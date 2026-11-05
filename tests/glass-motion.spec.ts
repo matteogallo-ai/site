@@ -234,3 +234,18 @@ test("each section comes into place once, its children one after the other, and 
   await page.waitForTimeout(200);
   for (const id of ids) expect((await children(id)).every((c) => c.opacity === "1")).toBe(true);
 });
+
+test("figures already on screen at load do not count: nothing above the fold moves but the answer", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 1400 });
+  const counted: string[] = [];
+  await page.exposeFunction("sawCounting", (v: string) => counted.push(v));
+  await page.addInitScript(() => {
+    new MutationObserver((records) => {
+      for (const r of records) if (r.attributeName === "data-counting") (window as unknown as { sawCounting: (v: string) => void }).sawCounting((r.target as Element).textContent ?? "");
+    }).observe(document, { attributes: true, subtree: true });
+  });
+  await page.goto("/");
+  await expect(page.locator(".band")).toBeInViewport();
+  await page.waitForTimeout(1200);
+  expect(counted).toEqual([]);
+});

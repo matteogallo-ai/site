@@ -14,7 +14,7 @@ export function counted(display: string, progress: number): string {
 }
 
 /**
- * Counts each figure up once, as it comes into view. Only an aria-hidden copy laid over the
+ * Counts each figure up once, as it comes into view from below the first screen. Only an aria-hidden copy laid over the
  * figure counts; the figure itself stays in the page, transparent, so assistive tech reads its
  * value throughout and the line keeps its width. Under reduced motion nothing moves.
  */
@@ -28,7 +28,12 @@ export function countOnSight(values: Iterable<HTMLElement>): void {
       countUp(entry.target as HTMLElement);
     }
   }, { threshold: 0.6 });
-  for (const value of values) seen.observe(value);
+  for (const value of values) {
+    // A figure already on screen when this runs is left as it is: nothing seen at load moves.
+    const box = value.getBoundingClientRect();
+    if (box.top < innerHeight && box.bottom > 0) continue;
+    seen.observe(value);
+  }
 }
 
 function countUp(value: HTMLElement): void {
