@@ -30,9 +30,12 @@ async function boxes(page: Page, mode: "answer" | "refusal") {
 }
 
 const within = (inner: Box, outer: Box) => inner.top >= outer.top && inner.bottom <= outer.bottom && inner.left >= outer.left && inner.right <= outer.right;
+// Settled: the window has scrolled to the passage and the lens has reached it. Web fonts can land
+// after document.fonts.ready and move the words; the lens follows them a moment later.
 const settled = async (page: Page, mode: "answer" | "refusal") => {
   const b = await boxes(page, mode);
-  return within(b.target, b.window);
+  const centre = (x: Box) => (x.top + x.bottom) / 2;
+  return within(b.target, b.window) && Math.abs(centre(b.lens) - centre(b.target)) < 8;
 };
 const apart = (a: Box, b: Box) => a.bottom <= b.top || b.bottom <= a.top || a.right <= b.left || b.right <= a.left;
 
