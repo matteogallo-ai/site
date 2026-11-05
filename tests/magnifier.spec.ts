@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 import { expect, type Page, test } from "@playwright/test";
-import { PAD, SCALE } from "../src/scripts/lens.ts";
+import { PAD, RING, SCALE } from "../src/scripts/lens.ts";
 
 const read = (name: string) => JSON.parse(readFileSync(new URL(`../src/data/demo/${name}.json`, import.meta.url), "utf8"));
 const answer = read("answer");
@@ -99,7 +99,7 @@ for (const width of [375, 1024, 1440]) {
       expect(c.boxes.copy.left).toBeGreaterThanOrEqual(c.boxes.lens.left);
       expect(c.boxes.copy.right).toBeLessThanOrEqual(c.boxes.lens.right);
       expect(c.boxes.copy.width).toBeGreaterThan(c.boxes.target.width * 1.02);
-      if (c.boxes.target.width * SCALE + 2 * PAD <= 2 * c.half) {
+      if (c.boxes.target.width * SCALE + 2 * PAD <= 2 * (c.half - RING)) {
         expect(c.boxes.copy.width).toBeGreaterThan(c.boxes.target.width * (SCALE - 0.01));
       }
       // No horizontal scroll: an overhanging lens is clipped, not added to the page width.
@@ -117,6 +117,27 @@ for (const mode of ["answer", "refusal"] as const) {
     for (const other of ["target", "copy"] as const) {
       await expect.poll(async () => distance(...pair(await centres(page, TARGETS[mode]), other)), { timeout: 5000 }).toBeLessThan(MAX_DISTANCE);
     }
+  });
+}
+
+for (const mode of ["answer", "refusal"] as const) {
+  test(`magnifier: ${mode} shows its enlarged words only, never the lines around them`, async ({ page }) => {
+    await page.goto("/");
+    if (mode === "refusal") await page.getByRole("tab", { name: "Refuse, faute de preuve" }).click();
+    await expect(page.locator("[data-lens]")).toBeVisible();
+    const shown = await page.evaluate((m) => {
+      const view = document.querySelector("[data-lens-view]")!;
+      const walker = document.createTreeWalker(view, NodeFilter.SHOW_TEXT);
+      const visible: { text: string; target: boolean }[] = [];
+      for (let n = walker.nextNode(); n; n = walker.nextNode()) {
+        const parent = n.parentElement!;
+        if (!n.textContent?.trim() || getComputedStyle(parent).visibility !== "visible") continue;
+        visible.push({ text: n.textContent, target: parent.closest(`[data-mark~="${m}"]`) !== null });
+      }
+      return visible;
+    }, mode);
+    expect(shown.length).toBeGreaterThan(0);
+    expect(shown.filter((s) => !s.target)).toEqual([]);
   });
 }
 

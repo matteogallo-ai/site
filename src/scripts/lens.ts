@@ -16,11 +16,13 @@ export interface LensLayout {
 
 export const SCALE = 1.12;
 export const PAD = 8;
+/** The glass ring drawn outside the lens box: the sheet scrolls and clips it, so it keeps this far in. */
+export const RING = 8;
 
 /**
  * The lens is centred on the target's centre and sized to the enlarged target. The copy is
  * aligned with the sheet, then scaled about that same centre, so the enlarged words stay under
- * the lens centre. The lens stays on the sheet (its glass ring uses the demo's clip margin) and
+ * the lens centre. The lens and its ring stay on the sheet, which clips them, and the lens
  * is symmetric about the centre, so near an edge or in a narrow column the words are enlarged
  * less, down to their own size, and the lens still holds them whole: a cut first letter reads
  * as a different word.
@@ -28,9 +30,10 @@ export const PAD = 8;
 export function lensLayout(target: Box, sheetWidth: number, scale = SCALE): LensLayout {
   const cx = target.left + target.width / 2;
   const cy = target.top + target.height / 2;
-  const half = Math.max(0, Math.min(cx, sheetWidth - cx));
+  const half = Math.max(0, Math.min(cx, sheetWidth - cx) - RING);
   const fit = Math.max(1, Math.min(scale, (half - PAD) / (target.width / 2)));
-  const width = Math.min(target.width * fit + 2 * PAD, 2 * half);
+  // Whole words come before a whole ring: words closer to the edge than RING keep their lens.
+  const width = Math.min(target.width * fit + 2 * PAD, Math.max(2 * half, target.width));
   const height = target.height * fit + 2 * PAD;
   const left = cx - width / 2;
   const top = cy - height / 2;

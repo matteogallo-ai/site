@@ -40,8 +40,9 @@ const runFile = fileOf(answer.source.path);
     <button type="button" role="tab" id="verity-tab-refusal" aria-controls="verity-panel-refusal" aria-selected="false" tabindex="-1" data-mode="refusal">Refuse, faute de preuve</button>
   </div>
 
-  <div class="sheet" data-sheet>
-    <article class="doc serif" lang="en" aria-label="Contrat de démonstration : Service Level Agreement">
+  <div class="window">
+    <div class="sheet" data-sheet tabindex="0" role="region" aria-label="Contrat de démonstration : Service Level Agreement">
+    <article class="doc serif" lang="en">
       {
         blocks.map((b) =>
           b.kind === "ul" ? (
@@ -72,10 +73,8 @@ const runFile = fileOf(answer.source.path);
     <p class="lens-tag" data-lens-tag hidden aria-hidden="true">
       <span data-tag-answer>Citation</span><span class="defect" data-tag-refusal>Jugé insuffisant</span>
     </p>
+    </div>
   </div>
-  <p class="source mono">
-    <a href={sla.source.url}>{fileOf(slaPath)}</a> · run <a href={answer.source.url}>{runFile}</a>
-  </p>
 
   <section class="card glass" role="tabpanel" id="verity-panel-answer" aria-labelledby="verity-tab-answer" tabindex="0">
     <p class="k">Question · {answer.example_id}</p>
@@ -110,6 +109,10 @@ const runFile = fileOf(answer.source.path);
     <p class="ref">Passage le plus proche{"\u00A0"}: <span class="mono" lang="en">{fileOf(slaPath)} · {sectionOf(closest.section)}</span>, jugé insuffisant</p>
     <p class="why" lang="en">{refusal.refusal_rationale}</p>
   </section>
+
+  <p class="source mono">
+    <a href={sla.source.url}>{fileOf(slaPath)}</a> · run <a href={answer.source.url}>{runFile}</a>
+  </p>
 </div>
 
 <noscript>
@@ -122,6 +125,15 @@ const runFile = fileOf(answer.source.path);
       display: block;
       margin-top: 1rem;
     }
+    /* Nothing scrolls the window to the passage: the whole contract is shown, the cards below it. */
+    [data-verity-demo] [data-sheet] {
+      height: auto;
+      padding-bottom: 1.25rem;
+      mask-image: none;
+    }
+    [data-verity-demo] .card {
+      margin: 1rem 0 0;
+    }
   </style>
 </noscript>
 
@@ -133,10 +145,6 @@ const runFile = fileOf(answer.source.path);
 <style>
   .demo {
     position: relative;
-    /* A lens capped at the sheet width keeps its centre on the target and may overhang the
-       sheet: clip it at the demo's edge instead of letting it widen the page. */
-    overflow-x: clip;
-    overflow-clip-margin: 8px;
   }
 
   .tabs {
@@ -163,12 +171,39 @@ const runFile = fileOf(answer.source.path);
     color: var(--paper);
   }
 
-  .sheet {
-    position: relative;
-    padding: 1.5rem 1.5rem 1.25rem;
+  /* The contract is seen through a window of fixed height, scrolled to the passage in play
+     (verity-demo.ts); it fades out at both ends to say that it goes on. */
+  .window {
     background: var(--sheet);
     border-radius: 6px;
     box-shadow: 0 0 0 1px var(--rule), 0 12px 32px -18px rgb(17 17 17 / 0.35);
+  }
+
+  .sheet {
+    position: relative;
+    height: 18rem;
+    padding: 1.5rem 1.5rem 1.25rem;
+    overflow-y: auto;
+    scrollbar-width: none;
+    border-radius: inherit;
+    /* Read by verity-demo.ts: where the passage goes, and what the tag above the lens keeps clear of. */
+    --target-at: 0.5;
+    --fade: 40px;
+    --tag-gap: 10px;
+    mask-image: linear-gradient(to bottom, transparent, #000 var(--fade), #000 calc(100% - var(--fade)), transparent);
+  }
+
+  /* The mask would also fade a focus outline drawn by the sheet: the window draws it, where
+     the browser can select it. */
+  @supports selector(:has(*)) {
+    .sheet:focus-visible {
+      outline: none;
+    }
+
+    .window:has(.sheet:focus-visible) {
+      outline: 2px solid var(--ink);
+      outline-offset: 2px;
+    }
   }
 
   .doc {
@@ -219,7 +254,9 @@ const runFile = fileOf(answer.source.path);
     top: 0;
     overflow: hidden;
     border-radius: 14px;
-    background: var(--sheet);
+    /* Frosted, near-opaque: the words behind blur out of the way of the enlarged ones. */
+    background: var(--lens-fill);
+    backdrop-filter: blur(12px);
     box-shadow:
       0 0 0 1px var(--glass-edge),
       0 0 0 6px var(--glass-fill),
@@ -255,17 +292,28 @@ const runFile = fileOf(answer.source.path);
       transform var(--dur-slow) var(--ease);
   }
 
+  /* The lens enlarges its words only: the rest of the copy would overlap the lines around. */
+  .lens-view :global(*) {
+    visibility: hidden;
+  }
+
+  .demo[data-mode="answer"] .lens-view :global([data-mark~="answer"]),
+  .demo[data-mode="refusal"] .lens-view :global([data-mark~="refusal"]) {
+    visibility: visible;
+  }
+
   /* Above the lens, never over the words it enlarges. */
   .lens-tag {
     position: absolute;
     margin: 0;
-    transform: translate(-100%, calc(-100% - 10px));
+    transform: translate(-100%, calc(-100% - var(--tag-gap)));
     padding: 0.05rem 0.45rem;
     box-shadow: 0 0 0 1px var(--rule);
     transition:
       left var(--dur-slow) var(--ease),
       top var(--dur-slow) var(--ease);
     font-size: var(--step-12);
+    white-space: nowrap;
     color: var(--proof-text);
     background: var(--paper);
     border-radius: 4px;
@@ -281,7 +329,7 @@ const runFile = fileOf(answer.source.path);
   }
 
   .source {
-    margin: 0.5rem 0 1rem;
+    margin: 0.75rem 0 0;
     font-size: var(--step-12);
     color: var(--graphite);
     overflow-wrap: anywhere;
@@ -291,8 +339,12 @@ const runFile = fileOf(answer.source.path);
     color: inherit;
   }
 
+  /* Over the contract, the card's glass is near-opaque: its text then never sits on the words
+     behind it (worst case checked in contrast.test.ts). */
   .card {
+    margin-top: 1rem;
     padding: 1.25rem;
+    background: var(--card-fill);
     border-radius: 14px;
     box-shadow: 0 0 0 1px var(--glass-edge), 0 12px 32px -20px rgb(17 17 17 / 0.4);
   }
@@ -407,6 +459,42 @@ const runFile = fileOf(answer.source.path);
   @media (prefers-reduced-transparency: reduce) {
     :global(:root[data-refraction]) .lens-glass {
       filter: none;
+    }
+  }
+
+  /* Wide screens: the answer card overlaps the bottom right of the window, so the question,
+     its passage under the lens and the answer fit on the first screen together. */
+  @media (min-width: 64rem) {
+    /* The card covers the lower half of the window: the passage is centred in the upper part,
+       and the padding lets the end of the contract scroll up there too. */
+    .sheet {
+      height: 22.5rem;
+      padding-bottom: 12rem;
+      /* Wide screens only: on a phone the window spans the screen, and a swipe on it must still
+         scroll the page once the window is at its end. */
+      overscroll-behavior: contain;
+      --target-at: 0.27;
+    }
+
+    .window {
+      margin-right: 12%;
+    }
+
+    .card {
+      position: relative;
+      z-index: 1;
+      margin: -11.5rem 0 0 20%;
+      padding: 1rem 1.25rem;
+    }
+
+    .q,
+    .a,
+    blockquote {
+      font-size: var(--step-14);
+    }
+
+    .k {
+      margin-top: 0.5rem !important;
     }
   }
 </style>
