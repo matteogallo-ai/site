@@ -169,3 +169,16 @@ test("an answer on screen at load stays as it is; one below the fold writes itse
   });
   await expect(card).toHaveAttribute("data-written", "", { timeout: 2000 });
 });
+
+test("an answer below the fold at load writes itself even when the page scrolls to it at once", async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 700 });
+  // Runs after the demo's module script has mounted, before any observer has reported.
+  await page.addInitScript(() =>
+    document.addEventListener("DOMContentLoaded", () => {
+      const a = document.querySelector("#verity-panel-answer .a")!;
+      window.scrollBy(0, a.getBoundingClientRect().top - window.innerHeight + 4);
+    }),
+  );
+  await page.goto("/");
+  await expect(page.locator("#verity-panel-answer")).toHaveAttribute("data-written", "", { timeout: 3000 });
+});

@@ -157,17 +157,14 @@ export function mountVerityDemo(root: HTMLElement): void {
   // down writes itself as soon as its answer starts to enter the view, before it can be read.
   const first = panelOf(tabs[0]!);
   const firstAnswer = first?.querySelector(".a");
-  if (first && firstAnswer) {
-    const seen = new IntersectionObserver(([entry]) => {
-      seen.disconnect();
-      if (entry && !entry.isIntersecting) {
-        pending = new IntersectionObserver(([e]) => {
-          if (e?.isIntersecting) write(first);
-        });
-        pending.observe(firstAnswer);
-      }
+  // Measured now, not from an observer's first report: that report comes later, and a scroll in
+  // between would pass an answer that was off-screen at load for one that was there.
+  const box = firstAnswer?.getBoundingClientRect();
+  if (first && firstAnswer && box && (box.top >= innerHeight || box.bottom <= 0)) {
+    pending = new IntersectionObserver(([e]) => {
+      if (e?.isIntersecting) write(first);
     });
-    seen.observe(firstAnswer);
+    pending.observe(firstAnswer);
   }
   void document.fonts.ready.then(() => place());
   place();
