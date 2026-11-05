@@ -1,0 +1,10 @@
+{
+  "source": {
+    "repo": "matteogallo-ai/verity",
+    "commit": "162a055dee9ec26297b204c669a6a9b6e667b52a",
+    "path": "datasets/corpus/sla.md",
+    "url": "https://github.com/matteogallo-ai/verity/blob/162a055dee9ec26297b204c669a6a9b6e667b52a/datasets/corpus/sla.md",
+    "sha256": "d9eb048faa5cf43d82444482a4737b1f1984172095ee290d4068084720792ec5"
+  },
+  "text": "# Service Level Agreement\n\nThis Service Level Agreement (\"SLA\") applies to the services provided by Acme Corporation under the Master Services Agreement.\n\n## 1. Uptime Commitment\nProvider commits to a monthly uptime of 99.9% for the production service. Uptime is measured per calendar month and excludes scheduled maintenance windows.\n\n## 2. Service Credits\nIf monthly uptime falls below the commitment, the Customer is entitled to a service credit calculated as a percentage of that month's fees:\n\n- Uptime from 99.0% up to 99.9%: 10% credit.\n- Uptime from 95.0% up to 99.0%: 25% credit.\n- Uptime below 95.0%: 50% credit.\n\nService credits are the Customer's sole and exclusive remedy for availability failures and must be claimed in writing within thirty (30) days of the affected month.\n\n## 3. Support Response Times\nProvider responds to support requests according to severity:\n\n- Priority 1 (critical, service unavailable): within one (1) hour.\n- Priority 2 (high, major feature impaired): within four (4) business hours.\n- Priority 3 (normal): within one (1) business day.\n\n## 4. Scheduled Maintenance\nRoutine maintenance is performed on Sundays between 02:00 and 06:00 UTC. Provider gives at least forty-eight (48) hours' advance notice of any scheduled maintenance, which does not count against the uptime commitment.\n"
+}
