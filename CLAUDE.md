@@ -55,6 +55,10 @@ Agents on the owner's machine never run `nvm use` and never edit `~/.npmrc` (it 
 global `prefix`); they call Node 24 by absolute path, e.g.
 `export PATH="$HOME/.nvm/versions/node/v24.22.2/bin:$PATH"` at the start of each command.
 
+Once per clone: `git config core.hooksPath .githooks` (git then ignores `.git/hooks`). The
+pre-push hook runs commitlint on every commit the push would publish; a pushed message cannot
+be fixed without a force-push.
+
 `docs/private/` is git-ignored and holds working notes that must never be committed.
 
 ```
