@@ -16,9 +16,13 @@ const MARKERS: [RegExp, string][] = [
 
 /** Each placeholder in `html`, as "<kind>: <matched text>". */
 export function gapsIn(html: string): string[] {
-  // Code and comments are not page content: a TODO there is not shown to a reader.
-  const content = html.replace(/<script\b[\s\S]*?<\/script>|<style\b[\s\S]*?<\/style>|<!--[\s\S]*?-->/g, "");
-  return MARKERS.flatMap(([pattern, kind]) => [...content.matchAll(pattern)].map((m) => `${kind}: ${m[0].trim()}`));
+  // Code and comments are not page content: a TODO there is not shown to a reader. Their spans
+  // are located and matches inside them skipped; the HTML itself is never rewritten.
+  const code = [...html.matchAll(/<(script|style)\b[\s\S]*?<\/\1\s*>|<!--[\s\S]*?-->/gi)].map((m) => [m.index, m.index + m[0].length]);
+  const inCode = (at: number) => code.some(([start, end]) => at >= start! && at < end!);
+  return MARKERS.flatMap(([pattern, kind]) =>
+    [...html.matchAll(pattern)].filter((m) => !inCode(m.index)).map((m) => `${kind}: ${m[0].trim()}`),
+  );
 }
 
 /** Astro integration: fails the build when a written page contains a placeholder. */

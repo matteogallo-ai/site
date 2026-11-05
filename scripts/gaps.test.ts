@@ -31,3 +31,11 @@ test("words that merely contain a marker are not gaps", () => {
 test("scripts, styles and comments are not page content", () => {
   assert.deepEqual(gapsIn("<script>/* TODO */</script><style>/* FIXME */</style><!-- TODO --><p>ok</p>"), []);
 });
+
+test("code in upper case or with spaced closing tags is still code", () => {
+  assert.deepEqual(gapsIn("<SCRIPT>/* TODO */</SCRIPT ><Style>/* FIXME */</style\n>"), []);
+});
+
+test("a marker after a script is still found", () => {
+  assert.equal(gapsIn("<script>x</script><p>TODO: bio</p>").length, 1);
+});
