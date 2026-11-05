@@ -1,2 +1,12 @@
+node_modules/
+dist/
+.astro/
+.lighthouseci/
+test-results/
+playwright-report/
+site-measures.json
+.DS_Store
+.env
+.env.*
 # Private working notes (French spec): never published.
 docs/private/
