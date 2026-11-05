@@ -1,4 +1,251 @@
 {
   "schema": "site.measures/v1",
-  "measures": []
+  "measures": [
+    {
+      "id": "verity.refusal_recall",
+      "label": {
+        "fr": "Rappel de refus",
+        "en": "Refusal recall"
+      },
+      "display": {
+        "fr": "17/20",
+        "en": "17/20"
+      },
+      "value": 0.85,
+      "k": 17,
+      "n": 20,
+      "ci95": [
+        0.639581,
+        0.947631
+      ],
+      "repo": "matteogallo-ai/verity",
+      "commit": "162a055dee9ec26297b204c669a6a9b6e667b52a",
+      "path": "scorecards/live-v1.1.0.json",
+      "url": "https://github.com/matteogallo-ai/verity/blob/162a055dee9ec26297b204c669a6a9b6e667b52a/scorecards/live-v1.1.0.json",
+      "evidence": [
+        {
+          "pointer": "/refusal/refusal_recall/k",
+          "equals": 17,
+          "binds": "k"
+        },
+        {
+          "pointer": "/refusal/refusal_recall/n",
+          "equals": 20,
+          "binds": "n"
+        },
+        {
+          "pointer": "/refusal/refusal_recall/ci95_wilson",
+          "equals": [
+            0.639581,
+            0.947631
+          ],
+          "binds": "ci95"
+        },
+        {
+          "pointer": "/refusal/confidence_threshold",
+          "equals": 0.0
+        }
+      ],
+      "status": "verified",
+      "note": "Test split, run of record 969e1d5, n = 56 questions, threshold 0.0."
+    },
+    {
+      "id": "verity.refusal_precision",
+      "label": {
+        "fr": "Précision de refus",
+        "en": "Refusal precision"
+      },
+      "display": {
+        "fr": "17/22",
+        "en": "17/22"
+      },
+      "value": 0.772727,
+      "k": 17,
+      "n": 22,
+      "ci95": [
+        0.5656,
+        0.89877
+      ],
+      "repo": "matteogallo-ai/verity",
+      "commit": "162a055dee9ec26297b204c669a6a9b6e667b52a",
+      "path": "scorecards/live-v1.1.0.json",
+      "url": "https://github.com/matteogallo-ai/verity/blob/162a055dee9ec26297b204c669a6a9b6e667b52a/scorecards/live-v1.1.0.json",
+      "evidence": [
+        {
+          "pointer": "/refusal/refusal_precision/k",
+          "equals": 17,
+          "binds": "k"
+        },
+        {
+          "pointer": "/refusal/refusal_precision/n",
+          "equals": 22,
+          "binds": "n"
+        },
+        {
+          "pointer": "/refusal/refusal_precision/ci95_wilson",
+          "equals": [
+            0.5656,
+            0.89877
+          ],
+          "binds": "ci95"
+        }
+      ],
+      "status": "verified",
+      "note": "Same run: 5 of 22 refusals were answerable questions."
+    },
+    {
+      "id": "verity.unanswerable_answered",
+      "label": {
+        "fr": "Questions sans réponse auxquelles il a répondu",
+        "en": "Unanswerable questions answered"
+      },
+      "display": {
+        "fr": "3/20",
+        "en": "3/20"
+      },
+      "value": 0.15,
+      "k": 3,
+      "n": 20,
+      "ci95": [
+        0.052369,
+        0.360419
+      ],
+      "repo": "matteogallo-ai/verity",
+      "commit": "162a055dee9ec26297b204c669a6a9b6e667b52a",
+      "path": "scorecards/live-v1.1.0.json",
+      "url": "https://github.com/matteogallo-ai/verity/blob/162a055dee9ec26297b204c669a6a9b6e667b52a/scorecards/live-v1.1.0.json",
+      "evidence": [
+        {
+          "pointer": "/refusal/out_of_scope_answered/count",
+          "equals": 3,
+          "binds": "k"
+        },
+        {
+          "pointer": "/refusal/out_of_scope_answered/total",
+          "equals": 20,
+          "binds": "n"
+        },
+        {
+          "pointer": "/refusal/out_of_scope_answered/ci95_wilson",
+          "equals": [
+            0.052369,
+            0.360419
+          ],
+          "binds": "ci95"
+        }
+      ],
+      "status": "verified",
+      "note": "The main Verity defect: 3 unanswerable questions got an answer instead of a refusal."
+    },
+    {
+      "id": "verity.hallucination_rate",
+      "label": {
+        "fr": "Taux d'hallucination (juge), questions avec réponse auxquelles il a répondu",
+        "en": "Hallucination rate (judge), answerable questions answered"
+      },
+      "display": {
+        "fr": "0/31",
+        "en": "0/31"
+      },
+      "value": 0.0,
+      "k": 0,
+      "n": 31,
+      "ci95": [
+        0.0,
+        0.110255
+      ],
+      "repo": "matteogallo-ai/verity",
+      "commit": "162a055dee9ec26297b204c669a6a9b6e667b52a",
+      "path": "scorecards/live-v1.1.0.json",
+      "url": "https://github.com/matteogallo-ai/verity/blob/162a055dee9ec26297b204c669a6a9b6e667b52a/scorecards/live-v1.1.0.json",
+      "evidence": [
+        {
+          "pointer": "/answer_quality/hallucination_rate/k",
+          "equals": 0,
+          "binds": "k"
+        },
+        {
+          "pointer": "/answer_quality/hallucination_rate/n_questions",
+          "equals": 31,
+          "binds": "n"
+        },
+        {
+          "pointer": "/answer_quality/hallucination_rate/ci95_wilson",
+          "equals": [
+            0.0,
+            0.110255
+          ],
+          "binds": "ci95"
+        },
+        {
+          "pointer": "/answer_quality/hallucination_rate/scope",
+          "equals": "answerable_and_answered"
+        }
+      ],
+      "status": "verified",
+      "note": "Scored by an LLM judge (judge prompt v0.1.0) whose agreement with blind human labels is κ 0.71 on 60 claims, 0.48 on the 40 real ones."
+    },
+    {
+      "id": "verity.threshold_run_of_record",
+      "label": {
+        "fr": "Seuil de refus (run de référence)",
+        "en": "Refusal threshold (run of record)"
+      },
+      "display": {
+        "fr": "0,00",
+        "en": "0.00"
+      },
+      "value": 0.0,
+      "repo": "matteogallo-ai/verity",
+      "commit": "162a055dee9ec26297b204c669a6a9b6e667b52a",
+      "path": "scorecards/live-v1.1.0.json",
+      "url": "https://github.com/matteogallo-ai/verity/blob/162a055dee9ec26297b204c669a6a9b6e667b52a/scorecards/live-v1.1.0.json",
+      "evidence": [
+        {
+          "pointer": "/refusal/confidence_threshold",
+          "equals": 0.0,
+          "binds": "value"
+        },
+        {
+          "path": "docs/results.md",
+          "contains": "The threshold decides nothing on this data."
+        },
+        {
+          "path": "docs/results.md",
+          "contains": "The threshold was chosen on the dev split by a rule fixed before the run"
+        }
+      ],
+      "status": "verified",
+      "note": "Chosen on the dev split by a rule fixed before the run, which gave 0.00; docs/results.md: the threshold decides nothing on this data."
+    },
+    {
+      "id": "verity.threshold_code_default",
+      "label": {
+        "fr": "Seuil de refus (défaut du code)",
+        "en": "Refusal threshold (code default)"
+      },
+      "display": {
+        "fr": "0,55",
+        "en": "0.55"
+      },
+      "value": 0.55,
+      "repo": "matteogallo-ai/verity",
+      "commit": "162a055dee9ec26297b204c669a6a9b6e667b52a",
+      "path": "src/verity/config.py",
+      "url": "https://github.com/matteogallo-ai/verity/blob/162a055dee9ec26297b204c669a6a9b6e667b52a/src/verity/config.py",
+      "evidence": [
+        {
+          "path": "src/verity/config.py",
+          "contains": "confidence_threshold: float = Field(\n        default=0.55,"
+        },
+        {
+          "path": ".env.example",
+          "contains": "VERITY_CONFIDENCE_THRESHOLD=0.55"
+        }
+      ],
+      "status": "verified",
+      "derived": "The default of the confidence_threshold field in the code.",
+      "note": "Default of `verity ask`; the run of record used 0.0."
+    }
+  ]
 }
