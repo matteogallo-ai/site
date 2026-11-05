@@ -16,7 +16,8 @@
     "test:a11y": "playwright test",
     "lighthouse": "lhci autorun",
     "measures": "node --experimental-strip-types scripts/site-measures.ts",
-    "fonts": ".venv/bin/python scripts/fonts/subset.py"
+    "fonts": ".venv/bin/python scripts/fonts/subset.py",
+    "check:sources": "node --experimental-strip-types scripts/check-sources.ts"
   },
   "dependencies": {
     "astro": "7.4.5"
