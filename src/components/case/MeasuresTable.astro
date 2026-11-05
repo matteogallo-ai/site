@@ -1,0 +1,148 @@
+---
+import Figure from "../Figure.astro";
+import { interval, measure } from "../../lib/measures.ts";
+
+/**
+ * One measure per row, optionally beside the same measure on a baseline. Every figure is a
+ * Figure (linked to its artefact); every interval is read from the measure. A measure with no
+ * interval must say why in `noInterval`, and one with an interval may not: the build fails
+ * either way, so a missing interval is never silent.
+ */
+interface Row {
+  id: string;
+  /** Row label when the measure's own label names its arm ("… — Verity"). */
+  label?: string;
+  base?: string;
+  noInterval?: string;
+  defect?: boolean;
+  reading: string;
+}
+
+interface Props {
+  /** Unique on the page: keeps Figure tooltip ids unique. */
+  where: string;
+  caption: string;
+  ours?: string;
+  baseline?: string;
+  rows: Row[];
+}
+
+const { where, caption, ours = "Valeur", baseline, rows } = Astro.props;
+
+const ci = (id: string, noInterval?: string) => {
+  const m = measure(id);
+  if (m.ci95 && noInterval) throw new Error(`${id} has an interval: drop noInterval`);
+  if (!m.ci95 && !noInterval) throw new Error(`${id} has no interval: say why in noInterval`);
+  return m.ci95 ? { text: interval(m, "fr"), measured: true } : { text: noInterval!, measured: false };
+};
+const cells = rows.map((r) => {
+  if (baseline && !r.base) throw new Error(`${r.id}: a comparison row needs its baseline measure`);
+  return { ...r, ownLabel: !r.label, label: r.label ?? measure(r.id).label.fr, ci: ci(r.id, r.noInterval), baseCi: r.base ? ci(r.base) : undefined };
+});
+---
+
+<h3 class="caption" id={`${where}-caption`}>{caption}</h3>
+{/* The caption sits outside the scrolling region so that it stays in view on a narrow screen. */}
+<div class="scroll" role="region" aria-labelledby={`${where}-caption`} tabindex="0">
+  <table aria-labelledby={`${where}-caption`}>
+    <thead>
+      <tr>
+        <th scope="col">Mesure</th>
+        <th scope="col">{ours}</th>
+        <th scope="col">IC 95&nbsp;%</th>
+        {baseline && <th scope="col">{baseline}</th>}
+        {baseline && <th scope="col">IC 95&nbsp;%</th>}
+        <th scope="col">Lecture</th>
+      </tr>
+    </thead>
+    <tbody>
+      {
+        cells.map((r) => (
+          <tr>
+            <th scope="row" data-label={r.ownLabel ? r.id : undefined}>
+              {r.label}
+            </th>
+            <td class="value">
+              <Figure id={r.id} where={where} defect={r.defect ?? false} />
+            </td>
+            <td class:list={["ci", { reason: !r.ci.measured }]} data-measure={r.ci.measured ? r.id : undefined}>
+              {r.ci.text}
+            </td>
+            {r.base && (
+              <td class="value">
+                <Figure id={r.base} where={where} />
+              </td>
+            )}
+            {r.base && (
+              <td class="ci" data-measure={r.base}>
+                {r.baseCi!.text}
+              </td>
+            )}
+            <td class="reading">{r.reading}</td>
+          </tr>
+        ))
+      }
+    </tbody>
+  </table>
+</div>
+
+<style>
+  .caption {
+    margin-top: 2rem;
+    font-size: var(--step-16);
+  }
+
+  .scroll {
+    margin-top: 0.75rem;
+    overflow-x: auto;
+  }
+
+  table {
+    width: 100%;
+    min-width: 40rem;
+    border-collapse: collapse;
+    font-size: var(--step-14);
+  }
+
+  th,
+  td {
+    text-align: left;
+    vertical-align: top;
+    padding: 0.6rem 0.75rem 0.6rem 0;
+    border-top: 1px solid var(--rule);
+  }
+
+  thead th {
+    font-weight: 400;
+    font-size: var(--step-12);
+    color: var(--graphite);
+    border-top: 0;
+  }
+
+  tbody th {
+    font-weight: 400;
+    max-width: 16rem;
+  }
+
+  /* The cell anchors the proof tooltip of its Figure (src/components/Figure.astro). */
+  .value {
+    position: relative;
+    white-space: nowrap;
+  }
+
+  .ci {
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .ci.reason {
+    white-space: normal;
+    color: var(--graphite);
+    min-width: 10rem;
+  }
+
+  .reading {
+    color: var(--graphite);
+    min-width: 14rem;
+  }
+</style>
