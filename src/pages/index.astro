@@ -2,7 +2,6 @@
 import { Picture } from "astro:assets";
 import Base from "../layouts/Base.astro";
 import Figure from "../components/Figure.astro";
-import Gap from "../components/Gap.astro";
 import VerityDemo from "../components/VerityDemo.astro";
 import Projects from "../components/Projects.astro";
 import Bio from "../components/Bio.astro";
@@ -24,7 +23,6 @@ const nb = " ";
       <li><a href="#ecrits">Écrits</a></li>
       <li><a href="#a-propos">À propos</a></li>
       <li><span class="lang" aria-current="true" lang="fr">FR</span></li>
-      <li><Gap>version EN</Gap></li>
     </ul>
   </nav>
 
@@ -118,16 +116,14 @@ const nb = " ";
   <section class="container section" id="contact" aria-labelledby="contact-title">
     <p class="mono rule-label">+ 05</p>
     <h2 id="contact-title">Contact</h2>
-    <p class="email"><Gap>adresse e-mail publique</Gap></p>
+    <p class="email"><a href="mailto:matteogallo.office@gmail.com">matteogallo.office@gmail.com</a></p>
     <ul class="contact-links">
-      <li>LinkedIn : <Gap>URL du profil</Gap></li>
+      <li><a href="https://www.linkedin.com/in/matteogallo-ai">LinkedIn</a></li>
       <li><a href="https://github.com/matteogallo-ai">GitHub</a></li>
     </ul>
   </section>
 
   <footer class="container footer">
-    <p>Mesures du site (poids, Lighthouse, date du build, commit) : <Gap>publiées depuis la CI de production</Gap></p>
-    <p>Colophon : <Gap>page du colophon</Gap></p>
     <p>Code sous licence MIT, contenu tous droits réservés. <a href={repo("site")}>Code du site</a></p>
   </footer>
 </Base>
@@ -364,6 +360,8 @@ const nb = " ";
   .email {
     font-size: var(--step-28);
     margin: 0;
+    /* The address is one unbroken word, wider than a 375 px screen at this size. */
+    overflow-wrap: anywhere;
   }
 
   .contact-links {
