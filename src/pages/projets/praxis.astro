@@ -3,7 +3,7 @@ import CaseStudy from "../../layouts/CaseStudy.astro";
 import CaseSection from "../../components/case/CaseSection.astro";
 import Diagram from "../../components/case/Diagram.astro";
 import MeasuresTable from "../../components/case/MeasuresTable.astro";
-import { pinned } from "../../lib/sources.ts";
+import { pinned, pull } from "../../lib/sources.ts";
 
 const at = (path: string) => pinned("praxis", path);
 ---
@@ -35,10 +35,10 @@ const at = (path: string) => pinned("praxis", path);
         { title: "Rendu", lines: ["Markdown, PDF, DOCX"] },
       ]}
       outcomes={[
-        { title: "Briefing sourcé", lines: ["tous les éléments", "passent les contrôles"], tone: "proof" },
-        { title: "Briefing signalé", lines: ["section listant", "chaque élément", "non sourcé"], tone: "defect" },
+        { title: "Livré, sourcé", lines: ["tous les éléments", "sourcés"], tone: "proof" },
+        { title: "Livré, signalé", lines: ["section listant", "chaque élément", "non sourcé"], tone: "defect" },
       ]}
-      caption="Chaque étape appelle un modèle Anthropic ; les contrôles de sourcing sont du code, pas un modèle. Un briefing qui ne passe pas les contrôles est livré quand même, avec une section qui liste ce qu’il n’a pas pu sourcer."
+      caption="Chaque étape appelle un modèle Anthropic ; les contrôles de sourcing sont du code, pas un modèle. En mode dégradé, celui de la ligne de commande et du benchmark, un briefing qui ne passe pas les contrôles est livré avec une section qui liste ce qu’il n’a pas pu sourcer ; le run s’arrête si aucun fait de la recherche n’a de source."
     />
     <p>
       Les prompts sont des fichiers <code>.prompt</code> lus par PromptLang depuis npm. La section des éléments non sourcés est écrite par le code à partir du rapport de sourcing : aucun modèle ne peut
@@ -81,19 +81,18 @@ const at = (path: string) => pinned("praxis", path);
     <p>
       Toutes les étapes et tous les formats ont été construits et testés sur des fixtures avant la première exécution réelle. Les tests ne pouvaient prouver que le câblage, le benchmark mesurait les
       fixtures, et les premières exécutions réelles ont toutes échoué. Ce que j’ai fait : un audit indépendant, puis des corrections du pipeline sans appel payant (prompt système à sa place, modèle par
-      étape, extraction JSON tolérante, délais par étape, reprise sur point de contrôle, mesure du coût), puis des runs réels publiés, échecs compris (<a href={at("README.md#how-this-was-built")}
-        >README</a
-      >).
+      étape, extraction JSON tolérante, délais par étape, reprise sur point de contrôle, mesure du coût), puis des runs réels publiés, échecs compris (<a href={at("ROADMAP.md")}>plan de correction</a>).
     </p>
     <h3>La politique stricte jetait tout le travail</h3>
     <p>
-      Sous la politique stricte, un seul élément sans source annulait toutes les étapes déjà faites. Le prompt de recherche exigeait une date de consultation que le modèle ne peut pas connaître : la seule
-      réponse conforme était « source manquante ». Praxis date maintenant lui-même ses consultations, et le mode dégradé livre le briefing avec ses manques écrits dedans (<a href={at("docs/adr/0002-degrade-on-insufficient-sourcing.md")}>ADR 0002</a>).
+      Sous la politique stricte, un seul élément sans source annulait toutes les étapes déjà faites. Aucune transcription de ces runs n’a été gardée : la cause est lue dans le prompt et le code, pas
+      observée. Le prompt de recherche exigeait une date de consultation que le modèle ne peut pas connaître, ce qui ne laissait de réponse conforme que « source manquante ». Praxis date maintenant
+      lui-même ses consultations, ce qui retire la cause probable sans garantir une source à chaque élément, et le mode dégradé livre le briefing avec ses manques écrits dedans (<a href={at("docs/adr/0002-degrade-on-insufficient-sourcing.md")}>ADR 0002</a>).
     </p>
     <h3>Une section refusée pour une adresse web dans sa prose</h3>
     <p>
-      Une section de synthèse a été refusée deux fois, la dernière pour une adresse <code>www.</code> dans le texte, que les lecteurs transforment en lien. La correction (<a
-        href="https://github.com/matteogallo-ai/praxis/pull/44">#44</a
+      Une section de synthèse a été refusée, puis refusée à nouveau à la relance, cette fois pour une adresse <code>www.</code> dans le texte, que les lecteurs transforment en lien. La correction (<a
+        href={pull("praxis", 44)}>#44</a
       >) remplace la consigne par des marqueurs de citation numérotés, vérifiés par le code. Aucune relance payante n’a été faite pour « vérifier » : la correction n’est pas prouvée sur un run réel.
     </p>
   </CaseSection>
@@ -142,7 +141,7 @@ const at = (path: string) => pinned("praxis", path);
       <li>Un chemin réel qui aboutit de façon fiable, et mesuré : coût, jetons, durée, échantillon noté.</li>
       <li>La qualité des briefings réels notée par un juge validé contre des étiquettes humaines, avec sa bande de bruit.</li>
       <li>La fraîcheur d’une source mesurée sur l’âge de la page elle-même.</li>
-      <li>Les listes d’hôtes de confiance construites à partir des questions du benchmark, avant d’exécuter.</li>
+      <li>La recherche web avec filtrage dynamique, évaluée contre l’outil de base.</li>
     </ul>
     <p><a href={at("README.md#roadmap")}>Feuille de route</a></p>
   </CaseSection>
