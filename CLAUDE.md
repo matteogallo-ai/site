@@ -18,10 +18,15 @@ src/styles/tokens.css    design tokens from SPEC §4 (colour, type scale, grid, 
 src/styles/contrast.ts   WCAG contrast ratio + tokens.css reader (tested by contrast.test.ts)
 src/styles/global.css    base element styles
 src/layouts/Base.astro   document shell: fonts (serif only with `serif` prop), metadata, skip link
+src/layouts/CaseStudy.astro  shell of the case studies /projets/<slug>: header, prose styles, links between cases
 src/pages/               one file per route
 src/components/          VerityDemo (contract, spotlight, tabs, cards), Figure (a measure with its proof),
-                         Glass (SVG refraction filters, Chromium only), Projects, Bio
-src/lib/                 document.ts (Markdown blocks keeping source offsets), measures.ts (figures by id)
+                         Glass (SVG refraction filters, Chromium only), Projects, Bio;
+                         case/: CaseSection, Diagram (the one SVG of a case study), MeasuresTable (figures,
+                         intervals, baseline; a missing interval must say why or the build fails)
+src/lib/                 document.ts (Markdown blocks keeping source offsets), measures.ts (figures and intervals by id),
+                         diagram.ts (case-study diagram layout; a line too long for its box fails the build),
+                         sources.ts (link to a repo file at the commit its measures are pinned to)
 src/scripts/             client code of the demo: lens.ts (geometry), typing.ts (answer writing), verity-demo.ts (DOM)
 src/data/media.json      project images with their source; scripts/media-frame.ts re-derives the recording stills,
                          scripts/media/pdf_page.py (PyMuPDF, hash-pinned; venv .venv-media) the Praxis page
@@ -39,10 +44,14 @@ lighthouserc.cjs         blocking budgets from SPEC §8 (scores, LCP, CLS, trans
 tests/                   Playwright on every built page: axe (light + dark), keyboard, glyph coverage;
                          magnifier.spec.ts: spotlight ring within 8 px of its words at 375/1024/1440, no other line under
                          the ring or its tag, dimming, tablist keyboard;
-                         glass-motion.spec.ts: answer writing, glass refracted / frosted / opaque
-                         first-screen.spec.ts: tabs, passage, ring and whole card in view at 1440×800 and 1280×720
+                         glass-motion.spec.ts: answer writing, glass refracted / frosted / opaque;
+                         first-screen.spec.ts: tabs, passage, ring and whole card in view at 1440×800 and 1280×720;
+                         case-studies.spec.ts: SPEC §3.2 sections in order, pinned figure and ADR links,
+                         no number outside a measure, a link or code
 scripts/site-measures*   Lighthouse CI output -> site-measures.json (weight, scores, date, commit)
-scripts/built-pages.ts   list of built HTML pages, shared by the axe tests and site-measures
+scripts/built-pages.ts   list of built HTML pages, shared by the axe tests, site-measures and the link check
+scripts/check-links.ts   runs linkinator with every built page as an entry point: from the home page
+                         alone it does not descend into the pages it reaches
 linkinator.config.json   link check; the production origin is skipped because the crawl
                          already covers the same pages locally and the site may not be live;
                          LinkedIn is skipped because it answers HTTP 999 to every crawler;
