@@ -20,7 +20,6 @@ body {
   line-height: 1.55;
   /* Each subset ships only the weights it needs: a missing weight or italic must not be faked. */
   font-synthesis: none;
-  font-variant-numeric: tabular-nums;
 }
 
 h1,

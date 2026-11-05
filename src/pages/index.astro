@@ -67,47 +67,40 @@ const repo = (name: string) => `https://github.com/matteogallo-ai/${name}`;
   <section class="container section" id="methode" aria-labelledby="methode-title">
     <p class="mono rule-label">+ 02</p>
     <h2 id="methode-title">Méthode</h2>
-    <ol class="rules">
+    <ul class="rules">
       <li>
-        <h3>Une revue humaine est pré-enregistrée, et son résultat publié tel qu’il est sorti.</h3>
-        <p>
-          L’échantillon de signalements du linter IA a été tiré avec une graine fixe et commité avant toute annotation. La revue a mesuré{" "}
-          <Figure id="promptlang.linter_precision_reviewed" where="method" defect />, ce qui ne distingue pas la précision de la borne déjà publiée ; c’est publié avec cette lecture.
-        </p>
-        <p class="links"><a href="https://github.com/matteogallo-ai/promptlang/pull/39">promptlang#39</a></p>
+        <h3>Revue humaine pré-enregistrée, publiée telle quelle</h3>
+        <p>Échantillon tiré avec une graine fixe, commité avant toute annotation : <Figure id="promptlang.linter_precision_reviewed" where="method" defect /> signalements jugés justes, publié avec sa limite.</p>
+        <p class="links"><a href="https://github.com/matteogallo-ai/promptlang/pull/39">PR promptlang#39</a></p>
       </li>
       <li>
-        <h3>Un humain lit les vraies sorties : la relecture trouve ce que les tests ratent.</h3>
-        <p>
-          Ma relecture d’un briefing live de Praxis a trouvé des estimations de risque présentées comme des faits de première main. Une décision d’architecture les excluait déjà ; le code ne l’appliquait pas. Le validateur est corrigé, la relecture publiée, aucun enregistrement réécrit.
-        </p>
-        <p class="links"><a href="https://github.com/matteogallo-ai/praxis/pull/47">praxis#47</a></p>
+        <h3>Lire les vraies sorties, pas seulement les tests</h3>
+        <p>Ma relecture d’un briefing Praxis a trouvé des estimations présentées comme des faits. Validateur corrigé, relecture publiée.</p>
+        <p class="links"><a href="https://github.com/matteogallo-ai/praxis/pull/47">PR praxis#47</a></p>
       </li>
       <li>
-        <h3>Un agent sans contexte audite main ; chaque constat est corrigé, réfuté ou laissé ouvert, par écrit.</h3>
-        <p>
-          L’audit de PromptLang a produit <Figure id="promptlang.audit_findings" where="method" /> constats, chacun suivi par écrit.
-        </p>
-        <p class="links"><a href="https://github.com/matteogallo-ai/promptlang/pull/32">promptlang#32</a></p>
+        <h3>Audit à froid, chaque constat suivi par écrit</h3>
+        <p>Un agent sans contexte a audité PromptLang : <Figure id="promptlang.audit_findings" where="method" /> constats, chacun corrigé, réfuté ou laissé ouvert.</p>
+        <p class="links"><a href="https://github.com/matteogallo-ai/promptlang/pull/32">PR promptlang#32</a></p>
       </li>
-    </ol>
+    </ul>
     <p><a href={repo("how-i-build")}>Toutes les règles et leurs incidents : how-i-build</a></p>
   </section>
 
-  <section class="container section" id="a-propos" aria-labelledby="a-propos-title">
-    <p class="mono rule-label">+ 03</p>
-    <h2 id="a-propos-title">À propos</h2>
-    <Bio />
-  </section>
-
-  <section class="container section" id="contact" aria-labelledby="contact-title">
-    <p class="mono rule-label">+ 04</p>
-    <h2 id="contact-title">Contact</h2>
-    <p class="email"><a href="mailto:matteogallo.office@gmail.com">matteogallo.office@gmail.com</a></p>
-    <ul class="contact-links">
-      <li><a href="https://www.linkedin.com/in/matteogallo-ai">LinkedIn</a></li>
-      <li><a href="https://github.com/matteogallo-ai">GitHub</a></li>
-    </ul>
+  <section class="container section closing" id="a-propos" aria-label="À propos et contact">
+    <div class="about">
+      <p class="mono rule-label">+ 03</p>
+      <h2>À propos</h2>
+      <Bio />
+    </div>
+    <div class="contact" id="contact">
+      <h2>Un poste d’ingénieur logiciel et IA en Suisse romande ? Écrivez-moi.</h2>
+      <p class="email"><a href="mailto:matteogallo.office@gmail.com">matteogallo.office@gmail.com</a></p>
+      <p class="actions">
+        <a class="button" href="https://www.linkedin.com/in/matteogallo-ai">LinkedIn</a>
+        <a class="button" href="https://github.com/matteogallo-ai">GitHub</a>
+      </p>
+    </div>
   </section>
 
   <footer class="container footer">
@@ -306,33 +299,77 @@ const repo = (name: string) => `https://github.com/matteogallo-ai/${name}`;
     font-size: var(--step-14);
   }
 
+  /* Three rules side by side: each a short claim, the incident behind it, its PR. */
   .rules {
-    margin: 0;
-    padding-left: 1.25rem;
     display: grid;
-    gap: 1.75rem;
-    max-width: 46rem;
+    gap: var(--gutter);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  @media (min-width: 48rem) {
+    .rules {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  .rules li {
+    display: flex;
+    flex-direction: column;
+    padding: 1.25rem;
+    border: 1px solid var(--rule);
+    border-radius: 14px;
   }
 
   .rules h3 {
-    font-size: var(--step-16);
+    font-size: var(--step-21);
+    line-height: 1.25;
+    letter-spacing: -0.01em;
   }
 
   .rules p {
-    margin: 0.4rem 0 0;
+    margin: 0.6rem 0 0;
+    font-size: var(--step-14);
+    color: var(--graphite);
+  }
+
+  /* The PR link sits at the foot of each card, level across the row. */
+  .rules .links {
+    margin-top: auto;
+    padding-top: 0.75rem;
+  }
+
+  /* About and contact close the page together: the bio on the left, the ask on the right. */
+  .closing {
+    display: grid;
+    gap: 3rem var(--gutter);
+  }
+
+  @media (min-width: 64rem) {
+    .closing {
+      grid-template-columns: 1fr 1fr;
+      align-items: start;
+    }
+
+    .contact {
+      padding-top: 2.4rem;
+    }
+  }
+
+  .contact h2 {
+    font-size: var(--step-21);
+    line-height: 1.2;
+    text-wrap: balance;
   }
 
   .email {
     font-size: var(--step-28);
-    margin: 0;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    margin: 1rem 0 0;
     /* The address is one unbroken word, wider than a 375 px screen at this size. */
     overflow-wrap: anywhere;
-  }
-
-  .contact-links {
-    margin: 1rem 0 0;
-    padding: 0;
-    list-style: none;
   }
 
   .footer {
