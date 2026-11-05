@@ -1,18 +1,11 @@
-import { lensLayout, relativeBox } from "./lens.ts";
+import { type Box, lensLayout, relativeBox, unionBox } from "./lens.ts";
 import { durationMs, revealed } from "./typing.ts";
 
 type Mode = "answer" | "refusal";
 
-/** The words a mode points at, as a DOM Range over the spans cut at the trace's offsets. */
-function targetRange(doc: Element, mode: Mode): Range | null {
-  const spans = doc.querySelectorAll<HTMLElement>(`[data-mark~="${mode}"]`);
-  const first = spans[0]?.firstChild;
-  const last = spans[spans.length - 1]?.firstChild;
-  if (!first || !last) return null;
-  const range = document.createRange();
-  range.setStart(first, 0);
-  range.setEnd(last, last.textContent?.length ?? 0);
-  return range;
+/** The words a mode points at: the text boxes of the spans cut at the trace's offsets. */
+function targetBoxes(doc: Element, mode: Mode, sheet: DOMRect): Box[] {
+  return [...doc.querySelectorAll<HTMLElement>(`[data-mark~="${mode}"]`)].flatMap((span) => [...span.getClientRects()].map((r) => relativeBox(r, sheet)));
 }
 
 const still = matchMedia("(prefers-reduced-motion: reduce)");
@@ -71,10 +64,10 @@ export function mountVerityDemo(root: HTMLElement): void {
   view.replaceChildren(copy);
 
   const place = () => {
-    const range = targetRange(doc, root.dataset["mode"] as Mode);
-    if (!range) return;
     const sheetRect = sheet.getBoundingClientRect();
-    const { lens: box, view: at, origin, scale } = lensLayout(relativeBox(range.getBoundingClientRect(), sheetRect), sheetRect.width);
+    const target = unionBox(targetBoxes(doc, root.dataset["mode"] as Mode, sheetRect));
+    if (!target) return;
+    const { lens: box, view: at, origin, scale } = lensLayout(target, sheetRect.width);
     Object.assign(lens.style, { left: `${box.left}px`, top: `${box.top}px`, width: `${box.width}px`, height: `${box.height}px` });
     Object.assign(view.style, {
       left: `${at.left}px`,

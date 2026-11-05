@@ -1,5 +1,6 @@
 import { readFileSync } from "node:fs";
 import { expect, type Page, test } from "@playwright/test";
+import { PAD, SCALE } from "../src/scripts/lens.ts";
 
 const read = (name: string) => JSON.parse(readFileSync(new URL(`../src/data/demo/${name}.json`, import.meta.url), "utf8"));
 const answer = read("answer");
@@ -31,23 +32,42 @@ async function centres(page: Page, text: string) {
       }
       throw new Error("offset past the end");
     };
-    const range = document.createRange();
-    range.setStart(...locate(at));
-    range.setEnd(...locate(at + wanted.length));
-    const t = range.getBoundingClientRect();
+    // The words' own text boxes: a Range across list items would also return the whole box of
+    // each item it contains, as wide as the line. (unionBox in lens.ts, rewritten here because
+    // this function runs in the page, where the test's imports do not exist.)
+    const union = (rects: DOMRect[]) => {
+      const left = Math.min(...rects.map((r) => r.left));
+      const top = Math.min(...rects.map((r) => r.top));
+      const right = Math.max(...rects.map((r) => r.right));
+      const bottom = Math.max(...rects.map((r) => r.bottom));
+      return new DOMRect(left, top, right - left, bottom - top);
+    };
+    const [startNode, startOffset] = locate(at);
+    const [endNode, endOffset] = locate(at + wanted.length);
+    const textRects: DOMRect[] = [];
+    for (let i = nodes.indexOf(startNode); i <= nodes.indexOf(endNode); i++) {
+      const n = nodes[i]!;
+      const r = document.createRange();
+      r.setStart(n, n === startNode ? startOffset : 0);
+      r.setEnd(n, n === endNode ? endOffset : n.data.length);
+      textRects.push(...[...r.getClientRects()].filter((x) => x.width > 0));
+    }
+    const t = union(textRects);
     const l = document.querySelector("[data-lens]")!.getBoundingClientRect();
     // The enlarged copy of the same words, inside the lens.
-    const copy = [...document.querySelectorAll("[data-lens-view] [data-mark]")].filter((s) => s.closest("[data-verity-demo]")!.getAttribute("data-mode")!.split(" ").some((m) => s.getAttribute("data-mark")!.split(" ").includes(m)));
-    const cr = document.createRange();
-    cr.setStartBefore(copy[0]!);
-    cr.setEndAfter(copy[copy.length - 1]!);
-    const c = cr.getBoundingClientRect();
+    const mode = document.querySelector("[data-verity-demo]")!.getAttribute("data-mode")!;
+    const copy = [...document.querySelectorAll(`[data-lens-view] [data-mark~="${mode}"]`)];
+    const c = union(copy.flatMap((s) => [...s.getClientRects()]));
+    const sheetBox = document.querySelector("[data-sheet]")!.getBoundingClientRect();
+    // Room on each side of the words' centre, inside the sheet.
+    const half = Math.min(t.left + t.width / 2 - sheetBox.left, sheetBox.right - (t.left + t.width / 2));
     const box = (r: DOMRect) => ({ left: r.left, top: r.top, right: r.right, bottom: r.bottom, width: r.width });
     return {
       target: { x: t.left + t.width / 2, y: t.top + t.height / 2 },
       lens: { x: l.left + l.width / 2, y: l.top + l.height / 2 },
       copy: { x: c.left + c.width / 2, y: c.top + c.height / 2 },
       boxes: { target: box(t), lens: box(l), copy: box(c) },
+      half,
     };
   }, text);
 }
@@ -74,7 +94,14 @@ for (const width of [375, 1024, 1440]) {
       // The lens covers its words vertically and enlarges them (it may be capped at the sheet width).
       expect(c.boxes.lens.top).toBeLessThanOrEqual(c.boxes.target.top);
       expect(c.boxes.lens.bottom).toBeGreaterThanOrEqual(c.boxes.target.bottom);
-      expect(c.boxes.copy.width).toBeGreaterThan(c.boxes.target.width * 1.05);
+      // The enlarged words are whole under the lens, first letter included, at every width;
+      // only words with too little room on either side of their centre are enlarged less than SCALE.
+      expect(c.boxes.copy.left).toBeGreaterThanOrEqual(c.boxes.lens.left);
+      expect(c.boxes.copy.right).toBeLessThanOrEqual(c.boxes.lens.right);
+      expect(c.boxes.copy.width).toBeGreaterThan(c.boxes.target.width * 1.02);
+      if (c.boxes.target.width * SCALE + 2 * PAD <= 2 * c.half) {
+        expect(c.boxes.copy.width).toBeGreaterThan(c.boxes.target.width * (SCALE - 0.01));
+      }
       // No horizontal scroll: an overhanging lens is clipped, not added to the page width.
       expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);
     });
