@@ -7,7 +7,8 @@ the check passes locally, CI has not run it on GitHub), `roadmap` (not implement
 `shipped` rows were first proved by CI run
 https://github.com/matteogallo-ai/site/actions/runs/42036373324 (PR #1); the measures and
 demo-trace rows by https://github.com/matteogallo-ai/site/actions/runs/42041962003 (PR #2); the home
-page rows by https://github.com/matteogallo-ai/site/actions/runs/42056375408 (PR #3).
+page rows by https://github.com/matteogallo-ai/site/actions/runs/42056375408 (PR #3), and the
+magnifier and answer-writing rows as worded now by https://github.com/matteogallo-ai/site/actions/runs/42063330369 (PR #4).
 
 | Claim | Implemented in | Proved by | Status |
 | --- | --- | --- | --- |
