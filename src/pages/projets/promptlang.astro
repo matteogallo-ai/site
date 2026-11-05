@@ -1,0 +1,166 @@
+---
+import CaseStudy from "../../layouts/CaseStudy.astro";
+import CaseSection from "../../components/case/CaseSection.astro";
+import Diagram from "../../components/case/Diagram.astro";
+import MeasuresTable from "../../components/case/MeasuresTable.astro";
+import { pinned } from "../../lib/sources.ts";
+
+const at = (path: string) => pinned("promptlang", path);
+const pr = (n: number) => `https://github.com/matteogallo-ai/promptlang/pull/${n}`;
+---
+
+<CaseStudy
+  no="02"
+  name="PromptLang"
+  repo="promptlang"
+  summary="Un langage typé pour les prompts LLM, compilé vers TypeScript ou Python, avec un contrôle de version sémantique et un linter IA."
+  description="Étude de cas de PromptLang, langage typé pour prompts LLM : problème, architecture, mesures contre baseline, défauts, décisions."
+>
+  <CaseSection n={1} id="probleme" title="Le problème">
+    <p>
+      Les prompts LLM vivent comme des chaînes éparpillées dans du Python et du TypeScript : pas de types, pas de tests, pas de versions. Quand un prompt casse en production, on l’apprend par un client.
+      PromptLang en fait des fichiers typés, compilés, testés et versionnés comme du code.
+    </p>
+  </CaseSection>
+
+  <CaseSection n={2} id="construit" title="Ce que j’ai construit">
+    <Diagram
+      id="promptlang-pipeline"
+      title="Ce que devient un fichier .prompt"
+      steps={[
+        { title: "Fichier .prompt", lines: ["paramètres typés, type de sortie, modèle cible"] },
+        { title: "Lexer", lines: ["texte vers jetons"] },
+        { title: "Parser", lines: ["jetons vers arbre syntaxique, imports résolus"] },
+      ]}
+      outcomes={[
+        { title: "Générer", lines: ["code typé", "TypeScript", "et Python"] },
+        { title: "Versionner", lines: ["semver-check", "juge le bump"] },
+        { title: "Analyser", lines: ["règles", "statiques et", "linter IA"] },
+      ]}
+      caption="L’arbre syntaxique sert trois usages indépendants. Le code généré vérifie chaque réponse du modèle contre le type de sortie déclaré ; semver-check dit si la version a assez bougé ; l’analyse signale les défauts du texte du prompt."
+    />
+    <p>
+      Un fichier <code>.prompt</code> déclare ses paramètres, le type de sa sortie et son modèle. Le compilateur en tire une fonction typée ; <code>semver-check</code> compare l’interface avec celle de la
+      base Git et refuse un changement cassant sans version majeure ; le linter IA relit le texte du prompt avant la revue humaine. Le paquet <code>@promptlang/core</code> est publié sur npm, et Praxis l’utilise
+      pour lire ses propres prompts.
+    </p>
+  </CaseSection>
+
+  <CaseSection n={3} id="mesures" title="Mesures">
+    <MeasuresTable
+      where="quality"
+      caption="Tests, linter IA, audit"
+      rows={[
+        {
+          id: "promptlang.mutation_score",
+          noInterval: "Un décompte de tous les mutants des modules couverts, pas un échantillon.",
+          reading: "Stryker, exécution locale hors CI, sur le lexer, le parser et semver seulement : ni le compilateur ni le runtime.",
+        },
+        {
+          id: "promptlang.linter_precision_reviewed",
+          defect: true,
+          reading: "Le défaut principal : en revue humaine, la plupart des signalements sont faux. Non distinguable de la borne déjà publiée.",
+        },
+        {
+          id: "promptlang.audit_findings",
+          noInterval: "Un décompte, pas une estimation.",
+          reading: "Audit du dépôt par un agent sans contexte. Chaque constat est corrigé dans une PR ou réfuté par écrit.",
+        },
+      ]}
+    />
+    <MeasuresTable
+      where="baseline"
+      caption="Linter IA contre la baseline « tout signaler » (split de test)"
+      ours="Linter IA"
+      baseline="Tout signaler"
+      rows={[
+        {
+          id: "promptlang.linter_precision_test",
+          base: "promptlang.baseline_report_all_precision",
+          label: "Précision",
+          reading: "Le gain sur un linter qui signale chaque catégorie sur chaque prompt est modeste.",
+        },
+        {
+          id: "promptlang.linter_recall",
+          base: "promptlang.baseline_report_all_recall",
+          label: "Rappel",
+          reading: "Tout signaler trouve tout : le rappel seul ne distingue pas le linter de la baseline.",
+        },
+      ]}
+    />
+    <p>
+      La précision du split de test compte les signalements qui correspondent à un défaut conçu ; la revue humaine relit des signalements un par un. Les deux disent la même chose : le linter IA aide le
+      relecteur, il ne remplace pas la revue (<a href={at("docs/SYSTEM_CARD.md")}>system card</a>).
+    </p>
+  </CaseSection>
+
+  <CaseSection n={4} id="echecs" title="Ce qui n’a pas marché, et ce que j’ai fait">
+    <p>
+      J’ai fait auditer le dépôt par un agent sans contexte, chargé de chercher la faille. Son verdict : les promesses du README dépassaient le runtime. Ce que j’en ai fait, constat par constat, est dans le <a
+        href={at("docs/audit/2026-11-03-f1-follow-up.md")}>suivi de l’audit</a
+      >.
+    </p>
+    <h3>Un linter IA déclaré livré, sans baseline</h3>
+    <p>
+      Le README présentait le linter comme livré alors que sa précision était faible et qu’aucune baseline ne disait ce qu’elle valait. Un linter qui signale tout trouve presque tous les défauts conçus :
+      le rappel était presque gratuit. J’ai publié la précision à côté de cette baseline (<a href={pr(29)}>#29</a>), puis fait relire des signalements à la main ; le linter est décrit comme une aide au
+      relecteur, pas comme une barrière.
+    </p>
+    <h3>Une sortie typée jamais vérifiée</h3>
+    <p>
+      Le code généré promettait une sortie typée sans vérifier la réponse du modèle. Il la vérifie maintenant contre le type déclaré, en TypeScript comme en Python, et lève une erreur ; les deux langages
+      tournent sur les mêmes réponses et doivent s’accorder (<a href={pr(27)}>#27</a>). Le correctif a d’abord été écrit comme un test rouge.
+    </p>
+    <h3>Un score de mutation qui ne couvre pas le code risqué</h3>
+    <p>
+      Le score ne porte que sur le lexer, le parser et semver ; les défauts trouvés par l’audit étaient dans le compilateur et le runtime. Le rapport de mutation liste désormais ce qu’il ne couvre pas
+      (<a href={at("docs/mutation/README.md")}>rapport</a>), pour que le score ne se lise pas comme une mesure de ce code.
+    </p>
+  </CaseSection>
+
+  <CaseSection n={5} id="decisions" title="Trois décisions">
+    <ol class="decisions">
+      <li>
+        <h3>Ce qui compte comme interface d’un prompt</h3>
+        <p>
+          Les paramètres (noms, types, optionnalité), le type de sortie et le modèle cible, sous une forme canonique qui ignore l’ordre des paramètres et des valeurs d’enum. Un amendement issu de l’audit y
+          ajoute les noms de types exportés : renommer un type que les consommateurs importent est un changement majeur.
+        </p>
+        <p><a href={at("docs/adr/0002-prompt-interface.md")}>ADR 0002</a></p>
+      </li>
+      <li>
+        <h3>Comment semver-check trouve sa base et juge un bump</h3>
+        <p>
+          La base vient de Git : la référence donnée, sinon <code>origin/main</code>, sinon le dernier tag ; le texte courant est l’arbre de travail, donc le contrôle tourne avant le commit comme en CI. Le
+          niveau exigé est celui du changement le plus strict, et un fichier illisible à la base est une erreur, jamais un fichier nouveau.
+        </p>
+        <p><a href={at("docs/adr/0003-semver-check.md")}>ADR 0003</a></p>
+      </li>
+      <li>
+        <h3>L’estimation approuvée est un plafond de dépense</h3>
+        <p>
+          Chaque exécution payante affiche une estimation et demande une approbation ; cette estimation devient un plafond. Avant chaque appel, le client réserve le pire cas de l’appel ; un appel qui dépasserait
+          le plafond n’est pas envoyé. L’ADR écrit aussi ce que le plafond ne garantit pas : un texte plus dense en jetons que prévu coûte plus que l’estimation.
+        </p>
+        <p><a href={at("docs/adr/0004-spending-cap.md")}>ADR 0004</a></p>
+      </li>
+    </ol>
+  </CaseSection>
+
+  <CaseSection n={6} id="construction" title="Comment c’est construit">
+    <p>
+      TypeScript strict sur Bun, sans transpilation séparée. Tests <code>bun test</code>, tests de propriétés fast-check sur le lexer, le parser et semver, mutation Stryker, Biome, knip. Runtime
+      multi-fournisseur : Anthropic, OpenAI, Ollama ou un client fourni. Le linter IA appelle <code>claude-haiku-5-5</code>. Architecture : <a href={at("docs/architecture.md")}>docs/architecture.md</a>.
+    </p>
+  </CaseSection>
+
+  <CaseSection n={7} id="suite" title="La suite">
+    <ul>
+      <li>Exécuter les blocs <code>eval</code> : ils sont analysés, pas exécutés.</li>
+      <li>Des tests de mutation sur le compilateur et le runtime, là où l’audit a trouvé les défauts.</li>
+      <li>Un linter IA sur d’autres fournisseurs que Claude, chacun avec sa propre mesure.</li>
+      <li>Le streaming des réponses, et un support d’éditeur (coloration, LSP).</li>
+    </ul>
+    <p><a href={at("docs/roadmap.md")}>Feuille de route</a></p>
+  </CaseSection>
+</CaseStudy>
