@@ -16,8 +16,10 @@ module.exports = {
       // also fails if any built page is missing from the results.
       maxAutodiscoverUrls: 0,
       staticDirFileDiscoveryDepth: 10,
-      // Median of three runs: one run of the mobile emulation swings by several points.
-      numberOfRuns: 3,
+      // Median of five runs: the first run on a cold CI runner is an outlier (performance 0.84
+      // on PR #2, 0.90 on PR #3, against 1.00 for the runs after it), and with three runs the
+      // median-run choice can land on it.
+      numberOfRuns: 5,
     },
     assert: {
       assertions: {

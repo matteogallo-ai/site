@@ -11,7 +11,7 @@ demo-trace rows by https://github.com/matteogallo-ai/site/actions/runs/420419620
 | Claim | Implemented in | Proved by | Status |
 | --- | --- | --- | --- |
 | Lighthouse ≥ 98 on performance, accessibility, best practices and SEO, on every built page (a missing page fails `npm run measures`), blocking | `lighthouserc.cjs` | CI job `lighthouse budgets + site measures` (`npm run lighthouse`) | shipped |
-| LCP < 1.5 s and CLS < 0.05 (Lighthouse mobile, median of 3 runs), blocking | `lighthouserc.cjs` | same job | shipped |
+| LCP < 1.5 s and CLS < 0.05 (Lighthouse mobile, median of 5 runs), blocking | `lighthouserc.cjs` | same job | shipped |
 | Home page ≤ 200 000 bytes transferred (gzip), project images included, blocking | `lighthouserc.cjs` (`resource-summary:total:size`), `scripts/site-measures.ts` (adds each project image a run did not request at its heaviest AVIF variant, and fails over the budget) | CI job `lighthouse budgets + site measures`, `scripts/site-measures.test.ts` | local |
 | Fonts ≤ 90 000 bytes transferred on every page, home included, blocking | `scripts/fonts/subset.py`, `lighthouserc.cjs` (`resource-summary:font:size`) | CI job `lighthouse budgets + site measures` | shipped |
 | Every character a page displays (text, pseudo-elements, list markers, quotes, form fields) is in the subset of the font that draws it, in a weight and style that subset ships | `src/assets/fonts/coverage.json`, `tests/collect-text.ts` | `tests/glyphs.spec.ts` (with a self-test on injected probes), `scripts/glyphs.test.ts` | shipped |
