@@ -113,6 +113,8 @@ const repo = (name: string) => `https://github.com/matteogallo-ai/${name}`;
     import { countOnSight } from "../scripts/count.ts";
     import { spyOn } from "../scripts/spy.ts";
     import { copyOnClick } from "../scripts/copy.ts";
+    import { revealOnSight } from "../scripts/reveal.ts";
+    revealOnSight(document.querySelectorAll<HTMLElement>(".reveal"));
     const nav = document.querySelector<HTMLElement>(".nav");
     if (nav) spyOn(nav);
     // The address copies itself on click; without this script it stays a mailto link.

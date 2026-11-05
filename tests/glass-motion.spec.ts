@@ -204,22 +204,33 @@ test("under reduced motion the figures do not count and the sections do not move
   await page.locator(".band").scrollIntoViewIfNeeded();
   await page.waitForTimeout(300);
   expect(await page.locator(".band [data-counting], .count-layer").count()).toBe(0);
-  expect(await page.locator("#methode").evaluate((s) => getComputedStyle(s).animationName)).toBe("none");
+  // Sections below the screen are not held back: their children are in place before any scroll.
+  const held = await page.evaluate(() =>
+    [...document.querySelectorAll(".reveal > *")].filter((c) => getComputedStyle(c).opacity !== "1" || getComputedStyle(c).transform !== "none").length,
+  );
+  expect(held).toBe(0);
 });
 
-test("each section comes fully into place once scrolled into view", async ({ page }) => {
+test("each section comes into place once, its children one after the other, and stays", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 800 });
   await page.goto("/");
   const ids = ["projets", "methode", "a-propos"];
-  // At load all three are below the screen: they wait, transparent, for their entry.
+  const children = (id: string) =>
+    page.locator(`#${id}`).evaluate((s) =>
+      [...s.children].map((c) => ({ opacity: getComputedStyle(c).opacity, transform: getComputedStyle(c).transform, delay: getComputedStyle(c).transitionDelay.split(",")[0] })),
+    );
+  // At load all three are below the screen: their children wait, transparent and lower, with
+  // delays 60 ms apart (at most 180 ms).
   for (const id of ids) {
-    const section = page.locator(`#${id}`);
-    expect(await section.evaluate((s) => getComputedStyle(s).animationName)).toBe("reveal");
-    await expect.poll(async () => Number(await section.evaluate((s) => getComputedStyle(s).opacity))).toBeLessThan(0.5);
+    await expect.poll(async () => (await children(id)).every((c) => c.opacity === "0" && c.transform !== "none")).toBe(true);
+    expect((await children(id)).map((c) => c.delay).slice(0, 4)).toEqual(["0s", "0.06s", "0.12s", "0.18s"].slice(0, (await children(id)).length));
   }
   for (const id of ids) {
-    const section = page.locator(`#${id}`);
-    await section.evaluate((s) => s.scrollIntoView({ block: "start" }));
-    await expect.poll(() => section.evaluate((s) => getComputedStyle(s).opacity)).toBe("1");
+    await page.locator(`#${id}`).evaluate((s) => s.scrollIntoView({ block: "start" }));
+    await expect.poll(async () => (await children(id)).every((c) => c.opacity === "1" && c.transform === "none"), { timeout: 3000 }).toBe(true);
   }
+  // Once: back at the top and down again, nothing is held back any more.
+  await page.evaluate(() => scrollTo(0, 0));
+  await page.waitForTimeout(200);
+  for (const id of ids) expect((await children(id)).every((c) => c.opacity === "1")).toBe(true);
 });

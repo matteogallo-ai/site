@@ -300,24 +300,28 @@ a {
   -webkit-text-fill-color: currentColor;
 }
 
-/* Sections come into place as they scroll into view, where the engine ties animations to the
-   scroll; elsewhere, and under reduced motion, they are simply there. */
-@media (prefers-reduced-motion: no-preference) {
-  @supports (animation-timeline: view()) {
-    /* The timeline goes through a variable: the minifier otherwise folds it into an animation
-       shorthand ("animation: linear both reveal view()") that Chromium rejects whole. */
-    .reveal {
-      --reveal-timeline: view();
-      animation: reveal linear both;
-      animation-timeline: var(--reveal-timeline);
-      animation-range: entry 0% entry 30%;
-    }
-  }
+/* Sections come into place once as they scroll into view (src/scripts/reveal.ts): their children
+   rise 12 px and fade in, one after the other, 60 ms apart (the fourth and later together). The
+   script sets data-reveal only when motion is welcome. */
+:root[data-reveal] .reveal > * {
+  transition:
+    opacity var(--dur-reveal) var(--ease-out),
+    transform var(--dur-reveal) var(--ease-out);
 }
 
-@keyframes reveal {
-  from {
-    opacity: 0;
-    translate: 0 1.5rem;
-  }
+:root[data-reveal] .reveal:not([data-shown]) > * {
+  opacity: 0;
+  transform: translateY(12px);
+}
+
+:root[data-reveal] .reveal > :nth-child(2) {
+  transition-delay: 60ms;
+}
+
+:root[data-reveal] .reveal > :nth-child(3) {
+  transition-delay: 120ms;
+}
+
+:root[data-reveal] .reveal > :nth-child(n + 4) {
+  transition-delay: 180ms;
 }
