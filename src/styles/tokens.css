@@ -16,7 +16,11 @@
   --proof-text: #17703d;
   --proof-wash: #dcefe2;
   --defect: #a8382a;
+  /* Not in the SPEC: the defect highlight, as --proof-wash is for proof. */
+  --defect-wash: #f4ddd7;
   --night: #1c2a44;
+  /* Not in the SPEC: the demo contract page, a shade lighter than the paper it lies on. */
+  --sheet: #fcfbf8;
 
   /* Type scale (SPEC §4): 12 · 14 · 16 · 21 · 28 · 44 · 68 px. */
   --step-12: 0.75rem;
@@ -58,7 +62,9 @@
     --proof-text: #5cc98a;
     --proof-wash: #173d27;
     --defect: #e58a78;
+    --defect-wash: #42201a;
     --night: #a9bbdd;
+    --sheet: #1b1c1a;
 
     --glass-fill: rgb(18 19 17 / 0.72);
     --glass-edge: rgb(237 235 229 / 0.1);
