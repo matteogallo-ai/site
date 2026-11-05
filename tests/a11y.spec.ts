@@ -11,7 +11,7 @@ for (const path of builtPages()) {
       // at opacity 0 below the screen, and axe skips what it cannot see.
       await page.emulateMedia({ colorScheme, reducedMotion: "reduce" });
       await page.goto(path);
-      const unseen = await page.evaluate(() => [...document.querySelectorAll("body *")].filter((e) => Number(getComputedStyle(e).opacity) < 1).map((e) => e.id || e.className));
+      const unseen = await page.evaluate(() => [...document.querySelectorAll("body *")].filter((e) => Number(getComputedStyle(e).opacity) < 1).map((e) => e.id || e.getAttribute("class")));
       expect(unseen, "elements axe would skip as invisible").toEqual([]);
       const { violations } = await new AxeBuilder({ page }).withTags(WCAG_TAGS).analyze();
       expect(violations.map((v) => `${v.id}: ${v.nodes.map((n) => n.target.join(" ")).join(", ")}`)).toEqual([]);
