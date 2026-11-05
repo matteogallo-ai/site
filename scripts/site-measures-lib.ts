@@ -26,6 +26,7 @@ export interface Lhr {
 export interface PageMeasure {
   path: string;
   transferBytes: number;
+  fontBytes: number;
   scores: { performance: number; accessibility: number; bestPractices: number; seo: number };
   lcpMs: number;
   cls: number;
@@ -57,17 +58,21 @@ function numeric(lhr: Lhr, id: string): number {
   return v;
 }
 
-function totalTransfer(lhr: Lhr): number {
-  const total = lhr.audits["resource-summary"]?.details?.items?.find((i) => i.resourceType === "total")?.transferSize;
-  if (typeof total !== "number") throw new Error('Lighthouse report has no "resource-summary" total');
-  return total;
+function transfer(lhr: Lhr, resourceType: "total" | "font"): number {
+  const items = lhr.audits["resource-summary"]?.details?.items;
+  if (!items) throw new Error('Lighthouse report has no "resource-summary"');
+  // Lighthouse emits a row for every resource type, 0 included: a missing row means a malformed report.
+  const size = items.find((i) => i.resourceType === resourceType)?.transferSize;
+  if (typeof size !== "number") throw new Error(`Lighthouse report has no "resource-summary" ${resourceType} row`);
+  return size;
 }
 
 export function pageMeasure(url: string, lhr: Lhr): PageMeasure {
   return {
     // lhci serves dist/ on a random localhost port; only the path is stable.
     path: urlPath(new URL(url).pathname.slice(1)),
-    transferBytes: totalTransfer(lhr),
+    transferBytes: transfer(lhr, "total"),
+    fontBytes: transfer(lhr, "font"),
     scores: {
       performance: score(lhr, "performance"),
       accessibility: score(lhr, "accessibility"),

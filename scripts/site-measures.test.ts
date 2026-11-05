@@ -24,7 +24,7 @@ test("reads the representative run of each page", () => {
     transfer: "gzip, served by the lhci local static server",
   });
   assert.deepEqual(m.pages, [
-    { path: "/", transferBytes: 116743, scores: { performance: 100, accessibility: 100, bestPractices: 100, seo: 100 }, lcpMs: 609, cls: 0 },
+    { path: "/", transferBytes: 116743, fontBytes: 113935, scores: { performance: 100, accessibility: 100, bestPractices: 100, seo: 100 }, lcpMs: 609, cls: 0 },
   ]);
 });
 
@@ -62,4 +62,11 @@ test("refuses a manifest with uneven runs per page", () => {
   // 3 runs of "/" and 2 of "/en/": the median of each is not over the same sample size.
   const uneven = [...manifest, run("http://localhost:1/en/index.html", true), run("http://localhost:1/en/index.html", false)];
   assert.throws(() => buildMeasures(uneven, () => fixture, ctx(["/", "/en/"])), /runs per page/);
+});
+
+test("refuses a report without the font row (Lighthouse always emits it, 0 included)", () => {
+  const noFont = structuredClone(fixture);
+  const items = noFont.audits["resource-summary"]?.details?.items ?? [];
+  noFont.audits["resource-summary"] = { details: { items: items.filter((i) => i.resourceType !== "font") } };
+  assert.throws(() => buildMeasures(manifest, () => noFont, ctx()), /font row/);
 });

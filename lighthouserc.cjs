@@ -3,6 +3,8 @@
 // SPEC limits are strict (< 1.5 s, < 0.05) and lhci compares with <=, hence 1499 and 0.049;
 // "200 Ko" is read as 200 000 bytes, the stricter of the two readings.
 const TRANSFER_BUDGET_BYTES = 200_000;
+// Font subsets (scripts/fonts/subset.py) on any page, the home page included.
+const FONT_BUDGET_BYTES = 90_000;
 
 module.exports = {
   ci: {
@@ -26,6 +28,7 @@ module.exports = {
         // Counts every request made during the run. Assumption, unverified while the site has no
         // screenshot: lazy images far enough below the fold are not requested, so they stay outside.
         "resource-summary:total:size": ["error", { maxNumericValue: TRANSFER_BUDGET_BYTES, aggregationMethod: "median-run" }],
+        "resource-summary:font:size": ["error", { maxNumericValue: FONT_BUDGET_BYTES, aggregationMethod: "median-run" }],
       },
     },
     upload: {
