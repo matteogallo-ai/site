@@ -5,7 +5,8 @@ listed here with what implements it, the check that proves it, and its status.
 Statuses: `shipped` (implemented, and the check passes in CI), `local` (implemented,
 the check passes locally, CI has not run it on GitHub), `roadmap` (not implemented).
 `shipped` rows were first proved by CI run
-https://github.com/matteogallo-ai/site/actions/runs/42036373324 (PR #1).
+https://github.com/matteogallo-ai/site/actions/runs/42036373324 (PR #1); the measures and
+demo-trace rows by https://github.com/matteogallo-ai/site/actions/runs/42041962003 (PR #2).
 
 | Claim | Implemented in | Proved by | Status |
 | --- | --- | --- | --- |
@@ -19,7 +20,7 @@ https://github.com/matteogallo-ai/site/actions/runs/42036373324 (PR #1).
 | 0 axe violation (WCAG 2.2 A/AA tags), light and dark, every built HTML page, blocking | `tests/a11y.spec.ts` | CI job `axe + keyboard` | shipped |
 | The text and graphic colour pairs listed in `contrast.test.ts` meet WCAG AA, light and dark | `src/styles/tokens.css` | `src/styles/contrast.test.ts` (CI job `typecheck + unit tests`) | shipped |
 | No broken internal link or CSS asset reference | `linkinator.config.json` | CI job `build + links` | shipped |
-| Every evidence item of `src/data/measures.json` (a JSON value at a pointer, or a passage of text) is stated by its file in the cited repository at the pinned commit, and every cited file exists there; a counted set of files (the Praxis live runs) equals the directory listing at that commit (GitHub contents API) | `src/data/measures.json`, `scripts/check-sources.ts` | CI job `measures + demo traces match their sources` (`npm run check:sources`) | local |
-| Every figure field of a measure (value, k, n, interval) equals the evidence item that binds it, or the entry writes how it is derived; every number in its displayed text is one of its figures at the precision shown, and every number in its label is stated by its evidence; a gap carries no figure | `scripts/measures-lib.ts` | `scripts/measures.test.ts` | local |
-| The two demo traces are copied unchanged from a committed Verity run (file sha256, record, run settings), and every offset selects exactly the quoted words of the demo document | `src/data/demo/`, `scripts/traces-lib.ts` | `scripts/traces.test.ts` (offline), `npm run check:sources` (against GitHub) | local |
+| Every evidence item of `src/data/measures.json` (a JSON value at a pointer, or a passage of text) is stated by its file in the cited repository at the pinned commit, and every cited file exists there; a counted set of files (the Praxis live runs) equals the directory listing at that commit (GitHub contents API) | `src/data/measures.json`, `scripts/check-sources.ts` | CI job `measures + demo traces match their sources` (`npm run check:sources`) | shipped |
+| Every figure field of a measure (value, k, n, interval) equals the evidence item that binds it, or the entry writes how it is derived; every number in its displayed text is one of its figures at the precision shown, and every number in its label is stated by its evidence; a gap carries no figure | `scripts/measures-lib.ts` | `scripts/measures.test.ts` | shipped |
+| The two demo traces are copied unchanged from a committed Verity run (file sha256, record, run settings), and every offset selects exactly the quoted words of the demo document | `src/data/demo/`, `scripts/traces-lib.ts` | `scripts/traces.test.ts` (offline), `npm run check:sources` (against GitHub) | shipped |
 | The footer shows the site's own measured weight and scores | `scripts/site-measures.ts` writes `site-measures.json` | `scripts/site-measures.test.ts` | roadmap: the file is generated in CI; no page reads it |
