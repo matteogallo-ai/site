@@ -6,6 +6,13 @@ import { blobUrl, type MeasuresFile } from "../../scripts/measures-lib.ts";
 
 const OWNER = "matteogallo-ai";
 
+export const repoUrl = (repo: string) => `https://github.com/${OWNER}/${repo}`;
+
+export function pull(repo: string, n: number): string {
+  if (!Number.isInteger(n) || n < 1) throw new Error(`pull request number must be a positive integer, not ${n}`);
+  return `${repoUrl(repo)}/pull/${n}`;
+}
+
 /** URL of `path` in `matteogallo-ai/<repo>` at the commit its measures are pinned to. */
 export function pinned(repo: string, path: string): string {
   const full = `${OWNER}/${repo}`;
