@@ -3,12 +3,14 @@ export const COUNT_MS = 700;
 
 /**
  * `display` with its first number counted up to `progress` (0 to 1) of its value, easing out so
- * the count slows as it lands. "17/20" at 0 reads "0/20": what is being counted stays in view.
+ * the count slows as it lands. "17/20" at 0 reads " 0/20": the number keeps its width (spaces are
+ * as wide as digits in the monospace face), so what follows it holds still and what is being
+ * counted stays in view.
  */
 export function counted(display: string, progress: number): string {
   const p = Math.min(1, Math.max(0, progress));
   const eased = 1 - (1 - p) ** 3;
-  return display.replace(/\d+/, (n) => String(Math.round(Number(n) * eased)));
+  return display.replace(/\d+/, (n) => String(Math.round(Number(n) * eased)).padStart(n.length, " "));
 }
 
 /**
@@ -18,13 +20,14 @@ export function counted(display: string, progress: number): string {
  */
 export function countOnSight(values: Iterable<HTMLElement>): void {
   if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  // Counted once mostly in view, so the count is seen from its start.
   const seen = new IntersectionObserver((entries) => {
     for (const entry of entries) {
       if (!entry.isIntersecting) continue;
       seen.unobserve(entry.target);
       countUp(entry.target as HTMLElement);
     }
-  });
+  }, { threshold: 0.6 });
   for (const value of values) seen.observe(value);
 }
 

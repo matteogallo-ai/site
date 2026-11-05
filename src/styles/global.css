@@ -167,8 +167,8 @@ a {
 }
 
 /* A figure counting up (src/scripts/count.ts): its own text stays in place and keeps the line's
-   width, unpainted; the aria-hidden copy over it counts, aligned on the right so the fixed part
-   ("/20") holds still while the number grows. */
+   width, unpainted; the aria-hidden copy over it counts, as wide as the figure (pre keeps the
+   spaces that pad the number), so nothing in it moves but the digits. */
 .value[data-counting] {
   position: relative;
   -webkit-text-fill-color: transparent;
@@ -176,8 +176,9 @@ a {
 
 .count-layer {
   position: absolute;
-  right: 0;
+  left: 0;
   top: 0;
+  white-space: pre;
   -webkit-text-fill-color: currentColor;
 }
 
