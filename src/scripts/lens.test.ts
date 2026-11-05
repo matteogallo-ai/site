@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { type Box, lensLayout, SCALE, unionBox } from "./lens.ts";
+import { type Box, lensLayout, RING, SCALE, unionBox } from "./lens.ts";
 
 const centre = (b: { left: number; top: number; width: number; height: number }) => ({ x: b.left + b.width / 2, y: b.top + b.height / 2 });
 
@@ -36,6 +36,15 @@ test("words near a sheet edge are enlarged less, never cut, and the lens stays o
   }
 });
 
+test("with room on the sheet, the lens keeps its ring on the sheet", () => {
+  // 10 px from the left edge: without the inset the lens would reach x = 0 and lose its ring.
+  const { lens } = lensLayout({ left: 10, top: 0, width: 300, height: 20 }, 400);
+  // The ring .lens draws in VerityDemo.astro: box-shadow out to 7 px.
+  const drawn = 7;
+  assert.ok(RING >= drawn);
+  assert.ok(lens.left >= drawn && lens.left + lens.width <= 400 - drawn, JSON.stringify(lens));
+});
+
 test("words with no room to grow are shown at their size", () => {
   assert.equal(lensLayout({ left: 0, top: 0, width: 300, height: 20 }, 300).scale, 1);
 });
@@ -63,7 +72,7 @@ test("the target is the union of its text boxes, not of the elements around them
 });
 
 test("an enlarged target that fits the sheet stays inside the lens at full scale", () => {
-  const target = { left: 42, top: 100, width: 469, height: 68 };
+  const target = { left: 60, top: 100, width: 469, height: 68 };
   const { lens, origin, scale } = lensLayout(target, 672);
   const words = enlarged(target, origin, scale);
   assert.equal(scale, SCALE);

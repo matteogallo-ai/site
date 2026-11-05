@@ -3,9 +3,27 @@ import { revealed, writingDuration } from "./typing.ts";
 
 type Mode = "answer" | "refusal";
 
-/** The words a mode points at: the text boxes of the spans cut at the trace's offsets. */
-function targetBoxes(doc: Element, mode: Mode, sheet: DOMRect): Box[] {
-  return [...doc.querySelectorAll<HTMLElement>(`[data-mark~="${mode}"]`)].flatMap((span) => [...span.getClientRects()].map((r) => relativeBox(r, sheet)));
+/**
+ * The words a mode points at: the text boxes of the spans cut at the trace's offsets, in the
+ * coordinates of the sheet's content, which scrolls under its window.
+ */
+function targetBoxes(doc: Element, mode: Mode, sheet: HTMLElement): Box[] {
+  const rect = sheet.getBoundingClientRect();
+  return [...doc.querySelectorAll<HTMLElement>(`[data-mark~="${mode}"]`)].flatMap((span) =>
+    [...span.getClientRects()].map((r) => {
+      const box = relativeBox(r, rect);
+      return { ...box, top: box.top + sheet.scrollTop };
+    }),
+  );
+}
+
+/**
+ * Where the target's centre sits in the window, as a fraction of its height: the middle of
+ * the part the answer card leaves uncovered (--target-at, set by the layout in VerityDemo.astro).
+ */
+function targetAt(sheet: HTMLElement): number {
+  const at = Number.parseFloat(getComputedStyle(sheet).getPropertyValue("--target-at"));
+  return Number.isFinite(at) ? at : 0.5;
 }
 
 const still = matchMedia("(prefers-reduced-motion: reduce)");
@@ -74,24 +92,24 @@ export function mountVerityDemo(root: HTMLElement): void {
   if (!sheet || !doc || !lens || !view || !tag || tabs.length !== 2) return;
 
   // The copy is the page's own markup, so it lays out exactly like the original.
-  const copy = doc.cloneNode(true) as HTMLElement;
-  copy.removeAttribute("aria-label");
-  view.replaceChildren(copy);
+  view.replaceChildren(doc.cloneNode(true));
 
-  const place = () => {
-    const sheetRect = sheet.getBoundingClientRect();
-    const target = unionBox(targetBoxes(doc, root.dataset["mode"] as Mode, sheetRect));
+  // The window scrolls to its target on load, on a change of mode and when the layout moves.
+  const place = (behavior: ScrollBehavior = "instant") => {
+    const width = sheet.clientWidth;
+    const target = unionBox(targetBoxes(doc, root.dataset["mode"] as Mode, sheet));
     if (!target) return;
-    const { lens: box, view: at, origin, scale } = lensLayout(target, sheetRect.width);
+    sheet.scrollTo({ top: target.top + target.height / 2 - sheet.clientHeight * targetAt(sheet), behavior });
+    const { lens: box, view: at, origin, scale } = lensLayout(target, width);
     Object.assign(lens.style, { left: `${box.left}px`, top: `${box.top}px`, width: `${box.width}px`, height: `${box.height}px` });
     Object.assign(view.style, {
       left: `${at.left}px`,
       top: `${at.top}px`,
-      width: `${sheetRect.width}px`,
+      width: `${width}px`,
       transformOrigin: `${origin.x}px ${origin.y}px`,
       transform: `scale(${scale})`,
     });
-    Object.assign(tag.style, { left: `${Math.min(box.left + box.width, sheetRect.width)}px`, top: `${box.top}px` });
+    Object.assign(tag.style, { left: `${Math.min(box.left + box.width, width)}px`, top: `${box.top}px` });
     lens.hidden = false;
     tag.hidden = false;
   };
@@ -120,7 +138,7 @@ export function mountVerityDemo(root: HTMLElement): void {
     }
     root.dataset["mode"] = tab.dataset["mode"];
     if (focus) tab.focus();
-    place();
+    place(still.matches ? "instant" : "smooth");
   };
 
   for (const tab of tabs) {
@@ -136,11 +154,11 @@ export function mountVerityDemo(root: HTMLElement): void {
   }
 
   // Layout changes with the width, the zoom and the web fonts: the lens follows each one.
-  const observer = new ResizeObserver(place);
+  const observer = new ResizeObserver(() => place());
   observer.observe(sheet);
   // A web font swap can move the words without resizing the sheet.
   observer.observe(doc);
-  document.fonts.addEventListener("loadingdone", place);
+  document.fonts.addEventListener("loadingdone", () => place());
   // A card already on screen at load is simply there (no flash, no late paint); one further
   // down writes itself as soon as its answer starts to enter the view, before it can be read.
   const first = panelOf(tabs[0]!);
@@ -157,6 +175,6 @@ export function mountVerityDemo(root: HTMLElement): void {
     });
     seen.observe(firstAnswer);
   }
-  void document.fonts.ready.then(place);
+  void document.fonts.ready.then(() => place());
   place();
 }

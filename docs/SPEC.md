@@ -11,8 +11,8 @@ rules, technique and accessibility.
 
 ## 2. Concept: "Verity at work"
 Plain text on the left, one strong visual on the right: Verity working on a contract.
-- **The contract page:** real text from Verity's demo corpus, never invented, set in a serif like a real document.
-- **The glass magnifier** sits on the cited clause and enlarges it. Its position is **computed** from the real position of the cited words in the page (Range API / `getBoundingClientRect`), never hard-coded, and recomputed on resize.
+- **The contract page:** real text from Verity's demo corpus, never invented, set in a serif like a real document. It is seen through a window of fixed height (about 360 px on wide screens), scrolled by code to the passage in play, fading out at the top and bottom; on wide screens the answer card overlaps its bottom right, so the tabs, the passage, the magnifier and the whole card fit on the first screen (tested at 1440×800 and 1280×720). On narrow screens the card follows the document.
+- **The glass magnifier** sits on the cited clause and enlarges it. Its position is **computed** from the real position of the cited words in the page (Range API / `getBoundingClientRect`), never hard-coded, and recomputed on resize. It shows only the enlarged words, on near-opaque frosted glass (fill of 85 % or more), so the lines around them never show through; their contrast is AA.
 - **The glass answer card:** question, answer, verbatim quote with its reference, checks (quote found, support vs threshold).
 - **Two modes:** "Answers, with a citation" (magnifier on the cited passage) and "Refuses, for lack of evidence" (magnifier on the closest passage retrieved, marked "judged insufficient"). Highlight, magnifier and card change with a transition. Both traces come from **real committed runs** of Verity.
 - **Colour of proof:** green (`#1E8A4C`, text `#17703D`) for everything proven (highlights, ticks). Brick red `#A8382A` for defects and refusals. Night blue `#1C2A44` as the secondary colour, taken from the portrait.
