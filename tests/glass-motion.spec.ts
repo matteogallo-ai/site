@@ -249,3 +249,30 @@ test("figures already on screen at load do not count: nothing above the fold mov
   await page.waitForTimeout(1200);
   expect(counted).toEqual([]);
 });
+
+test("on a change of mode the ring fades out before it moves: no frame shows it changing shape while visible", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/");
+  await expect(page.locator("[data-lens]")).toBeVisible();
+  await page.waitForTimeout(500);
+  const frames = await page.evaluate(
+    () =>
+      new Promise<{ box: string; opacity: number }[]>((done) => {
+        const lens = document.querySelector<HTMLElement>("[data-lens]")!;
+        const seen: { box: string; opacity: number }[] = [];
+        const start = performance.now();
+        const tick = () => {
+          seen.push({ box: `${lens.style.left} ${lens.style.top} ${lens.style.width} ${lens.style.height}`, opacity: Number(getComputedStyle(lens).opacity) });
+          if (performance.now() - start < 900) requestAnimationFrame(tick);
+          else done(seen);
+        };
+        document.querySelector<HTMLElement>("#verity-tab-refusal")!.click();
+        requestAnimationFrame(tick);
+      }),
+  );
+  const first = frames[0]!.box;
+  const moved = frames.findIndex((f) => f.box !== first);
+  expect(moved, "the ring never moved").toBeGreaterThan(0);
+  // Every frame from the move on, until it is back, starts from an invisible ring.
+  expect(frames[moved]!.opacity, JSON.stringify(frames.slice(0, moved + 1))).toBeLessThan(0.05);
+});

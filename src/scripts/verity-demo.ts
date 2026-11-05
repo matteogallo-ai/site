@@ -119,14 +119,19 @@ export function mountVerityDemo(root: HTMLElement): void {
   };
 
   const tablist = root.querySelector<HTMLElement>('[role="tablist"]');
-  // The ring fades out, the window scrolls and the ring fades in on the new passage: it never
-  // slides across the contract. Under reduced motion it is simply moved.
+  // The ring fades out; once it is invisible the contract changes mode (its margins move the
+  // text), the window scrolls and the ring fades in on the new passage. It never slides or
+  // changes shape in view. Under reduced motion all of it happens at once.
   let away = 0;
-  const hop = () => {
+  const hop = (mode: string) => {
     clearTimeout(away);
-    if (still.matches) return place();
+    if (still.matches) {
+      root.dataset["mode"] = mode;
+      return place();
+    }
     root.dataset["away"] = "";
     away = window.setTimeout(() => {
+      root.dataset["mode"] = mode;
       place("smooth");
       delete root.dataset["away"];
     }, Number.parseFloat(getComputedStyle(lens).transitionDuration) * 1000);
@@ -142,11 +147,12 @@ export function mountVerityDemo(root: HTMLElement): void {
       if (panel) panel.toggleAttribute("data-off", !on);
     }
     if (tablist) tablist.dataset["at"] = String(tabs.indexOf(tab));
-    const changed = root.dataset["mode"] !== tab.dataset["mode"];
+    const mode = tab.dataset["mode"] ?? "answer";
+    const changed = (root.dataset["next"] ?? root.dataset["mode"]) !== mode;
+    root.dataset["next"] = mode;
     if (changed) write(panelOf(tab));
-    root.dataset["mode"] = tab.dataset["mode"];
     if (focus) tab.focus();
-    if (changed) hop();
+    if (changed) hop(mode);
     else place();
   };
 
@@ -163,11 +169,16 @@ export function mountVerityDemo(root: HTMLElement): void {
   }
 
   // Layout changes with the width, the zoom and the web fonts: the lens follows each one.
-  const observer = new ResizeObserver(() => place());
+  // Not while the ring is away: it is placed once the contract has changed mode.
+  const observer = new ResizeObserver(() => {
+    if (!("away" in root.dataset)) place();
+  });
   observer.observe(sheet);
   // A web font swap can move the words without resizing the sheet.
   observer.observe(doc);
-  document.fonts.addEventListener("loadingdone", () => place());
+  document.fonts.addEventListener("loadingdone", () => {
+    if (!("away" in root.dataset)) place();
+  });
   // A card already on screen at load is simply there (no flash, no late paint); one further
   // down writes itself as soon as its answer starts to enter the view, before it can be read.
   const first = panelOf(tabs[0]!);
