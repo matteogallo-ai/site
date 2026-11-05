@@ -1,0 +1,46 @@
+{
+  "source": {
+    "repo": "matteogallo-ai/verity",
+    "commit": "162a055dee9ec26297b204c669a6a9b6e667b52a",
+    "path": "datasets/eval/runs/live/eval_969e1d5_test.json",
+    "url": "https://github.com/matteogallo-ai/verity/blob/162a055dee9ec26297b204c669a6a9b6e667b52a/datasets/eval/runs/live/eval_969e1d5_test.json",
+    "sha256": "afcf11ef4504344b4fb163787063c2c22eba7253e2dbc111ce5828490b28ba44",
+    "pointer": "/per_audit/45"
+  },
+  "documents": {
+    "e1acb2d6-45aa-5ee9-abc4-91428d0b1ed0": "datasets/corpus/sla.md"
+  },
+  "run": {
+    "agent_model": "claude-sonnet-4-6",
+    "judge_model": "claude-opus-5-5",
+    "embedding_model": "BAAI/bge-small-en-v1.5",
+    "confidence_threshold": 0.0
+  },
+  "example_id": "q-078",
+  "question": "What is the response time for a Priority 4 support request?",
+  "refused": true,
+  "refusal_reason": "model_refused",
+  "refusal_rationale": "The SLA section (document index 0) explicitly lists only Priority 1, 2, and 3; no Priority 4 tier exists in any evidence, so the answer correctly refuses to fabricate a response time.",
+  "confidence_score": 0.97,
+  "answer_text": "I don't know based on the provided documents.",
+  "citations": [],
+  "judge_claims": null,
+  "hits_used": [
+    {
+      "chunk": {
+        "char_end": 1323,
+        "char_start": 790,
+        "document_id": "e1acb2d6-45aa-5ee9-abc4-91428d0b1ed0",
+        "id": "5cf7d938-ef50-57b4-bf2d-50077540cb43",
+        "metadata": {},
+        "ordinal": 2,
+        "page": null,
+        "section": "Service Level Agreement > 3. Support Response Times",
+        "text": "## 3. Support Response Times\nProvider responds to support requests according to severity:\n\n- Priority 1 (critical, service unavailable): within one (1) hour.\n- Priority 2 (high, major feature impaired): within four (4) business hours.\n- Priority 3 (normal): within one (1) business day.\n\n## 4. Scheduled Maintenance\nRoutine maintenance is performed on Sundays between 02:00 and 06:00 UTC. Provider gives at least forty-eight (48) hours' advance notice of any scheduled maintenance, which does not count against the uptime commitment."
+      },
+      "kind": "reranked",
+      "rank": 0,
+      "score": 7.164898872375488
+    }
+  ]
+}

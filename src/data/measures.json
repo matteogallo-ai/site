@@ -1,0 +1,920 @@
+{
+  "schema": "site.measures/v1",
+  "measures": [
+    {
+      "id": "verity.refusal_recall",
+      "label": {
+        "fr": "Rappel de refus",
+        "en": "Refusal recall"
+      },
+      "display": {
+        "fr": "17/20",
+        "en": "17/20"
+      },
+      "value": 0.85,
+      "k": 17,
+      "n": 20,
+      "ci95": [
+        0.639581,
+        0.947631
+      ],
+      "repo": "matteogallo-ai/verity",
+      "commit": "162a055dee9ec26297b204c669a6a9b6e667b52a",
+      "path": "scorecards/live-v1.1.0.json",
+      "url": "https://github.com/matteogallo-ai/verity/blob/162a055dee9ec26297b204c669a6a9b6e667b52a/scorecards/live-v1.1.0.json",
+      "evidence": [
+        {
+          "pointer": "/refusal/refusal_recall/k",
+          "equals": 17,
+          "binds": "k"
+        },
+        {
+          "pointer": "/refusal/refusal_recall/n",
+          "equals": 20,
+          "binds": "n"
+        },
+        {
+          "pointer": "/refusal/refusal_recall/ci95_wilson",
+          "equals": [
+            0.639581,
+            0.947631
+          ],
+          "binds": "ci95"
+        },
+        {
+          "pointer": "/refusal/confidence_threshold",
+          "equals": 0.0
+        }
+      ],
+      "status": "verified",
+      "note": "Test split, run of record 969e1d5, n = 56 questions, threshold 0.0."
+    },
+    {
+      "id": "verity.refusal_precision",
+      "label": {
+        "fr": "Précision de refus",
+        "en": "Refusal precision"
+      },
+      "display": {
+        "fr": "17/22",
+        "en": "17/22"
+      },
+      "value": 0.772727,
+      "k": 17,
+      "n": 22,
+      "ci95": [
+        0.5656,
+        0.89877
+      ],
+      "repo": "matteogallo-ai/verity",
+      "commit": "162a055dee9ec26297b204c669a6a9b6e667b52a",
+      "path": "scorecards/live-v1.1.0.json",
+      "url": "https://github.com/matteogallo-ai/verity/blob/162a055dee9ec26297b204c669a6a9b6e667b52a/scorecards/live-v1.1.0.json",
+      "evidence": [
+        {
+          "pointer": "/refusal/refusal_precision/k",
+          "equals": 17,
+          "binds": "k"
+        },
+        {
+          "pointer": "/refusal/refusal_precision/n",
+          "equals": 22,
+          "binds": "n"
+        },
+        {
+          "pointer": "/refusal/refusal_precision/ci95_wilson",
+          "equals": [
+            0.5656,
+            0.89877
+          ],
+          "binds": "ci95"
+        }
+      ],
+      "status": "verified",
+      "note": "Same run: 5 of 22 refusals were answerable questions."
+    },
+    {
+      "id": "verity.unanswerable_answered",
+      "label": {
+        "fr": "Questions sans réponse auxquelles il a répondu",
+        "en": "Unanswerable questions answered"
+      },
+      "display": {
+        "fr": "3/20",
+        "en": "3/20"
+      },
+      "value": 0.15,
+      "k": 3,
+      "n": 20,
+      "ci95": [
+        0.052369,
+        0.360419
+      ],
+      "repo": "matteogallo-ai/verity",
+      "commit": "162a055dee9ec26297b204c669a6a9b6e667b52a",
+      "path": "scorecards/live-v1.1.0.json",
+      "url": "https://github.com/matteogallo-ai/verity/blob/162a055dee9ec26297b204c669a6a9b6e667b52a/scorecards/live-v1.1.0.json",
+      "evidence": [
+        {
+          "pointer": "/refusal/out_of_scope_answered/count",
+          "equals": 3,
+          "binds": "k"
+        },
+        {
+          "pointer": "/refusal/out_of_scope_answered/total",
+          "equals": 20,
+          "binds": "n"
+        },
+        {
+          "pointer": "/refusal/out_of_scope_answered/ci95_wilson",
+          "equals": [
+            0.052369,
+            0.360419
+          ],
+          "binds": "ci95"
+        }
+      ],
+      "status": "verified",
+      "note": "The main Verity defect: 3 unanswerable questions got an answer instead of a refusal."
+    },
+    {
+      "id": "verity.hallucination_rate",
+      "label": {
+        "fr": "Taux d'hallucination (juge), questions avec réponse auxquelles il a répondu",
+        "en": "Hallucination rate (judge), answerable questions answered"
+      },
+      "display": {
+        "fr": "0/31",
+        "en": "0/31"
+      },
+      "value": 0.0,
+      "k": 0,
+      "n": 31,
+      "ci95": [
+        0.0,
+        0.110255
+      ],
+      "repo": "matteogallo-ai/verity",
+      "commit": "162a055dee9ec26297b204c669a6a9b6e667b52a",
+      "path": "scorecards/live-v1.1.0.json",
+      "url": "https://github.com/matteogallo-ai/verity/blob/162a055dee9ec26297b204c669a6a9b6e667b52a/scorecards/live-v1.1.0.json",
+      "evidence": [
+        {
+          "pointer": "/answer_quality/hallucination_rate/k",
+          "equals": 0,
+          "binds": "k"
+        },
+        {
+          "pointer": "/answer_quality/hallucination_rate/n_questions",
+          "equals": 31,
+          "binds": "n"
+        },
+        {
+          "pointer": "/answer_quality/hallucination_rate/ci95_wilson",
+          "equals": [
+            0.0,
+            0.110255
+          ],
+          "binds": "ci95"
+        },
+        {
+          "pointer": "/answer_quality/hallucination_rate/scope",
+          "equals": "answerable_and_answered"
+        }
+      ],
+      "status": "verified",
+      "note": "Scored by an LLM judge (judge prompt v0.1.0) whose agreement with blind human labels is κ 0.71 on 60 claims, 0.48 on the 40 real ones."
+    },
+    {
+      "id": "verity.threshold_run_of_record",
+      "label": {
+        "fr": "Seuil de refus (run de référence)",
+        "en": "Refusal threshold (run of record)"
+      },
+      "display": {
+        "fr": "0,00",
+        "en": "0.00"
+      },
+      "value": 0.0,
+      "repo": "matteogallo-ai/verity",
+      "commit": "162a055dee9ec26297b204c669a6a9b6e667b52a",
+      "path": "scorecards/live-v1.1.0.json",
+      "url": "https://github.com/matteogallo-ai/verity/blob/162a055dee9ec26297b204c669a6a9b6e667b52a/scorecards/live-v1.1.0.json",
+      "evidence": [
+        {
+          "pointer": "/refusal/confidence_threshold",
+          "equals": 0.0,
+          "binds": "value"
+        },
+        {
+          "path": "docs/results.md",
+          "contains": "The threshold decides nothing on this data."
+        },
+        {
+          "path": "docs/results.md",
+          "contains": "The threshold was chosen on the dev split by a rule fixed before the run"
+        }
+      ],
+      "status": "verified",
+      "note": "Chosen on the dev split by a rule fixed before the run, which gave 0.00; docs/results.md: the threshold decides nothing on this data."
+    },
+    {
+      "id": "verity.threshold_code_default",
+      "label": {
+        "fr": "Seuil de refus (défaut du code)",
+        "en": "Refusal threshold (code default)"
+      },
+      "display": {
+        "fr": "0,55",
+        "en": "0.55"
+      },
+      "value": 0.55,
+      "repo": "matteogallo-ai/verity",
+      "commit": "162a055dee9ec26297b204c669a6a9b6e667b52a",
+      "path": "src/verity/config.py",
+      "url": "https://github.com/matteogallo-ai/verity/blob/162a055dee9ec26297b204c669a6a9b6e667b52a/src/verity/config.py",
+      "evidence": [
+        {
+          "path": "src/verity/config.py",
+          "contains": "confidence_threshold: float = Field(\n        default=0.55,"
+        },
+        {
+          "path": ".env.example",
+          "contains": "VERITY_CONFIDENCE_THRESHOLD=0.55"
+        }
+      ],
+      "status": "verified",
+      "derived": "The default of the confidence_threshold field in the code.",
+      "note": "Default of `verity ask`; the run of record used 0.0."
+    },
+    {
+      "id": "verity.judge_kappa_all",
+      "label": {
+        "fr": "Accord juge–humain à l'aveugle, κ de Cohen (60 affirmations)",
+        "en": "Judge–blind human agreement, Cohen's κ (60 claims)"
+      },
+      "display": {
+        "fr": "κ 0,71",
+        "en": "κ 0.71"
+      },
+      "value": 0.7099447513812154,
+      "repo": "matteogallo-ai/verity",
+      "commit": "162a055dee9ec26297b204c669a6a9b6e667b52a",
+      "path": "datasets/eval/judge_validation/agreement.json",
+      "url": "https://github.com/matteogallo-ai/verity/blob/162a055dee9ec26297b204c669a6a9b6e667b52a/datasets/eval/judge_validation/agreement.json",
+      "evidence": [
+        {
+          "pointer": "/agreement_mixed/cohen_kappa",
+          "equals": 0.7099447513812154,
+          "binds": "value"
+        },
+        {
+          "pointer": "/agreement_mixed/n_claims",
+          "equals": 60
+        },
+        {
+          "path": "docs/results.md",
+          "contains": "Judge `claude-opus-5-5` with judge prompt v0.1.0"
+        },
+        {
+          "path": "docs/results.md",
+          "contains": "The κ below belongs to this prompt version"
+        }
+      ],
+      "status": "verified",
+      "note": "Judge prompt v0.1.0, the one the runs of record used; 40 real and 20 perturbed claims. A changed judge prompt needs its own κ."
+    },
+    {
+      "id": "verity.judge_kappa_real",
+      "label": {
+        "fr": "Accord juge–humain à l'aveugle, κ de Cohen (40 affirmations réelles)",
+        "en": "Judge–blind human agreement, Cohen's κ (40 real claims)"
+      },
+      "display": {
+        "fr": "κ 0,48",
+        "en": "κ 0.48"
+      },
+      "value": 0.48051948051948035,
+      "repo": "matteogallo-ai/verity",
+      "commit": "162a055dee9ec26297b204c669a6a9b6e667b52a",
+      "path": "datasets/eval/judge_validation/agreement.json",
+      "url": "https://github.com/matteogallo-ai/verity/blob/162a055dee9ec26297b204c669a6a9b6e667b52a/datasets/eval/judge_validation/agreement.json",
+      "evidence": [
+        {
+          "pointer": "/agreement_real_only/cohen_kappa",
+          "equals": 0.48051948051948035,
+          "binds": "value"
+        },
+        {
+          "pointer": "/agreement_real_only/n_claims",
+          "equals": 40
+        },
+        {
+          "path": "docs/results.md",
+          "contains": "Judge `claude-opus-5-5` with judge prompt v0.1.0"
+        },
+        {
+          "path": "docs/results.md",
+          "contains": "The κ below belongs to this prompt version"
+        },
+        {
+          "path": "docs/results.md",
+          "contains": "only 1 of 40 claims is in the smaller human class"
+        }
+      ],
+      "status": "verified",
+      "note": "Judge prompt v0.1.0. Fragile: only 1 of the 40 claims is in the smaller human class, so one or two disagreements move κ widely."
+    },
+    {
+      "id": "verity.judge_traps_detected",
+      "label": {
+        "fr": "Affirmations piégées que le juge trouve non étayées (borne haute)",
+        "en": "Perturbed claims the judge finds unsupported (upper bound)"
+      },
+      "display": {
+        "fr": "16/20",
+        "en": "16/20"
+      },
+      "value": 0.8,
+      "k": 16,
+      "n": 20,
+      "ci95": [
+        0.584,
+        0.9193
+      ],
+      "repo": "matteogallo-ai/verity",
+      "commit": "162a055dee9ec26297b204c669a6a9b6e667b52a",
+      "path": "datasets/eval/judge_validation/agreement.json",
+      "url": "https://github.com/matteogallo-ai/verity/blob/162a055dee9ec26297b204c669a6a9b6e667b52a/datasets/eval/judge_validation/agreement.json",
+      "evidence": [
+        {
+          "pointer": "/sensitivity/judge_detected/k",
+          "equals": 16,
+          "binds": "k"
+        },
+        {
+          "pointer": "/sensitivity/judge_detected/n",
+          "equals": 20,
+          "binds": "n"
+        },
+        {
+          "pointer": "/sensitivity/judge_detected/ci95_wilson",
+          "equals": [
+            0.584,
+            0.9193
+          ],
+          "binds": "ci95"
+        },
+        {
+          "pointer": "/notes/1",
+          "equals": "a perturbed claim counts as detected if any sub-claim the judge made of it is unsupported, even outside the changed span: sensitivity is an upper bound (per-claim detail in perturbed_verdicts.json)"
+        },
+        {
+          "pointer": "/sensitivity/human_unsupported/k",
+          "equals": 13
+        },
+        {
+          "pointer": "/sensitivity/human_unsupported/n",
+          "equals": 20
+        }
+      ],
+      "status": "verified",
+      "note": "Upper bound: a perturbed claim counts as detected if any sub-claim the judge made of it is unsupported, even outside the changed span. The blind human found 13 of the 20 unsupported."
+    },
+    {
+      "id": "verity.baseline_verity_answerable_answered",
+      "label": {
+        "fr": "Questions avec réponse traitées — Verity",
+        "en": "Answerable questions answered — Verity"
+      },
+      "display": {
+        "fr": "16/21",
+        "en": "16/21"
+      },
+      "value": 0.761905,
+      "k": 16,
+      "n": 21,
+      "ci95": [
+        0.549088,
+        0.89372
+      ],
+      "repo": "matteogallo-ai/verity",
+      "commit": "162a055dee9ec26297b204c669a6a9b6e667b52a",
+      "path": "scorecards/naive-baseline-comparison.json",
+      "url": "https://github.com/matteogallo-ai/verity/blob/162a055dee9ec26297b204c669a6a9b6e667b52a/scorecards/naive-baseline-comparison.json",
+      "evidence": [
+        {
+          "pointer": "/arms/verity/metrics/answerable_answered/k",
+          "equals": 16,
+          "binds": "k"
+        },
+        {
+          "pointer": "/arms/verity/metrics/answerable_answered/n",
+          "equals": 21,
+          "binds": "n"
+        },
+        {
+          "pointer": "/arms/verity/metrics/answerable_answered/ci95_wilson",
+          "equals": [
+            0.549088,
+            0.89372
+          ],
+          "binds": "ci95"
+        },
+        {
+          "pointer": "/readings/answerable_answered",
+          "equals": "not distinguishable"
+        },
+        {
+          "pointer": "/arms/verity/n_completed",
+          "equals": 23
+        },
+        {
+          "pointer": "/arms/naive/n_completed",
+          "equals": 28
+        },
+        {
+          "pointer": "/n_dataset",
+          "equals": 39
+        }
+      ],
+      "status": "verified",
+      "note": "Dev split, incomplete runs (Verity 23/39, naive 28/39), compared on the 23 questions both completed; the artefact reads the difference as not distinguishable."
+    },
+    {
+      "id": "verity.baseline_naive_answerable_answered",
+      "label": {
+        "fr": "Questions avec réponse traitées — RAG naïf",
+        "en": "Answerable questions answered — naive RAG"
+      },
+      "display": {
+        "fr": "21/21",
+        "en": "21/21"
+      },
+      "value": 1.0,
+      "k": 21,
+      "n": 21,
+      "ci95": [
+        0.845361,
+        1.0
+      ],
+      "repo": "matteogallo-ai/verity",
+      "commit": "162a055dee9ec26297b204c669a6a9b6e667b52a",
+      "path": "scorecards/naive-baseline-comparison.json",
+      "url": "https://github.com/matteogallo-ai/verity/blob/162a055dee9ec26297b204c669a6a9b6e667b52a/scorecards/naive-baseline-comparison.json",
+      "evidence": [
+        {
+          "pointer": "/arms/naive/metrics/answerable_answered/k",
+          "equals": 21,
+          "binds": "k"
+        },
+        {
+          "pointer": "/arms/naive/metrics/answerable_answered/n",
+          "equals": 21,
+          "binds": "n"
+        },
+        {
+          "pointer": "/arms/naive/metrics/answerable_answered/ci95_wilson",
+          "equals": [
+            0.845361,
+            1.0
+          ],
+          "binds": "ci95"
+        },
+        {
+          "pointer": "/readings/answerable_answered",
+          "equals": "not distinguishable"
+        },
+        {
+          "pointer": "/arms/verity/n_completed",
+          "equals": 23
+        },
+        {
+          "pointer": "/arms/naive/n_completed",
+          "equals": 28
+        },
+        {
+          "pointer": "/n_dataset",
+          "equals": 39
+        }
+      ],
+      "status": "verified",
+      "note": "Dev split, incomplete runs (Verity 23/39, naive 28/39), compared on the 23 questions both completed; the artefact reads the difference as not distinguishable."
+    },
+    {
+      "id": "verity.baseline_verity_hallucination_rate",
+      "label": {
+        "fr": "Taux d'hallucination — Verity (comparaison)",
+        "en": "Hallucination rate — Verity (comparison)"
+      },
+      "display": {
+        "fr": "0/16",
+        "en": "0/16"
+      },
+      "value": 0.0,
+      "k": 0,
+      "n": 16,
+      "ci95": [
+        0.0,
+        0.193608
+      ],
+      "repo": "matteogallo-ai/verity",
+      "commit": "162a055dee9ec26297b204c669a6a9b6e667b52a",
+      "path": "scorecards/naive-baseline-comparison.json",
+      "url": "https://github.com/matteogallo-ai/verity/blob/162a055dee9ec26297b204c669a6a9b6e667b52a/scorecards/naive-baseline-comparison.json",
+      "evidence": [
+        {
+          "pointer": "/arms/verity/metrics/hallucination_rate/k",
+          "equals": 0,
+          "binds": "k"
+        },
+        {
+          "pointer": "/arms/verity/metrics/hallucination_rate/n",
+          "equals": 16,
+          "binds": "n"
+        },
+        {
+          "pointer": "/arms/verity/metrics/hallucination_rate/ci95_wilson",
+          "equals": [
+            0.0,
+            0.193608
+          ],
+          "binds": "ci95"
+        },
+        {
+          "pointer": "/readings/hallucination_rate",
+          "equals": "not distinguishable"
+        },
+        {
+          "pointer": "/arms/verity/n_completed",
+          "equals": 23
+        },
+        {
+          "pointer": "/arms/naive/n_completed",
+          "equals": 28
+        },
+        {
+          "pointer": "/n_dataset",
+          "equals": 39
+        }
+      ],
+      "status": "verified",
+      "note": "Dev split, incomplete runs (Verity 23/39, naive 28/39), compared on the 23 questions both completed; the artefact reads the difference as not distinguishable."
+    },
+    {
+      "id": "verity.baseline_naive_hallucination_rate",
+      "label": {
+        "fr": "Taux d'hallucination — RAG naïf",
+        "en": "Hallucination rate — naive RAG"
+      },
+      "display": {
+        "fr": "0/21",
+        "en": "0/21"
+      },
+      "value": 0.0,
+      "k": 0,
+      "n": 21,
+      "ci95": [
+        0.0,
+        0.154639
+      ],
+      "repo": "matteogallo-ai/verity",
+      "commit": "162a055dee9ec26297b204c669a6a9b6e667b52a",
+      "path": "scorecards/naive-baseline-comparison.json",
+      "url": "https://github.com/matteogallo-ai/verity/blob/162a055dee9ec26297b204c669a6a9b6e667b52a/scorecards/naive-baseline-comparison.json",
+      "evidence": [
+        {
+          "pointer": "/arms/naive/metrics/hallucination_rate/k",
+          "equals": 0,
+          "binds": "k"
+        },
+        {
+          "pointer": "/arms/naive/metrics/hallucination_rate/n",
+          "equals": 21,
+          "binds": "n"
+        },
+        {
+          "pointer": "/arms/naive/metrics/hallucination_rate/ci95_wilson",
+          "equals": [
+            0.0,
+            0.154639
+          ],
+          "binds": "ci95"
+        },
+        {
+          "pointer": "/readings/hallucination_rate",
+          "equals": "not distinguishable"
+        },
+        {
+          "pointer": "/arms/verity/n_completed",
+          "equals": 23
+        },
+        {
+          "pointer": "/arms/naive/n_completed",
+          "equals": 28
+        },
+        {
+          "pointer": "/n_dataset",
+          "equals": 39
+        }
+      ],
+      "status": "verified",
+      "note": "Dev split, incomplete runs (Verity 23/39, naive 28/39), compared on the 23 questions both completed; the artefact reads the difference as not distinguishable."
+    },
+    {
+      "id": "promptlang.mutation_score",
+      "label": {
+        "fr": "Score de mutation (lexer, parser, semver)",
+        "en": "Mutation score (lexer, parser, semver)"
+      },
+      "display": {
+        "fr": "96,13 %",
+        "en": "96.13%"
+      },
+      "value": 96.13,
+      "repo": "matteogallo-ai/promptlang",
+      "commit": "804f1be95261da6a82763e7acfc80251a1db81d1",
+      "path": "docs/mutation/summary.json",
+      "url": "https://github.com/matteogallo-ai/promptlang/blob/804f1be95261da6a82763e7acfc80251a1db81d1/docs/mutation/summary.json",
+      "evidence": [
+        {
+          "pointer": "/total/score",
+          "equals": 96.13,
+          "binds": "value"
+        },
+        {
+          "path": "docs/mutation/README.md",
+          "contains": "Stryker mutates `src/lexer/**/*.ts`, `src/parser/**/*.ts`, `src/semver/**/*.ts`"
+        }
+      ],
+      "status": "verified",
+      "note": "Stryker, local run, not CI; covers the lexer, parser and semver modules only."
+    },
+    {
+      "id": "promptlang.linter_precision_reviewed",
+      "label": {
+        "fr": "Précision du linter IA (revue humaine)",
+        "en": "AI linter precision (human review)"
+      },
+      "display": {
+        "fr": "12/40",
+        "en": "12/40"
+      },
+      "value": 0.3,
+      "k": 12,
+      "n": 40,
+      "ci95": [
+        0.18074845154920366,
+        0.45430018943418177
+      ],
+      "repo": "matteogallo-ai/promptlang",
+      "commit": "804f1be95261da6a82763e7acfc80251a1db81d1",
+      "path": "evals/linter/findings-review/score.json",
+      "url": "https://github.com/matteogallo-ai/promptlang/blob/804f1be95261da6a82763e7acfc80251a1db81d1/evals/linter/findings-review/score.json",
+      "evidence": [
+        {
+          "pointer": "/precision/k",
+          "equals": 12,
+          "binds": "k"
+        },
+        {
+          "pointer": "/precision/n",
+          "equals": 40,
+          "binds": "n"
+        },
+        {
+          "pointer": "/precision/ci95",
+          "equals": [
+            0.18074845154920366,
+            0.45430018943418177
+          ],
+          "binds": "ci95"
+        }
+      ],
+      "status": "verified",
+      "note": "The main PromptLang defect: 30%, not distinguishable from the 20% bound already published."
+    },
+    {
+      "id": "promptlang.linter_recall",
+      "label": {
+        "fr": "Rappel du linter IA (test, répétition 1)",
+        "en": "AI linter recall (test, repeat 1)"
+      },
+      "display": {
+        "fr": "44/45",
+        "en": "44/45"
+      },
+      "value": 0.9777777777777777,
+      "k": 44,
+      "n": 45,
+      "ci95": [
+        0.8843331811799517,
+        0.9960664011606768
+      ],
+      "repo": "matteogallo-ai/promptlang",
+      "commit": "804f1be95261da6a82763e7acfc80251a1db81d1",
+      "path": "runs/live/linter-eval-2026-11-03T08-39-28-817Z.json",
+      "url": "https://github.com/matteogallo-ai/promptlang/blob/804f1be95261da6a82763e7acfc80251a1db81d1/runs/live/linter-eval-2026-11-03T08-39-28-817Z.json",
+      "evidence": [
+        {
+          "pointer": "/metrics/0/repeat",
+          "equals": 1
+        },
+        {
+          "pointer": "/metrics/0/test/overall/recall/k",
+          "equals": 44,
+          "binds": "k"
+        },
+        {
+          "pointer": "/metrics/0/test/overall/recall/n",
+          "equals": 45,
+          "binds": "n"
+        },
+        {
+          "pointer": "/metrics/0/test/overall/recall/ci95",
+          "equals": [
+            0.8843331811799517,
+            0.9960664011606768
+          ],
+          "binds": "ci95"
+        },
+        {
+          "pointer": "/metrics/1/test/overall/recall/k",
+          "equals": 45
+        },
+        {
+          "path": "docs/SYSTEM_CARD.md",
+          "contains": "| Baseline: report every category | 12.5% (45/360, 95% CI [9.5%, 16.3%]) | 100.0% (45/45"
+        }
+      ],
+      "status": "verified",
+      "note": "Repeat 2 gave 45/45; a report-everything baseline also reaches 45/45."
+    },
+    {
+      "id": "promptlang.audit_findings",
+      "label": {
+        "fr": "Constats de l'audit par un agent sans contexte",
+        "en": "Findings of the audit by a context-free agent"
+      },
+      "display": {
+        "fr": "23",
+        "en": "23"
+      },
+      "value": 23,
+      "repo": "matteogallo-ai/promptlang",
+      "commit": "804f1be95261da6a82763e7acfc80251a1db81d1",
+      "path": "docs/audit/2026-11-03-f1-neutral-audit.md",
+      "url": "https://github.com/matteogallo-ai/promptlang/blob/804f1be95261da6a82763e7acfc80251a1db81d1/docs/audit/2026-11-03-f1-neutral-audit.md",
+      "evidence": [
+        {
+          "path": "docs/audit/2026-11-03-f1-neutral-audit.md",
+          "contains": "| C23 | Contexte (pas un défaut) |"
+        },
+        {
+          "path": "docs/audit/2026-11-03-f1-neutral-audit.md",
+          "contains": "A reviewer with no context (no conversation, no earlier\nreport) audited `main`"
+        }
+      ],
+      "status": "verified",
+      "derived": "Rows C1 to C23 of the findings table; checked by reading the file, the evidence proves only that row C23 exists.",
+      "note": "22 defects (blocking, major, minor) and C23, context rather than a defect. What was done about each: 2026-11-03-f1-follow-up.md."
+    },
+    {
+      "id": "praxis.insufficiently_sourced",
+      "label": {
+        "fr": "Briefings live signalés insuffisamment sourcés",
+        "en": "Live briefings flagged insufficiently sourced"
+      },
+      "display": {
+        "fr": "6/6",
+        "en": "6/6"
+      },
+      "value": 1.0,
+      "k": 6,
+      "n": 6,
+      "repo": "matteogallo-ai/praxis",
+      "commit": "8fe756a414625f03dad5f98791b0df7834047e1c",
+      "path": "README.md",
+      "url": "https://github.com/matteogallo-ai/praxis/blob/8fe756a414625f03dad5f98791b0df7834047e1c/README.md",
+      "evidence": [
+        {
+          "path": "README.md",
+          "contains": "## Status: six live briefings completed, their quality not reviewed"
+        },
+        {
+          "path": "README.md",
+          "contains": "Every one is flagged insufficiently sourced"
+        },
+        {
+          "contains": "13 live attempts: 7 failed"
+        },
+        {
+          "listing": "benchmarks/outputs/live",
+          "matching": "^[^/]+/run-[^/]+/metadata\\.json$",
+          "files": [
+            "05-supply-chain-acquisition/run-2026-11-04T08-33-09-131Z/metadata.json",
+            "05-supply-chain-acquisition/run-2026-11-04T10-52-05-822Z/metadata.json",
+            "08-ai-regulation-position/run-2026-11-04T12-56-19-902Z/metadata.json",
+            "10-esg-position/run-2026-11-04T13-04-11-831Z/metadata.json",
+            "11-family-office-co-investment/run-2026-11-04T13-12-35-988Z/metadata.json",
+            "12-sodium-ion-plant-morocco/run-2026-11-04T13-20-16-572Z/metadata.json"
+          ],
+          "pointer": "/sourcing/insufficiently_sourced",
+          "each": true,
+          "binds": [
+            "k",
+            "n"
+          ]
+        }
+      ],
+      "status": "verified",
+      "note": "The main Praxis defect. Six completed runs over five questions (question 05 twice); 7 other attempts failed. The quality of the briefings is not reviewed."
+    },
+    {
+      "id": "praxis.cost_per_briefing",
+      "label": {
+        "fr": "Coût d'un briefing live terminé",
+        "en": "Cost of one completed live briefing"
+      },
+      "display": {
+        "fr": "3,29–4,75 $",
+        "en": "$3.29–$4.75"
+      },
+      "value": [
+        3.2894020000000004,
+        4.752918
+      ],
+      "repo": "matteogallo-ai/praxis",
+      "commit": "8fe756a414625f03dad5f98791b0df7834047e1c",
+      "path": "README.md",
+      "url": "https://github.com/matteogallo-ai/praxis/blob/8fe756a414625f03dad5f98791b0df7834047e1c/README.md",
+      "evidence": [
+        {
+          "path": "README.md",
+          "contains": "$3.29"
+        },
+        {
+          "path": "README.md",
+          "contains": "$4.75"
+        },
+        {
+          "path": "benchmarks/outputs/live/05-supply-chain-acquisition/run-2026-11-04T08-33-09-131Z/metadata.json",
+          "pointer": "/usage/total/cost_usd",
+          "equals": 3.5076959999999997
+        },
+        {
+          "path": "benchmarks/outputs/live/05-supply-chain-acquisition/run-2026-11-04T10-52-05-822Z/metadata.json",
+          "pointer": "/usage/total/cost_usd",
+          "equals": 3.685426
+        },
+        {
+          "path": "benchmarks/outputs/live/08-ai-regulation-position/run-2026-11-04T12-56-19-902Z/metadata.json",
+          "pointer": "/usage/total/cost_usd",
+          "equals": 3.6642539999999997
+        },
+        {
+          "path": "benchmarks/outputs/live/10-esg-position/run-2026-11-04T13-04-11-831Z/metadata.json",
+          "pointer": "/usage/total/cost_usd",
+          "equals": 3.922974
+        },
+        {
+          "path": "benchmarks/outputs/live/11-family-office-co-investment/run-2026-11-04T13-12-35-988Z/metadata.json",
+          "pointer": "/usage/total/cost_usd",
+          "equals": 3.2894020000000004
+        },
+        {
+          "path": "benchmarks/outputs/live/12-sodium-ion-plant-morocco/run-2026-11-04T13-20-16-572Z/metadata.json",
+          "pointer": "/usage/total/cost_usd",
+          "equals": 4.752918
+        }
+      ],
+      "status": "verified",
+      "derived": "Min and max of /usage/total/cost_usd over the six committed completed runs.",
+      "note": "Min and max over the six committed live runs."
+    },
+    {
+      "id": "how-i-build.principles",
+      "label": {
+        "fr": "Principes de méthode, chacun avec sa PR de preuve",
+        "en": "Method principles, each with its proof PR"
+      },
+      "display": {
+        "fr": "5",
+        "en": "5"
+      },
+      "value": 5,
+      "repo": "matteogallo-ai/how-i-build",
+      "commit": "289b3c094407f17dabc3f1e5c686571068404ac8",
+      "path": "README.md",
+      "url": "https://github.com/matteogallo-ai/how-i-build/blob/289b3c094407f17dabc3f1e5c686571068404ac8/README.md",
+      "evidence": [
+        {
+          "path": "README.md",
+          "contains": "## The method in five principles"
+        }
+      ],
+      "status": "verified",
+      "derived": "Count of the numbered principles under that heading."
+    }
+  ]
+}

@@ -1,0 +1,94 @@
+{
+  "source": {
+    "repo": "matteogallo-ai/verity",
+    "commit": "162a055dee9ec26297b204c669a6a9b6e667b52a",
+    "path": "datasets/eval/runs/live/eval_969e1d5_test.json",
+    "url": "https://github.com/matteogallo-ai/verity/blob/162a055dee9ec26297b204c669a6a9b6e667b52a/datasets/eval/runs/live/eval_969e1d5_test.json",
+    "sha256": "afcf11ef4504344b4fb163787063c2c22eba7253e2dbc111ce5828490b28ba44",
+    "pointer": "/per_audit/5"
+  },
+  "documents": {
+    "e1acb2d6-45aa-5ee9-abc4-91428d0b1ed0": "datasets/corpus/sla.md",
+    "fb8586a0-0d8a-520f-9c69-f803e3ca8fee": "datasets/corpus/order_form_northwind_2025.pdf"
+  },
+  "run": {
+    "agent_model": "claude-sonnet-4-6",
+    "judge_model": "claude-opus-5-5",
+    "embedding_model": "BAAI/bge-small-en-v1.5",
+    "confidence_threshold": 0.0
+  },
+  "example_id": "q-010",
+  "question": "What is the response time for a Priority 1 support request?",
+  "refused": false,
+  "refusal_reason": null,
+  "refusal_rationale": "",
+  "confidence_score": 0.99,
+  "answer_text": "For a standard Priority 1 (critical, service unavailable) support request, the response time is within one (1) hour. If the customer has Premium Support, the Priority 1 response time is shortened to thirty (30) minutes, available 24 hours a day, seven days a week.",
+  "citations": [
+    {
+      "char_end": 947,
+      "char_start": 883,
+      "chunk_id": "5cf7d938-ef50-57b4-bf2d-50077540cb43",
+      "document_id": "e1acb2d6-45aa-5ee9-abc4-91428d0b1ed0",
+      "quote": "Priority 1 (critical, service unavailable): within one (1) hour."
+    },
+    {
+      "char_end": 1459,
+      "char_start": 1339,
+      "chunk_id": "4279a0a3-c587-5e36-a104-453b840b0aa9",
+      "document_id": "fb8586a0-0d8a-520f-9c69-f803e3ca8fee",
+      "quote": "Premium Support shortens the Priority 1 response time to thirty (30) minutes, twentyfour hours a day, seven days a week."
+    }
+  ],
+  "judge_claims": [
+    {
+      "citation_ok": true,
+      "claim": "For a standard Priority 1 (critical, service unavailable) support request, the response time is within one (1) hour.",
+      "supported": true
+    },
+    {
+      "citation_ok": true,
+      "claim": "With Premium Support, the Priority 1 response time is shortened to thirty (30) minutes.",
+      "supported": true
+    },
+    {
+      "citation_ok": true,
+      "claim": "The Premium Support Priority 1 response time applies 24 hours a day, seven days a week.",
+      "supported": true
+    }
+  ],
+  "hits_used": [
+    {
+      "chunk": {
+        "char_end": 1323,
+        "char_start": 790,
+        "document_id": "e1acb2d6-45aa-5ee9-abc4-91428d0b1ed0",
+        "id": "5cf7d938-ef50-57b4-bf2d-50077540cb43",
+        "metadata": {},
+        "ordinal": 2,
+        "page": null,
+        "section": "Service Level Agreement > 3. Support Response Times",
+        "text": "## 3. Support Response Times\nProvider responds to support requests according to severity:\n\n- Priority 1 (critical, service unavailable): within one (1) hour.\n- Priority 2 (high, major feature impaired): within four (4) business hours.\n- Priority 3 (normal): within one (1) business day.\n\n## 4. Scheduled Maintenance\nRoutine maintenance is performed on Sundays between 02:00 and 06:00 UTC. Provider gives at least forty-eight (48) hours' advance notice of any scheduled maintenance, which does not count against the uptime commitment."
+      },
+      "kind": "reranked",
+      "rank": 0,
+      "score": 8.027809143066406
+    },
+    {
+      "chunk": {
+        "char_end": 1601,
+        "char_start": 826,
+        "document_id": "fb8586a0-0d8a-520f-9c69-f803e3ca8fee",
+        "id": "4279a0a3-c587-5e36-a104-453b840b0aa9",
+        "metadata": {},
+        "ordinal": 2,
+        "page": 1,
+        "section": "3. Billing and Payment",
+        "text": "Fees are invoiced annually in advance on the subscription start date and on each anniversary. Notwithstanding Section 2 of the Master Services Agreement, Customer shall pay each invoice within forty-five (45) days of the invoice date. All amounts are exclusive of taxes.\n\n4. Data Residency\n\nCustomer data for this subscription is hosted exclusively in Provider's Frankfurt, Germany data center. Provider will not move Customer data to another region without Customer's prior written consent.\n\n5. Premium Support\n\nPremium Support shortens the Priority 1 response time to thirty (30) minutes, twentyfour hours a day, seven days a week. All other support response times follow the Service Level Agreement. Customer is assigned a named technical account manager.\n\n6. Seat Changes"
+      },
+      "kind": "reranked",
+      "rank": 1,
+      "score": 2.7394042015075684
+    }
+  ]
+}
