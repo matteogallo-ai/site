@@ -327,8 +327,10 @@ const nameOf = (path: string) => {
      so no :has() is needed. The margin is not animated: it must be final when the lens measures
      the words. */
 
-  .demo[data-lit][data-mode="answer"] [data-holds="answer"],
-  .demo[data-lit][data-mode="refusal"] [data-holds="refusal"] {
+  /* From the static page on, not only once the script lights the passage: added later, the
+     margins would shift the contract after the first paint (layout shift). */
+  .demo[data-mode="answer"] [data-holds="answer"],
+  .demo[data-mode="refusal"] [data-holds="refusal"] {
     /* Above, room for the tag too: it names the passage without hiding the line before it. */
     margin-block: calc(var(--room) + 2.25rem) var(--room);
   }
