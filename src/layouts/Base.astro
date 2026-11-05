@@ -1,6 +1,7 @@
 ---
 import { Font } from "astro:assets";
 import "../styles/global.css";
+import Glass from "../components/Glass.astro";
 
 interface Props {
   title: string;
@@ -29,6 +30,7 @@ const skipLabel = lang === "fr" ? "Aller au contenu" : "Skip to content";
   </head>
   <body>
     <a class="skip-link" href="#main">{skipLabel}</a>
+    <Glass />
     <main id="main">
       <slot />
     </main>

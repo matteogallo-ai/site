@@ -1,0 +1,48 @@
+---
+/**
+ * SVG refraction for the glass surfaces (SPEC §4), a progressive enhancement: only Chromium
+ * renders an SVG filter inside backdrop-filter, so the filters apply under :root[data-refraction],
+ * which the script sets in Chromium alone. Other engines keep the frosted glass; under
+ * prefers-reduced-transparency the glass is opaque and unrefracted (global.css).
+ */
+
+// Displacement map of the magnifier: green follows y and fades to neutral (128) away from the
+// top and bottom rims; red stays neutral. Only the rims bend, vertically, so the enlarged words
+// keep their shape from end to end while the glass edge reads as curved.
+const lensMap = `<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100" preserveAspectRatio="none">
+<defs>
+<linearGradient id="y" x2="0" y2="1"><stop offset="0" stop-color="#800000"/><stop offset="1" stop-color="#80ff00"/></linearGradient>
+<linearGradient id="c" x2="0" y2="1"><stop offset="0" stop-color="#808000" stop-opacity="0"/><stop offset=".25" stop-color="#808000"/><stop offset=".75" stop-color="#808000"/><stop offset="1" stop-color="#808000" stop-opacity="0"/></linearGradient>
+</defs>
+<rect width="100" height="100" fill="url(#y)"/>
+<rect width="100" height="100" fill="url(#c)"/>
+</svg>`;
+const lensMapUri = `data:image/svg+xml,${encodeURIComponent(lensMap)}`;
+---
+
+<svg class="glass-filters" aria-hidden="true" focusable="false" width="0" height="0">
+  <filter id="glass-refraction" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB">
+    <feTurbulence type="fractalNoise" baseFrequency="0.012 0.018" numOctaves="2" seed="7" result="noise" />
+    <feDisplacementMap in="SourceGraphic" in2="noise" scale="14" xChannelSelector="R" yChannelSelector="G" />
+  </filter>
+  <!-- A scale in pixels, not in box units: a taller lens must not bend its lines further. -->
+  <filter id="lens-refraction" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB">
+    <feImage href={lensMapUri} x="0" y="0" width="100%" height="100%" preserveAspectRatio="none" result="map" />
+    <feDisplacementMap in="SourceGraphic" in2="map" scale="12" xChannelSelector="R" yChannelSelector="G" />
+  </filter>
+</svg>
+
+<script>
+  // navigator.userAgentData exists in Chromium-based browsers only: the engines that render
+  // SVG filters in backdrop-filter. Feature queries cannot tell, as other engines parse url() there.
+  if ("userAgentData" in navigator) document.documentElement.dataset["refraction"] = "";
+</script>
+
+<style>
+  .glass-filters {
+    position: absolute;
+    width: 0;
+    height: 0;
+    overflow: hidden;
+  }
+</style>

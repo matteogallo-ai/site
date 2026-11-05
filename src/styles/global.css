@@ -118,3 +118,24 @@ a {
     scroll-behavior: auto !important;
   }
 }
+
+/* Glass (SPEC §4): only the navigation, the magnifier and the answer card. Frosted everywhere;
+   refracted where the engine renders SVG filters in backdrop-filter (Glass.astro); the tokens
+   make it opaque under prefers-reduced-transparency. */
+.glass {
+  background: var(--glass-fill);
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  backdrop-filter: blur(var(--glass-blur));
+}
+
+:root[data-refraction] .glass {
+  backdrop-filter: url(#glass-refraction) blur(var(--glass-blur));
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .glass,
+  :root[data-refraction] .glass {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}

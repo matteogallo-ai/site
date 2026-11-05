@@ -1,4 +1,5 @@
 import { lensLayout, relativeBox } from "./lens.ts";
+import { durationMs, revealed } from "./typing.ts";
 
 type Mode = "answer" | "refusal";
 
@@ -12,6 +13,46 @@ function targetRange(doc: Element, mode: Mode): Range | null {
   range.setStart(first, 0);
   range.setEnd(last, last.textContent?.length ?? 0);
   return range;
+}
+
+const still = matchMedia("(prefers-reduced-motion: reduce)");
+
+/**
+ * Writes the card's answer word by word, then lets its checks appear in order (CSS on
+ * data-written). The unwritten words keep their place, hidden, so the card never reflows.
+ * Returns a function that ends the writing at once.
+ */
+function writeOut(card: HTMLElement): () => void {
+  const answer = card.querySelector<HTMLElement>(".a");
+  // Under reduced motion the final state is shown at once (SPEC §4).
+  if (!answer || still.matches) return () => {};
+  const text = answer.textContent ?? "";
+  const duration = durationMs(getComputedStyle(card).getPropertyValue("--dur-slow")) ?? 400;
+  const shown = document.createElement("span");
+  const rest = document.createElement("span");
+  rest.className = "unwritten";
+  answer.replaceChildren(shown, rest);
+  delete card.dataset["written"];
+  card.dataset["writing"] = "";
+  let frame = 0;
+  const finish = () => {
+    answer.textContent = text;
+    delete card.dataset["writing"];
+    card.dataset["written"] = "";
+  };
+  const start = performance.now();
+  const step = (now: number) => {
+    const n = revealed(text, (now - start) / duration);
+    shown.textContent = text.slice(0, n);
+    rest.textContent = text.slice(n);
+    if (n < text.length) frame = requestAnimationFrame(step);
+    else finish();
+  };
+  step(start);
+  return () => {
+    cancelAnimationFrame(frame);
+    finish();
+  };
 }
 
 export function mountVerityDemo(root: HTMLElement): void {
@@ -47,15 +88,28 @@ export function mountVerityDemo(root: HTMLElement): void {
     tag.hidden = false;
   };
 
+  const panelOf = (t: HTMLButtonElement) => document.getElementById(t.getAttribute("aria-controls") ?? "");
+  let stopWriting = () => {};
+  // Waits for the first card to scroll into view; a choice of mode settles it first.
+  let pending: IntersectionObserver | undefined;
+  const write = (panel: HTMLElement | null) => {
+    pending?.disconnect();
+    stopWriting();
+    if (panel) stopWriting = writeOut(panel);
+  };
+
   const select = (tab: HTMLButtonElement, focus: boolean) => {
     for (const t of tabs) {
       const on = t === tab;
       t.setAttribute("aria-selected", String(on));
       t.tabIndex = on ? 0 : -1;
-      const panel = document.getElementById(t.getAttribute("aria-controls") ?? "");
+      const panel = panelOf(t);
       if (panel) panel.hidden = !on;
     }
-    if (root.dataset["mode"] !== tab.dataset["mode"]) root.dataset["switched"] = "";
+    if (root.dataset["mode"] !== tab.dataset["mode"]) {
+      root.dataset["switched"] = "";
+      write(panelOf(tab));
+    }
     root.dataset["mode"] = tab.dataset["mode"];
     if (focus) tab.focus();
     place();
@@ -79,6 +133,21 @@ export function mountVerityDemo(root: HTMLElement): void {
   // A web font swap can move the words without resizing the sheet.
   observer.observe(doc);
   document.fonts.addEventListener("loadingdone", place);
+  // A card already on screen at load is simply there (no flash, no late paint); one further
+  // down writes itself when it is first scrolled into view.
+  const first = panelOf(tabs[0]!);
+  if (first) {
+    const seen = new IntersectionObserver(([entry]) => {
+      seen.disconnect();
+      if (entry && !entry.isIntersecting) {
+        pending = new IntersectionObserver(([e]) => {
+          if (e?.isIntersecting) write(first);
+        }, { threshold: 0.5 });
+        pending.observe(first);
+      }
+    });
+    seen.observe(first);
+  }
   void document.fonts.ready.then(place);
   place();
 }
