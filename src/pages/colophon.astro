@@ -123,13 +123,11 @@ const unmeasured = [...Object.keys(import.meta.glob("./**/*.astro")).map((file) 
     <h2 id="agents">Agents et relecture</h2>
     <p>
       Le code, les tests et les premières versions des textes sont écrits par des agents de code (Claude Code), sous des règles écrites dans le dépôt : un test qui échoue avant chaque correction, aucun chiffre
-      sans source, aucune réussite annoncée sans la commande qui la prouve, et une relecture par un second agent, sans le contexte du premier, avant de rendre le travail (<a href={at("CLAUDE.md")}
-        >règles des agents</a
-      >).
+      sans source, aucune réussite annoncée sans la commande qui la prouve (<a href={at("CLAUDE.md")}>règles des agents</a>).
     </p>
     <p>
-      Je relis chaque modification avant de la fusionner : le rapport de l’agent, ses preuves, ce que le relecteur a trouvé et ce qui a été refusé. Je suis seul à fusionner sur la branche principale, que des
-      règles GitHub protègent. Ce que la machine vérifie mieux que moi, elle le vérifie à chaque fois : budgets, accessibilité, liens, et chaque chiffre comparé à sa source.
+      Chaque modification passe par une relecture indépendante (un second agent, sans le contexte du premier), puis je relis le rapport et l’aperçu, avec l’aide d’un assistant IA, avant de la fusionner
+      moi-même. Je suis seul à fusionner sur la branche principale, que des règles GitHub protègent.
     </p>
   </section>
 </Base>

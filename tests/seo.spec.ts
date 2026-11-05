@@ -54,6 +54,13 @@ for (const path of pages) {
   });
 }
 
+test("the home page's footer links to the Colophon", async ({ page }) => {
+  await page.goto("/");
+  await page.locator(".footer").getByRole("link", { name: "Colophon" }).click();
+  await expect(page).toHaveURL(/\/colophon\/$/);
+  await expect(page.locator("h1")).toHaveText("Colophon");
+});
+
 test("an unknown address answers 404 with the 404 page and a way home", async ({ page }) => {
   const response = await page.goto("/aucune-page-ici/");
   expect(response?.status()).toBe(404);
