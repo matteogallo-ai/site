@@ -33,7 +33,8 @@ src/lib/                 document.ts (Markdown blocks keeping source offsets), m
                          sitemap.ts (sitemap.xml and robots.txt from the page files), og.ts (what the OG image says)
 src/data/site-measures.json  copy of the site-measures artifact of one CI run; site-measures.source.json names
                          the run and the sha256 the copy must keep (colophon.test.ts)
-scripts/check-rulesets.ts  go-live check that an active ruleset protects main (rules in rulesets-lib.ts)
+scripts/check-rulesets.ts  go-live check that an active ruleset requires a pull request on main, from
+                         GitHub's own resolution of the rules on the branch (decision in rulesets-lib.ts)
 scripts/og.ts            draws public/og.png (1200x630) with the site's fonts and tokens through Playwright;
                          src/data/og.json pins the hash of its inputs and of the PNG (og.test.ts)
 src/scripts/             client code of the demo: lens.ts (geometry), typing.ts (answer writing), verity-demo.ts (DOM)

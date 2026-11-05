@@ -1,30 +1,19 @@
-// Whether the GitHub rulesets of the repository protect its main branch, as the Colophon says
-// they do ("la branche principale, que des règles GitHub protègent"). Pure: check-rulesets.ts
-// fetches the rulesets, this decides.
+// Whether GitHub rules protect the main branch, as the Colophon says ("la branche principale,
+// que des règles GitHub protègent"). GitHub itself resolves which rulesets apply to a branch
+// (active ones only, with their branch patterns and exclusions): check-rulesets.ts reads that
+// answer from /rules/branches/<branch>, and this decides whether it amounts to protection.
 
-export interface Ruleset {
-  id: number;
-  name: string;
-  target?: string;
-  enforcement: "active" | "evaluate" | "disabled";
-  conditions?: { ref_name?: { include?: string[]; exclude?: string[] } } | null;
-  rules?: { type: string }[];
+export interface BranchRule {
+  type: string;
+  ruleset_id: number;
 }
 
-// Rules that stop a change from reaching main without going through the owner: a required pull
-// request, no force-push rewriting it, no deletion, no direct update.
-const PROTECTIVE = new Set(["pull_request", "non_fast_forward", "deletion", "update"]);
+// "Je suis seul à fusionner" holds only if nothing reaches main without the owner: a required
+// pull request, or no direct update at all. Rules such as no deletion or no force-push guard
+// the history but still let a direct push through, so they do not count on their own.
+const GATES = new Set(["pull_request", "update"]);
 
-function targetsMain(r: Ruleset, defaultBranch: string): boolean {
-  const ref = r.conditions?.ref_name;
-  const names = (list: string[] | undefined) => (list ?? []).some((p) => p === "~ALL" || p === "~DEFAULT_BRANCH" || p === `refs/heads/${defaultBranch}`);
-  return names(ref?.include) && !names(ref?.exclude);
-}
-
-/** The active branch rulesets that protect main, by name; empty when none does. */
-export function protectingMain(rulesets: Ruleset[], defaultBranch = "main"): string[] {
-  return rulesets
-    .filter((r) => (r.target ?? "branch") === "branch" && r.enforcement === "active" && targetsMain(r, defaultBranch))
-    .filter((r) => (r.rules ?? []).some((rule) => PROTECTIVE.has(rule.type)))
-    .map((r) => r.name);
+/** The ids of the rulesets whose rules gate every change to the branch; empty when none does. */
+export function gatingRulesets(rules: BranchRule[]): number[] {
+  return [...new Set(rules.filter((r) => GATES.has(r.type)).map((r) => r.ruleset_id))].sort((a, b) => a - b);
 }
