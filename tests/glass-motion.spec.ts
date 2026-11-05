@@ -262,7 +262,7 @@ test("on a change of mode the ring fades out before it moves: no frame shows it 
         const seen: { box: string; opacity: number }[] = [];
         const start = performance.now();
         const tick = () => {
-          seen.push({ box: `${lens.style.left} ${lens.style.top} ${lens.style.width} ${lens.style.height}`, opacity: Number(getComputedStyle(lens).opacity) });
+          seen.push({ box: `${lens.style.getPropertyValue("--x")} ${lens.style.getPropertyValue("--y")} ${lens.style.width} ${lens.style.height}`, opacity: Number(getComputedStyle(lens).opacity) });
           if (performance.now() - start < 900) requestAnimationFrame(tick);
           else done(seen);
         };

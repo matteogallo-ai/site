@@ -96,8 +96,12 @@ export function mountVerityDemo(root: HTMLElement): void {
     const target = unionBox(targetBoxes(doc, root.dataset["mode"] as Mode, sheet));
     if (!target) return;
     const box = lensLayout(target, width);
-    Object.assign(lens.style, { left: `${box.left}px`, top: `${box.top}px`, width: `${box.width}px`, height: `${box.height}px` });
-    Object.assign(tag.style, { left: `${Math.min(box.left + box.width, width)}px`, top: `${box.top}px` });
+    // Placed by transform (CSS reads --x and --y): moving them then never counts as a layout shift.
+    lens.style.setProperty("--x", `${box.left}px`);
+    lens.style.setProperty("--y", `${box.top}px`);
+    Object.assign(lens.style, { width: `${box.width}px`, height: `${box.height}px` });
+    tag.style.setProperty("--x", `${Math.min(box.left + box.width, width)}px`);
+    tag.style.setProperty("--y", `${box.top}px`);
     lens.hidden = false;
     tag.hidden = false;
     // The target's centre goes to --target-at of the window's height (the middle of the part

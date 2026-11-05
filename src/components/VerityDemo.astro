@@ -357,6 +357,7 @@ const nameOf = (path: string) => {
     box-sizing: content-box;
     margin: calc(-1 * var(--ring));
     padding: var(--ring);
+    transform: translate(var(--x, 0), var(--y, 0));
     border-radius: 16px;
     box-shadow: 0 14px 30px -18px rgb(17 17 17 / 0.5);
     transition: opacity var(--dur-hover) var(--ease-out);
@@ -389,7 +390,9 @@ const nameOf = (path: string) => {
     align-items: center;
     gap: 0.4rem;
     margin: 0;
-    transform: translate(-100%, calc(-100% - var(--tag-gap)));
+    left: 0;
+    top: 0;
+    transform: translate(var(--x, 0), var(--y, 0)) translate(-100%, calc(-100% - var(--tag-gap)));
     padding: 0.15rem 0.55rem 0.15rem 0.2rem;
     box-shadow: 0 0 0 1px var(--rule);
     transition: opacity var(--dur-hover) var(--ease-out);
