@@ -22,8 +22,10 @@ src/layouts/CaseStudy.astro  shell of the case studies /projets/<slug>: header, 
 src/pages/               one file per route
 src/components/          VerityDemo (contract, magnifier, tabs, cards), Figure (a measure with its proof),
                          Glass (SVG refraction filters, Chromium only), Projects, Bio;
-                         case/: CaseSection, Diagram (the one SVG of a case study), MeasuresTable (figures,
-                         intervals, baseline; a missing interval must say why or the build fails)
+                         case/: Brief (« En bref »: three plain lines, three figures, the main defect among them),
+                         CaseSection (each opens with a lead sentence), Diagram (the one SVG of a case study),
+                         MeasuresDetail (the folded tables), MeasuresTable (figures, intervals, baseline; a missing
+                         interval must say why or the build fails; stacked cards under 48rem)
 src/lib/                 document.ts (Markdown blocks keeping source offsets), measures.ts (figures and intervals by id),
                          diagram.ts (case-study diagram layout; a line too long for its box fails the build),
                          sources.ts (link to a repo file at the commit its measures are pinned to)
@@ -46,7 +48,8 @@ tests/                   Playwright on every built page: axe (light + dark), key
                          glass-motion.spec.ts: answer writing, glass refracted / frosted / opaque;
                          first-screen.spec.ts: tabs, passage, lens and whole card in view at 1440×800 and 1280×720;
                          case-studies.spec.ts: SPEC §3.2 sections in order, pinned figure and ADR links,
-                         no number outside a measure, a link or code
+                         no number outside a measure, a link or code; brief, lead sentences, jargon list,
+                         folded tables as cards at 375 px
 scripts/site-measures*   Lighthouse CI output -> site-measures.json (weight, scores, date, commit)
 scripts/built-pages.ts   list of built HTML pages, shared by the axe tests, site-measures and the link check
 scripts/check-links.ts   runs linkinator with every built page as an entry point: from the home page
