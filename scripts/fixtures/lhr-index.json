@@ -1,0 +1,42 @@
+{
+  "lighthouseVersion": "13.6.0",
+  "configSettings": {
+    "formFactor": "mobile"
+  },
+  "categories": {
+    "performance": {
+      "score": 1
+    },
+    "accessibility": {
+      "score": 1
+    },
+    "best-practices": {
+      "score": 1
+    },
+    "seo": {
+      "score": 1
+    }
+  },
+  "audits": {
+    "largest-contentful-paint": {
+      "numericValue": 609.4665
+    },
+    "cumulative-layout-shift": {
+      "numericValue": 0
+    },
+    "resource-summary": {
+      "details": {
+        "items": [
+          {
+            "resourceType": "total",
+            "transferSize": 116743
+          },
+          {
+            "resourceType": "font",
+            "transferSize": 113935
+          }
+        ]
+      }
+    }
+  }
+}

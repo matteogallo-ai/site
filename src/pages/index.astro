@@ -1,0 +1,59 @@
+---
+import Base from "../layouts/Base.astro";
+---
+
+<Base
+  title="Matteo Gallo — Software & AI Engineer"
+  description="Matteo Gallo, Software & AI Engineer à Lausanne. Je construis des produits IA complets et je publie leurs mesures, défauts compris."
+>
+  <section class="container hero">
+    <p class="mono label">No. 00</p>
+    <h1>Matteo Gallo</h1>
+    <p class="title">Software &amp; AI Engineer.</p>
+    <p class="message">
+      Je construis des produits IA complets et je publie leurs mesures, <mark>défauts compris</mark>.
+    </p>
+  </section>
+</Base>
+
+<style>
+  .hero {
+    padding-block: 6rem;
+  }
+
+  .label {
+    margin: 0 0 1rem;
+    font-size: var(--step-12);
+    color: var(--graphite);
+  }
+
+  h1 {
+    font-size: var(--step-44);
+    letter-spacing: var(--track-44);
+  }
+
+  @media (min-width: 48rem) {
+    h1 {
+      font-size: var(--step-68);
+      letter-spacing: var(--track-68);
+    }
+  }
+
+  .title {
+    margin: 0.5rem 0 0;
+    font-size: var(--step-28);
+    color: var(--graphite);
+  }
+
+  .message {
+    max-width: 34em;
+    margin: 1.5rem 0 0;
+    font-size: var(--step-21);
+  }
+
+  mark {
+    background: var(--proof-wash);
+    color: var(--ink);
+    padding-inline: 0.15em;
+  }
+</style>

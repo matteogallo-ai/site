@@ -1,0 +1,82 @@
+/*
+ * Design tokens (SPEC §4). The colour pairs are checked for WCAG AA by
+ * src/styles/contrast.test.ts, which parses this file: keep every colour a
+ * six-digit hex literal so the test reads exactly what the browser gets.
+ */
+:root {
+  color-scheme: light dark;
+
+  /* Colour, light theme (SPEC §4 values). */
+  --paper: #f5f4f0;
+  --ink: #111111;
+  --graphite: #5c5c58;
+  /* Decorative rules only: never the sole carrier of meaning, so exempt from the 3:1 non-text rule. */
+  --rule: #dad8d2;
+  --proof: #1e8a4c;
+  --proof-text: #17703d;
+  --proof-wash: #dcefe2;
+  --defect: #a8382a;
+  --night: #1c2a44;
+
+  /* Type scale (SPEC §4): 12 · 14 · 16 · 21 · 28 · 44 · 68 px. */
+  --step-12: 0.75rem;
+  --step-14: 0.875rem;
+  --step-16: 1rem;
+  --step-21: 1.3125rem;
+  --step-28: 1.75rem;
+  --step-44: 2.75rem;
+  --step-68: 4.25rem;
+  /* Negative tracking on the two display sizes. */
+  --track-44: -0.02em;
+  --track-68: -0.03em;
+
+  /* Grid (SPEC §4). */
+  --grid-columns: 12;
+  --gutter: 24px;
+  --container: 1200px;
+
+  /* Motion (SPEC §4): 150–400 ms on one curve. */
+  --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --dur-fast: 150ms;
+  --dur-base: 250ms;
+  --dur-slow: 400ms;
+
+  /* Glass: navigation, loupe and answer card only (SPEC §4). */
+  --glass-fill: rgb(245 244 240 / 0.72);
+  --glass-edge: rgb(17 17 17 / 0.08);
+  --glass-blur: 14px;
+}
+
+@media (prefers-color-scheme: dark) {
+  /* Dark values are not in the SPEC; chosen to keep the same hue roles at AA on the dark paper. */
+  :root {
+    --paper: #121311;
+    --ink: #edebe5;
+    --graphite: #a3a19a;
+    --rule: #3a3934;
+    --proof: #3fb872;
+    --proof-text: #5cc98a;
+    --proof-wash: #173d27;
+    --defect: #e58a78;
+    --night: #a9bbdd;
+
+    --glass-fill: rgb(18 19 17 / 0.72);
+    --glass-edge: rgb(237 235 229 / 0.1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* Near-zero rather than 0: transitions land on their final state at once and still fire transitionend. */
+  :root {
+    --dur-fast: 0.01ms;
+    --dur-base: 0.01ms;
+    --dur-slow: 0.01ms;
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  :root {
+    --glass-fill: var(--paper);
+    --glass-blur: 0px;
+  }
+}

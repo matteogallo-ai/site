@@ -1,0 +1,6 @@
+{
+  "recurse": true,
+  "checkCss": true,
+  "verbosity": "error",
+  "skip": ["^https://matteogallo\\.pages\\.dev(/|$)"]
+}
