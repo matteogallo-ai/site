@@ -11,6 +11,13 @@ updates:
         patterns: ["*"]
         update-types: ["minor", "patch"]
 
+  # Font tools: a bump can change the subsets, so the "font subsets reproducible" job fails
+  # on that PR until the fonts are regenerated with it. Kept apart from the npm group for that reason.
+  - package-ecosystem: "pip"
+    directory: "/scripts/fonts"
+    schedule:
+      interval: "weekly"
+
   # Actions are pinned by SHA; Dependabot updates the SHA and the version comment.
   - package-ecosystem: "github-actions"
     directory: "/"
