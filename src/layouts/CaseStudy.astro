@@ -1,5 +1,6 @@
 ---
 import Base from "./Base.astro";
+import { repoUrl } from "../lib/sources.ts";
 
 interface Props {
   /** Calibre number of the project, as on the home page cards ("01"). */
@@ -32,7 +33,7 @@ const cases = [
       <p class="no"><span class="mono">No. {no}</span> · Étude de cas</p>
       <h1>{name}</h1>
       <p class="summary">{summary}</p>
-      <p class="code"><a href={`https://github.com/matteogallo-ai/${repo}`}>Code : matteogallo-ai/{repo}</a></p>
+      <p class="code"><a href={repoUrl(repo)}>Code : matteogallo-ai/{repo}</a></p>
     </header>
     <slot />
     <nav class="others" aria-label="Autres études de cas">
