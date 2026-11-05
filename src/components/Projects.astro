@@ -1,0 +1,156 @@
+---
+import { Picture } from "astro:assets";
+import Figure from "./Figure.astro";
+import Gap from "./Gap.astro";
+import verityShot from "../assets/projects/verity-answer.png";
+import promptlangStill from "../assets/projects/promptlang-demo-last.png";
+import media from "../data/media.json";
+
+const shot = (id: string) => media.media.find((m) => m.id === id)!;
+const verityMedia = shot("verity");
+const promptlangMedia = shot("promptlang");
+const repo = (name: string) => `https://github.com/matteogallo-ai/${name}`;
+---
+
+<section class="container section" id="projets" aria-labelledby="projets-title">
+  <p class="mono rule-label">+ 01</p>
+  <h2 id="projets-title">Projets</h2>
+  <div class="projects">
+    <article class="project" aria-labelledby="p-verity">
+      <p class="mono no">No. 01</p>
+      <h3 id="p-verity">Verity</h3>
+      <figure>
+        <Picture src={verityShot} formats={["avif", "webp"]} alt={verityMedia.alt.fr} widths={[480, 960]} sizes="(min-width: 64rem) 360px, 100vw" loading="lazy" decoding="async" />
+        <figcaption>{verityMedia.caption.fr} <a href={verityMedia.url}>Source</a></figcaption>
+      </figure>
+      <p>Un agent RAG sur des documents d’entreprise : il répond en citant mot pour mot, refuse quand ses preuves sont faibles, et publie à quelle fréquence il refuse à raison.</p>
+      <ul class="measures">
+        <li><Figure id="verity.refusal_precision" where="card" /> précision de refus</li>
+        <li><Figure id="verity.judge_kappa_all" where="card" /> accord du juge avec un humain à l’aveugle, toutes affirmations ; <Figure id="verity.judge_kappa_real" where="card" /> sur les affirmations réelles seules</li>
+      </ul>
+      <div class="known-defect">
+        <p class="k">Défaut connu</p>
+        <p><Figure id="verity.unanswerable_answered" where="card" defect /> questions sans réponse ont reçu une réponse au lieu d’un refus.</p>
+      </div>
+      <p class="stack">Python 3.12, FastAPI, Postgres + pgvector, Next.js, Claude.</p>
+      <p class="links"><a href={repo("verity")}>Code</a> · <Gap>étude de cas</Gap></p>
+    </article>
+
+    <article class="project" aria-labelledby="p-promptlang">
+      <p class="mono no">No. 02</p>
+      <h3 id="p-promptlang">PromptLang</h3>
+      <figure>
+        <Picture src={promptlangStill} formats={["avif", "webp"]} alt={promptlangMedia.alt.fr} widths={[480, 960]} sizes="(min-width: 64rem) 360px, 100vw" loading="lazy" decoding="async" />
+        <figcaption>{promptlangMedia.caption.fr} <a href={promptlangMedia.url}>Voir l’enregistrement (GIF)</a></figcaption>
+      </figure>
+      <p>Un langage typé pour les prompts LLM, compilé vers TypeScript ou Python, publié sur npm.</p>
+      <ul class="measures">
+        <li><Figure id="promptlang.mutation_score" where="card" /> score de mutation (lexer, parser, semver ; exécution locale, hors CI)</li>
+        <li><Figure id="promptlang.linter_recall" where="card" /> rappel du linter IA ; un linter qui signale tout fait aussi bien</li>
+      </ul>
+      <div class="known-defect">
+        <p class="k">Défaut connu</p>
+        <p><Figure id="promptlang.linter_precision_reviewed" where="card" defect /> signalements du linter IA jugés justes en revue humaine.</p>
+      </div>
+      <p class="stack">TypeScript strict, Bun, npm.</p>
+      <p class="links"><a href={repo("promptlang")}>Code</a> · <Gap>étude de cas</Gap></p>
+    </article>
+
+    <article class="project" aria-labelledby="p-praxis">
+      <p class="mono no">No. 03</p>
+      <h3 id="p-praxis">Praxis</h3>
+      <figure>
+        <Gap>capture ou GIF de Praxis : le dépôt n’en contient aucun</Gap>
+      </figure>
+      <p>Un pipeline LLM qui transforme une question business en briefing analytique, avec contrôles de sourcing et revue adverse.</p>
+      <ul class="measures">
+        <li><Figure id="praxis.cost_per_briefing" where="card" /> par briefing live terminé</li>
+      </ul>
+      <div class="known-defect">
+        <p class="k">Défaut connu</p>
+        <p><Figure id="praxis.insufficiently_sourced" where="card" defect /> briefings live signalés insuffisamment sourcés.</p>
+      </div>
+      <p class="stack">TypeScript, Bun ; sorties Markdown, PDF, DOCX.</p>
+      <p class="links"><a href={repo("praxis")}>Code</a> · <Gap>étude de cas</Gap></p>
+    </article>
+  </div>
+</section>
+
+<style>
+  .projects {
+    display: grid;
+    gap: 2.5rem var(--gutter);
+  }
+
+  @media (min-width: 64rem) {
+    .projects {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  .project p {
+    margin: 0.75rem 0 0;
+  }
+
+  .no {
+    font-size: var(--step-12);
+    color: var(--graphite);
+    margin: 0 0 0.25rem !important;
+  }
+
+  figure {
+    margin: 1rem 0 0;
+  }
+
+  figure :global(img),
+  figure img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 6px;
+    box-shadow: 0 0 0 1px var(--rule);
+  }
+
+  .measures {
+    margin: 1rem 0 0;
+    padding: 0;
+    list-style: none;
+    font-size: var(--step-14);
+  }
+
+  .measures li + li {
+    margin-top: 0.35rem;
+  }
+
+  .known-defect {
+    margin-top: 1rem;
+    padding: 0.75rem 0.9rem;
+    border-left: 3px solid var(--defect);
+    background: var(--defect-wash);
+    font-size: var(--step-14);
+  }
+
+  .known-defect p {
+    margin: 0;
+  }
+
+  .known-defect .k {
+    font-size: var(--step-12);
+    color: var(--ink);
+    margin-bottom: 0.25rem !important;
+  }
+
+  .known-defect :global(.figure.defect) {
+    color: var(--ink);
+    font-weight: 600;
+  }
+
+  .stack {
+    font-size: var(--step-14);
+    color: var(--graphite);
+  }
+
+  .links {
+    font-size: var(--step-14);
+  }
+</style>
