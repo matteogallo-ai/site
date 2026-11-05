@@ -140,3 +140,29 @@ for (const [name, theme] of Object.entries(themes)) {
     });
   }
 }
+
+// Hover states: the primary button lightens its ink toward the paper, a secondary one takes an
+// ink wash over the paper. The focus ring is the proof colour, a graphic: 3:1 on the paper.
+const lifted = readMix(css, "ink-lifted");
+const wash = readMix(css, "ink-wash");
+test("hover tints are the ink lightened by 6 % and an ink wash of 6 %", () => {
+  assert.deepEqual([lifted.first, lifted.second, lifted.weight], ["ink", "paper", 0.94]);
+  assert.deepEqual([wash.first, wash.second, wash.weight], ["ink", "transparent", 0.06]);
+});
+
+for (const [name, theme] of Object.entries(themes)) {
+  const primaryHover = mix(theme.ink!, theme.paper!, lifted.weight);
+  test(`${name}: --paper on the hovered primary button (${primaryHover}) >= 4.5:1`, () => {
+    const ratio = contrastRatio(theme.paper!, primaryHover);
+    assert.ok(ratio >= 4.5, `${ratio.toFixed(2)}:1 < 4.5:1`);
+  });
+  const secondaryHover = mix(theme.ink!, theme.paper!, wash.weight);
+  test(`${name}: --ink on the hovered secondary button (${secondaryHover}) >= 4.5:1`, () => {
+    const ratio = contrastRatio(theme.ink!, secondaryHover);
+    assert.ok(ratio >= 4.5, `${ratio.toFixed(2)}:1 < 4.5:1`);
+  });
+  test(`${name}: the focus ring (--proof) on the hovered secondary button >= 3:1`, () => {
+    const ratio = contrastRatio(theme.proof!, secondaryHover);
+    assert.ok(ratio >= 3, `${ratio.toFixed(2)}:1 < 3:1`);
+  });
+}

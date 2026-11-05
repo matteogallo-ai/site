@@ -39,9 +39,16 @@ textarea {
   font: inherit;
 }
 
+/* A link's underline is a quiet rule at rest and takes the full colour under the pointer. */
 a {
   color: inherit;
   text-underline-offset: 0.2em;
+  text-decoration-color: color-mix(in srgb, currentColor 40%, transparent);
+  transition: text-decoration-color var(--dur-hover) var(--ease-out);
+}
+
+a:hover {
+  text-decoration-color: currentColor;
 }
 
 :focus-visible {
@@ -177,7 +184,7 @@ a {
   color: var(--graphite);
   background: transparent;
   cursor: pointer;
-  transition: color var(--dur-move) var(--ease-out);
+  transition: color var(--dur-hover) var(--ease-out);
 }
 
 .segmented > button:hover {
