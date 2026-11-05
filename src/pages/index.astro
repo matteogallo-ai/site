@@ -96,8 +96,13 @@ const repo = (name: string) => `https://github.com/matteogallo-ai/${name}`;
     </div>
     <div class="contact" id="contact">
       <h2>Un poste d’ingénieur logiciel et IA en Suisse romande ? Écrivez-moi.</h2>
-      <p class="email"><a href="mailto:matteogallo.office@gmail.com">matteogallo.office@gmail.com</a></p>
+      <p class="email">
+        <a class="address" href="mailto:matteogallo.office@gmail.com" data-copy>matteogallo.office@gmail.com</a>
+        <span class="copied" id="copy-status" role="status"></span>
+      </p>
+      <p class="hint" data-copy-hint hidden>Cliquez sur l’adresse pour la copier.</p>
       <p class="actions">
+        <a class="button primary" href="mailto:matteogallo.office@gmail.com">Écrire</a>
         <a class="button" href="https://www.linkedin.com/in/matteogallo-ai">LinkedIn</a>
         <a class="button" href="https://github.com/matteogallo-ai">GitHub</a>
       </p>
@@ -107,8 +112,16 @@ const repo = (name: string) => `https://github.com/matteogallo-ai/${name}`;
   <script>
     import { countOnSight } from "../scripts/count.ts";
     import { spyOn } from "../scripts/spy.ts";
+    import { copyOnClick } from "../scripts/copy.ts";
     const nav = document.querySelector<HTMLElement>(".nav");
     if (nav) spyOn(nav);
+    // The address copies itself on click; without this script it stays a mailto link.
+    const address = document.querySelector<HTMLAnchorElement>("a[data-copy]");
+    const status = document.getElementById("copy-status");
+    if (address && status && navigator.clipboard) {
+      copyOnClick(address, status);
+      document.querySelector<HTMLElement>("[data-copy-hint]")?.removeAttribute("hidden");
+    }
     // The band's three figures count up once, as they come into view (SPEC §4).
     countOnSight(document.querySelectorAll<HTMLElement>(".band .value"));
   </script>
@@ -438,12 +451,46 @@ const repo = (name: string) => `https://github.com/matteogallo-ai/${name}`;
   }
 
   .email {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.25rem 0.75rem;
+    margin: 1rem 0 0;
+  }
+
+  /* The address, a link or (with the script) a button that copies it. */
+  .address {
+    padding: 0;
+    border: 0;
     font-size: var(--step-28);
     font-weight: 600;
     letter-spacing: -0.01em;
-    margin: 1rem 0 0;
+    text-align: left;
+    color: var(--ink);
+    background: none;
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.2em;
+    text-decoration-color: var(--rule);
+    cursor: pointer;
     /* The address is one unbroken word, wider than a 375 px screen at this size. */
     overflow-wrap: anywhere;
+    transition: text-decoration-color var(--dur-hover) var(--ease-out);
+  }
+
+  .address:hover {
+    text-decoration-color: var(--ink);
+  }
+
+  .copied {
+    font-size: var(--step-14);
+    color: var(--proof-text);
+  }
+
+  .hint {
+    margin: 0.25rem 0 0;
+    font-size: var(--step-14);
+    color: var(--graphite);
   }
 
   .footer {
