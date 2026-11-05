@@ -13,7 +13,8 @@ test("every placeholder form is reported, with its text", () => {
     ["<p>Missing: case study</p>", /Missing/],
     ['<div data-gap="contact"></div>', /gap marker/],
     // A gap measure renders the em dash as its value (scripts/measures-lib.ts GAP_DISPLAY).
-    ['<a class="figure"><span class="value">—</span></a>', /gap measure/],
+    // Markup as Figure.astro renders it (copied from dist/index.html).
+    ['<a class="figure"><span class="value mono" data-astro-cid-khyig4bw>—</span></a>', /gap measure/],
     ["<p>TODO: write the bio</p>", /TODO/],
   ];
   for (const [html, expected] of cases) {
@@ -24,5 +25,9 @@ test("every placeholder form is reported, with its text", () => {
 });
 
 test("words that merely contain a marker are not gaps", () => {
-  assert.deepEqual(gapsIn('<p class="gap-free">Mistodo</p><p>todos</p>'), []);
+  assert.deepEqual(gapsIn('<p class="gap-free" data-gap-free>Mistodo</p><p>todos</p>'), []);
+});
+
+test("scripts, styles and comments are not page content", () => {
+  assert.deepEqual(gapsIn("<script>/* TODO */</script><style>/* FIXME */</style><!-- TODO --><p>ok</p>"), []);
 });

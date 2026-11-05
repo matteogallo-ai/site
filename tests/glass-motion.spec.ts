@@ -45,11 +45,14 @@ test("the answer writes itself word by word, then its checks appear", async ({ p
 test("under reduced motion the answer is shown whole at once", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/");
-  await refusalTab(page).click();
-  const panel = page.locator("#verity-panel-refusal");
-  await expect(panel.locator(".unwritten")).toHaveCount(0);
-  await expect(panel).not.toHaveAttribute("data-writing");
-  await expect(panel.locator(".a")).toHaveText("I don't know based on the provided documents.");
+  // Read in the same task as the click: a retrying assertion would also pass on writing that
+  // merely ends fast (the motion tokens are 0.01ms under reduced motion).
+  const state = await page.evaluate(() => {
+    document.querySelector<HTMLElement>("#verity-tab-refusal")!.click();
+    const panel = document.getElementById("verity-panel-refusal")!;
+    return { unwritten: panel.querySelectorAll(".unwritten").length, writing: "writing" in panel.dataset, text: panel.querySelector(".a")!.textContent };
+  });
+  expect(state).toEqual({ unwritten: 0, writing: false, text: "I don't know based on the provided documents." });
 });
 
 const glassOf = (page: Page) =>
@@ -90,4 +93,23 @@ test("glass: opaque under prefers-reduced-transparency", async ({ page }) => {
   expect(glass.lens).toBe("none");
   // The fill is the paper colour, fully opaque.
   expect(glass.fill).toMatch(/^rgb\(\d+, \d+, \d+\)$/);
+});
+
+test("an answer on screen at load stays as it is; one below the fold writes itself as it enters", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/");
+  const card = page.locator("#verity-panel-answer");
+  await page.waitForTimeout(500);
+  await expect(card).not.toHaveAttribute("data-writing");
+  await expect(card).not.toHaveAttribute("data-written");
+
+  await page.setViewportSize({ width: 375, height: 700 });
+  await page.goto("/");
+  await expect(card).not.toHaveAttribute("data-written");
+  // Bring the first line of the answer just into view: writing starts before it can be read whole.
+  await page.evaluate(() => {
+    const a = document.querySelector("#verity-panel-answer .a")!;
+    window.scrollBy(0, a.getBoundingClientRect().top - window.innerHeight + 4);
+  });
+  await expect(card).toHaveAttribute("data-written", "", { timeout: 2000 });
 });

@@ -134,19 +134,20 @@ export function mountVerityDemo(root: HTMLElement): void {
   observer.observe(doc);
   document.fonts.addEventListener("loadingdone", place);
   // A card already on screen at load is simply there (no flash, no late paint); one further
-  // down writes itself when it is first scrolled into view.
+  // down writes itself as soon as its answer starts to enter the view, before it can be read.
   const first = panelOf(tabs[0]!);
-  if (first) {
+  const firstAnswer = first?.querySelector(".a");
+  if (first && firstAnswer) {
     const seen = new IntersectionObserver(([entry]) => {
       seen.disconnect();
       if (entry && !entry.isIntersecting) {
         pending = new IntersectionObserver(([e]) => {
           if (e?.isIntersecting) write(first);
-        }, { threshold: 0.5 });
-        pending.observe(first);
+        });
+        pending.observe(firstAnswer);
       }
     });
-    seen.observe(first);
+    seen.observe(firstAnswer);
   }
   void document.fonts.ready.then(place);
   place();

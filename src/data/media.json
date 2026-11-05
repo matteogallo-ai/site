@@ -18,11 +18,11 @@
         "frame": 110
       },
       "alt": {
-        "fr": "Image 110 de l'enregistrement live de Verity (agent claude-sonnet-4-6) : la question « What is the response time for a Priority 1 support request? », la réponse « within one (1) hour », portée à thirty (30) minutes par le Premium Support du bon de commande NW-2025-001, avec ses citations [1] et [2], et à droite le passage cité du SLA surligné parmi les huit sources retrouvées.",
+        "fr": "Image 110 de l’enregistrement live de Verity (agent claude-sonnet-4-6) : la question « What is the response time for a Priority 1 support request? », la réponse « within one (1) hour », portée à thirty (30) minutes par le Premium Support du bon de commande NW-2025-001, avec ses citations [1] et [2], et à droite le passage cité du SLA surligné parmi les huit sources retrouvées.",
         "en": "Frame 110 of Verity's live recording (agent claude-sonnet-4-6): the question \"What is the response time for a Priority 1 support request?\", the answer \"within one (1) hour\", shortened to thirty (30) minutes by the Premium Support of order form NW-2025-001, with its citations [1] and [2], and on the right the cited SLA passage highlighted among the eight retrieved sources."
       },
       "caption": {
-        "fr": "Image de l'enregistrement live de la démo (claude-sonnet-4-6) : une citation cliquée, son passage surligné.",
+        "fr": "Image de l’enregistrement live de la démo (claude-sonnet-4-6) : une citation cliquée, son passage surligné.",
         "en": "A frame of the live demo recording (claude-sonnet-4-6): a citation clicked, its passage highlighted."
       }
     },
@@ -43,11 +43,11 @@
         "frame": 351
       },
       "alt": {
-        "fr": "Dernière image de l'enregistrement de bun run demo : semver-check refuse un changement incompatible publié en 1.1.0, l'accepte en 2.0.0, un consommateur épinglé sur ^1.0.0 échoue proprement, puis les 3 tests de prompts passent sur des réponses simulées.",
+        "fr": "Dernière image de l’enregistrement de bun run demo : semver-check refuse un changement incompatible publié en 1.1.0, l’accepte en 2.0.0, un consommateur épinglé sur ^1.0.0 échoue proprement, puis les 3 tests de prompts passent sur des réponses simulées.",
         "en": "Last frame of the bun run demo recording: semver-check rejects an incompatible change released as 1.1.0, passes it as 2.0.0, a consumer pinned to ^1.0.0 fails cleanly, then the 3 prompt tests pass on mock responses."
       },
       "caption": {
-        "fr": "Dernière image de l'enregistrement de bun run demo.",
+        "fr": "Dernière image de l’enregistrement de bun run demo.",
         "en": "Last frame of the bun run demo recording."
       }
     },
@@ -69,11 +69,11 @@
         "zoom": 1.25
       },
       "alt": {
-        "fr": "Première page du briefing live q10 de Praxis, au format position-paper-corporate : le titre « Publish our updated position on Scope 3 emissions disclosure requirements. », l'option recommandée OPT-A, un risque agrégé « high », 1650 mots pour une cible de 1600, une robustesse « low » et huit critiques dont cinq matérielles, révision nécessaire.",
+        "fr": "Première page du briefing live q10 de Praxis, au format position-paper-corporate : le titre « Publish our updated position on Scope 3 emissions disclosure requirements. », l’option recommandée OPT-A, un risque agrégé « high », 1650 mots pour une cible de 1600, une robustesse « low » et huit critiques dont cinq matérielles, révision nécessaire.",
         "en": "First page of Praxis's live briefing q10, in the position-paper-corporate format: the title \"Publish our updated position on Scope 3 emissions disclosure requirements.\", recommended option OPT-A, aggregated risk \"high\", 1650 words for a 1600 target, robustness \"low\" and eight critiques, five of them material, revision needed."
       },
       "caption": {
-        "fr": "Première page du PDF d'un briefing live publié, robustesse « low » comprise.",
+        "fr": "Première page du PDF d’un briefing live publié, robustesse « low » comprise.",
         "en": "First page of a published live briefing PDF, \"low\" robustness included."
       }
     }

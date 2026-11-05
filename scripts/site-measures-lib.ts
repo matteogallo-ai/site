@@ -130,8 +130,8 @@ export function unrequested(lhr: Lhr, stems: string[]): string[] {
 /**
  * The run's transfer plus, for each image it did not request (lazy, below what the run
  * scrolled to), the heaviest AVIF variant Astro wrote for it: the format a <picture> serves
- * first in the browsers measured, at the largest width a srcset can pick. An upper bound,
- * so the budget holds whatever the visitor scrolls to.
+ * first in the browsers measured, at the largest width a srcset can pick. An upper bound for
+ * AVIF-capable browsers; one served the WebP or PNG fallback downloads more.
  */
 export function transferWithUnrequested(lhr: Lhr, missing: string[], files: { name: string; bytes: number }[]): number {
   let total = transfer(lhr, "total");

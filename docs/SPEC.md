@@ -60,6 +60,7 @@ How the site is built: stack, budgets, real measures, accessibility choices, wha
 
 ## 6. Content rules
 - No figure without a source: everything comes from `src/data/measures.json`, filled from the published artefacts of the repositories at their current commit, with link and hash.
+- No placeholder on a published page: an element of §3 whose content or target does not exist yet (the EN version, case-study links, the résumé PDF, the footer site measures, the Colophon link) is left out of the page until it does; the build fails on any placeholder.
 - No skills wall, no technology logos, no carousel, no form, no templated developer-portfolio layout.
 - Defects shown at the same level as measures.
 - Public resume: no postal address, phone or date of birth. The PDF published on the site carries only e-mail, LinkedIn, GitHub and city.
