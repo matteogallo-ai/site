@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { test } from "node:test";
-import { type DemoDocument, type DemoTrace, traceErrors, traceMatchesRun, uuid5Url } from "./traces-lib.ts";
+import { type DemoDocument, type DemoTrace, type DemoTranslations, traceErrors, traceMatchesRun, translationErrors, uuid5Url } from "./traces-lib.ts";
 
 const read = <T>(path: string) => JSON.parse(readFileSync(new URL(`../src/data/demo/${path}`, import.meta.url), "utf8")) as T;
 const sla = read<DemoDocument>("sla.json");
@@ -70,4 +70,21 @@ test("a trace must equal the run record it points to", () => {
   assert.ok(traceMatchesRun(answer, tampered).some((e) => /answer_text differs/.test(e)));
   assert.ok(traceMatchesRun(answer, { ...run, judge_model: "other" }).some((e) => /run.judge_model/.test(e)));
   assert.ok(traceMatchesRun({ ...answer, headline: "Cited in one hour" } as DemoTrace, run).some((e) => /unknown key headline/.test(e)));
+});
+
+const translations = read<DemoTranslations>("translations.json");
+
+test("each French line translates the English the trace says", () => {
+  assert.deepEqual(translationErrors(answer, translations), []);
+  assert.deepEqual(translationErrors(refusal, translations), []);
+});
+
+test("a translation of an answer the trace no longer gives is rejected", () => {
+  const t = clone(answer);
+  t.answer_text += " Edited.";
+  assert.deepEqual(translationErrors(t, translations), [`${t.example_id}: the answer translated is not the trace's answer`]);
+  assert.deepEqual(translationErrors({ ...t, example_id: "q-999" }, translations), ["q-999: no translation"]);
+  // A hand-edited file missing a field reports it instead of throwing on undefined.
+  const partial = { [t.example_id]: { answer: (translations[t.example_id] as { answer: unknown }).answer } } as unknown as DemoTranslations;
+  assert.deepEqual(translationErrors({ ...t, answer_text: answer.answer_text }, partial), [`${t.example_id}: no question translation`]);
 });

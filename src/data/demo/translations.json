@@ -1,0 +1,24 @@
+{
+  "schema": "site.demo-translations/v1",
+  "note": "French translations shown under the demo's English question and answer. Each keeps the English it translates: the build and scripts/traces.test.ts fail if a trace no longer says it.",
+  "q-010": {
+    "question": {
+      "en": "What is the response time for a Priority 1 support request?",
+      "fr": "Quel est le délai de réponse pour une demande de support de priorité 1 ?"
+    },
+    "answer": {
+      "en": "For a standard Priority 1 (critical, service unavailable) support request, the response time is within one (1) hour. If the customer has Premium Support, the Priority 1 response time is shortened to thirty (30) minutes, available 24 hours a day, seven days a week.",
+      "fr": "Pour une demande de support standard de priorité 1 (critique, service indisponible), le délai de réponse est d’une (1) heure au plus. Si le client a le Support Premium, ce délai est ramené à trente (30) minutes, disponible 24 heures sur 24, sept jours sur sept."
+    }
+  },
+  "q-078": {
+    "question": {
+      "en": "What is the response time for a Priority 4 support request?",
+      "fr": "Quel est le délai de réponse pour une demande de support de priorité 4 ?"
+    },
+    "answer": {
+      "en": "I don't know based on the provided documents.",
+      "fr": "Je ne sais pas, d’après les documents fournis."
+    }
+  }
+}

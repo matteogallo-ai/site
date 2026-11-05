@@ -6,15 +6,16 @@ rules, technique and accessibility.
 ## 1. Goal and reader
 - **Reader:** a technical lead hiring a software/AI engineer, who decides within 30 seconds.
 - **What the site does:** confirm, not sell. One screen answers who, what, the proof, and how to get in touch.
-- **Single message:** "I build complete AI products and publish their measures, defects included."
+- **Single message:** "I build AI products you can verify." Complete products, every measure published, defects included.
 - The site proves by demonstration, not by effect.
 
 ## 2. Concept: "Verity at work"
 Plain text on the left, one strong visual on the right: Verity working on a contract.
-- **The contract page:** real text from Verity's demo corpus, never invented, set in a serif like a real document. It is seen through a window of fixed height (about 360 px on wide screens), scrolled by code to the passage in play, fading out at the top and bottom; on wide screens the answer card overlaps its bottom right, so the tabs, the passage, the magnifier and the whole card fit on the first screen (tested at 1440×800 and 1280×720). On narrow screens the card follows the document.
-- **The glass magnifier** sits on the cited clause and enlarges it. Its position is **computed** from the real position of the cited words in the page (Range API / `getBoundingClientRect`), never hard-coded, and recomputed on resize. It shows only the enlarged words, on near-opaque frosted glass (fill of 85 % or more), so the lines around them never show through; their contrast is AA.
-- **The glass answer card:** question, answer, verbatim quote with its reference, checks (quote found, support vs threshold).
-- **Two modes:** "Answers, with a citation" (magnifier on the cited passage) and "Refuses, for lack of evidence" (magnifier on the closest passage retrieved, marked "judged insufficient"). Highlight, magnifier and card change with a transition. Both traces come from **real committed runs** of Verity.
+- **The contract page:** real text from Verity's demo corpus, never invented, set in a serif like a real document. It is seen through a window of fixed height (about 360 px on wide screens), scrolled by code to the passage in play, fading out at the top and bottom (on wide screens, at the bottom where the card begins); on wide screens the answer card overlaps its bottom right, so the tabs, the passage, its ring and the whole card fit on the first screen (tested at 1440×800 and 1280×720). On narrow screens the card follows the document.
+- **The spotlight:** the contract dims (still AA) and the passage in play keeps the ink, held whole inside a ring of glass, under a tag that names it; nothing is enlarged and the lines around the passage move apart, so neither the ring nor the tag covers another line. The ring's position is **computed** from the real position of the cited words in the page (Range API / `getBoundingClientRect`), never hard-coded, and recomputed on resize.
+- **The glass answer card:** the question and the answer, each with its French translation in small type marked "traduction" (faithful, reviewed, bound to the English it translates), the reference of the quote (the quote itself is shown in place on the contract), checks (quote found, support vs threshold).
+- **The frame:** the demo is framed and captioned "Démo réelle : Verity, mon agent RAG, sur un contrat de test (en anglais)". Three numbered marks follow a run: 1 the question, 2 the passage found in the contract (on the spotlight), 3 the checked answer. File names stay off the screen: a "Source du run" link carries them in its tooltip.
+- **Two modes:** "Answers, with a citation" (spotlight on the cited passage) and "Refuses, for lack of evidence" (spotlight on the closest passage retrieved, marked "judged insufficient"). Highlight, spotlight and card change with a transition. Both traces come from **real committed runs** of Verity.
 - **Colour of proof:** green (`#1E8A4C`, text `#17703D`) for everything proven (highlights, ticks). Brick red `#A8382A` for defects and refusals. Night blue `#1C2A44` as the secondary colour, taken from the portrait.
 - Watchmaking stays in the DNA without being drawn: calibre numbers (`No. 01`), monospace figures, precision.
 
@@ -23,15 +24,14 @@ Plain text on the left, one strong visual on the right: Verity working on a cont
 ### 3.1 Home `/`
 1. **Navigation:** floating glass pill. Projects · Method · About; Writing and the FR/EN selector join it once an article and the English version exist.
 2. **First screen:**
-   - Left: **portrait** (about 120 px, round, next to the name), name, status "Available · Lausanne, CH" (green dot), title "Software & AI Engineer.", the message (with "defects included" highlighted in green), buttons "See the projects" and "Write an e-mail", and the note "On the right: Verity, my RAG agent, on a demo contract".
+   - Left, in small type: the **portrait** (56 px, round), the name, "Software & AI Engineer · Lausanne" and the status "Available" (green dot). Then the headline, 68 px: "I build AI products you can verify." Under it: "Complete products, from the interface to production. Every measure is published, defects included." ("defects included" highlighted in green), and the buttons "See the projects" and "Write an e-mail".
    - Right: the Verity demo (section 2).
    - A band of 3 figures under the first screen, one of them the main defect.
 3. **Projects:** 3 cards (No. 01 Verity, No. 02 PromptLang, No. 03 Praxis), each with **a real screenshot or GIF** of the product, one sentence, 2–3 measures linked to their proof, a "Known defect" box (background tinted with at most 8 % of the defect colour, its label in the defect colour, its text in ink), the technologies in one line of text, and links Case study · Code.
-4. **Method:** 3 rules from how-i-build, each with the real incident behind it and the link. Link to the repository.
+4. **Method:** 3 rules from how-i-build as cards side by side, each with a title of at most 8 words, the real incident behind it in two lines and the link to its PR. Link to the repository.
 5. **Writing:** dated list of published articles. The section is left out while none is published.
-6. **About:** a **"Short / Detailed"** toggle between two versions of the bio. An honest path, languages, what I am looking for, résumé (PDF).
-7. **Contact:** e-mail in large type, LinkedIn, GitHub. No form.
-8. **Footer:** the site's own measures (weight, Lighthouse, build date, commit), generated by CI. Link to the Colophon.
+6. **About and contact**, one closing section on two columns. Left, the bio with a **"Short / Detailed"** toggle: an honest path, languages, what I am looking for, résumé (PDF). Right: "Un poste d'ingénieur logiciel et IA en Suisse romande ? Écrivez-moi.", the e-mail in large type, LinkedIn and GitHub as buttons. No form.
+7. **Footer:** the site's own measures (weight, Lighthouse, build date, commit), generated by CI. Link to the Colophon.
 
 ### 3.2 Case studies `/projets/<slug>`
 Problem (3 lines) · what I built (1 SVG diagram) · measures (table with intervals and baseline, linked to the artefacts) · what did not work and what I did about it · 3 decisions (ADR) · how it is built · what comes next.
@@ -50,11 +50,11 @@ How the site is built: stack, budgets, real measures, accessibility choices, wha
 - **Scale:** 12 · 14 · 16 · 21 · 28 · 44 · 68 px. Negative tracking on large headings.
 - **Colours:** paper `#F5F4F0`, ink `#111111`, graphite `#5C5C58`, rules `#DAD8D2`, proof `#1E8A4C`/`#17703D`, defect `#A8382A`, night blue `#1C2A44`. Automatic dark mode (`prefers-color-scheme`). AA contrast checked for every pair.
 - **Grid:** 12 columns, 24 px gutter, 1200 px container. Dotted vertical rules, "+" marks between sections, numbered sections.
-- **Glass:** only the navigation, the magnifier and the answer card. Frosted glass everywhere; SVG refraction as progressive enhancement (Chromium); opaque version under `prefers-reduced-transparency`. Text on glass only over a known, controlled background.
-- **Motion:** transitions last 150–400 ms, `cubic-bezier(.2,.8,.2,1)`. The magnifier glides to the clause, the answer writes itself, the ticks appear in order. Writing the answer is a reading animation, not a transition: about 35 ms a word, at most 1.5 s; a click or a key shows it whole, and only an `aria-hidden` visual layer is animated, so assistive tech reads the whole answer from the start. Everything is cut under `prefers-reduced-motion` (final state shown at once).
+- **Glass:** only the navigation, the spotlight's ring and the answer card. Frosted glass everywhere; SVG refraction as progressive enhancement (Chromium); opaque version under `prefers-reduced-transparency`. Text on glass only over a known, controlled background.
+- **Motion:** transitions last 150–400 ms, `cubic-bezier(.2,.8,.2,1)`. The spotlight glides to the clause, the answer writes itself, the ticks appear in order. Writing the answer is a reading animation, not a transition: about 35 ms a word, at most 1.5 s; a click or a key shows it whole, and only an `aria-hidden` visual layer is animated, so assistive tech reads the whole answer from the start. The three figures of the band count up once as they come into view (700 ms, an `aria-hidden` copy over the real value); the sections below the first screen come into place as they scroll into view (CSS scroll-driven animation, where supported). Everything is cut under `prefers-reduced-motion` (final state shown at once).
 
 ## 5. Signature details
-1. The Verity demo with the magnifier computed on the citation.
+1. The Verity demo with the spotlight computed on the citation.
 2. Every figure is a link to its proof (the artefact path shown on hover and focus).
 3. The footer that measures itself, and the Colophon page.
 
@@ -71,10 +71,10 @@ How the site is built: stack, budgets, real measures, accessibility choices, wha
 French at `/`, English at `/en/`, translated by hand, correct `hreflang`.
 
 ## 8. Technique
-- **Astro**, static, zero JS by default. JS islands: the Verity demo, the Short/Detailed toggle.
+- **Astro**, static, zero JS by default. JS islands: the Verity demo, the Short/Detailed toggle, the band's counters.
 - **Cloudflare Pages** through its Git integration (no token). Address: `matteogallo.pages.dev` (fallback: `matteo-gallo.pages.dev`); custom domain `matteogallo.ch`.
 - **Blocking budgets in CI:** home ≤ 200 KB transferred excluding deferred screenshots, measured with gzip (stricter than the brotli Cloudflare serves, on purpose); fonts ≤ 90 000 bytes on any page; LCP < 1.5 s; CLS < 0.05; Lighthouse ≥ 98 on all 4 categories; 0 axe violation.
-- **CI:** build, typecheck, links, Lighthouse CI, axe, budgets, magnifier test at 3 widths, generation of `site-measures.json`.
+- **CI:** build, typecheck, links, Lighthouse CI, axe, budgets, spotlight position test at 3 widths, generation of `site-measures.json`.
 - Portrait: `src/assets/matteo.jpg` (800 × 800), served as AVIF/WebP at the sizes used.
 - Metadata: Open Graph (image generated from the first screen), favicon, sitemap, robots. No tracker.
 

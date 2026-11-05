@@ -19,7 +19,7 @@ src/styles/contrast.ts   WCAG contrast ratio + tokens.css reader (tested by cont
 src/styles/global.css    base element styles
 src/layouts/Base.astro   document shell: fonts (serif only with `serif` prop), metadata, skip link
 src/pages/               one file per route
-src/components/          VerityDemo (contract, magnifier, tabs, cards), Figure (a measure with its proof),
+src/components/          VerityDemo (contract, spotlight, tabs, cards), Figure (a measure with its proof),
                          Glass (SVG refraction filters, Chromium only), Projects, Bio
 src/lib/                 document.ts (Markdown blocks keeping source offsets), measures.ts (figures by id)
 src/scripts/             client code of the demo: lens.ts (geometry), typing.ts (answer writing), verity-demo.ts (DOM)
@@ -37,9 +37,10 @@ scripts/traces-lib.ts    rules for demo traces: offsets select the quote, copy e
 scripts/check-sources.ts fetches each source at its pinned commit and checks the evidence (network)
 lighthouserc.cjs         blocking budgets from SPEC §8 (scores, LCP, CLS, transferred bytes)
 tests/                   Playwright on every built page: axe (light + dark), keyboard, glyph coverage;
-                         magnifier.spec.ts: lens centre within 8 px of its words at 375/1024/1440, tablist keyboard;
+                         magnifier.spec.ts: spotlight ring within 8 px of its words at 375/1024/1440, no other line under
+                         the ring or its tag, dimming, tablist keyboard;
                          glass-motion.spec.ts: answer writing, glass refracted / frosted / opaque
-                         first-screen.spec.ts: tabs, passage, lens and whole card in view at 1440×800 and 1280×720
+                         first-screen.spec.ts: tabs, passage, ring and whole card in view at 1440×800 and 1280×720
 scripts/site-measures*   Lighthouse CI output -> site-measures.json (weight, scores, date, commit)
 scripts/built-pages.ts   list of built HTML pages, shared by the axe tests and site-measures
 linkinator.config.json   link check; the production origin is skipped because the crawl

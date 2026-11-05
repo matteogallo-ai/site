@@ -20,7 +20,6 @@ body {
   line-height: 1.55;
   /* Each subset ships only the weights it needs: a missing weight or italic must not be faked. */
   font-synthesis: none;
-  font-variant-numeric: tabular-nums;
 }
 
 h1,
@@ -119,7 +118,7 @@ a {
   }
 }
 
-/* Glass (SPEC §4): only the navigation, the magnifier and the answer card. Frosted everywhere;
+/* Glass (SPEC §4): only the navigation, the spotlight ring and the answer card. Frosted everywhere;
    refracted where the engine renders SVG filters in backdrop-filter (Glass.astro); the tokens
    make it opaque under prefers-reduced-transparency. */
 .glass {
@@ -137,5 +136,70 @@ a {
   :root[data-refraction] .glass {
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
+  }
+}
+
+/* A tooltip shown on hover and keyboard focus of its .tip-host, dismissed with Escape
+   (src/scripts/tips.ts). It is positioned against the host's block (the cell, list item or
+   paragraph around it), not the host: it can then never be wider than that block, and a host
+   near the right edge cannot widen the page. */
+.tip {
+  position: absolute;
+  left: 0;
+  top: calc(100% + 0.35rem);
+  z-index: 2;
+  width: max-content;
+  max-width: 100%;
+  padding: 0.3rem 0.5rem;
+  font-size: var(--step-12);
+  line-height: 1.4;
+  color: var(--ink);
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  overflow-wrap: anywhere;
+  /* display, not visibility: a hidden box would still widen the page on narrow screens. */
+  display: none;
+}
+
+.tip-host:is(:hover, :focus-visible):not([data-dismissed]) .tip {
+  display: block;
+}
+
+/* A figure counting up (src/scripts/count.ts): its own text stays in place and keeps the line's
+   width, unpainted; the aria-hidden copy over it counts, as wide as the figure (pre keeps the
+   spaces that pad the number), so nothing in it moves but the digits. */
+.value[data-counting] {
+  position: relative;
+  -webkit-text-fill-color: transparent;
+}
+
+.count-layer {
+  position: absolute;
+  left: 0;
+  top: 0;
+  white-space: pre;
+  -webkit-text-fill-color: currentColor;
+}
+
+/* Sections come into place as they scroll into view, where the engine ties animations to the
+   scroll; elsewhere, and under reduced motion, they are simply there. */
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    /* The timeline goes through a variable: the minifier otherwise folds it into an animation
+       shorthand ("animation: linear both reveal view()") that Chromium rejects whole. */
+    .reveal {
+      --reveal-timeline: view();
+      animation: reveal linear both;
+      animation-timeline: var(--reveal-timeline);
+      animation-range: entry 0% entry 30%;
+    }
+  }
+}
+
+@keyframes reveal {
+  from {
+    opacity: 0;
+    translate: 0 1.5rem;
   }
 }

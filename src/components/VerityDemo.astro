@@ -2,7 +2,8 @@
 import sla from "../data/demo/sla.json";
 import answerData from "../data/demo/answer.json";
 import refusalData from "../data/demo/refusal.json";
-import type { DemoTrace } from "../../scripts/traces-lib.ts";
+import translationsData from "../data/demo/translations.json";
+import { type DemoTrace, type DemoTranslations, translationErrors } from "../../scripts/traces-lib.ts";
 import { firstListIn, toBlocks, type Span } from "../lib/document.ts";
 import { decimal } from "../lib/measures.ts";
 
@@ -11,7 +12,7 @@ const refusal = refusalData as DemoTrace;
 const slaPath = sla.source.path;
 const slaId = Object.entries(answer.documents).find(([, path]) => path === slaPath)![0];
 
-// The quote the magnifier goes to is the citation on the page's document; the other one is a reference.
+// The quote the spotlight goes to is the citation on the page's document; the other one is a reference.
 const cited = answer.citations.find((c) => c.document_id === slaId)!;
 const elsewhere = answer.citations.filter((c) => c.document_id !== slaId);
 const closest = refusal.hits_used[0]!.chunk;
@@ -30,14 +31,38 @@ const blocks = toBlocks(sla.text, [
 
 const sectionOf = (section: string) => section.split(" > ").at(-1)!;
 const fileOf = (path: string) => path.split("/").at(-1)!;
+// "3. Support Response Times" -> "3": the card names sections by number to stay on one line.
+const numberOf = (section: string) => {
+  const n = /^(\d+)\./.exec(section)?.[1];
+  if (!n) throw new Error(`section without a number: ${section}`);
+  return n;
+};
 const chunkOf = (chunkId: string) => answer.hits_used.find((h) => h.chunk.id === chunkId)?.chunk;
 const runFile = fileOf(answer.source.path);
+if (refusal.source.url !== answer.source.url) throw new Error("the two demo traces come from different runs: one source link cannot name both");
+
+// The French lines translate exactly what each trace says (scripts/traces-lib.ts).
+const translations = translationsData as DemoTranslations;
+const untranslated = [...translationErrors(answer, translations), ...translationErrors(refusal, translations)];
+if (untranslated.length > 0) throw new Error(untranslated.join("\n"));
+const fr = (trace: DemoTrace) => translations[trace.example_id] as { question: { fr: string }; answer: { fr: string } };
+
+// Readers get what a cited document is, not its file name; an unnamed document fails the build.
+const NAMES: Record<string, string> = { "sla.md": "contrat SLA", "order_form_northwind_2025.pdf": "bon de commande Northwind" };
+const nameOf = (path: string) => {
+  const name = NAMES[fileOf(path)];
+  if (!name) throw new Error(`no reader-facing name for ${path}`);
+  return name;
+};
 ---
 
 <div class="demo" data-verity-demo data-mode="answer">
+  <div class="head">
+  <p class="caption">Démo réelle : Verity, mon agent RAG, sur un contrat de test (en anglais)</p>
   <div class="tabs" role="tablist" aria-label="Mode de Verity">
     <button type="button" role="tab" id="verity-tab-answer" aria-controls="verity-panel-answer" aria-selected="true" data-mode="answer">Répond, en citant</button>
     <button type="button" role="tab" id="verity-tab-refusal" aria-controls="verity-panel-refusal" aria-selected="false" tabindex="-1" data-mode="refusal">Refuse, faute de preuve</button>
+  </div>
   </div>
 
   <div class="window">
@@ -46,9 +71,9 @@ const runFile = fileOf(answer.source.path);
       {
         blocks.map((b) =>
           b.kind === "ul" ? (
-            <ul>
+            <ul data-holds={b.items.some((item) => item.some((s: Span) => s.marks.includes("refusal"))) ? "refusal" : undefined}>
               {b.items.map((item) => (
-                <li>
+                <li data-holds={item.some((s: Span) => s.marks.includes("answer")) ? "answer" : undefined}>
                   {item.map((s: Span) => (
                     <span data-o={s.start} data-mark={s.marks.join(" ") || undefined}>{s.text}</span>
                   ))}
@@ -56,7 +81,7 @@ const runFile = fileOf(answer.source.path);
               ))}
             </ul>
           ) : (
-            <p class={b.kind === "p" ? undefined : `heading ${b.kind}`}>
+            <p class={b.kind === "p" ? undefined : `heading ${b.kind}`} data-holds={b.spans.some((s: Span) => s.marks.includes("answer")) ? "answer" : undefined}>
               {b.spans.map((s: Span) => (
                 <span data-o={s.start} data-mark={s.marks.join(" ") || undefined}>{s.text}</span>
               ))}
@@ -65,31 +90,23 @@ const runFile = fileOf(answer.source.path);
         )
       }
     </article>
-    <div class="lens" data-lens hidden aria-hidden="true">
-      <div class="lens-glass">
-        <div class="lens-view" data-lens-view></div>
-      </div>
-    </div>
+    <div class="lens" data-lens hidden aria-hidden="true"><div class="ring glass"></div></div>
     <p class="lens-tag" data-lens-tag hidden aria-hidden="true">
-      <span data-tag-answer>Citation</span><span class="defect" data-tag-refusal>Jugé insuffisant</span>
+      <span class="n">2</span><span data-tag-answer>Le passage retrouvé dans le contrat</span><span data-tag-refusal>Le passage le plus proche, jugé insuffisant</span>
     </p>
     </div>
   </div>
 
   <section class="card glass" role="tabpanel" id="verity-panel-answer" aria-labelledby="verity-tab-answer" tabindex="0">
-    <p class="k">Question · {answer.example_id}</p>
+    <p class="step"><span class="n">1</span> La question</p>
     <p class="q" lang="en">{answer.question}</p>
-    <p class="k">Réponse</p>
+    <p class="tr"><span class="tr-k">traduction</span> {fr(answer).question.fr}</p>
+    <p class="step"><span class="n">3</span> La réponse, vérifiée</p>
     <p class="a" lang="en"><span class="a-text">{answer.answer_text}</span></p>
-    <blockquote class="serif" lang="en">{cited.quote}</blockquote>
-    <p class="ref mono" lang="en">{fileOf(slaPath)} · {sectionOf(chunkOf(cited.chunk_id)!.section)}</p>
-    {
-      elsewhere.map((c) => (
-        <p class="ref mono" lang="en">
-          + {fileOf(answer.documents[c.document_id]!)} · {sectionOf(chunkOf(c.chunk_id)!.section)}
-        </p>
-      ))
-    }
+    <p class="tr tr-a"><span class="tr-k">traduction</span> {fr(answer).answer.fr}</p>
+    <p class="ref">
+      Cité{"\u00A0"}: {[{ path: slaPath, chunk: cited.chunk_id }, ...elsewhere.map((c) => ({ path: answer.documents[c.document_id]!, chunk: c.chunk_id }))].map((d) => `${nameOf(d.path)} (section ${numberOf(sectionOf(chunkOf(d.chunk)!.section))})`).join(", ")}
+    </p>
     <ul class="checks">
       <li><span class="tick mono" aria-hidden="true">✓</span> Citation retrouvée mot pour mot dans le document</li>
       <li>
@@ -101,17 +118,24 @@ const runFile = fileOf(answer.source.path);
   </section>
 
   <section class="card glass refused" role="tabpanel" id="verity-panel-refusal" aria-labelledby="verity-tab-refusal" tabindex="0" hidden>
-    <p class="k">Question · {refusal.example_id}</p>
+    <p class="step"><span class="n">1</span> La question</p>
     <p class="q" lang="en">{refusal.question}</p>
-    <p class="k">Réponse</p>
+    <p class="tr"><span class="tr-k">traduction</span> {fr(refusal).question.fr}</p>
+    <p class="step"><span class="n">3</span> La réponse : un refus, vérifié</p>
     <p class="a" lang="en"><span class="a-text">{refusal.answer_text}</span></p>
-    <p class="verdict">Refus du modèle · confiance <span class="mono">{decimal(refusal.confidence_score, 2, "fr")}</span></p>
-    <p class="ref">Passage le plus proche{"\u00A0"}: <span class="mono" lang="en">{fileOf(slaPath)} · {sectionOf(closest.section)}</span>, jugé insuffisant</p>
+    <p class="tr tr-a"><span class="tr-k">traduction</span> {fr(refusal).answer.fr}</p>
+    <p class="verdict">Refus du modèle, confiance <span class="mono">{decimal(refusal.confidence_score, 2, "fr")}</span></p>
+    <p class="ref">Passage le plus proche{"\u00A0"}: {nameOf(slaPath)} (section {numberOf(sectionOf(closest.section))}), jugé insuffisant</p>
     <p class="why" lang="en">{refusal.refusal_rationale}</p>
   </section>
 
-  <p class="source mono">
-    <a href={sla.source.url}>{fileOf(slaPath)}</a> · run <a href={answer.source.url}>{runFile}</a>
+  <p class="source">
+    <a class="tip-host" href={answer.source.url} aria-describedby="verity-run-tip">
+      Source du run
+      <span class="tip" id="verity-run-tip" role="tooltip">
+        Run <span class="mono">{runFile}</span> de Verity (questions {answer.example_id} et {refusal.example_id}), sur le contrat <span class="mono">{fileOf(slaPath)}</span>
+      </span>
+    </a>
   </p>
 </div>
 
@@ -138,13 +162,65 @@ const runFile = fileOf(answer.source.path);
 </noscript>
 
 <script>
+  import { dismissibleTips } from "../scripts/tips.ts";
   import { mountVerityDemo } from "../scripts/verity-demo.ts";
+  dismissibleTips();
   for (const root of document.querySelectorAll<HTMLElement>("[data-verity-demo]")) mountVerityDemo(root);
 </script>
 
 <style>
+  /* The demo is framed as an exhibit: a caption says what it is, the frame where it ends. */
   .demo {
     position: relative;
+    padding: 1rem;
+    border: 1px solid var(--rule);
+    border-radius: 20px;
+  }
+
+  .caption {
+    margin: 0 0 0.75rem;
+    font-size: var(--step-14);
+    color: var(--graphite);
+  }
+
+  /* The three steps of a run, in the order Verity takes them: the question, the passage it
+     retrieves (on the contract, by the spotlight), the answer it checks. */
+  .step {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    margin-top: 0.75rem !important;
+    font-size: var(--step-12);
+    font-weight: 600;
+  }
+
+  .step:first-child {
+    margin-top: 0 !important;
+  }
+
+  .n {
+    display: inline-grid;
+    flex: none;
+    place-items: center;
+    width: 1.25rem;
+    height: 1.25rem;
+    border-radius: 50%;
+    background: var(--ink);
+    color: var(--paper);
+    font-size: var(--step-12);
+    font-weight: 600;
+    line-height: 1;
+  }
+
+  .tr {
+    margin-top: 0.2rem !important;
+    font-size: var(--step-12);
+    color: var(--graphite);
+  }
+
+  .tr-k {
+    margin-right: 0.25rem;
+    font-weight: 600;
   }
 
   .tabs {
@@ -189,7 +265,8 @@ const runFile = fileOf(answer.source.path);
     /* Read by verity-demo.ts: where the passage goes, and what the tag above the lens keeps clear of. */
     --target-at: 0.5;
     --fade: 40px;
-    --tag-gap: 10px;
+    --tag-gap: 14px;
+    --room: 1.25rem;
     mask-image: linear-gradient(to bottom, transparent, #000 var(--fade), #000 calc(100% - var(--fade)), transparent);
   }
 
@@ -237,31 +314,55 @@ const runFile = fileOf(answer.source.path);
     list-style-type: "–\00A0";
   }
 
+  /* Spotlight: once the script runs, the contract steps back and the passage in play keeps the
+     ink. --dimmed still meets AA on the sheet (contrast.test.ts): the words around stay legible. */
+  .demo[data-lit] .doc {
+    color: var(--dimmed);
+  }
+
+  .doc [data-o] {
+    transition: color var(--dur-slow) var(--ease);
+  }
+
+  /* The lit passage moves its neighbours apart, so the glass ring around it (PAD + --ring) lies
+     over blank space, never over another line. The blocks are marked at build time (data-holds), so no :has() is
+     needed. The margin must be final when the lens measures the words: no transition, not even
+     the 0.01ms one the reduced-motion rule in global.css gives every property, which left the
+     lens 48 px off its words for a frame. */
+  .doc :is(p, li, ul) {
+    transition-property: none;
+  }
+
+  .demo[data-lit][data-mode="answer"] [data-holds="answer"],
+  .demo[data-lit][data-mode="refusal"] [data-holds="refusal"] {
+    /* Above, room for the tag too: it names the passage without hiding the line before it. */
+    margin-block: calc(var(--room) + 2.25rem) var(--room);
+  }
+
   /* Highlight follows the mode; the spans were cut at the cited offsets at build time. */
   .demo[data-mode="answer"] [data-mark~="answer"] {
+    color: var(--ink);
     background: var(--proof-wash);
     box-shadow: 0 2px 0 var(--proof);
   }
 
   .demo[data-mode="refusal"] [data-mark~="refusal"] {
+    color: var(--ink);
     background: var(--defect-wash);
     box-shadow: 0 2px 0 var(--defect);
   }
 
+  /* The lens box holds the passage; its glass ring is drawn --ring wide outside it. */
   .lens {
+    --ring: 7px;
     position: absolute;
     left: 0;
     top: 0;
-    overflow: hidden;
-    border-radius: 14px;
-    /* Frosted, near-opaque: the words behind blur out of the way of the enlarged ones. */
-    background: var(--lens-fill);
-    backdrop-filter: blur(12px);
-    box-shadow:
-      0 0 0 1px var(--glass-edge),
-      0 0 0 6px var(--glass-fill),
-      0 0 0 7px var(--glass-edge),
-      0 18px 40px -16px rgb(17 17 17 / 0.45);
+    box-sizing: content-box;
+    margin: calc(-1 * var(--ring));
+    padding: var(--ring);
+    border-radius: 16px;
+    box-shadow: 0 14px 30px -18px rgb(17 17 17 / 0.5);
     transition:
       left var(--dur-slow) var(--ease),
       top var(--dur-slow) var(--ease),
@@ -270,57 +371,37 @@ const runFile = fileOf(answer.source.path);
     pointer-events: none;
   }
 
-  /* The rim of the glass bends the enlarged words (Glass.astro); the shadow ring stays on .lens. */
-  .lens-glass {
+  /* Glass only in the ring: the mask cuts out the middle, so the passage stays sharp while the
+     ring bends and frosts the dimmed lines around it (.glass, global.css). */
+  .ring {
     position: absolute;
     inset: 0;
-    overflow: hidden;
+    padding: var(--ring);
+    border: 1px solid var(--glass-edge);
     border-radius: inherit;
+    mask-image: linear-gradient(#000 0 0), linear-gradient(#000 0 0);
+    mask-clip: content-box, border-box;
+    mask-composite: exclude;
   }
 
-  :global(:root[data-refraction]) .lens-glass {
-    filter: url(#lens-refraction);
-  }
-
-  /* The copy moves with the lens: lens position + copy offset stays constant while it glides. */
-  .lens-view {
-    position: absolute;
-    padding: 1.5rem 1.5rem 1.25rem;
-    transition:
-      left var(--dur-slow) var(--ease),
-      top var(--dur-slow) var(--ease),
-      transform var(--dur-slow) var(--ease);
-  }
-
-  /* The lens enlarges its words only: the rest of the copy would overlap the lines around. */
-  .lens-view :global(*) {
-    visibility: hidden;
-  }
-
-  .demo[data-mode="answer"] .lens-view :global([data-mark~="answer"]),
-  .demo[data-mode="refusal"] .lens-view :global([data-mark~="refusal"]) {
-    visibility: visible;
-  }
-
-  /* Above the lens, never over the words it enlarges. */
+  /* Above the lens, never over the passage. */
   .lens-tag {
     position: absolute;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
     margin: 0;
     transform: translate(-100%, calc(-100% - var(--tag-gap)));
-    padding: 0.05rem 0.45rem;
+    padding: 0.15rem 0.55rem 0.15rem 0.2rem;
     box-shadow: 0 0 0 1px var(--rule);
     transition:
       left var(--dur-slow) var(--ease),
       top var(--dur-slow) var(--ease);
     font-size: var(--step-12);
     white-space: nowrap;
-    color: var(--proof-text);
+    color: var(--ink);
     background: var(--paper);
-    border-radius: 4px;
-  }
-
-  .lens-tag .defect {
-    color: var(--defect);
+    border-radius: 999px;
   }
 
   .demo[data-mode="answer"] [data-tag-refusal],
@@ -328,11 +409,12 @@ const runFile = fileOf(answer.source.path);
     display: none;
   }
 
+  /* The tooltip is placed against this line (global .tip), so it is never wider than the demo. */
   .source {
+    position: relative;
     margin: 0.75rem 0 0;
     font-size: var(--step-12);
     color: var(--graphite);
-    overflow-wrap: anywhere;
   }
 
   .source a {
@@ -365,31 +447,13 @@ const runFile = fileOf(answer.source.path);
     margin: 0;
   }
 
-  .k {
-    margin-top: 0.75rem !important;
-    font-size: var(--step-12);
-    color: var(--graphite);
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-  }
-
-  .k:first-child {
-    margin-top: 0 !important;
-  }
-
   .q,
   .a {
     font-size: var(--step-16);
   }
 
-  blockquote {
-    margin: 0.75rem 0 0.25rem;
-    padding-left: 0.75rem;
-    border-left: 3px solid var(--proof);
-    font-size: var(--step-16);
-  }
-
   .ref {
+    margin-top: 0.6rem !important;
     font-size: var(--step-12);
     color: var(--graphite);
     overflow-wrap: anywhere;
@@ -418,10 +482,12 @@ const runFile = fileOf(answer.source.path);
   }
 
   .card[data-writing] .a-text,
+  .card[data-writing] .tr-a,
   .card[data-writing] .checks li {
     opacity: 0;
   }
 
+  .card[data-written] .tr-a,
   .card[data-written] .checks li {
     animation: card-in var(--dur-base) var(--ease) backwards;
   }
@@ -456,20 +522,29 @@ const runFile = fileOf(answer.source.path);
     color: var(--graphite);
   }
 
-  @media (prefers-reduced-transparency: reduce) {
-    :global(:root[data-refraction]) .lens-glass {
-      filter: none;
-    }
-  }
-
   /* Wide screens: the answer card overlaps the bottom right of the window, so the question,
-     its passage under the lens and the answer fit on the first screen together. */
+     its passage in the spotlight and the answer fit on the first screen together. */
   @media (min-width: 64rem) {
     /* The card covers the lower half of the window: the passage is centred in the upper part,
        and the padding lets the end of the contract scroll up there too. */
+    /* Below 80rem the passage wraps on more lines: a taller window keeps it above the card. */
+    .demo {
+      --window-height: 25rem;
+      --card-overlap: 11.5rem;
+    }
+
+    @media (min-width: 80rem) {
+      .demo {
+        --window-height: 22.5rem;
+      }
+    }
+
+    /* The contract is opaque down to where the card begins, then fades out under it: the strip
+       of it left of the card would show only cut words. */
     .sheet {
-      height: 22.5rem;
+      height: var(--window-height);
       padding-bottom: 12rem;
+      mask-image: linear-gradient(to bottom, transparent, #000 var(--fade), #000 calc(var(--window-height) - var(--card-overlap)), transparent calc(var(--window-height) - var(--card-overlap) + var(--fade) / 2));
       /* Wide screens only: on a phone the window spans the screen, and a swipe on it must still
          scroll the page once the window is at its end. */
       overscroll-behavior: contain;
@@ -483,18 +558,39 @@ const runFile = fileOf(answer.source.path);
     .card {
       position: relative;
       z-index: 1;
-      margin: -11.5rem 0 0 20%;
+      margin: calc(-1 * var(--card-overlap)) 0 0 10%;
       padding: 1rem 1.25rem;
     }
 
     .q,
-    .a,
-    blockquote {
+    .a {
       font-size: var(--step-14);
     }
 
-    .k {
-      margin-top: 0.5rem !important;
+    .demo {
+      padding: 0.75rem 1.25rem 1.25rem;
+    }
+
+    /* The caption and the tabs share a row: the height goes to the contract and the card. */
+    .head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem 1rem;
+      margin-bottom: 0.6rem;
+    }
+
+    .head .caption,
+    .head .tabs {
+      margin: 0;
+    }
+
+    .head .caption {
+      flex: 1;
+    }
+
+    .step {
+      margin-top: 0.6rem !important;
     }
   }
 </style>
