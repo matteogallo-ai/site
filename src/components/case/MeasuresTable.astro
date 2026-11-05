@@ -33,10 +33,11 @@ const ci = (id: string, noInterval?: string) => {
   const m = measure(id);
   if (m.ci95 && noInterval) throw new Error(`${id} has an interval: drop noInterval`);
   if (!m.ci95 && !noInterval) throw new Error(`${id} has no interval: say why in noInterval`);
-  return m.ci95 ? { text: interval(m, "fr"), measured: true } : { text: noInterval!, measured: false };
+  return m.ci95 ? { text: interval(m), measured: true } : { text: noInterval!, measured: false };
 };
 const cells = rows.map((r) => {
   if (baseline && !r.base) throw new Error(`${r.id}: a comparison row needs its baseline measure`);
+  if (r.base && !baseline) throw new Error(`${r.id}: a baseline measure needs the table's baseline column`);
   return { ...r, ownLabel: !r.label, label: r.label ?? measure(r.id).label.fr, ci: ci(r.id, r.noInterval), baseCi: r.base ? ci(r.base) : undefined };
 });
 ---
@@ -49,9 +50,9 @@ const cells = rows.map((r) => {
       <tr>
         <th scope="col">Mesure</th>
         <th scope="col">{ours}</th>
-        <th scope="col">IC 95&nbsp;%</th>
+        <th scope="col" class="ci-head">IC 95&nbsp;%</th>
         {baseline && <th scope="col">{baseline}</th>}
-        {baseline && <th scope="col">IC 95&nbsp;%</th>}
+        {baseline && <th scope="col" class="ci-head">IC 95&nbsp;%</th>}
         <th scope="col">Lecture</th>
       </tr>
     </thead>
