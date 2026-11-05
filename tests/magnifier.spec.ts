@@ -52,12 +52,29 @@ async function centres(page: Page, text: string) {
       textRects.push(...[...r.getClientRects()].filter((x) => x.width > 0));
     }
     const t = union(textRects);
-    const l = document.querySelector("[data-lens]")!.getBoundingClientRect();
+    const lensEl = document.querySelector("[data-lens]")!;
+    const l = lensEl.getBoundingClientRect();
+    const tag = document.querySelector("[data-verity-demo] .lens-tag")!.getBoundingClientRect();
+    // The glass ring is drawn inside the lens box, --ring wide: the words must sit inside it, clear of the glass.
+    const ring = Number.parseFloat(getComputedStyle(lensEl).getPropertyValue("--ring"));
+    const inner = new DOMRect(l.left + ring, l.top + ring, l.width - 2 * ring, l.height - 2 * ring);
+    // Every other line of the contract: none may lie under the ring, or the glass would cover it.
+    const mode = document.querySelector("[data-verity-demo]")!.getAttribute("data-mode")!;
+    const others = [...doc.querySelectorAll(`[data-o]:not([data-mark~="${mode}"])`)].flatMap((span) => {
+      const r = document.createRange();
+      r.selectNodeContents(span);
+      return [...r.getClientRects()].filter((x) => x.width > 0 && span.textContent!.trim() !== "");
+    });
     const box = (r: DOMRect) => ({ left: r.left, top: r.top, right: r.right, bottom: r.bottom, width: r.width });
+    const overlaps = (a: DOMRect, b: DOMRect) => a.left < b.right && b.left < a.right && a.top < b.bottom && b.top < a.bottom;
     return {
       target: { x: t.left + t.width / 2, y: t.top + t.height / 2 },
       lens: { x: l.left + l.width / 2, y: l.top + l.height / 2 },
-      boxes: { target: box(t), lens: box(l) },
+      boxes: { target: box(t), lens: box(l), inner: box(inner) },
+      ring,
+      covered: others.filter((o) => overlaps(o, l)).map((o) => box(o)),
+      // The tag that names the passage sits above the ring: it must not hide a line either.
+      underTag: others.filter((o) => overlaps(o, tag)).map((o) => box(o)),
     };
   }, text);
 }
@@ -68,7 +85,7 @@ const distance = (a: { x: number; y: number }, b: { x: number; y: number }) => M
 
 for (const width of [375, 1024, 1440]) {
   for (const mode of ["answer", "refusal"] as const) {
-    test(`magnifier: ${mode} at ${width}px is centred on its words and holds them whole`, async ({ page }) => {
+    test(`magnifier: ${mode} at ${width}px is centred on its words, holds them whole, and neither ring nor tag covers another line`, async ({ page }) => {
       await page.setViewportSize({ width, height: 900 });
       await page.emulateMedia({ reducedMotion: "reduce" });
       await page.goto("/");
@@ -80,11 +97,15 @@ for (const width of [375, 1024, 1440]) {
       await expect.poll(async () => distance(...pair(await centres(page, TARGETS[mode])))).toBeLessThan(MAX_DISTANCE);
       const c = await centres(page, TARGETS[mode]);
       expect(distance(c.lens, c.target)).toBeLessThan(MAX_DISTANCE);
-      // The words are whole inside the lens, first and last letters included, at every width.
-      expect(c.boxes.lens.top).toBeLessThanOrEqual(c.boxes.target.top);
-      expect(c.boxes.lens.bottom).toBeGreaterThanOrEqual(c.boxes.target.bottom);
-      expect(c.boxes.lens.left).toBeLessThanOrEqual(c.boxes.target.left);
-      expect(c.boxes.lens.right).toBeGreaterThanOrEqual(c.boxes.target.right);
+      // The words are whole inside the ring, first and last letters included, at every width,
+      // and no other line of the contract lies under the glass.
+      expect(c.ring).toBeGreaterThan(0);
+      expect(c.boxes.inner.top).toBeLessThanOrEqual(c.boxes.target.top);
+      expect(c.boxes.inner.bottom).toBeGreaterThanOrEqual(c.boxes.target.bottom);
+      expect(c.boxes.inner.left).toBeLessThanOrEqual(c.boxes.target.left);
+      expect(c.boxes.inner.right).toBeGreaterThanOrEqual(c.boxes.target.right);
+      expect(c.covered).toEqual([]);
+      expect(c.underTag).toEqual([]);
       // No horizontal scroll: an overhanging lens is clipped, not added to the page width.
       expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);
     });

@@ -71,9 +71,9 @@ const nameOf = (path: string) => {
       {
         blocks.map((b) =>
           b.kind === "ul" ? (
-            <ul>
+            <ul data-holds={b.items.some((item) => item.some((s: Span) => s.marks.includes("refusal"))) ? "refusal" : undefined}>
               {b.items.map((item) => (
-                <li>
+                <li data-holds={item.some((s: Span) => s.marks.includes("answer")) ? "answer" : undefined}>
                   {item.map((s: Span) => (
                     <span data-o={s.start} data-mark={s.marks.join(" ") || undefined}>{s.text}</span>
                   ))}
@@ -81,7 +81,7 @@ const nameOf = (path: string) => {
               ))}
             </ul>
           ) : (
-            <p class={b.kind === "p" ? undefined : `heading ${b.kind}`}>
+            <p class={b.kind === "p" ? undefined : `heading ${b.kind}`} data-holds={b.spans.some((s: Span) => s.marks.includes("answer")) ? "answer" : undefined}>
               {b.spans.map((s: Span) => (
                 <span data-o={s.start} data-mark={s.marks.join(" ") || undefined}>{s.text}</span>
               ))}
@@ -98,10 +98,10 @@ const nameOf = (path: string) => {
   </div>
 
   <section class="card glass" role="tabpanel" id="verity-panel-answer" aria-labelledby="verity-tab-answer" tabindex="0">
-    <p class="step"><span class="n" aria-hidden="true">1</span>La question</p>
+    <p class="step"><span class="n">1</span>La question</p>
     <p class="q" lang="en">{answer.question}</p>
     <p class="tr"><span class="tr-k">traduction</span> {fr(answer).question.fr}</p>
-    <p class="step"><span class="n" aria-hidden="true">3</span>La réponse, vérifiée</p>
+    <p class="step"><span class="n">3</span>La réponse, vérifiée</p>
     <p class="a" lang="en"><span class="a-text">{answer.answer_text}</span></p>
     <p class="tr tr-a"><span class="tr-k">traduction</span> {fr(answer).answer.fr}</p>
     <p class="ref">
@@ -118,10 +118,10 @@ const nameOf = (path: string) => {
   </section>
 
   <section class="card glass refused" role="tabpanel" id="verity-panel-refusal" aria-labelledby="verity-tab-refusal" tabindex="0" hidden>
-    <p class="step"><span class="n" aria-hidden="true">1</span>La question</p>
+    <p class="step"><span class="n">1</span>La question</p>
     <p class="q" lang="en">{refusal.question}</p>
     <p class="tr"><span class="tr-k">traduction</span> {fr(refusal).question.fr}</p>
-    <p class="step"><span class="n" aria-hidden="true">3</span>La réponse : un refus, vérifié</p>
+    <p class="step"><span class="n">3</span>La réponse : un refus, vérifié</p>
     <p class="a" lang="en"><span class="a-text">{refusal.answer_text}</span></p>
     <p class="tr tr-a"><span class="tr-k">traduction</span> {fr(refusal).answer.fr}</p>
     <p class="verdict">Refus du modèle, confiance <span class="mono">{decimal(refusal.confidence_score, 2, "fr")}</span></p>
@@ -220,9 +220,7 @@ const nameOf = (path: string) => {
 
   .tr-k {
     margin-right: 0.25rem;
-    padding: 0 0.3rem;
-    border: 1px solid var(--rule);
-    border-radius: 4px;
+    font-weight: 600;
   }
 
   .tabs {
@@ -268,6 +266,7 @@ const nameOf = (path: string) => {
     --target-at: 0.5;
     --fade: 40px;
     --tag-gap: 14px;
+    --room: 1.25rem;
     mask-image: linear-gradient(to bottom, transparent, #000 var(--fade), #000 calc(100% - var(--fade)), transparent);
   }
 
@@ -323,6 +322,21 @@ const nameOf = (path: string) => {
 
   .doc [data-o] {
     transition: color var(--dur-slow) var(--ease);
+  }
+
+  /* The lit passage moves its neighbours apart, so the glass ring around it (PAD + --ring) lies
+     over blank space, never over another line. The blocks are marked at build time (data-holds), so no :has() is
+     needed. The margin must be final when the lens measures the words: no transition, not even
+     the 0.01ms one the reduced-motion rule in global.css gives every property, which left the
+     lens 48 px off its words for a frame. */
+  .doc :is(p, li, ul) {
+    transition-property: none;
+  }
+
+  .demo[data-lit][data-mode="answer"] [data-holds="answer"],
+  .demo[data-lit][data-mode="refusal"] [data-holds="refusal"] {
+    /* Above, room for the tag too: it names the passage without hiding the line before it. */
+    margin-block: calc(var(--room) + 2.25rem) var(--room);
   }
 
   /* Highlight follows the mode; the spans were cut at the cited offsets at build time. */
@@ -513,9 +527,17 @@ const nameOf = (path: string) => {
   @media (min-width: 64rem) {
     /* The card covers the lower half of the window: the passage is centred in the upper part,
        and the padding lets the end of the contract scroll up there too. */
+    .demo {
+      --window-height: 22.5rem;
+      --card-overlap: 11.5rem;
+    }
+
+    /* The contract fades out where the card begins: the strip of it left of the card would
+       show only cut words. */
     .sheet {
-      height: 22.5rem;
+      height: var(--window-height);
       padding-bottom: 12rem;
+      mask-image: linear-gradient(to bottom, transparent, #000 var(--fade), #000 calc(var(--window-height) - var(--card-overlap) - var(--fade)), transparent calc(var(--window-height) - var(--card-overlap)));
       /* Wide screens only: on a phone the window spans the screen, and a swipe on it must still
          scroll the page once the window is at its end. */
       overscroll-behavior: contain;
@@ -529,7 +551,7 @@ const nameOf = (path: string) => {
     .card {
       position: relative;
       z-index: 1;
-      margin: -11.5rem 0 0 10%;
+      margin: calc(-1 * var(--card-overlap)) 0 0 10%;
       padding: 1rem 1.25rem;
     }
 

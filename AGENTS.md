@@ -37,7 +37,8 @@ scripts/traces-lib.ts    rules for demo traces: offsets select the quote, copy e
 scripts/check-sources.ts fetches each source at its pinned commit and checks the evidence (network)
 lighthouserc.cjs         blocking budgets from SPEC §8 (scores, LCP, CLS, transferred bytes)
 tests/                   Playwright on every built page: axe (light + dark), keyboard, glyph coverage;
-                         magnifier.spec.ts: spotlight ring within 8 px of its words at 375/1024/1440, dimming, tablist keyboard;
+                         magnifier.spec.ts: spotlight ring within 8 px of its words at 375/1024/1440, no other line under
+                         the ring or its tag, dimming, tablist keyboard;
                          glass-motion.spec.ts: answer writing, glass refracted / frosted / opaque
                          first-screen.spec.ts: tabs, passage, ring and whole card in view at 1440×800 and 1280×720
 scripts/site-measures*   Lighthouse CI output -> site-measures.json (weight, scores, date, commit)
