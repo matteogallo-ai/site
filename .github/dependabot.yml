@@ -1,0 +1,22 @@
+# Weekly, grouped minor and patch updates; a major bump gets its own PR so a
+# breaking release cannot hold back the safe updates grouped with it (PLAYBOOK §1.3).
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    groups:
+      npm-dependencies:
+        patterns: ["*"]
+        update-types: ["minor", "patch"]
+
+  # Actions are pinned by SHA; Dependabot updates the SHA and the version comment.
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    groups:
+      github-actions:
+        patterns: ["*"]
+        update-types: ["minor", "patch"]

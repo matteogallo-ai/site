@@ -1,0 +1,35 @@
+## What this PR does
+
+One or two sentences. Link the issue: Closes #<issue-number>
+
+## Why, and trade-offs
+
+The problem, the approach chosen, the alternatives rejected and why.
+
+## Engineering standards checklist
+
+See [`docs/ENGINEERING_STANDARDS.md`](../docs/ENGINEERING_STANDARDS.md). Tick each item or explain why it does not apply.
+
+- [ ] **1. Claims** — every README/doc capability touched has a row in `docs/CLAIMS.md` with a passing test; anything unshipped is labelled Roadmap (checked by hand against CI jobs)
+- [ ] **2. No stale narrative** — no "coming in vX", sprint IDs or TODO without `(#issue)`
+- [ ] **3. Mocks vs live** — no score computed on mocks is presented as quality
+- [ ] **4. Metrics** — every number states its `n` and denominator and comes from `src/data/measures.json` with its source
+- [ ] **5. Untrusted content** — retrieved/user/tool content reaching a prompt is delimited and labelled untrusted; `SECURITY.md` still accurate
+- [ ] **6. External calls** — explicit timeout, bounded retries on retryable errors only, errors mapped by type, provider-down test
+- [ ] **7. Fresh clone** — README quickstart still works from a clean checkout
+- [ ] **8. History** — Conventional Commits, one logical change per commit, ≤ ~400 changed lines per commit
+- [ ] **9. No dead weight** — no unused dependency; no duplicated helper
+- [ ] **10. Ownership** — I can explain every changed module (walkthrough below); ADR added/updated for architectural changes
+- [ ] **11. Release gate** — docs in sync
+
+## Evidence
+
+Commands run and their output (typecheck, tests, lint, knip, claims, stale-narrative, anything specific).
+
+## Walkthrough
+
+For each changed module: what it does, why this design, how it is verified, how it breaks.
+
+## What was AI-generated and what I changed
+
+Which parts a coding agent drafted, what the independent reviewer found, and what I changed, rejected or verified by hand.
