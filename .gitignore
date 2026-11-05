@@ -11,3 +11,5 @@ site-measures.json
 # Private working notes (French spec): never published.
 docs/private/
 .venv/
+.venv-media/
+__pycache__/

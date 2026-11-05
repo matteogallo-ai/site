@@ -126,3 +126,19 @@ export function unrequested(lhr: Lhr, stems: string[]): string[] {
   const urls = (lhr.audits["network-requests"]?.details?.items ?? []).map((i) => i.url ?? "");
   return stems.filter((stem) => !urls.some((u) => u.split("/").at(-1)!.startsWith(`${stem}.`)));
 }
+
+/**
+ * The run's transfer plus, for each image it did not request (lazy, below what the run
+ * scrolled to), the heaviest AVIF variant Astro wrote for it: the format a <picture> serves
+ * first in the browsers measured, at the largest width a srcset can pick. An upper bound,
+ * so the budget holds whatever the visitor scrolls to.
+ */
+export function transferWithUnrequested(lhr: Lhr, missing: string[], files: { name: string; bytes: number }[]): number {
+  let total = transfer(lhr, "total");
+  for (const stem of missing) {
+    const variants = files.filter((f) => f.name.startsWith(`${stem}.`) && f.name.endsWith(".avif")).map((f) => f.bytes);
+    if (variants.length === 0) throw new Error(`no AVIF variant of ${stem} in the build`);
+    total += Math.max(...variants);
+  }
+  return total;
+}

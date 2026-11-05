@@ -7,6 +7,8 @@ const TRANSFER_BUDGET_BYTES = 200_000;
 const FONT_BUDGET_BYTES = 90_000;
 
 module.exports = {
+  // Read by scripts/site-measures.ts; lhci ignores keys outside `ci`.
+  budgets: { transferBytes: TRANSFER_BUDGET_BYTES, fontBytes: FONT_BUDGET_BYTES },
   ci: {
     collect: {
       staticDistDir: "./dist",
@@ -25,8 +27,8 @@ module.exports = {
         "categories:seo": ["error", { minScore: 0.98, aggregationMethod: "median-run" }],
         "largest-contentful-paint": ["error", { maxNumericValue: 1499, aggregationMethod: "median-run" }],
         "cumulative-layout-shift": ["error", { maxNumericValue: 0.049, aggregationMethod: "median-run" }],
-        // Counts every request made during the run, the lazy project screenshots included:
-        // Lighthouse's full-page capture loads them, and `npm run measures` fails if a home run did not.
+        // Counts every request made during the run; a lazy project image the run did not load is
+        // added by `npm run measures` at its heaviest variant, which fails over this budget.
         "resource-summary:total:size": ["error", { maxNumericValue: TRANSFER_BUDGET_BYTES, aggregationMethod: "median-run" }],
         "resource-summary:font:size": ["error", { maxNumericValue: FONT_BUDGET_BYTES, aggregationMethod: "median-run" }],
       },
