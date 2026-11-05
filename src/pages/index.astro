@@ -20,6 +20,7 @@ const repo = (name: string) => `https://github.com/matteogallo-ai/${name}`;
       <li><a href="#projets">Projets</a></li>
       <li><a href="#methode">Méthode</a></li>
       <li><a href="#a-propos">À propos</a></li>
+      <li class="spy" data-spy-dot hidden aria-hidden="true"></li>
     </ul>
   </nav>
 
@@ -105,6 +106,9 @@ const repo = (name: string) => `https://github.com/matteogallo-ai/${name}`;
 
   <script>
     import { countOnSight } from "../scripts/count.ts";
+    import { spyOn } from "../scripts/spy.ts";
+    const nav = document.querySelector<HTMLElement>(".nav");
+    if (nav) spyOn(nav);
     // The band's three figures count up once, as they come into view (SPEC §4).
     countOnSight(document.querySelectorAll<HTMLElement>(".band .value"));
   </script>
@@ -140,12 +144,44 @@ const repo = (name: string) => `https://github.com/matteogallo-ai/${name}`;
     pointer-events: auto;
   }
 
+  .nav ul {
+    position: relative;
+  }
+
+  /* The underline draws itself from the left on hover; it stays drawn on the section in view. */
   .nav a {
+    position: relative;
     text-decoration: none;
   }
 
-  .nav a:hover {
-    text-decoration: underline;
+  .nav a::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -0.1rem;
+    height: 1px;
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform var(--dur-move) var(--ease-out);
+  }
+
+  .nav a:hover::after {
+    transform: scaleX(1);
+  }
+
+  /* The dot under the link of the section in view (src/scripts/spy.ts): it travels by
+     translateX from the list's left edge, so only its transform moves. */
+  .spy {
+    position: absolute;
+    left: -2px;
+    bottom: 0.2rem;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--proof);
+    transition: transform var(--dur-move) var(--ease-in-out);
   }
 
   .hero {
@@ -251,20 +287,6 @@ const repo = (name: string) => `https://github.com/matteogallo-ai/${name}`;
     margin: 1.75rem 0 0;
   }
 
-  .button {
-    display: inline-block;
-    padding: 0.6rem 1.1rem;
-    border-radius: 999px;
-    border: 1px solid var(--ink);
-    text-decoration: none;
-    font-size: var(--step-16);
-  }
-
-  .button.primary {
-    background: var(--ink);
-    color: var(--paper);
-  }
-
   .band {
     display: grid;
     gap: var(--gutter);
@@ -326,11 +348,52 @@ const repo = (name: string) => `https://github.com/matteogallo-ai/${name}`;
   }
 
   .rules li {
+    position: relative;
     display: flex;
     flex-direction: column;
     padding: 1.25rem;
     border: 1px solid var(--rule);
     border-radius: 14px;
+    transition:
+      border-color var(--dur-hover) var(--ease-out),
+      transform var(--dur-hover) var(--ease-out);
+  }
+
+  /* The whole card opens its PR: the PR link's box is stretched over the card. A paragraph that
+     holds a figure stays above it, so the figure keeps its own link and proof tooltip. */
+  .rules .links a::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+  }
+
+  .rules li > p:has(> :global(.figure)) {
+    z-index: 1;
+  }
+
+  .rules li:hover {
+    border-color: var(--edge-hover);
+  }
+
+  .rules li:has(.links a:focus-visible) {
+    outline: 2px solid var(--proof);
+    outline-offset: 3px;
+  }
+
+  .rules .links a:focus-visible {
+    outline: none;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .rules li:hover {
+      transform: translateY(-2px);
+    }
+
+    .rules li:active {
+      transform: translateY(0);
+      transition-duration: var(--dur-press);
+    }
   }
 
   .rules h3 {

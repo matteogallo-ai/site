@@ -93,6 +93,52 @@ a {
   top: var(--gutter);
 }
 
+/* Buttons (links styled as actions). Secondary by default; .primary in ink. Colours change
+   under any motion preference; the lift and the press only when motion is welcome. */
+.button {
+  display: inline-block;
+  padding: 0.6rem 1.1rem;
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  font-size: var(--step-16);
+  line-height: 1.4;
+  color: var(--ink);
+  background-color: transparent;
+  text-decoration: none;
+  transition:
+    background-color var(--dur-hover) var(--ease-out),
+    border-color var(--dur-hover) var(--ease-out),
+    box-shadow var(--dur-hover) var(--ease-out),
+    transform var(--dur-hover) var(--ease-out);
+}
+
+.button:hover {
+  border-color: var(--ink);
+  background-color: var(--ink-wash);
+}
+
+.button.primary {
+  border-color: var(--ink);
+  color: var(--paper);
+  background-color: var(--ink);
+}
+
+.button.primary:hover {
+  background-color: var(--ink-lifted);
+  box-shadow: 0 6px 16px -10px rgb(17 17 17 / 0.6);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .button:hover {
+    transform: translateY(-1px);
+  }
+
+  .button:active {
+    transform: scale(0.97);
+    transition-duration: var(--dur-press);
+  }
+}
+
 /* The mono subset ships one weight: bold mono would be synthesised (font-synthesis: none) or fall back. */
 .mono {
   font-family: var(--font-mono);

@@ -45,6 +45,14 @@
   --gutter: 24px;
   --container: 1200px;
 
+  /* Hover states (SPEC §4): a secondary button takes 6 % of ink; the primary one, all ink,
+     lightens by 6 % toward the paper. */
+  --ink-wash: color-mix(in srgb, var(--ink) 6%, transparent);
+  --ink-lifted: color-mix(in srgb, var(--ink) 94%, var(--paper));
+  /* A card's border under the pointer: halfway from the rule to the graphite, so it stands out
+     a little in both schemes. */
+  --edge-hover: color-mix(in srgb, var(--graphite) 50%, var(--rule));
+
   /* Motion (SPEC §4): out for entrances and hovers, in-out for things that travel. Only transform
      and opacity move continuously; transitions name their properties, never "all". */
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
