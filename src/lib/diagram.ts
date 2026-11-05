@@ -1,19 +1,21 @@
 // Layout of the case-study diagrams: steps stacked top to bottom, then the outcomes side by
-// side. Narrow on purpose (WIDTH user units, drawn at about that many pixels): the same SVG
-// reads at 375 px without scaling its text below the 12 px step of the type scale.
+// side. WIDTH is below the 327 px a 375 px screen leaves the container, so the SVG is never
+// scaled down there and its smallest text stays at the 12 px step of the type scale
+// (tests/case-studies.spec.ts measures it).
 
-export const WIDTH = 360;
+export const WIDTH = 320;
 const MARGIN = 2;
-const PAD_X = 12;
+const PAD_X = 10;
 const PAD_Y = 10;
 const GAP_Y = 26;
-const GAP_X = 10;
+const GAP_X = 8;
 const TITLE_SIZE = 14;
-const LINE_SIZE = 12.5;
+const LINE_SIZE = 12;
 const TITLE_LEAD = 18;
 const LINE_LEAD = 16;
-// Average advance of Inter, in em, rounded up: the build fails rather than let text spill
-// out of a box (no text measurement exists at build time).
+// Average advance of Inter, in em, rounded up. An estimate, not a measurement (none exists at
+// build time): it fails the build on lines far too long, and a line of wide glyphs could still
+// pass and overflow, which the screenshots at 375 px are for.
 const ADVANCE = { title: 0.62, line: 0.56 };
 
 export type Tone = "proof" | "defect";

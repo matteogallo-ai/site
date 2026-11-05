@@ -36,7 +36,7 @@ test("outcomes sit side by side under the last step, each reached by an arrow", 
 test("a line too long for its box fails instead of overflowing it", () => {
   const long = "x".repeat(80);
   assert.throws(() => layout({ steps: [{ title: "A", lines: [long] }] }), /does not fit/);
-  assert.throws(() => layout({ steps, outcomes: [{ title: "a", lines: ["deux lignes"] }, { title: "b" }, { title: "c", lines: ["une ligne bien trop longue"] }] }), /does not fit/);
+  assert.throws(() => layout({ steps, outcomes: [{ title: "a", lines: ["deux lignes"] }, { title: "b" }, { title: "c", lines: ["une ligne trop longue"] }] }), /does not fit/);
 });
 
 test("a diagram has at least one step", () => {
