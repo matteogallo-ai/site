@@ -1,0 +1,184 @@
+---
+import CaseStudy from "../../layouts/CaseStudy.astro";
+import Brief from "../../components/case/Brief.astro";
+import CaseSection from "../../components/case/CaseSection.astro";
+import Diagram from "../../components/case/Diagram.astro";
+import MeasuresDetail from "../../components/case/MeasuresDetail.astro";
+import MeasuresTable from "../../components/case/MeasuresTable.astro";
+import Figure from "../../components/Figure.astro";
+import { pinned, pull } from "../../lib/sources.ts";
+
+const at = (path: string) => pinned("praxis", path);
+---
+
+<CaseStudy
+  no="03"
+  name="Praxis"
+  repo="praxis"
+  summary="Un outil qui transforme une question business en note d’analyse (un briefing) écrite par des modèles d’IA, dont les sources sont contrôlées par du code et la rédaction relue par un modèle chargé d’y chercher la faille."
+  description="Étude de cas de Praxis, briefings d’analyse écrits par IA avec sources contrôlées : problème, architecture, mesures, défauts, décisions."
+>
+  <Brief
+    does="À partir d’une question business, il cherche sur le web, vérifie en code que chaque fait a une source acceptable, puis rédige une note d’analyse qui dit elle-même ce qu’elle n’a pas pu sourcer."
+    measured="Combien d’exécutions réelles, payées, aboutissent à une note, ce que coûte une note, et combien de notes passent le contrôle des sources."
+    defect="Aucune note réelle ne passe le contrôle des sources. Ce que j’en ai fait : la note est livrée quand même, avec une section écrite par le code qui liste chaque élément non sourcé ; le défaut est publié, pas caché."
+    figures={[
+      { id: "praxis.live_completed", caption: "exécutions réelles arrivées au bout, sur les tentatives" },
+      { id: "praxis.cost_per_briefing", caption: "coût d’une note terminée, de la moins chère à la plus chère" },
+      { id: "praxis.insufficiently_sourced", caption: "notes terminées signalées comme insuffisamment sourcées", defect: true },
+    ]}
+  />
+
+  <CaseSection n={1} id="probleme" title="Le problème" lead="En deux phrases, pourquoi ce projet existe.">
+    <p>
+      Une note d’analyse écrite par un modèle d’IA a l’air sourcée même quand elle ne l’est pas. Praxis écrit une note dans un format choisi (note de préparation, mémo, prise de position) et dit au lecteur,
+      dans le texte même, ce qui repose sur une source vérifiable et ce qui n’y repose pas.
+    </p>
+  </CaseSection>
+
+  <CaseSection n={2} id="construit" title="Ce que j’ai construit" lead="Les étapes d’une note, de la question au fichier livré, et les deux issues possibles.">
+    <Diagram
+      id="praxis-pipeline"
+      title="Les étapes d’une note Praxis"
+      steps={[
+        { title: "Cadrage", lines: ["ce que couvre la question, quel format"] },
+        { title: "Recherche web", lines: ["faits, acteurs, risques, options :", "chaque élément porte sa source"] },
+        { title: "Contrôle des sources, en code", lines: ["source absente, site peu fiable,", "page trop ancienne, doublon"] },
+        { title: "Rédaction", lines: ["un appel au modèle par section"] },
+        { title: "Relecture contradictoire", lines: ["un modèle cherche la faille ; peut", "relancer la rédaction, une fois au plus"] },
+        { title: "Fichier livré", lines: ["Markdown, PDF, Word"] },
+      ]}
+      outcomes={[
+        { title: "Livré, sourcé", lines: ["tous les éléments", "ont une source"], tone: "proof" },
+        { title: "Livré, signalé", lines: ["une section liste", "chaque élément", "sans source"], tone: "defect" },
+      ]}
+      caption="Chaque étape appelle un modèle d’Anthropic, sauf le contrôle des sources, qui est du code. En ligne de commande et dans le banc d’essai, une note qui ne passe pas ce contrôle est livrée avec une section qui liste ce qu’elle n’a pas pu sourcer ; l’exécution s’arrête si aucun fait de la recherche n’a de source."
+    />
+    <p>
+      Les consignes données aux modèles sont des fichiers <code>.prompt</code> lus par PromptLang. La section des éléments sans source est écrite par le code à partir du rapport du contrôle : aucun modèle ne
+      peut l’adoucir.
+    </p>
+  </CaseSection>
+
+  <CaseSection
+    n={3}
+    id="mesures"
+    title="Mesures"
+    lead="Ce que donnent les exécutions réelles, payées, et ce qui n’est pas mesuré du tout."
+  >
+    <p>
+      Sur les exécutions réelles, <Figure id="praxis.live_completed" where="prose" /> sont arrivées au bout ; une note terminée a coûté <Figure id="praxis.cost_per_briefing" where="prose" />. Toutes les notes
+      terminées sont signalées comme insuffisamment sourcées : <Figure id="praxis.insufficiently_sourced" where="prose" defect />. Le signal se lève dès qu’un seul élément bloque.
+    </p>
+    <h3>Pas de point de comparaison</h3>
+    <p>
+      Rien dans le dépôt ne compare Praxis à une approche plus simple, un seul appel au modèle ou une rédaction sans recherche. Le seul score publié auparavant notait des notes simulées, écrites à la main pour les
+      tests : il mesurait ces exemples, pas un modèle, et il a été retiré (<a href={at("CHANGELOG.md")}>journal des modifications</a>). La qualité des notes elles-mêmes n’est relue pour aucune question ; seules
+      les sources de première main d’une question ont été relues par un humain (<a href={at("benchmarks/outputs/live/README.md")}>exécutions réelles</a>).
+    </p>
+    <MeasuresDetail>
+      <MeasuresTable
+        where="live"
+        caption="Exécutions réelles, payées"
+        rows={[
+          {
+            id: "praxis.live_completed",
+            label: "Notes terminées, sur les tentatives",
+            reading:
+              "Les autres tentatives ont échoué : contrôle des sources trop strict, texte avant la réponse structurée, délai dépassé, réponse tronquée, section refusée.",
+          },
+          {
+            id: "praxis.insufficiently_sourced",
+            label: "Notes signalées insuffisamment sourcées",
+            defect: true,
+            noInterval: "Le dépôt ne publie pas d’intervalle pour ce décompte.",
+            reading: "Le défaut principal : chaque note terminée est signalée. Le signal se lève dès qu’un seul élément bloque.",
+          },
+          {
+            id: "praxis.cost_per_briefing",
+            label: "Coût d’une note terminée",
+            noInterval: "L’étendue des exécutions terminées, de la moins chère à la plus chère : pas une estimation.",
+            reading: "Coût enregistré avec chaque exécution terminée.",
+          },
+        ]}
+      />
+    </MeasuresDetail>
+  </CaseSection>
+
+  <CaseSection n={4} id="echecs" title="Ce qui n’a pas marché, et ce que j’ai fait" lead="Trois échecs réels, leur cause quand elle est connue, et ce que chacun a changé.">
+    <h3>Déclaré terminé sans une seule note réelle</h3>
+    <p>
+      Toutes les étapes et tous les formats ont été construits et testés sur des exemples écrits à la main avant la première exécution réelle. Les tests ne pouvaient prouver que l’assemblage des étapes, le banc
+      d’essai mesurait ces exemples, et les premières exécutions réelles ont toutes échoué. Ce que j’ai fait : un audit indépendant, puis des corrections sans appel payant (consigne générale à sa place, modèle
+      choisi par étape, lecture tolérante de la réponse structurée, délais par étape, reprise là où l’exécution s’était arrêtée, mesure du coût), puis des exécutions réelles publiées, échecs compris (<a
+        href={at("ROADMAP.md")}>plan de correction</a
+      >).
+    </p>
+    <h3>Le contrôle strict jetait tout le travail</h3>
+    <p>
+      En mode strict, un seul élément sans source annulait toutes les étapes déjà faites. Aucune trace de ces exécutions n’a été gardée : la cause est lue dans la consigne et le code, pas observée. La consigne de
+      recherche exigeait une date de consultation que le modèle ne peut pas connaître, ce qui ne laissait qu’une réponse conforme : « source manquante ». Praxis date maintenant lui-même ses consultations, ce qui
+      retire la cause probable sans garantir une source à chaque élément, et la note est livrée avec ses manques écrits dedans (<a href={at("docs/adr/0002-degrade-on-insufficient-sourcing.md")}>ADR 0002</a>).
+    </p>
+    <h3>Une section refusée pour une adresse web dans son texte</h3>
+    <p>
+      Une section de synthèse a été refusée, puis refusée à nouveau à la relance, cette fois pour une adresse <code>www.</code> dans le texte, que les lecteurs de documents transforment en lien. La correction (<a
+        href={pull("praxis", 44)}>#44</a
+      >) remplace cette consigne par des renvois numérotés aux sources, vérifiés par le code. Aucune relance payante n’a été faite pour « vérifier » : la correction n’est pas prouvée sur une exécution réelle.
+    </p>
+  </CaseSection>
+
+  <CaseSection
+    n={5}
+    id="decisions"
+    title="Trois décisions"
+    lead="Trois choix d’architecture, chacun écrit dans une note de décision (ADR) avec ses raisons et ses conséquences : de quoi juger le raisonnement, pas seulement le résultat."
+  >
+    <ol class="decisions">
+      <li>
+        <h3>Lire la réponse structurée en code, sans rien réparer</h3>
+        <p>
+          L’interface d’Anthropic refuse les réponses au format imposé quand la recherche web cite ses sources, et refuse de forcer l’appel d’un outil sur les modèles utilisés. Pour les étapes avec recherche, le code garde le
+          texte qui suit le dernier appel d’outil et en extrait la plus grande réponse structurée (un objet JSON) complète et lisible, sans rien réparer ; les étapes sans recherche imposent leur format. Dans tous les cas, le code valide
+          chaque champ.
+        </p>
+        <p><a href={at("docs/adr/0001-getting-json-from-the-model.md")}>ADR 0001</a></p>
+      </li>
+      <li>
+        <h3>Livrer en signalant plutôt qu’abandonner</h3>
+        <p>
+          En ligne de commande et dans le banc d’essai, un échec du contrôle des sources est enregistré, l’exécution continue, le rapport est signalé et le code ajoute une section qui liste chaque élément
+          bloquant. La note est complète, mais dit dans son propre texte ce qu’elle n’a pas pu sourcer. Utilisé comme bibliothèque, Praxis abandonne toujours par défaut : changer les erreurs qu’une fonction
+          publique peut lever casserait le code de ceux qui l’appellent.
+        </p>
+        <p><a href={at("docs/adr/0002-degrade-on-insufficient-sourcing.md")}>ADR 0002</a></p>
+      </li>
+      <li>
+        <h3>À quelles sources faire confiance</h3>
+        <p>
+          Le site d’une entreprise est accepté pour les faits de cette entreprise seulement, à condition que la correspondance entre organisations et sites soit explicite, relue et versionnée. Après une relecture
+          humaine, la règle n’accepte plus jamais une source de première main pour la probabilité ou l’impact d’un risque. Le second volet, la presse spécialisée, n’est pas implémenté.
+        </p>
+        <p><a href={at("docs/adr/0003-source-trust-criteria.md")}>ADR 0003</a></p>
+      </li>
+    </ol>
+  </CaseSection>
+
+  <CaseSection n={6} id="construction" title="Comment c’est construit" lead="Pour un lecteur technique : la pile, les modèles utilisés et les outils de test.">
+    <p>
+      TypeScript sur Bun. L’interface de programmation (API) Messages d’Anthropic, avec son outil de recherche web : <code>claude-opus-5-5</code> pour le cadrage, les options et la relecture contradictoire, <code>claude-sonnet-5-5</code> pour
+      la recherche, les acteurs, les risques et la rédaction. <code>@promptlang/core</code> depuis npm, épinglé par son empreinte ; pdfkit pour le PDF, le fichier Word écrit à la main. Tests
+      <code>bun test</code>, fast-check, Stryker. Architecture : <a href={at("docs/architecture.md")}>docs/architecture.md</a>.
+    </p>
+  </CaseSection>
+
+  <CaseSection n={7} id="suite" title="La suite" lead="Ce qui manque, d’après la feuille de route du projet.">
+    <ul>
+      <li>Une exécution réelle qui aboutit de façon fiable, et mesurée : coût, volume de texte traité, durée, échantillon noté.</li>
+      <li>La qualité des notes réelles notée par un modèle juge, validé contre des notes humaines, avec sa marge d’erreur.</li>
+      <li>L’ancienneté d’une source mesurée sur la date de la page elle-même.</li>
+      <li>Une recherche web qui filtre ses résultats en cours de route, évaluée contre l’outil de base.</li>
+    </ul>
+    <p><a href={at("README.md#roadmap")}>Feuille de route</a></p>
+  </CaseSection>
+</CaseStudy>

@@ -1,0 +1,256 @@
+---
+import CaseStudy from "../../layouts/CaseStudy.astro";
+import Brief from "../../components/case/Brief.astro";
+import CaseSection from "../../components/case/CaseSection.astro";
+import Diagram from "../../components/case/Diagram.astro";
+import MeasuresDetail from "../../components/case/MeasuresDetail.astro";
+import MeasuresTable from "../../components/case/MeasuresTable.astro";
+import Figure from "../../components/Figure.astro";
+import { measure } from "../../lib/measures.ts";
+import { pinned } from "../../lib/sources.ts";
+import answer from "../../data/demo/answer.json";
+
+const at = (path: string) => pinned("verity", path);
+// The run of record: its hash stays in the link, out of the prose.
+const runOfRecord = answer.source.url;
+
+// Both quotes come from data that npm run check:sources compares with GitHub: the cited
+// passage from the committed run (demo/answer.json), the threshold sentence from the
+// evidence of its measure.
+const DEFECT = "twentyfour";
+const cited = answer.citations.find((c) => c.quote.includes(DEFECT));
+if (!cited) throw new Error(`no citation of the demo answer contains "${DEFECT}"`);
+const [before, after] = cited.quote.split(DEFECT) as [string, string];
+const thresholdSentence = measure("verity.threshold_run_of_record").evidence.find((e) => "contains" in e && e.contains.startsWith("The threshold decides"));
+if (!thresholdSentence || !("contains" in thresholdSentence)) throw new Error("the threshold sentence is not in the measure's evidence");
+---
+
+<CaseStudy
+  no="01"
+  name="Verity"
+  repo="verity"
+  serif
+  summary="Un agent qui répond aux questions sur des contrats en citant la clause mot pour mot, et qui refuse quand il n’a pas de preuve."
+  description="Étude de cas de Verity, agent qui répond sur des contrats en citant ses sources : problème, architecture, mesures avec leurs incertitudes, défauts, décisions."
+>
+  <Brief
+    does="Il répond aux questions sur un ensemble de contrats en citant la clause exacte, et dit « je ne sais pas » quand les documents ne contiennent pas la réponse."
+    measured="Sur des questions de test jamais vues pendant le réglage : s’il refuse les questions sans réponse, et si ses réponses inventent quelque chose."
+    defect="Il a répondu à des questions qui n’avaient pas de réponse dans les documents. Ce que j’en ai fait : je l’ai publié, avec les trois questions en cause nommées dans les résultats."
+    figures={[
+      { id: "verity.refusal_recall", caption: "questions sans réponse correctement refusées" },
+      { id: "verity.hallucination_rate", caption: "réponses contenant une invention, selon un juge vérifié contre mes propres notes" },
+      { id: "verity.unanswerable_answered", caption: "questions sans réponse auxquelles il a quand même répondu", defect: true },
+    ]}
+  />
+
+  <CaseSection n={1} id="probleme" title="Le problème" lead="En trois phrases, pourquoi ce projet existe.">
+    <p>
+      Les assistants qui répondent sur des documents d’entreprise le font avec assurance, et se trompent juste assez souvent pour être dangereux. Sur un contrat, une réponse fluide mais fausse coûte plus
+      cher qu’un « je ne sais pas ». Verity ne répond qu’en citant la clause mot pour mot, refuse sinon, et mesure s’il refuse à raison.
+    </p>
+  </CaseSection>
+
+  <CaseSection
+    n={2}
+    id="construit"
+    title="Ce que j’ai construit"
+    lead="Le chemin d’une question, de la recherche des passages à la réponse ou au refus : on y voit où se décide un refus."
+  >
+    <Diagram
+      id="verity-pipeline"
+      title="Le chemin d’une question dans Verity"
+      steps={[
+        { title: "Question", lines: ["sur un corpus de contrats et de politiques"] },
+        { title: "Recherche des passages", lines: ["par le sens et par les mots,", "puis tri des passages les plus utiles"] },
+        { title: "Rédaction avec citations", lines: ["chaque citation doit être un extrait exact", "du document ; sans citation, refus"] },
+        { title: "Contrôles en code, sans modèle", lines: ["citations : couvrent-elles la réponse,", "sont-elles pertinentes ? manipulation ?", "un seul échec refuse"] },
+        { title: "Note de confiance et seuil", lines: ["un modèle note la réponse et peut refuser ;", "il ne peut pas annuler un contrôle"] },
+      ]}
+      outcomes={[
+        { title: "Réponse citée", lines: ["clause et position"], tone: "proof" },
+        { title: "Refus motivé", lines: ["cause enregistrée"], tone: "defect" },
+      ]}
+      caption="Le refus se décide dans l’ordre : pas de citation, puis les contrôles écrits en code, puis la note de confiance et son seuil. Le juge, un second modèle qui note les réponses, n’est pas sur ce chemin : il évalue les exécutions après coup."
+    />
+    <p>
+      Verity est un agent RAG : il cherche d’abord les passages utiles dans les documents, puis rédige sa réponse à partir d’eux. Il garde la position exacte de chaque passage dans son document et renvoie soit
+      une réponse dont chaque citation se retrouve telle quelle dans la source, soit un refus avec sa cause. La démonstration de l’<a href="/">accueil</a> rejoue des réponses d’une exécution réelle.
+    </p>
+  </CaseSection>
+
+  <CaseSection
+    n={3}
+    id="mesures"
+    title="Mesures"
+    lead="Ce que valent ses réponses et ses refus, chiffres à l’appui, avec leur incertitude et une comparaison à un système plus simple."
+  >
+    <p>
+      Les chiffres viennent de l’<a href={runOfRecord}>exécution de référence</a>, sur des questions de test jamais vues pendant le réglage. Sur les questions dont les documents ne contiennent pas la réponse,
+      Verity en refuse <Figure id="verity.refusal_recall" where="prose" />, mais répond quand même à <Figure id="verity.unanswerable_answered" where="prose" defect />. Le juge, un second modèle chargé de noter
+      les réponses, trouve une invention dans <Figure id="verity.hallucination_rate" where="prose" /> réponses. Ce juge s’accorde avec mes propres notes, posées sans voir les siennes, à <Figure
+        id="verity.judge_kappa_all"
+        where="prose"
+      /> : c’est un kappa de Cohen, une mesure d’accord qui retire la part due au hasard, de zéro pour le hasard à un pour un accord parfait. Ce chiffre mêle des affirmations réelles et des affirmations piégées exprès ; sur les seules réelles, il tombe à <Figure
+        id="verity.judge_kappa_real"
+        where="prose"
+      />, un chiffre fragile.
+    </p>
+    <p>
+      Comparé à un RAG naïf, le même principe sans aucun contrôle, sur des questions de réglage et sur des exécutions que le budget a arrêtées avant la fin, Verity ne fait pas mieux de façon mesurable : il traite <Figure id="verity.baseline_verity_answerable_answered" where="prose" /> questions qui ont
+      une réponse, contre <Figure id="verity.baseline_naive_answerable_answered" where="prose" />, et sur si peu de questions l’écart ne se distingue pas du hasard. C’est le résultat publié, pas le résultat
+      favorable.
+    </p>
+    <MeasuresDetail>
+      <p>
+        Seuil de refus de l’exécution : <Figure
+          id="verity.threshold_run_of_record"
+          where="detail"
+        />.
+      </p>
+      <MeasuresTable
+        where="run"
+        caption="Exécution de référence, questions de test"
+        rows={[
+          { id: "verity.refusal_recall", reading: "Questions sans réponse dans les documents, refusées." },
+          { id: "verity.refusal_precision", reading: "Refus qui portaient sur une question vraiment sans réponse ; les autres viennent des contrôles de citation." },
+          { id: "verity.unanswerable_answered", defect: true, reading: "Le défaut principal : une réponse livrée là où les documents n’en contiennent pas." },
+          { id: "verity.hallucination_rate", reading: "Selon le juge vérifié ci-dessous. Zéro observé n’est pas zéro garanti : d’où l’intervalle." },
+          {
+            id: "verity.judge_kappa_all",
+            noInterval: "Kappa n’est pas une proportion : le fichier source ne lui donne pas d’intervalle.",
+            reading: "Accord du juge avec mes notes posées à l’aveugle, affirmations réelles et piégées.",
+          },
+          {
+            id: "verity.judge_kappa_real",
+            noInterval: "Kappa n’est pas une proportion : le fichier source ne lui donne pas d’intervalle.",
+            reading: "Fragile : presque aucune affirmation réelle n’est jugée non étayée par l’humain, si bien qu’un désaccord le déplace fortement.",
+          },
+          { id: "verity.judge_traps_detected", reading: "Borne haute : une affirmation piégée compte comme détectée dès qu’une de ses parties est rejetée." },
+        ]}
+      />
+      <MeasuresTable
+        where="naive"
+        caption="Contre un RAG naïf (questions de réglage, exécutions incomplètes)"
+        ours="Verity"
+        baseline="RAG naïf"
+        rows={[
+          {
+            id: "verity.baseline_verity_answerable_answered",
+            base: "verity.baseline_naive_answerable_answered",
+            label: "Questions avec réponse traitées",
+            reading: "Non distinguables selon le fichier de comparaison. Verity refuse davantage, sans gain mesuré en échange.",
+          },
+          {
+            id: "verity.baseline_verity_hallucination_rate",
+            base: "verity.baseline_naive_hallucination_rate",
+            label: "Taux d’invention (juge)",
+            reading: "Aucune invention mesurée d’un côté comme de l’autre : rien à départager.",
+          },
+          {
+            id: "verity.baseline_verity_unanswerable_answered",
+            base: "verity.baseline_naive_unanswerable_answered",
+            label: "Questions sans réponse auxquelles il a répondu",
+            reading: "L’avantage attendu de Verity, mais sur si peu de questions qu’il ne se distingue pas du hasard.",
+          },
+        ]}
+      />
+      <p>
+        Le budget a arrêté les deux exécutions avant la fin ; la comparaison porte sur les questions que les deux ont terminées (<a href={at("scorecards/naive-baseline-comparison.json")}>fichier de
+          comparaison</a
+        >).
+      </p>
+    </MeasuresDetail>
+  </CaseSection>
+
+  <CaseSection n={4} id="echecs" title="Ce qui n’a pas marché, et ce que j’ai fait" lead="Deux défauts que les chiffres seuls ne montrent pas, et ce que j’en ai fait.">
+    <h3>Le seuil de confiance ne décide rien</h3>
+    <p>
+      Verity donne une note de confiance à chaque réponse et refuse sous un seuil. Le code refuse par défaut sous <Figure id="verity.threshold_code_default" where="threshold" />. L’exécution de référence a
+      tourné à <Figure id="verity.threshold_run_of_record" where="threshold" /> : le seuil a été choisi sur les questions de réglage par une règle fixée à l’avance, et aucun seuil ne faisait mieux qu’un autre.
+    </p>
+    <blockquote lang="en">
+      <p>{thresholdSentence.contains}</p>
+      <footer><a href={at("docs/results.md")}>docs/results.md</a></footer>
+    </blockquote>
+    <p>
+      Chaque refus vient d’un contrôle écrit en code ou du modèle de notation lui-même ; aucun n’est dû au seuil. La note de confiance est l’auto-évaluation du modèle, et elle ne correspond pas à sa fréquence
+      réelle d’erreur. Ce que j’ai fait : le publier. Le seuil réel figure à côté de celui du code, et un refus fondé sur une confiance fiable est dans la feuille de route au lieu d’être revendiqué.
+    </p>
+
+    <h3>Une citation exacte d’un texte mal extrait</h3>
+    <blockquote lang="en">
+      <p>
+        {before}{DEFECT} <span class="sic" lang="en">[sic, PDF extraction defect]</span>{after}
+      </p>
+      <footer>Citation de la réponse à <code>{answer.example_id}</code>, <a href={runOfRecord}>exécution de référence</a></footer>
+    </blockquote>
+    <p>
+      Dans le <a href={at("datasets/corpus/order_form_northwind_2025.pdf")}>PDF du bon de commande</a>, « twenty- » finit une ligne et « four » commence la suivante ; l’extraction du texte a recollé les deux
+      sans le trait d’union. Le contrôle « mot pour mot » l’a accepté, puisque la citation recopie fidèlement le passage fautif : il prouve que la citation est dans le texte extrait, pas que le texte extrait est
+      fidèle au document.
+    </p>
+    <p>
+      Un audit a proposé une règle : refuser toute réponse dont un chiffre n’est pas dans ses citations. Mesurée sur les exécutions publiées avant de l’activer, elle refusait des réponses justes, pour des
+      chiffres calculés, des chiffres repris de la question, des identifiants, et ici une durée écrite en chiffres dans la réponse et en lettres dans la citation fautive. Elle n’est pas activée (<a
+        href={at("docs/audit/2026-11-03-figure-rule-measurement.md")}>mesure</a
+      >).
+    </p>
+  </CaseSection>
+
+  <CaseSection
+    n={5}
+    id="decisions"
+    title="Trois décisions"
+    lead="Trois choix d’architecture, chacun écrit dans une note de décision (ADR) avec ses raisons et ses conséquences : de quoi juger le raisonnement, pas seulement le résultat."
+  >
+    <ol class="decisions">
+      <li>
+        <h3>Le refus est une réponse à part entière, et il est mesuré</h3>
+        <p>
+          Le jeu d’évaluation contient volontairement des questions sans réponse, et la justesse des refus fait partie des mesures principales. Une contribution qui fait répondre plus souvent en répondant à
+          tort est une régression. La note promettait un refus « calibré », c’est-à-dire une confiance qui correspond à la fréquence réelle d’erreur ; la mesure l’a contredite, et la note le dit en tête.
+        </p>
+        <p><a href={at("docs/adr/0003-refusal-as-headline-feature.md")}>ADR 0003</a></p>
+      </li>
+      <li>
+        <h3>On reproduit le fichier d’exécution, pas la sortie du modèle</h3>
+        <p>
+          Aucun appel ne règle l’aléa du modèle. Une exécution réelle est enregistrée une fois, avec la version du code, les modèles et le détail de chaque question, et n’est jamais réécrite ; tous les chiffres
+          publiés sont recalculés depuis ce fichier. Deux exécutions de la même version peuvent différer : c’est l’aléa du modèle, rapporté comme tel.
+        </p>
+        <p><a href={at("docs/adr/0007-reproducibility-from-artefacts.md")}>ADR 0007</a></p>
+      </li>
+      <li>
+        <h3>Des fichiers de consignes lus localement, sans PromptLang</h3>
+        <p>
+          Une note antérieure prévoyait de compiler les consignes du modèle avec PromptLang, mon autre projet ; cette intégration n’a jamais été construite. Plutôt que de garder la promesse, j’ai inscrit l’état
+          réel : un petit lecteur de fichiers testé, une erreur si une variable manque, les contenus non fiables balisés comme données. La dépendance aurait servi un récit, pas un besoin.
+        </p>
+        <p><a href={at("docs/adr/0005-prompt-files-without-promptlang.md")}>ADR 0005</a></p>
+      </li>
+    </ol>
+  </CaseSection>
+
+  <CaseSection n={6} id="construction" title="Comment c’est construit" lead="Pour un lecteur technique : la pile, les outils et les modèles de l’exécution de référence.">
+    <p>
+      Python, FastAPI, Postgres avec pgvector (ou un stockage en mémoire), modèles locaux pour comparer le sens des textes et trier les passages, clients Anthropic et OpenAI derrière un routeur de repli,
+      interface Next.js. Outillage : uv, ruff, mypy strict, pytest, GitHub Actions.
+    </p>
+    <p>
+      Exécution de référence : agent <code>{answer.run.agent_model}</code>, juge <code>{answer.run.judge_model}</code>, comparaison du sens <code>{answer.run.embedding_model}</code>. Architecture détaillée : <a
+        href={at("docs/architecture.md")}>docs/architecture.md</a
+      >.
+    </p>
+  </CaseSection>
+
+  <CaseSection n={7} id="suite" title="La suite" lead="Ce qui manque encore, d’après le projet lui-même.">
+    <ul>
+      <li>Une exécution publiée de la version actuelle : celles de référence précèdent les consignes actuelles du modèle.</li>
+      <li>Un refus fondé sur une confiance fiable : l’erreur de confiance mesurée sur le test ne le permet pas.</li>
+      <li>Un juge d’une autre famille de modèles, et un second annotateur humain.</li>
+      <li>La lecture de pages web : le code existe, aucun test ne l’exerce.</li>
+    </ul>
+    <p><a href={at("README.md#roadmap")}>Feuille de route</a> · <a href={at("docs/results.md")}>ce que les chiffres ne disent pas</a></p>
+  </CaseSection>
+</CaseStudy>
