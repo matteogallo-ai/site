@@ -1,0 +1,16 @@
+---
+interface Props {
+  /** Position on the page, shown as the section's calibre number ("+ 01"). */
+  n: number;
+  id: string;
+  title: string;
+}
+
+const { n, id, title } = Astro.props;
+---
+
+<section class="section case-section" id={id} aria-labelledby={`${id}-title`}>
+  <p class="mono rule-label" aria-hidden="true">+ {String(n).padStart(2, "0")}</p>
+  <h2 id={`${id}-title`}>{title}</h2>
+  <slot />
+</section>
