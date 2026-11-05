@@ -104,19 +104,6 @@ a {
   font-family: var(--font-serif);
 }
 
-@media (prefers-reduced-motion: reduce) {
-  /* SPEC §4: everything is cut, including durations written outside the motion tokens.
-     0.01ms rather than 0 so transitionend still fires for scripts that wait on it. */
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-delay: 0s !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
-  }
-}
 
 /* Glass (SPEC §4): only the navigation, the spotlight ring and the answer card. Frosted everywhere;
    refracted where the engine renders SVG filters in backdrop-filter (Glass.astro); the tokens

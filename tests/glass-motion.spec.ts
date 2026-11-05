@@ -102,7 +102,7 @@ test("under reduced motion the answer is shown whole at once", async ({ page }) 
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/");
   // Read in the same task as the click: a retrying assertion would also pass on writing that
-  // merely ends fast (the motion tokens are 0.01ms under reduced motion).
+  // merely ends fast.
   const state = await page.evaluate(() => {
     document.querySelector<HTMLElement>("#verity-tab-refusal")!.click();
     const panel = document.getElementById("verity-panel-refusal")!;

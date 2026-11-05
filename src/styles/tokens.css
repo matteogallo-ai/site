@@ -45,11 +45,14 @@
   --gutter: 24px;
   --container: 1200px;
 
-  /* Motion (SPEC §4): 150–400 ms on one curve. */
-  --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
-  --dur-fast: 150ms;
-  --dur-base: 250ms;
-  --dur-slow: 400ms;
+  /* Motion (SPEC §4): out for entrances and hovers, in-out for things that travel. Only transform
+     and opacity move continuously; transitions name their properties, never "all". */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-press: 90ms;
+  --dur-hover: 180ms;
+  --dur-move: 280ms;
+  --dur-reveal: 480ms;
 
   /* Glass: navigation, loupe and answer card only (SPEC §4). */
   --glass-fill: rgb(245 244 240 / 0.72);
@@ -78,11 +81,13 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  /* Near-zero rather than 0: transitions land on their final state at once and still fire transitionend. */
+  /* Nothing travels or scales; colours still change, briefly. A duration of 0 starts no
+     transition at all, so no style is ever read halfway. */
   :root {
-    --dur-fast: 0.01ms;
-    --dur-base: 0.01ms;
-    --dur-slow: 0.01ms;
+    --dur-press: 0s;
+    --dur-hover: 120ms;
+    --dur-move: 0s;
+    --dur-reveal: 0s;
   }
 }
 

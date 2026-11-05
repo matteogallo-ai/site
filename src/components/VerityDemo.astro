@@ -321,17 +321,13 @@ const nameOf = (path: string) => {
   }
 
   .doc [data-o] {
-    transition: color var(--dur-slow) var(--ease);
+    transition: color var(--dur-move) var(--ease-out);
   }
 
   /* The lit passage moves its neighbours apart, so the glass ring around it (PAD + --ring) lies
-     over blank space, never over another line. The blocks are marked at build time (data-holds), so no :has() is
-     needed. The margin must be final when the lens measures the words: no transition, not even
-     the 0.01ms one the reduced-motion rule in global.css gives every property, which left the
-     lens 48 px off its words for a frame. */
-  .doc :is(p, li, ul) {
-    transition-property: none;
-  }
+     over blank space, never over another line. The blocks are marked at build time (data-holds),
+     so no :has() is needed. The margin is not animated: it must be final when the lens measures
+     the words. */
 
   .demo[data-lit][data-mode="answer"] [data-holds="answer"],
   .demo[data-lit][data-mode="refusal"] [data-holds="refusal"] {
@@ -364,10 +360,10 @@ const nameOf = (path: string) => {
     border-radius: 16px;
     box-shadow: 0 14px 30px -18px rgb(17 17 17 / 0.5);
     transition:
-      left var(--dur-slow) var(--ease),
-      top var(--dur-slow) var(--ease),
-      width var(--dur-slow) var(--ease),
-      height var(--dur-slow) var(--ease);
+      left var(--dur-move) var(--ease-in-out),
+      top var(--dur-move) var(--ease-in-out),
+      width var(--dur-move) var(--ease-in-out),
+      height var(--dur-move) var(--ease-in-out);
     pointer-events: none;
   }
 
@@ -395,8 +391,8 @@ const nameOf = (path: string) => {
     padding: 0.15rem 0.55rem 0.15rem 0.2rem;
     box-shadow: 0 0 0 1px var(--rule);
     transition:
-      left var(--dur-slow) var(--ease),
-      top var(--dur-slow) var(--ease);
+      left var(--dur-move) var(--ease-in-out),
+      top var(--dur-move) var(--ease-in-out);
     font-size: var(--step-12);
     white-space: nowrap;
     color: var(--ink);
@@ -432,8 +428,15 @@ const nameOf = (path: string) => {
   }
 
   /* Motion only answers a change of mode: on load the card is simply there. */
-  .demo[data-switched] .card {
-    animation: card-in var(--dur-slow) var(--ease);
+  @media (prefers-reduced-motion: no-preference) {
+    .demo[data-switched] .card {
+      animation: card-in var(--dur-move) var(--ease-out);
+    }
+
+    .card[data-written] .tr-a,
+    .card[data-written] .checks li {
+      animation: card-in var(--dur-hover) var(--ease-out) backwards;
+    }
   }
 
   @keyframes card-in {
@@ -485,11 +488,6 @@ const nameOf = (path: string) => {
   .card[data-writing] .tr-a,
   .card[data-writing] .checks li {
     opacity: 0;
-  }
-
-  .card[data-written] .tr-a,
-  .card[data-written] .checks li {
-    animation: card-in var(--dur-base) var(--ease) backwards;
   }
 
   .checks li:nth-child(2) {
