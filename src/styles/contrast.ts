@@ -47,3 +47,30 @@ export function readThemes(source: string): { light: Theme; dark: Theme } {
   }
   return { light, dark };
 }
+
+/** `a` and `b` mixed in sRGB with `weight` of `a`, as CSS color-mix(in srgb, a weight, b) does. */
+export function mix(a: string, b: string, weight: number): string {
+  luminance(a);
+  luminance(b);
+  const at = (hex: string, i: number) => Number.parseInt(hex.slice(i, i + 2), 16);
+  return `#${[1, 3, 5].map((i) => Math.round(at(a, i) * weight + at(b, i) * (1 - weight)).toString(16).padStart(2, "0")).join("")}`;
+}
+
+export interface Mix {
+  first: string;
+  weight: number;
+  second: string;
+}
+
+/**
+ * A token written as color-mix(in srgb, var(--a) N%, var(--b) | transparent): the test resolves
+ * it per theme from the same declaration the browser reads. Throws on any other form.
+ */
+export function readMix(source: string, name: string): Mix {
+  const css = source.replace(/\/\*[\s\S]*?\*\//g, "");
+  const value = new RegExp(`--${name}:\\s*([^;]+);`).exec(css)?.[1]?.trim();
+  if (value === undefined) throw new Error(`tokens.css: no --${name}`);
+  const m = /^color-mix\(in srgb, var\(--([a-z0-9-]+)\) (\d+(?:\.\d+)?)%, (?:var\(--([a-z0-9-]+)\)|(transparent))\)$/.exec(value);
+  if (!m) throw new Error(`tokens.css: --${name} is "${value}", not color-mix(in srgb, var(--a) N%, var(--b))`);
+  return { first: m[1] as string, weight: Number(m[2]) / 100, second: m[3] ?? "transparent" };
+}

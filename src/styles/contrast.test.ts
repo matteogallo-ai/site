@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { test } from "node:test";
-import { contrastRatio, readThemes } from "./contrast.ts";
+import { contrastRatio, mix, readMix, readThemes } from "./contrast.ts";
 
 const css = readFileSync(new URL("./tokens.css", import.meta.url), "utf8");
 const themes = readThemes(css);
@@ -58,3 +58,49 @@ test("readThemes ignores braces and declarations inside comments", () => {
   const css = ":root { /* not {this} --ink: #ffffff; */ --ink: #111111; }\n@media (prefers-color-scheme: dark) { :root { --ink: #eeeeee; } }";
   assert.deepEqual(readThemes(css), { light: { ink: "#111111" }, dark: { ink: "#eeeeee" } });
 });
+
+test("mix matches CSS color-mix in srgb", () => {
+  assert.equal(mix("#000000", "#ffffff", 0.5), "#808080");
+  assert.equal(mix("#a8382a", "#f5f4f0", 1), "#a8382a");
+  assert.equal(mix("#a8382a", "#f5f4f0", 0), "#f5f4f0");
+});
+
+test("readMix reads a color-mix token and refuses any other form", () => {
+  assert.deepEqual(readMix(":root { --t: color-mix(in srgb, var(--a) 7%, var(--b)); }", "t"), { first: "a", weight: 0.07, second: "b" });
+  assert.deepEqual(readMix(":root { --t: color-mix(in srgb, var(--a) 90%, transparent); }", "t"), { first: "a", weight: 0.9, second: "transparent" });
+  assert.throws(() => readMix(":root { --t: #ffffff; }", "t"), /not color-mix/);
+  assert.throws(() => readMix(":root {}", "t"), /no --t/);
+});
+
+// « Défaut connu »: a barely tinted box, its label in the defect colour, its text in ink.
+const tint = readMix(css, "defect-tint");
+test("--defect-tint is at most 8 % of --defect over the paper", () => {
+  assert.equal(tint.first, "defect");
+  assert.equal(tint.second, "paper");
+  assert.ok(tint.weight <= 0.08, `${tint.weight * 100} % > 8 %`);
+});
+
+// The lens is frosted glass: whatever lies behind it shows through the fill, blurred. Worst
+// case for the enlarged words is a solid patch of ink behind them.
+const lensFill = readMix(css, "lens-fill");
+test("--lens-fill is the sheet at 85 % or more", () => {
+  assert.equal(lensFill.first, "sheet");
+  assert.equal(lensFill.second, "transparent");
+  assert.ok(lensFill.weight >= 0.85, `${lensFill.weight * 100} % < 85 %`);
+});
+
+for (const [name, theme] of Object.entries(themes)) {
+  const defectTint = mix(theme.defect!, theme.paper!, tint.weight);
+  for (const fg of ["defect", "ink"]) {
+    test(`${name}: --${fg} on --defect-tint (${defectTint}) >= 4.5:1`, () => {
+      const ratio = contrastRatio(theme[fg]!, defectTint);
+      assert.ok(ratio >= 4.5, `${ratio.toFixed(2)}:1 < 4.5:1`);
+    });
+  }
+  const underLens = mix(theme.sheet!, theme.ink!, lensFill.weight);
+  // The lens shows only its target words, in ink, on their wash (tested above) or on the fill.
+  test(`${name}: --ink on the lens over ink (${underLens}) >= 4.5:1`, () => {
+    const ratio = contrastRatio(theme.ink!, underLens);
+    assert.ok(ratio >= 4.5, `${ratio.toFixed(2)}:1 < 4.5:1`);
+  });
+}

@@ -26,7 +26,7 @@ Plain text on the left, one strong visual on the right: Verity working on a cont
    - Left: **portrait** (about 120 px, round, next to the name), name, status "Available · Lausanne, CH" (green dot), title "Software & AI Engineer.", the message (with "defects included" highlighted in green), buttons "See the projects" and "Write an e-mail", and the note "On the right: Verity, my RAG agent, on a demo contract".
    - Right: the Verity demo (section 2).
    - A band of 3 figures under the first screen, one of them the main defect.
-3. **Projects:** 3 cards (No. 01 Verity, No. 02 PromptLang, No. 03 Praxis), each with **a real screenshot or GIF** of the product, one sentence, 2–3 measures linked to their proof, a "Known defect" box, the technologies in one line of text, and links Case study · Code.
+3. **Projects:** 3 cards (No. 01 Verity, No. 02 PromptLang, No. 03 Praxis), each with **a real screenshot or GIF** of the product, one sentence, 2–3 measures linked to their proof, a "Known defect" box (background tinted with at most 8 % of the defect colour, its label in the defect colour, its text in ink), the technologies in one line of text, and links Case study · Code.
 4. **Method:** 3 rules from how-i-build, each with the real incident behind it and the link. Link to the repository.
 5. **Writing:** dated list. First entry: "I trapped my own judge" (forthcoming).
 6. **About:** a **"Short / Detailed"** toggle between two versions of the bio. An honest path, languages, what I am looking for, résumé (PDF).
