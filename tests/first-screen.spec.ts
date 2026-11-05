@@ -97,3 +97,37 @@ for (const [width, height] of [
     });
   }
 }
+
+// Wide screens: the card overlaps the window's lower part, and the window's text fades out where
+// the card begins (--window-height - --card-overlap). The passage and its ring sit above that line,
+// fully opaque, and clear of the card.
+for (const [width, height] of [
+  [1440, 800],
+  [1280, 720],
+  [1024, 768],
+] as const) {
+  for (const mode of ["answer", "refusal"] as const) {
+    test(`at ${width}×${height}, the ${mode} lens is above the card and the window's lower fade`, async ({ page }) => {
+      await page.setViewportSize({ width, height });
+      await page.emulateMedia({ reducedMotion: "reduce" });
+      await page.goto("/");
+      await page.evaluate(() => document.fonts.ready);
+      if (mode === "refusal") await page.getByRole("tab", { name: "Refuse, faute de preuve" }).click();
+      await expect.poll(() => settled(page, mode)).toBe(true);
+      const b = await boxes(page, mode);
+      const opaqueEnd = await page.evaluate(() => {
+        const demo = document.querySelector("[data-verity-demo]")!;
+        const rem = Number.parseFloat(getComputedStyle(document.documentElement).fontSize);
+        const read = (name: string) => Number.parseFloat(getComputedStyle(demo).getPropertyValue(name)) * rem;
+        return read("--window-height") - read("--card-overlap");
+      });
+      if (Number.isNaN(opaqueEnd)) {
+        // The card follows the window at this width: nothing overlaps.
+        expect(b.card.top).toBeGreaterThanOrEqual(b.window.bottom);
+        return;
+      }
+      expect(b.lens.bottom - b.window.top, JSON.stringify(b)).toBeLessThanOrEqual(opaqueEnd + 0.5);
+      expect(apart(b.lens, b.card), JSON.stringify(b)).toBe(true);
+    });
+  }
+}

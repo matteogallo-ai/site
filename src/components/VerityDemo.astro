@@ -98,10 +98,10 @@ const nameOf = (path: string) => {
   </div>
 
   <section class="card glass" role="tabpanel" id="verity-panel-answer" aria-labelledby="verity-tab-answer" tabindex="0">
-    <p class="step"><span class="n">1</span>La question</p>
+    <p class="step"><span class="n">1</span> La question</p>
     <p class="q" lang="en">{answer.question}</p>
     <p class="tr"><span class="tr-k">traduction</span> {fr(answer).question.fr}</p>
-    <p class="step"><span class="n">3</span>La réponse, vérifiée</p>
+    <p class="step"><span class="n">3</span> La réponse, vérifiée</p>
     <p class="a" lang="en"><span class="a-text">{answer.answer_text}</span></p>
     <p class="tr tr-a"><span class="tr-k">traduction</span> {fr(answer).answer.fr}</p>
     <p class="ref">
@@ -118,10 +118,10 @@ const nameOf = (path: string) => {
   </section>
 
   <section class="card glass refused" role="tabpanel" id="verity-panel-refusal" aria-labelledby="verity-tab-refusal" tabindex="0" hidden>
-    <p class="step"><span class="n">1</span>La question</p>
+    <p class="step"><span class="n">1</span> La question</p>
     <p class="q" lang="en">{refusal.question}</p>
     <p class="tr"><span class="tr-k">traduction</span> {fr(refusal).question.fr}</p>
-    <p class="step"><span class="n">3</span>La réponse : un refus, vérifié</p>
+    <p class="step"><span class="n">3</span> La réponse : un refus, vérifié</p>
     <p class="a" lang="en"><span class="a-text">{refusal.answer_text}</span></p>
     <p class="tr tr-a"><span class="tr-k">traduction</span> {fr(refusal).answer.fr}</p>
     <p class="verdict">Refus du modèle, confiance <span class="mono">{decimal(refusal.confidence_score, 2, "fr")}</span></p>
@@ -527,17 +527,24 @@ const nameOf = (path: string) => {
   @media (min-width: 64rem) {
     /* The card covers the lower half of the window: the passage is centred in the upper part,
        and the padding lets the end of the contract scroll up there too. */
+    /* Below 80rem the passage wraps on more lines: a taller window keeps it above the card. */
     .demo {
-      --window-height: 22.5rem;
+      --window-height: 25rem;
       --card-overlap: 11.5rem;
     }
 
-    /* The contract fades out where the card begins: the strip of it left of the card would
-       show only cut words. */
+    @media (min-width: 80rem) {
+      .demo {
+        --window-height: 22.5rem;
+      }
+    }
+
+    /* The contract is opaque down to where the card begins, then fades out under it: the strip
+       of it left of the card would show only cut words. */
     .sheet {
       height: var(--window-height);
       padding-bottom: 12rem;
-      mask-image: linear-gradient(to bottom, transparent, #000 var(--fade), #000 calc(var(--window-height) - var(--card-overlap) - var(--fade)), transparent calc(var(--window-height) - var(--card-overlap)));
+      mask-image: linear-gradient(to bottom, transparent, #000 var(--fade), #000 calc(var(--window-height) - var(--card-overlap)), transparent calc(var(--window-height) - var(--card-overlap) + var(--fade) / 2));
       /* Wide screens only: on a phone the window spans the screen, and a swipe on it must still
          scroll the page once the window is at its end. */
       overscroll-behavior: contain;
