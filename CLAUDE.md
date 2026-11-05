@@ -26,6 +26,7 @@ src/lib/                 document.ts (Markdown blocks keeping source offsets), m
                          sitemap.ts (sitemap.xml and robots.txt from the page files), og.ts (what the OG image says)
 src/data/site-measures.json  copy of the site-measures artifact of one CI run; site-measures.source.json names
                          the run and the sha256 the copy must keep (colophon.test.ts)
+scripts/check-rulesets.ts  go-live check that an active ruleset protects main (rules in rulesets-lib.ts)
 scripts/og.ts            draws public/og.png (1200x630) with the site's fonts and tokens through Playwright;
                          src/data/og.json pins the hash of its inputs and of the PNG (og.test.ts)
 src/scripts/             client code of the demo: lens.ts (geometry), typing.ts (answer writing), verity-demo.ts (DOM)
@@ -83,6 +84,7 @@ npm run test:a11y      axe, keyboard and glyph coverage on every page of dist/ (
 npm run fonts          rebuild font subsets (needs .venv: pip install --require-hashes -r scripts/fonts/requirements.txt)
 npm run lighthouse     Lighthouse CI with blocking budgets (needs a build and Chrome)
 npm run measures       write site-measures.json from the last Lighthouse run
+npm run check:rulesets  at go-live, not in CI: fails until an active GitHub ruleset protects main (Colophon sentence)
 npm run og             redraw public/og.png (after changing the home headline or the tokens; needs Playwright chromium)
 ```
 
