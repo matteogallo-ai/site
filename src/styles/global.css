@@ -55,6 +55,32 @@ a {
   margin-inline: auto;
 }
 
+/* Numbered home sections (SPEC §4: "+" marks between sections, numbered sections). */
+.section {
+  padding-block: 4rem 1rem;
+}
+
+.rule-label {
+  margin: 0 0 0.5rem;
+  font-size: var(--step-12);
+  color: var(--graphite);
+}
+
+.section h2 {
+  font-size: var(--step-28);
+  letter-spacing: -0.01em;
+  margin-bottom: 1.5rem;
+}
+
+.section h3 {
+  font-size: var(--step-21);
+}
+
+/* The block holding a measure anchors its proof tooltip (src/components/Figure.astro). */
+:is(p, li):has(> .figure) {
+  position: relative;
+}
+
 .skip-link {
   position: absolute;
   left: var(--gutter);
@@ -68,8 +94,15 @@ a {
   top: var(--gutter);
 }
 
+/* The mono subset ships one weight: bold mono would be synthesised (font-synthesis: none) or fall back. */
 .mono {
   font-family: var(--font-mono);
+  font-weight: 400;
+}
+
+/* Only pages built with Base's `serif` prop load this face. */
+.serif {
+  font-family: var(--font-serif);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -79,8 +112,30 @@ a {
   *::before,
   *::after {
     animation-duration: 0.01ms !important;
+    animation-delay: 0s !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+}
+
+/* Glass (SPEC §4): only the navigation, the magnifier and the answer card. Frosted everywhere;
+   refracted where the engine renders SVG filters in backdrop-filter (Glass.astro); the tokens
+   make it opaque under prefers-reduced-transparency. */
+.glass {
+  background: var(--glass-fill);
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  backdrop-filter: blur(var(--glass-blur));
+}
+
+:root[data-refraction] .glass {
+  backdrop-filter: url(#glass-refraction) blur(var(--glass-blur));
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .glass,
+  :root[data-refraction] .glass {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
   }
 }

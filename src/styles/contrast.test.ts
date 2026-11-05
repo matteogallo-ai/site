@@ -14,6 +14,8 @@ const PAIRS: Array<[string, string, number]> = [
   ["defect", "paper", 4.5],
   ["night", "paper", 4.5],
   ["ink", "proof-wash", 4.5],
+  ["ink", "defect-wash", 4.5],
+  ["ink", "sheet", 4.5],
   ["proof-text", "proof-wash", 4.5],
   ["proof", "paper", 3],
 ];

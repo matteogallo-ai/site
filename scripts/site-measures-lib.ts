@@ -13,7 +13,7 @@ export interface ManifestEntry {
 
 interface Audit {
   numericValue?: number;
-  details?: { items?: Array<{ resourceType?: string; transferSize?: number }> };
+  details?: { items?: Array<{ resourceType?: string; transferSize?: number; url?: string }> };
 }
 
 export interface Lhr {
@@ -115,4 +115,30 @@ export function buildMeasures(
     },
     pages,
   };
+}
+
+/**
+ * Files a run must have requested for its transfer total to include them: the home
+ * budget counts the project screenshots, which load lazily, so a run that never
+ * reached them would pass the budget without measuring it.
+ */
+export function unrequested(lhr: Lhr, stems: string[]): string[] {
+  const urls = (lhr.audits["network-requests"]?.details?.items ?? []).map((i) => i.url ?? "");
+  return stems.filter((stem) => !urls.some((u) => u.split("/").at(-1)!.startsWith(`${stem}.`)));
+}
+
+/**
+ * The run's transfer plus, for each image it did not request (lazy, below what the run
+ * scrolled to), the heaviest AVIF variant Astro wrote for it: the format a <picture> serves
+ * first in the browsers measured, at the largest width a srcset can pick. An upper bound for
+ * AVIF-capable browsers; one served the WebP or PNG fallback downloads more.
+ */
+export function transferWithUnrequested(lhr: Lhr, missing: string[], files: { name: string; bytes: number }[]): number {
+  let total = transfer(lhr, "total");
+  for (const stem of missing) {
+    const variants = files.filter((f) => f.name.startsWith(`${stem}.`) && f.name.endsWith(".avif")).map((f) => f.bytes);
+    if (variants.length === 0) throw new Error(`no AVIF variant of ${stem} in the build`);
+    total += Math.max(...variants);
+  }
+  return total;
 }

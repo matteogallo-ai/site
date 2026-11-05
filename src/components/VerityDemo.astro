@@ -1,0 +1,412 @@
+---
+import sla from "../data/demo/sla.json";
+import answerData from "../data/demo/answer.json";
+import refusalData from "../data/demo/refusal.json";
+import type { DemoTrace } from "../../scripts/traces-lib.ts";
+import { firstListIn, toBlocks, type Span } from "../lib/document.ts";
+import { decimal } from "../lib/measures.ts";
+
+const answer = answerData as DemoTrace;
+const refusal = refusalData as DemoTrace;
+const slaPath = sla.source.path;
+const slaId = Object.entries(answer.documents).find(([, path]) => path === slaPath)![0];
+
+// The quote the magnifier goes to is the citation on the page's document; the other one is a reference.
+const cited = answer.citations.find((c) => c.document_id === slaId)!;
+const elsewhere = answer.citations.filter((c) => c.document_id !== slaId);
+const closest = refusal.hits_used[0]!.chunk;
+const refusalTarget = firstListIn(sla.text, closest);
+
+// The card states these checks as passed: a trace that fails them must not build.
+if (sla.text.slice(cited.char_start, cited.char_end) !== cited.quote) throw new Error(`${answer.example_id}: the quote is not at its offsets in ${slaPath}`);
+const claims = answer.judge_claims ?? [];
+if (claims.length === 0) throw new Error(`${answer.example_id}: no judge claims to report`);
+const supported = claims.filter((c) => c.supported && c.citation_ok).length;
+
+const blocks = toBlocks(sla.text, [
+  { name: "answer", start: cited.char_start, end: cited.char_end },
+  { name: "refusal", ...refusalTarget },
+]);
+
+const sectionOf = (section: string) => section.split(" > ").at(-1)!;
+const fileOf = (path: string) => path.split("/").at(-1)!;
+const chunkOf = (chunkId: string) => answer.hits_used.find((h) => h.chunk.id === chunkId)?.chunk;
+const runFile = fileOf(answer.source.path);
+---
+
+<div class="demo" data-verity-demo data-mode="answer">
+  <div class="tabs" role="tablist" aria-label="Mode de Verity">
+    <button type="button" role="tab" id="verity-tab-answer" aria-controls="verity-panel-answer" aria-selected="true" data-mode="answer">Répond, en citant</button>
+    <button type="button" role="tab" id="verity-tab-refusal" aria-controls="verity-panel-refusal" aria-selected="false" tabindex="-1" data-mode="refusal">Refuse, faute de preuve</button>
+  </div>
+
+  <div class="sheet" data-sheet>
+    <article class="doc serif" lang="en" aria-label="Contrat de démonstration : Service Level Agreement">
+      {
+        blocks.map((b) =>
+          b.kind === "ul" ? (
+            <ul>
+              {b.items.map((item) => (
+                <li>
+                  {item.map((s: Span) => (
+                    <span data-o={s.start} data-mark={s.marks.join(" ") || undefined}>{s.text}</span>
+                  ))}
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p class={b.kind === "p" ? undefined : `heading ${b.kind}`}>
+              {b.spans.map((s: Span) => (
+                <span data-o={s.start} data-mark={s.marks.join(" ") || undefined}>{s.text}</span>
+              ))}
+            </p>
+          ),
+        )
+      }
+    </article>
+    <div class="lens" data-lens hidden aria-hidden="true">
+      <div class="lens-glass">
+        <div class="lens-view" data-lens-view></div>
+      </div>
+    </div>
+    <p class="lens-tag" data-lens-tag hidden aria-hidden="true">
+      <span data-tag-answer>Citation</span><span class="defect" data-tag-refusal>Jugé insuffisant</span>
+    </p>
+  </div>
+  <p class="source mono">
+    <a href={sla.source.url}>{fileOf(slaPath)}</a> · run <a href={answer.source.url}>{runFile}</a>
+  </p>
+
+  <section class="card glass" role="tabpanel" id="verity-panel-answer" aria-labelledby="verity-tab-answer" tabindex="0">
+    <p class="k">Question · {answer.example_id}</p>
+    <p class="q" lang="en">{answer.question}</p>
+    <p class="k">Réponse</p>
+    <p class="a" lang="en"><span class="a-text">{answer.answer_text}</span></p>
+    <blockquote class="serif" lang="en">{cited.quote}</blockquote>
+    <p class="ref mono" lang="en">{fileOf(slaPath)} · {sectionOf(chunkOf(cited.chunk_id)!.section)}</p>
+    {
+      elsewhere.map((c) => (
+        <p class="ref mono" lang="en">
+          + {fileOf(answer.documents[c.document_id]!)} · {sectionOf(chunkOf(c.chunk_id)!.section)}
+        </p>
+      ))
+    }
+    <ul class="checks">
+      <li><span class="tick mono" aria-hidden="true">✓</span> Citation retrouvée mot pour mot dans le document</li>
+      <li>
+        <span class="tick mono" aria-hidden="true">{supported === claims.length ? "✓" : "✗"}</span>
+        <span class="mono">{supported}/{claims.length}</span> affirmations étayées par leur citation, selon le juge
+      </li>
+      <li><span class="tick mono muted" aria-hidden="true">·</span> confiance <span class="mono">{decimal(answer.confidence_score, 2, "fr")}</span></li>
+    </ul>
+  </section>
+
+  <section class="card glass refused" role="tabpanel" id="verity-panel-refusal" aria-labelledby="verity-tab-refusal" tabindex="0" hidden>
+    <p class="k">Question · {refusal.example_id}</p>
+    <p class="q" lang="en">{refusal.question}</p>
+    <p class="k">Réponse</p>
+    <p class="a" lang="en"><span class="a-text">{refusal.answer_text}</span></p>
+    <p class="verdict">Refus du modèle · confiance <span class="mono">{decimal(refusal.confidence_score, 2, "fr")}</span></p>
+    <p class="ref">Passage le plus proche{"\u00A0"}: <span class="mono" lang="en">{fileOf(slaPath)} · {sectionOf(closest.section)}</span>, jugé insuffisant</p>
+    <p class="why" lang="en">{refusal.refusal_rationale}</p>
+  </section>
+</div>
+
+<noscript>
+  <style is:inline>
+    /* Without the script the tabs cannot switch: show both cards and no inert controls. */
+    [data-verity-demo] .tabs {
+      visibility: hidden;
+    }
+    #verity-panel-refusal[hidden] {
+      display: block;
+      margin-top: 1rem;
+    }
+  </style>
+</noscript>
+
+<script>
+  import { mountVerityDemo } from "../scripts/verity-demo.ts";
+  for (const root of document.querySelectorAll<HTMLElement>("[data-verity-demo]")) mountVerityDemo(root);
+</script>
+
+<style>
+  .demo {
+    position: relative;
+    /* A lens capped at the sheet width keeps its centre on the target and may overhang the
+       sheet: clip it at the demo's edge instead of letting it widen the page. */
+    overflow-x: clip;
+    overflow-clip-margin: 8px;
+  }
+
+  .tabs {
+    display: inline-flex;
+    gap: 0.25rem;
+    padding: 0.25rem;
+    margin-bottom: 0.75rem;
+    border: 1px solid var(--rule);
+    border-radius: 999px;
+  }
+
+  [role="tab"] {
+    font-size: var(--step-14);
+    padding: 0.4rem 0.9rem;
+    border: 0;
+    border-radius: 999px;
+    background: transparent;
+    color: var(--graphite);
+    cursor: pointer;
+  }
+
+  [role="tab"][aria-selected="true"] {
+    background: var(--ink);
+    color: var(--paper);
+  }
+
+  .sheet {
+    position: relative;
+    padding: 1.5rem 1.5rem 1.25rem;
+    background: var(--sheet);
+    border-radius: 6px;
+    box-shadow: 0 0 0 1px var(--rule), 0 12px 32px -18px rgb(17 17 17 / 0.35);
+  }
+
+  .doc {
+    font-size: var(--step-14);
+    line-height: 1.55;
+    color: var(--ink);
+  }
+
+  /* The contract's own headings are not the page's: styled paragraphs keep the page outline. */
+  .doc .heading {
+    margin: 1rem 0 0.25rem;
+    font-size: var(--step-14);
+    font-weight: 600;
+    line-height: 1.55;
+    letter-spacing: 0;
+  }
+
+  .doc .h1 {
+    margin-top: 0;
+    font-size: var(--step-16);
+  }
+
+  .doc p:not(.heading) {
+    margin: 0 0 0.5rem;
+  }
+
+  .doc ul {
+    margin: 0 0 0.5rem;
+    padding-left: 1.1rem;
+    /* The serif subset has no bullet (U+2022); the source document marks items with a hyphen. */
+    list-style-type: "–\00A0";
+  }
+
+  /* Highlight follows the mode; the spans were cut at the cited offsets at build time. */
+  .demo[data-mode="answer"] [data-mark~="answer"] {
+    background: var(--proof-wash);
+    box-shadow: 0 2px 0 var(--proof);
+  }
+
+  .demo[data-mode="refusal"] [data-mark~="refusal"] {
+    background: var(--defect-wash);
+    box-shadow: 0 2px 0 var(--defect);
+  }
+
+  .lens {
+    position: absolute;
+    left: 0;
+    top: 0;
+    overflow: hidden;
+    border-radius: 14px;
+    background: var(--sheet);
+    box-shadow:
+      0 0 0 1px var(--glass-edge),
+      0 0 0 6px var(--glass-fill),
+      0 0 0 7px var(--glass-edge),
+      0 18px 40px -16px rgb(17 17 17 / 0.45);
+    transition:
+      left var(--dur-slow) var(--ease),
+      top var(--dur-slow) var(--ease),
+      width var(--dur-slow) var(--ease),
+      height var(--dur-slow) var(--ease);
+    pointer-events: none;
+  }
+
+  /* The rim of the glass bends the enlarged words (Glass.astro); the shadow ring stays on .lens. */
+  .lens-glass {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    border-radius: inherit;
+  }
+
+  :global(:root[data-refraction]) .lens-glass {
+    filter: url(#lens-refraction);
+  }
+
+  /* The copy moves with the lens: lens position + copy offset stays constant while it glides. */
+  .lens-view {
+    position: absolute;
+    padding: 1.5rem 1.5rem 1.25rem;
+    transition:
+      left var(--dur-slow) var(--ease),
+      top var(--dur-slow) var(--ease),
+      transform var(--dur-slow) var(--ease);
+  }
+
+  /* Above the lens, never over the words it enlarges. */
+  .lens-tag {
+    position: absolute;
+    margin: 0;
+    transform: translate(-100%, calc(-100% - 10px));
+    padding: 0.05rem 0.45rem;
+    box-shadow: 0 0 0 1px var(--rule);
+    transition:
+      left var(--dur-slow) var(--ease),
+      top var(--dur-slow) var(--ease);
+    font-size: var(--step-12);
+    color: var(--proof-text);
+    background: var(--paper);
+    border-radius: 4px;
+  }
+
+  .lens-tag .defect {
+    color: var(--defect);
+  }
+
+  .demo[data-mode="answer"] [data-tag-refusal],
+  .demo[data-mode="refusal"] [data-tag-answer] {
+    display: none;
+  }
+
+  .source {
+    margin: 0.5rem 0 1rem;
+    font-size: var(--step-12);
+    color: var(--graphite);
+    overflow-wrap: anywhere;
+  }
+
+  .source a {
+    color: inherit;
+  }
+
+  .card {
+    padding: 1.25rem;
+    border-radius: 14px;
+    box-shadow: 0 0 0 1px var(--glass-edge), 0 12px 32px -20px rgb(17 17 17 / 0.4);
+  }
+
+  /* Motion only answers a change of mode: on load the card is simply there. */
+  .demo[data-switched] .card {
+    animation: card-in var(--dur-slow) var(--ease);
+  }
+
+  @keyframes card-in {
+    from {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+  }
+
+  .card p {
+    margin: 0;
+  }
+
+  .k {
+    margin-top: 0.75rem !important;
+    font-size: var(--step-12);
+    color: var(--graphite);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .k:first-child {
+    margin-top: 0 !important;
+  }
+
+  .q,
+  .a {
+    font-size: var(--step-16);
+  }
+
+  blockquote {
+    margin: 0.75rem 0 0.25rem;
+    padding-left: 0.75rem;
+    border-left: 3px solid var(--proof);
+    font-size: var(--step-16);
+  }
+
+  .ref {
+    font-size: var(--step-12);
+    color: var(--graphite);
+    overflow-wrap: anywhere;
+  }
+
+  .checks {
+    margin: 0.75rem 0 0;
+    padding: 0;
+    list-style: none;
+    font-size: var(--step-14);
+  }
+
+  /* The answer writes itself (verity-demo.ts) in an aria-hidden layer over the answer, which
+     is only made transparent: assistive tech keeps the whole answer and the checks throughout. */
+  .a {
+    position: relative;
+  }
+
+  .a :global(.a-layer) {
+    position: absolute;
+    inset: 0;
+  }
+
+  .a :global(.unwritten) {
+    visibility: hidden;
+  }
+
+  .card[data-writing] .a-text,
+  .card[data-writing] .checks li {
+    opacity: 0;
+  }
+
+  .card[data-written] .checks li {
+    animation: card-in var(--dur-base) var(--ease) backwards;
+  }
+
+  .checks li:nth-child(2) {
+    animation-delay: 120ms;
+  }
+
+  .checks li:nth-child(3) {
+    animation-delay: 240ms;
+  }
+
+  .tick {
+    display: inline-block;
+    width: 1.1em;
+    color: var(--proof-text);
+  }
+
+  .tick.muted {
+    color: var(--graphite);
+  }
+
+  .verdict {
+    margin-top: 0.75rem !important;
+    color: var(--defect);
+    font-weight: 600;
+  }
+
+  .why {
+    margin-top: 0.5rem !important;
+    font-size: var(--step-14);
+    color: var(--graphite);
+  }
+
+  @media (prefers-reduced-transparency: reduce) {
+    :global(:root[data-refraction]) .lens-glass {
+      filter: none;
+    }
+  }
+</style>

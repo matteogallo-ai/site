@@ -41,11 +41,20 @@ jobs:
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version-file: .nvmrc
-      # Node built-ins only: no install needed. Reads the public repos at their pinned commits.
+      # check-sources uses Node built-ins only; npm ci comes after it, for sharp in media-frame.
       - run: npm run check:sources
         env:
           # Read-only (permissions: contents: read): lifts the API quota for directory listings.
           GITHUB_TOKEN: ${{ github.token }}
+      - run: npm ci
+      - name: the recording stills have the pixels of their pinned frames
+        run: node --experimental-strip-types scripts/media-frame.ts --check
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: "3.12"
+      - run: pip install --require-hashes -r scripts/media/requirements.txt
+      - name: the Praxis still has the pixels of the pinned briefing's first page
+        run: python scripts/media/pdf_page.py --check
 
   links:
     name: build + links

@@ -13,7 +13,7 @@ test("French and Italian text with French punctuation is covered by the text fon
 });
 
 test("the mono subset draws the measure symbols and no-break spaces", () => {
-  assert.deepEqual(missingGlyphs({ mono: `κ? no: 0,71 ≥ 0,60 ✓ ✗ · ‹ › 200${NBSP}000 € <> ≤` }, coverage), ['mono: "κ" U+03BA']);
+  assert.deepEqual(missingGlyphs({ mono: `κ 0,71 ≥ 0,60 ✓ ✗ · ‹ › 200${NBSP}000 € <> ≤ 3,29–4,75 $ é` }, coverage), ['mono: "é" U+00E9']);
 });
 
 test("the narrow no-break space of French Intl.NumberFormat is reported in mono: JetBrains Mono has none", () => {

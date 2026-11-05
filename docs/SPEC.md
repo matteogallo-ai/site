@@ -51,7 +51,7 @@ How the site is built: stack, budgets, real measures, accessibility choices, wha
 - **Colours:** paper `#F5F4F0`, ink `#111111`, graphite `#5C5C58`, rules `#DAD8D2`, proof `#1E8A4C`/`#17703D`, defect `#A8382A`, night blue `#1C2A44`. Automatic dark mode (`prefers-color-scheme`). AA contrast checked for every pair.
 - **Grid:** 12 columns, 24 px gutter, 1200 px container. Dotted vertical rules, "+" marks between sections, numbered sections.
 - **Glass:** only the navigation, the magnifier and the answer card. Frosted glass everywhere; SVG refraction as progressive enhancement (Chromium); opaque version under `prefers-reduced-transparency`. Text on glass only over a known, controlled background.
-- **Motion:** 150–400 ms, `cubic-bezier(.2,.8,.2,1)`. The magnifier glides to the clause, the answer writes itself, the ticks appear in order. Everything is cut under `prefers-reduced-motion` (final state shown at once).
+- **Motion:** transitions last 150–400 ms, `cubic-bezier(.2,.8,.2,1)`. The magnifier glides to the clause, the answer writes itself, the ticks appear in order. Writing the answer is a reading animation, not a transition: about 35 ms a word, at most 1.5 s; a click or a key shows it whole, and only an `aria-hidden` visual layer is animated, so assistive tech reads the whole answer from the start. Everything is cut under `prefers-reduced-motion` (final state shown at once).
 
 ## 5. Signature details
 1. The Verity demo with the magnifier computed on the citation.
@@ -60,6 +60,7 @@ How the site is built: stack, budgets, real measures, accessibility choices, wha
 
 ## 6. Content rules
 - No figure without a source: everything comes from `src/data/measures.json`, filled from the published artefacts of the repositories at their current commit, with link and hash.
+- No placeholder on a published page: an element of §3 whose content or target does not exist yet (the EN version, case-study links, the résumé PDF, the footer site measures, the Colophon link) is left out of the page until it does; the build fails on any placeholder.
 - No skills wall, no technology logos, no carousel, no form, no templated developer-portfolio layout.
 - Defects shown at the same level as measures.
 - Public resume: no postal address, phone or date of birth. The PDF published on the site carries only e-mail, LinkedIn, GitHub and city.

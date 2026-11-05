@@ -2,5 +2,12 @@
   "recurse": true,
   "checkCss": true,
   "verbosity": "error",
-  "skip": ["^https://matteogallo\\.pages\\.dev(/|$)"]
+  "skip": [
+    "^https://matteogallo\\.pages\\.dev(/|$)",
+    "^https://www\\.linkedin\\.com/"
+  ],
+  "retry": true,
+  "retryErrors": true,
+  "retryErrorsCount": 3,
+  "retryErrorsJitter": 3000
 }

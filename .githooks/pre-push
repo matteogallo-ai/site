@@ -1,0 +1,23 @@
+#!/bin/sh
+# Lints the message of every commit this push would publish (those on no branch of the remote
+# pushed to): once pushed, a message can only be fixed by a force-push, which the repo rules
+# forbid. Enable once per clone: git config core.hooksPath .githooks (git then ignores
+# .git/hooks).
+set -eu
+remote="$1"
+zero=0000000000000000000000000000000000000000
+command -v npx >/dev/null || { echo "pre-push: npx not found; put Node 24 on PATH" >&2; exit 1; }
+failed=0
+while read -r _local_ref local_sha _remote_ref _remote_sha; do
+  [ "$local_sha" = "$zero" ] && continue
+  # Captured first: a failing rev-list inside the for list would not stop the script.
+  commits=$(git rev-list "$local_sha" --not --remotes="$remote") || exit 1
+  for commit in $commits; do
+    if ! git log -1 --format=%B "$commit" | npx --no-install commitlint >/dev/null 2>&1; then
+      echo "pre-push: commitlint rejects $(git log -1 --format='%h %s' "$commit")" >&2
+      git log -1 --format=%B "$commit" | npx --no-install commitlint >&2 || true
+      failed=1
+    fi
+  done
+done
+exit "$failed"

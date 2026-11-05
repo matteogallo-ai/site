@@ -1,0 +1,81 @@
+{
+  "schema": "site.media/v1",
+  "media": [
+    {
+      "id": "verity",
+      "file": "src/assets/projects/verity-demo-110.png",
+      "sha256": "314a1b33d9bbb4a79f21900b85d753e79625f1562ac5395ba63afa7a5e3c4e29",
+      "repo": "matteogallo-ai/verity",
+      "commit": "162a055dee9ec26297b204c669a6a9b6e667b52a",
+      "path": "docs/media/verity-demo.gif",
+      "url": "https://github.com/matteogallo-ai/verity/blob/162a055dee9ec26297b204c669a6a9b6e667b52a/docs/media/verity-demo.gif",
+      "from": {
+        "repo": "matteogallo-ai/verity",
+        "commit": "162a055dee9ec26297b204c669a6a9b6e667b52a",
+        "path": "docs/media/verity-demo.gif",
+        "sha256": "56c8251c254c33479d35c87fd4342f66a6dcea0bfec2b02246bd6109786226d6",
+        "pixels_sha256": "5843db98f182d154f71ae2ffa830cc5a70952719c76cfad518177f31cc601055",
+        "frame": 110
+      },
+      "alt": {
+        "fr": "Image 110 de l’enregistrement live de Verity (agent claude-sonnet-4-6) : la question « What is the response time for a Priority 1 support request? », la réponse « within one (1) hour », portée à thirty (30) minutes par le Premium Support du bon de commande NW-2025-001, avec ses citations [1] et [2], et à droite le passage cité du SLA surligné parmi les huit sources retrouvées.",
+        "en": "Frame 110 of Verity's live recording (agent claude-sonnet-4-6): the question \"What is the response time for a Priority 1 support request?\", the answer \"within one (1) hour\", shortened to thirty (30) minutes by the Premium Support of order form NW-2025-001, with its citations [1] and [2], and on the right the cited SLA passage highlighted among the eight retrieved sources."
+      },
+      "caption": {
+        "fr": "Image de l’enregistrement live de la démo (claude-sonnet-4-6) : une citation cliquée, son passage surligné.",
+        "en": "A frame of the live demo recording (claude-sonnet-4-6): a citation clicked, its passage highlighted."
+      }
+    },
+    {
+      "id": "promptlang",
+      "file": "src/assets/projects/promptlang-demo-last.png",
+      "sha256": "e332f66e81a91c850c5e5d016df4711b7e628d1651ed290bb1e14b3d0c7b025d",
+      "repo": "matteogallo-ai/promptlang",
+      "commit": "804f1be95261da6a82763e7acfc80251a1db81d1",
+      "path": "docs/media/demo.gif",
+      "url": "https://github.com/matteogallo-ai/promptlang/blob/804f1be95261da6a82763e7acfc80251a1db81d1/docs/media/demo.gif",
+      "from": {
+        "repo": "matteogallo-ai/promptlang",
+        "commit": "804f1be95261da6a82763e7acfc80251a1db81d1",
+        "path": "docs/media/demo.gif",
+        "sha256": "230514f517a07b33757ff3efd694bea9a489a0ad741731d7c34e544c2e9a1ec1",
+        "pixels_sha256": "9d42d3477d1ba39f1399d1b1a5a85e7a9c2afe330a2f38ebb196e2af5126f8dd",
+        "frame": 351
+      },
+      "alt": {
+        "fr": "Dernière image de l’enregistrement de bun run demo : semver-check refuse un changement incompatible publié en 1.1.0, l’accepte en 2.0.0, un consommateur épinglé sur ^1.0.0 échoue proprement, puis les 3 tests de prompts passent sur des réponses simulées.",
+        "en": "Last frame of the bun run demo recording: semver-check rejects an incompatible change released as 1.1.0, passes it as 2.0.0, a consumer pinned to ^1.0.0 fails cleanly, then the 3 prompt tests pass on mock responses."
+      },
+      "caption": {
+        "fr": "Dernière image de l’enregistrement de bun run demo.",
+        "en": "Last frame of the bun run demo recording."
+      }
+    },
+    {
+      "id": "praxis",
+      "file": "src/assets/projects/praxis-esg-brief-p1.png",
+      "sha256": "ea38459578cb645aa90137202aef6c5f40552fa16b400f850c64935dbae77917",
+      "repo": "matteogallo-ai/praxis",
+      "commit": "8fe756a414625f03dad5f98791b0df7834047e1c",
+      "path": "benchmarks/outputs/live/10-esg-position/run-2026-11-04T13-04-11-831Z/brief.pdf",
+      "url": "https://github.com/matteogallo-ai/praxis/blob/8fe756a414625f03dad5f98791b0df7834047e1c/benchmarks/outputs/live/10-esg-position/run-2026-11-04T13-04-11-831Z/brief.pdf",
+      "from": {
+        "repo": "matteogallo-ai/praxis",
+        "commit": "8fe756a414625f03dad5f98791b0df7834047e1c",
+        "path": "benchmarks/outputs/live/10-esg-position/run-2026-11-04T13-04-11-831Z/brief.pdf",
+        "sha256": "d71a698b0eaf0e525240d7d5972f6472067b4f878984588f4ef6dff59c6fe3de",
+        "pixels_sha256": "7020a5c67fed12427e929e1432eb4fb0547ab225a24026350b71b0daf111fef3",
+        "page": 1,
+        "zoom": 1.25
+      },
+      "alt": {
+        "fr": "Première page du briefing live q10 de Praxis, au format position-paper-corporate : le titre « Publish our updated position on Scope 3 emissions disclosure requirements. », l’option recommandée OPT-A, un risque agrégé « high », 1650 mots pour une cible de 1600, une robustesse « low » et huit critiques dont cinq matérielles, révision nécessaire.",
+        "en": "First page of Praxis's live briefing q10, in the position-paper-corporate format: the title \"Publish our updated position on Scope 3 emissions disclosure requirements.\", recommended option OPT-A, aggregated risk \"high\", 1650 words for a 1600 target, robustness \"low\" and eight critiques, five of them material, revision needed."
+      },
+      "caption": {
+        "fr": "Première page du PDF d’un briefing live publié, robustesse « low » comprise.",
+        "en": "First page of a published live briefing PDF, \"low\" robustness included."
+      }
+    }
+  ]
+}

@@ -1,0 +1,74 @@
+---
+---
+
+<div class="bio" data-bio>
+  <div class="toggle" role="group" aria-label="Longueur de la bio">
+    <button type="button" aria-pressed="true" data-bio-show="short">Court</button>
+    <button type="button" aria-pressed="false" data-bio-show="long">Détaillé</button>
+  </div>
+  <div data-bio-version="short">
+    <p>Software &amp; AI Engineer à Lausanne, autodidacte. Je construis des produits IA de bout en bout et je publie ce qu’ils valent, mesures et défauts.</p>
+  </div>
+  <div data-bio-version="long" hidden>
+    <p>
+      Je suis autodidacte. J’ai commencé une formation d’automaticien à l’ETML, interrompue en deuxième année pour me consacrer au développement logiciel. Depuis, je construis des systèmes IA de bout en bout : je décide de ce qui est construit et de la façon dont c’est jugé (spécifications, architecture, définition de « terminé », protocoles d’évaluation, plafonds de coût) ; des agents de code écrivent l’essentiel du code, d’autres le relisent, je lis le résultat et je merge.
+    </p>
+    <p>Langues : français et italien (langues maternelles), anglais (intermédiaire), espagnol (notions).</p>
+    <p>Ce que je cherche : Un poste d’ingénieur logiciel et IA en Suisse romande (Lausanne, Genève, hybride).</p>
+  </div>
+</div>
+
+<noscript>
+  <style is:inline>
+    /* Without the script the toggle cannot switch: show the detailed version and no inert control. */
+    [data-bio] .toggle {
+      display: none;
+    }
+    [data-bio] [data-bio-version="long"][hidden] {
+      display: block;
+    }
+  </style>
+</noscript>
+
+<script>
+  // Short/Detailed bio. Without this script, the noscript style shows both versions and hides the toggle.
+  for (const bio of document.querySelectorAll<HTMLElement>("[data-bio]")) {
+    const buttons = [...bio.querySelectorAll<HTMLButtonElement>("[data-bio-show]")];
+    const show = (which: string) => {
+      for (const b of buttons) b.setAttribute("aria-pressed", String(b.dataset["bioShow"] === which));
+      for (const v of bio.querySelectorAll<HTMLElement>("[data-bio-version]")) v.hidden = v.dataset["bioVersion"] !== which;
+    };
+    for (const b of buttons) b.addEventListener("click", () => show(b.dataset["bioShow"]!));
+    show("short");
+  }
+</script>
+
+<style>
+  .bio {
+    max-width: 46rem;
+  }
+
+  .toggle {
+    display: inline-flex;
+    gap: 0.25rem;
+    padding: 0.25rem;
+    margin-bottom: 0.75rem;
+    border: 1px solid var(--rule);
+    border-radius: 999px;
+  }
+
+  .toggle button {
+    padding: 0.35rem 0.9rem;
+    border: 0;
+    border-radius: 999px;
+    background: transparent;
+    color: var(--graphite);
+    cursor: pointer;
+    font-size: var(--step-14);
+  }
+
+  .toggle button[aria-pressed="true"] {
+    background: var(--ink);
+    color: var(--paper);
+  }
+</style>

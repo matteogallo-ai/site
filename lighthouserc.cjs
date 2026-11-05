@@ -7,6 +7,8 @@ const TRANSFER_BUDGET_BYTES = 200_000;
 const FONT_BUDGET_BYTES = 90_000;
 
 module.exports = {
+  // Read by scripts/site-measures.ts; lhci ignores keys outside `ci`.
+  budgets: { transferBytes: TRANSFER_BUDGET_BYTES, fontBytes: FONT_BUDGET_BYTES },
   ci: {
     collect: {
       staticDistDir: "./dist",
@@ -14,8 +16,10 @@ module.exports = {
       // also fails if any built page is missing from the results.
       maxAutodiscoverUrls: 0,
       staticDirFileDiscoveryDepth: 10,
-      // Median of three runs: one run of the mobile emulation swings by several points.
-      numberOfRuns: 3,
+      // Median of five runs: the first run on a cold CI runner is an outlier (performance 0.84
+      // on PR #2, 0.90 on PR #3, against 1.00 for the runs after it), and with three runs the
+      // median-run choice can land on it.
+      numberOfRuns: 5,
     },
     assert: {
       assertions: {
@@ -25,8 +29,8 @@ module.exports = {
         "categories:seo": ["error", { minScore: 0.98, aggregationMethod: "median-run" }],
         "largest-contentful-paint": ["error", { maxNumericValue: 1499, aggregationMethod: "median-run" }],
         "cumulative-layout-shift": ["error", { maxNumericValue: 0.049, aggregationMethod: "median-run" }],
-        // Counts every request made during the run. Assumption, unverified while the site has no
-        // screenshot: lazy images far enough below the fold are not requested, so they stay outside.
+        // Counts every request made during the run; a lazy project image the run did not load is
+        // added by `npm run measures` at its heaviest variant, which fails over this budget.
         "resource-summary:total:size": ["error", { maxNumericValue: TRANSFER_BUDGET_BYTES, aggregationMethod: "median-run" }],
         "resource-summary:font:size": ["error", { maxNumericValue: FONT_BUDGET_BYTES, aggregationMethod: "median-run" }],
       },
