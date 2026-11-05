@@ -45,7 +45,7 @@ if (refusal.source.url !== answer.source.url) throw new Error("the two demo trac
 const translations = translationsData as DemoTranslations;
 const untranslated = [...translationErrors(answer, translations), ...translationErrors(refusal, translations)];
 if (untranslated.length > 0) throw new Error(untranslated.join("\n"));
-const fr = (trace: DemoTrace) => translations[trace.example_id] as { question: { fr: string }; answer: { fr: string } };
+const fr = (trace: DemoTrace) => translations[trace.example_id] as { question: { fr: string }; answer: { fr: string }; rationale?: { fr: string } };
 
 // Readers get what a cited document is, not its file name; an unnamed document fails the build.
 const NAMES: Record<string, string> = { "sla.md": "contrat SLA", "order_form_northwind_2025.pdf": "bon de commande Northwind" };
@@ -59,7 +59,7 @@ const nameOf = (path: string) => {
 <div class="demo" data-verity-demo data-mode="answer">
   <div class="head">
   <p class="caption">Démo réelle : Verity, mon agent RAG, sur un contrat de test (en anglais)</p>
-  <div class="tabs" role="tablist" aria-label="Mode de Verity">
+  <div class="tabs segmented" role="tablist" aria-label="Mode de Verity" data-at="0">
     <button type="button" role="tab" id="verity-tab-answer" aria-controls="verity-panel-answer" aria-selected="true" data-mode="answer">Répond, en citant</button>
     <button type="button" role="tab" id="verity-tab-refusal" aria-controls="verity-panel-refusal" aria-selected="false" tabindex="-1" data-mode="refusal">Refuse, faute de preuve</button>
   </div>
@@ -97,6 +97,7 @@ const nameOf = (path: string) => {
     </div>
   </div>
 
+  <div class="cards">
   <section class="card glass" role="tabpanel" id="verity-panel-answer" aria-labelledby="verity-tab-answer" tabindex="0">
     <p class="step"><span class="n">1</span> La question</p>
     <p class="q" lang="en">{answer.question}</p>
@@ -117,7 +118,7 @@ const nameOf = (path: string) => {
     </ul>
   </section>
 
-  <section class="card glass refused" role="tabpanel" id="verity-panel-refusal" aria-labelledby="verity-tab-refusal" tabindex="0" hidden>
+  <section class="card glass refused" role="tabpanel" id="verity-panel-refusal" aria-labelledby="verity-tab-refusal" tabindex="0" data-off>
     <p class="step"><span class="n">1</span> La question</p>
     <p class="q" lang="en">{refusal.question}</p>
     <p class="tr"><span class="tr-k">traduction</span> {fr(refusal).question.fr}</p>
@@ -126,8 +127,9 @@ const nameOf = (path: string) => {
     <p class="tr tr-a"><span class="tr-k">traduction</span> {fr(refusal).answer.fr}</p>
     <p class="verdict">Refus du modèle, confiance <span class="mono">{decimal(refusal.confidence_score, 2, "fr")}</span></p>
     <p class="ref">Passage le plus proche{"\u00A0"}: {nameOf(slaPath)} (section {numberOf(sectionOf(closest.section))}), jugé insuffisant</p>
-    <p class="why" lang="en">{refusal.refusal_rationale}</p>
+    <p class="tr why"><span class="tr-k">traduction</span> {fr(refusal).rationale!.fr}</p>
   </section>
+  </div>
 
   <p class="source">
     <a class="tip-host" href={answer.source.url} aria-describedby="verity-run-tip">
@@ -145,8 +147,13 @@ const nameOf = (path: string) => {
     [data-verity-demo] .tabs {
       visibility: hidden;
     }
-    #verity-panel-refusal[hidden] {
+    [data-verity-demo] .cards {
       display: block;
+    }
+    #verity-panel-refusal[data-off] {
+      visibility: visible;
+      opacity: 1;
+      transform: none;
       margin-top: 1rem;
     }
     /* Nothing scrolls the window to the passage: the whole contract is shown, the cards below it. */
@@ -155,7 +162,7 @@ const nameOf = (path: string) => {
       padding-bottom: 1.25rem;
       mask-image: none;
     }
-    [data-verity-demo] .card {
+    [data-verity-demo] .cards {
       margin: 1rem 0 0;
     }
   </style>
@@ -175,6 +182,11 @@ const nameOf = (path: string) => {
     padding: 1rem;
     border: 1px solid var(--rule);
     border-radius: 20px;
+    /* Depth, barely: the proof green and the night blue of the portrait, 6 % at most, so every
+       text on them keeps its contrast (contrast.test.ts). */
+    background:
+      radial-gradient(60% 50% at 80% 15%, var(--halo-proof), transparent),
+      radial-gradient(60% 60% at 15% 90%, var(--halo-night), transparent);
   }
 
   .caption {
@@ -192,6 +204,10 @@ const nameOf = (path: string) => {
     margin-top: 0.75rem !important;
     font-size: var(--step-12);
     font-weight: 600;
+    /* Inter has no small capitals (no smcp feature): capitals at 12 px, tracked, in graphite. */
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--graphite);
   }
 
   .step:first-child {
@@ -212,8 +228,10 @@ const nameOf = (path: string) => {
     line-height: 1;
   }
 
+  /* A translation sits indented under the English it translates. */
   .tr {
     margin-top: 0.2rem !important;
+    padding-left: 0.75rem;
     font-size: var(--step-12);
     color: var(--graphite);
   }
@@ -224,35 +242,15 @@ const nameOf = (path: string) => {
   }
 
   .tabs {
-    display: inline-flex;
-    gap: 0.25rem;
-    padding: 0.25rem;
     margin-bottom: 0.75rem;
-    border: 1px solid var(--rule);
-    border-radius: 999px;
-  }
-
-  [role="tab"] {
-    font-size: var(--step-14);
-    padding: 0.4rem 0.9rem;
-    border: 0;
-    border-radius: 999px;
-    background: transparent;
-    color: var(--graphite);
-    cursor: pointer;
-  }
-
-  [role="tab"][aria-selected="true"] {
-    background: var(--ink);
-    color: var(--paper);
   }
 
   /* The contract is seen through a window of fixed height, scrolled to the passage in play
-     (verity-demo.ts); it fades out at both ends to say that it goes on. */
+     (verity-demo.ts); it fades out at both ends to say that it goes on. It is told apart from
+     the frame by its tint alone: one drawn frame, the demo's. */
   .window {
     background: var(--sheet);
-    border-radius: 6px;
-    box-shadow: 0 0 0 1px var(--rule), 0 12px 32px -18px rgb(17 17 17 / 0.35);
+    border-radius: 10px;
   }
 
   .sheet {
@@ -359,12 +357,14 @@ const nameOf = (path: string) => {
     padding: var(--ring);
     border-radius: 16px;
     box-shadow: 0 14px 30px -18px rgb(17 17 17 / 0.5);
-    transition:
-      left var(--dur-move) var(--ease-in-out),
-      top var(--dur-move) var(--ease-in-out),
-      width var(--dur-move) var(--ease-in-out),
-      height var(--dur-move) var(--ease-in-out);
+    transition: opacity var(--dur-hover) var(--ease-out);
     pointer-events: none;
+  }
+
+  /* On a change of mode the ring and its tag fade out, move unseen, and fade in on the new
+     passage (verity-demo.ts): nothing animates their position or size. */
+  .demo[data-away] :is(.lens, .lens-tag) {
+    opacity: 0;
   }
 
   /* Glass only in the ring: the mask cuts out the middle, so the passage stays sharp while the
@@ -390,9 +390,7 @@ const nameOf = (path: string) => {
     transform: translate(-100%, calc(-100% - var(--tag-gap)));
     padding: 0.15rem 0.55rem 0.15rem 0.2rem;
     box-shadow: 0 0 0 1px var(--rule);
-    transition:
-      left var(--dur-move) var(--ease-in-out),
-      top var(--dur-move) var(--ease-in-out);
+    transition: opacity var(--dur-hover) var(--ease-out);
     font-size: var(--step-12);
     white-space: nowrap;
     color: var(--ink);
@@ -420,17 +418,37 @@ const nameOf = (path: string) => {
   /* Over the contract, the card's glass is near-opaque: its text then never sits on the words
      behind it (worst case checked in contrast.test.ts). */
   .card {
-    margin-top: 1rem;
     padding: 1.25rem;
     background: var(--card-fill);
     border-radius: 14px;
     box-shadow: 0 0 0 1px var(--glass-edge), 0 12px 32px -20px rgb(17 17 17 / 0.4);
   }
 
-  /* Motion only answers a change of mode: on load the card is simply there. */
+  /* Both cards share one grid cell: the cell is as tall as the taller card, so switching modes
+     never moves what follows, and the cards cross-fade over each other. The card that is off is
+     invisible, so out of the accessibility tree and of the tab order. */
+  .cards {
+    display: grid;
+    margin-top: 1rem;
+  }
+
+  .cards > .card {
+    grid-area: 1 / 1;
+    align-self: start;
+    transition:
+      opacity var(--dur-hover) var(--ease-out),
+      transform var(--dur-hover) var(--ease-out),
+      visibility var(--dur-hover);
+  }
+
+  .cards > .card[data-off] {
+    visibility: hidden;
+    opacity: 0;
+  }
+
   @media (prefers-reduced-motion: no-preference) {
-    .demo[data-switched] .card {
-      animation: card-in var(--dur-move) var(--ease-out);
+    .cards > .card[data-off] {
+      transform: translateY(4px);
     }
 
     .card[data-written] .tr-a,
@@ -516,8 +534,6 @@ const nameOf = (path: string) => {
 
   .why {
     margin-top: 0.5rem !important;
-    font-size: var(--step-14);
-    color: var(--graphite);
   }
 
   /* Wide screens: the answer card overlaps the bottom right of the window, so the question,
@@ -549,14 +565,13 @@ const nameOf = (path: string) => {
       --target-at: 0.27;
     }
 
-    .window {
-      margin-right: 12%;
-    }
-
-    .card {
+    .cards {
       position: relative;
       z-index: 1;
       margin: calc(-1 * var(--card-overlap)) 0 0 10%;
+    }
+
+    .card {
       padding: 1rem 1.25rem;
     }
 
@@ -585,6 +600,12 @@ const nameOf = (path: string) => {
 
     .head .caption {
       flex: 1;
+    }
+
+    /* The tabs are as wide as twice the longer label: tighter here, the caption keeps to two
+       lines and the card stays on a 1280×720 screen. */
+    .tabs.segmented > button {
+      padding-inline: 0.6rem;
     }
 
     .step {

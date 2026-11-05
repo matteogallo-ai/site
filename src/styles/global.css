@@ -139,6 +139,62 @@ a {
   }
 }
 
+/* Two options in a pill, the chosen one on an ink pill that slides between them (demo tabs, bio
+   length). The columns are equal, so the pill moves by translateX alone; data-at holds the
+   chosen index. */
+.segmented {
+  position: relative;
+  isolation: isolate;
+  display: inline-grid;
+  grid-template-columns: 1fr 1fr;
+  padding: 0.25rem;
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+}
+
+.segmented::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  top: 0.25rem;
+  bottom: 0.25rem;
+  left: 0.25rem;
+  width: calc(50% - 0.25rem);
+  border-radius: 999px;
+  background: var(--ink);
+  transition: transform var(--dur-move) var(--ease-in-out);
+}
+
+.segmented[data-at="1"]::before {
+  transform: translateX(100%);
+}
+
+.segmented > button {
+  padding: 0.4rem 0.9rem;
+  border: 0;
+  border-radius: 999px;
+  font-size: var(--step-14);
+  color: var(--graphite);
+  background: transparent;
+  cursor: pointer;
+  transition: color var(--dur-move) var(--ease-out);
+}
+
+.segmented > button:hover {
+  color: var(--ink);
+}
+
+.segmented > button:is([aria-selected="true"], [aria-pressed="true"]) {
+  color: var(--paper);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .segmented > button:active {
+    transform: scale(0.97);
+    transition: transform var(--dur-press) var(--ease-out);
+  }
+}
+
 /* The mono subset ships one weight: bold mono would be synthesised (font-synthesis: none) or fall back. */
 .mono {
   font-family: var(--font-mono);

@@ -118,21 +118,36 @@ export function mountVerityDemo(root: HTMLElement): void {
     if (panel) stopWriting = writeOut(panel);
   };
 
+  const tablist = root.querySelector<HTMLElement>('[role="tablist"]');
+  // The ring fades out, the window scrolls and the ring fades in on the new passage: it never
+  // slides across the contract. Under reduced motion it is simply moved.
+  let away = 0;
+  const hop = () => {
+    clearTimeout(away);
+    if (still.matches) return place();
+    root.dataset["away"] = "";
+    away = window.setTimeout(() => {
+      place("smooth");
+      delete root.dataset["away"];
+    }, Number.parseFloat(getComputedStyle(lens).transitionDuration) * 1000);
+  };
+
   const select = (tab: HTMLButtonElement, focus: boolean) => {
     for (const t of tabs) {
       const on = t === tab;
       t.setAttribute("aria-selected", String(on));
       t.tabIndex = on ? 0 : -1;
       const panel = panelOf(t);
-      if (panel) panel.hidden = !on;
+      // Both cards stay in the layout (they share a grid cell); the one that is off is invisible.
+      if (panel) panel.toggleAttribute("data-off", !on);
     }
-    if (root.dataset["mode"] !== tab.dataset["mode"]) {
-      root.dataset["switched"] = "";
-      write(panelOf(tab));
-    }
+    if (tablist) tablist.dataset["at"] = String(tabs.indexOf(tab));
+    const changed = root.dataset["mode"] !== tab.dataset["mode"];
+    if (changed) write(panelOf(tab));
     root.dataset["mode"] = tab.dataset["mode"];
     if (focus) tab.focus();
-    place(still.matches ? "instant" : "smooth");
+    if (changed) hop();
+    else place();
   };
 
   for (const tab of tabs) {

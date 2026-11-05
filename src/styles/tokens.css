@@ -53,6 +53,10 @@
      a little in both schemes. */
   --edge-hover: color-mix(in srgb, var(--graphite) 50%, var(--rule));
 
+  /* Halo behind the demo (SPEC §4): the proof green and the portrait's night blue at 6 %. */
+  --halo-proof: color-mix(in srgb, var(--proof) 6%, transparent);
+  --halo-night: color-mix(in srgb, var(--night) 6%, transparent);
+
   /* Motion (SPEC §4): out for entrances and hovers, in-out for things that travel. Only transform
      and opacity move continuously; transitions name their properties, never "all". */
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
