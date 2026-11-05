@@ -6,7 +6,7 @@ rules, technique and accessibility.
 ## 1. Goal and reader
 - **Reader:** a technical lead hiring a software/AI engineer, who decides within 30 seconds.
 - **What the site does:** confirm, not sell. One screen answers who, what, the proof, and how to get in touch.
-- **Single message:** "I build complete AI products and publish their measures, defects included."
+- **Single message:** "I build AI products you can verify." Complete products, every measure published, defects included.
 - The site proves by demonstration, not by effect.
 
 ## 2. Concept: "Verity at work"
@@ -24,7 +24,7 @@ Plain text on the left, one strong visual on the right: Verity working on a cont
 ### 3.1 Home `/`
 1. **Navigation:** floating glass pill. Projects · Method · About; Writing and the FR/EN selector join it once an article and the English version exist.
 2. **First screen:**
-   - Left: **portrait** (about 120 px, round, next to the name), name, status "Available · Lausanne, CH" (green dot), title "Software & AI Engineer.", the message (with "defects included" highlighted in green), buttons "See the projects" and "Write an e-mail", and the note "On the right: Verity, my RAG agent, on a demo contract".
+   - Left, in small type: the **portrait** (56 px, round), the name, "Software & AI Engineer · Lausanne" and the status "Available" (green dot). Then the headline, 68 px: "I build AI products you can verify." Under it: "Complete products, from the interface to production. Every measure is published, defects included." ("defects included" highlighted in green), and the buttons "See the projects" and "Write an e-mail".
    - Right: the Verity demo (section 2).
    - A band of 3 figures under the first screen, one of them the main defect.
 3. **Projects:** 3 cards (No. 01 Verity, No. 02 PromptLang, No. 03 Praxis), each with **a real screenshot or GIF** of the product, one sentence, 2–3 measures linked to their proof, a "Known defect" box (background tinted with at most 8 % of the defect colour, its label in the defect colour, its text in ink), the technologies in one line of text, and links Case study · Code.
