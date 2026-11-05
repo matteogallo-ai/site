@@ -39,6 +39,7 @@ lighthouserc.cjs         blocking budgets from SPEC §8 (scores, LCP, CLS, trans
 tests/                   Playwright on every built page: axe (light + dark), keyboard, glyph coverage;
                          magnifier.spec.ts: lens centre within 8 px of its words at 375/1024/1440, tablist keyboard;
                          glass-motion.spec.ts: answer writing, glass refracted / frosted / opaque
+                         first-screen.spec.ts: tabs, passage, lens and whole card in view at 1440×800 and 1280×720
 scripts/site-measures*   Lighthouse CI output -> site-measures.json (weight, scores, date, commit)
 scripts/built-pages.ts   list of built HTML pages, shared by the axe tests and site-measures
 linkinator.config.json   link check; the production origin is skipped because the crawl
