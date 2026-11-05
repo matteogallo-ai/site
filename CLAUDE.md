@@ -22,6 +22,7 @@ astro.config.mjs         site origin and self-hosted fonts (latin subsets from @
 lighthouserc.cjs         blocking budgets from SPEC §8 (scores, LCP, CLS, transferred bytes)
 tests/                   Playwright: axe (light + dark) and keyboard checks on every built page
 scripts/site-measures*   Lighthouse CI output -> site-measures.json (weight, scores, date, commit)
+scripts/built-pages.ts   list of built HTML pages, shared by the axe tests and site-measures
 linkinator.config.json   link check; the production origin is skipped because the crawl
                          already covers the same pages locally and the site may not be live
 ```

@@ -1,3 +1,5 @@
+import { urlPath } from "./built-pages.ts";
+
 /**
  * Turns Lighthouse CI filesystem output into site-measures.json: the figures the
  * footer and the Colophon show about the site itself (SPEC §3.1 item 8, §5.3).
@@ -32,7 +34,14 @@ export interface PageMeasure {
 export interface SiteMeasures {
   generatedAt: string;
   commit: string;
-  lighthouse: { version: string; formFactor: string; runsPerPage: number; aggregation: "median-run" };
+  lighthouse: {
+    version: string;
+    formFactor: string;
+    runsPerPage: number;
+    aggregation: "median-run";
+    /** The footer shows this next to the weight: it is not the brotli size Cloudflare sends. */
+    transfer: "gzip, served by the lhci local static server";
+  };
   pages: PageMeasure[];
 }
 
@@ -57,7 +66,7 @@ function totalTransfer(lhr: Lhr): number {
 export function pageMeasure(url: string, lhr: Lhr): PageMeasure {
   return {
     // lhci serves dist/ on a random localhost port; only the path is stable.
-    path: new URL(url).pathname.replace(/index\.html$/, ""),
+    path: urlPath(new URL(url).pathname.slice(1)),
     transferBytes: totalTransfer(lhr),
     scores: {
       performance: score(lhr, "performance"),
@@ -74,18 +83,31 @@ export function pageMeasure(url: string, lhr: Lhr): PageMeasure {
 export function buildMeasures(
   manifest: ManifestEntry[],
   readLhr: (jsonPath: string) => Lhr,
-  context: { commit: string; now: Date },
+  context: { commit: string; now: Date; expectedPaths: string[] },
 ): SiteMeasures {
   if (!/^[0-9a-f]{40}$/.test(context.commit)) throw new Error(`not a full commit hash: "${context.commit}"`);
   const representative = manifest.filter((e) => e.isRepresentativeRun);
   if (representative.length === 0) throw new Error("manifest has no representative run: did lhci collect anything?");
   const runsPerPage = manifest.length / representative.length;
+  if (!Number.isInteger(runsPerPage)) throw new Error(`uneven runs per page: ${manifest.length} runs for ${representative.length} pages`);
   const lhrs = representative.map((e) => ({ entry: e, lhr: readLhr(e.jsonPath) }));
+  const pages = lhrs.map(({ entry, lhr }) => pageMeasure(entry.url, lhr)).sort((a, b) => a.path.localeCompare(b.path));
+  // lhci drops pages silently past its autodiscovery caps; a missing page must fail, not shrink the file.
+  const measured = new Set(pages.map((p) => p.path));
+  const missing = context.expectedPaths.filter((p) => !measured.has(p));
+  if (missing.length > 0) throw new Error(`built pages not measured: ${missing.join(", ")}`);
   const first = lhrs[0]?.lhr as Lhr;
+  if (typeof first.configSettings?.formFactor !== "string") throw new Error("Lighthouse report has no form factor");
   return {
     generatedAt: context.now.toISOString(),
     commit: context.commit,
-    lighthouse: { version: first.lighthouseVersion, formFactor: first.configSettings.formFactor, runsPerPage, aggregation: "median-run" },
-    pages: lhrs.map(({ entry, lhr }) => pageMeasure(entry.url, lhr)).sort((a, b) => a.path.localeCompare(b.path)),
+    lighthouse: {
+      version: first.lighthouseVersion,
+      formFactor: first.configSettings.formFactor,
+      runsPerPage,
+      aggregation: "median-run",
+      transfer: "gzip, served by the lhci local static server",
+    },
+    pages,
   };
 }
