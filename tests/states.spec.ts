@@ -9,7 +9,7 @@ const PROPS = ["color", "background-color", "border-color", "border-bottom-style
 /**
  * The styles that can show a state, on the element, its ::before and ::after, its descendants and
  * the ancestors that draw it as a card (a stretched link lights its whole card). Each entry also
- * says whether the node declares a non-zero transition.
+ * lists the properties the node transitions (non-zero duration).
  */
 async function look(target: Locator) {
   return target.evaluate((el, props) => {
@@ -18,15 +18,25 @@ async function look(target: Locator) {
     if (card && card !== el) nodes.push(card);
     const read = (n: Element, pseudo?: string) => {
       const c = getComputedStyle(n, pseudo);
+      const names = c.transitionProperty.split(",").map((x) => x.trim());
       const durations = c.transitionDuration.split(",").map((d) => Number.parseFloat(d));
       return {
-        values: props.map((p) => c.getPropertyValue(p)).join("|"),
-        transition: durations.some((d) => d > 0) ? c.transitionProperty : "",
+        values: Object.fromEntries(props.map((p) => [p, c.getPropertyValue(p)])) as Record<string, string>,
+        transitioned: names.filter((_, i) => (durations[i % durations.length] ?? 0) > 0),
       };
     };
     return nodes.flatMap((n) => [read(n), read(n, "::before"), read(n, "::after")]);
   }, PROPS as unknown as string[]);
 }
+
+type Look = Awaited<ReturnType<typeof look>>;
+/** Each property that differs between two looks, with whether that node transitions it. */
+const changes = (from: Look, to: Look) =>
+  to.flatMap((node, i) =>
+    Object.keys(node.values)
+      .filter((p) => node.values[p] !== from[i]!.values[p])
+      .map((p) => ({ property: p, transitioned: node.transitioned.includes(p) })),
+  );
 
 /** The interactive elements of the home page, by a name used in the test titles. */
 const ELEMENTS: Record<string, (page: Page) => Locator> = {
@@ -60,11 +70,12 @@ for (const [name, find] of Object.entries(ELEMENTS)) {
     // The longest hover transition (the nav underline, --dur-move) has ended.
     await page.waitForTimeout(400);
     const hover = await look(el);
-    const changed = hover.map((h, i) => ({ ...h, was: rest[i]!.values })).filter((h) => h.values !== h.was);
+    const changed = changes(rest, hover);
     expect(changed.length, "no style changes on hover").toBeGreaterThan(0);
+    // A property that changed is the one its node transitions (not merely some transition).
     expect(
-      changed.some((c) => c.transition !== ""),
-      "what changes on hover has no transition",
+      changed.some((c) => c.transitioned),
+      `no changed property is under a transition: ${JSON.stringify(changed)}`,
     ).toBe(true);
 
     await page.mouse.move(0, 0);
@@ -73,11 +84,24 @@ for (const [name, find] of Object.entries(ELEMENTS)) {
     await el.focus();
     await page.waitForTimeout(300);
     const focused = await look(el);
+    // The ring (CRAFT §2): 2 px in the proof colour, 3 px off the element (or its card).
     const ring = await el.evaluate((e) => {
+      const probe = document.createElement("span");
+      probe.style.color = "var(--proof)";
+      document.body.append(probe);
+      const proof = getComputedStyle(probe).color;
+      probe.remove();
       const card = e.closest("li");
-      return [e, card].some((n) => n && getComputedStyle(n).outlineStyle !== "none" && e.matches(":focus-visible"));
+      return (
+        e.matches(":focus-visible") &&
+        [e, card].some((n) => {
+          if (!n) return false;
+          const c = getComputedStyle(n);
+          return c.outlineStyle === "solid" && c.outlineWidth === "2px" && c.outlineOffset === "3px" && c.outlineColor === proof;
+        })
+      );
     });
-    expect(ring, "no focus ring").toBe(true);
+    expect(ring, "no 2 px proof-coloured focus ring 3 px off").toBe(true);
     expect(focused).not.toEqual(before);
   });
 }
@@ -115,7 +139,9 @@ test("states: the demo tabs and the bio toggle slide one pill, and the demo card
   const below = await page.locator(".band").evaluate((e) => e.getBoundingClientRect().top);
   await page.getByRole("tab", { name: "Refuse, faute de preuve" }).click();
   await expect.poll(async () => (await pill(".tabs.segmented")).transform).not.toBe(tabsAt0.transform);
-  // Switching modes moves nothing: the cards' cell and what follows the demo stay put.
+  // Switching modes moves nothing: the cards' cell and what follows the demo stay put, also once
+  // every transition of the switch (ring away and back, cross-fade) has ended.
+  await page.waitForTimeout(800);
   expect(await cards.evaluate((e) => e.getBoundingClientRect().height)).toBe(height);
   expect(await page.locator(".band").evaluate((e) => e.getBoundingClientRect().top)).toBe(below);
 
@@ -176,4 +202,17 @@ test("states: the navigation marks the section in view, and none on the first sc
   await expect(page.locator("[data-spy-dot]")).toBeVisible();
   await page.evaluate(() => scrollTo(0, 0));
   await expect(current()).toHaveCount(0);
+});
+
+test("states: when the clipboard refuses, the address is selected and the reader is told", async ({ page }) => {
+  await page.addInitScript(() => {
+    Object.defineProperty(navigator, "clipboard", { value: { writeText: () => Promise.reject(new Error("denied")) } });
+  });
+  await page.goto("/");
+  const address = page.getByRole("button", { name: "matteogallo.office@gmail.com" });
+  // The hint and the outcome both describe the button.
+  await expect(address).toHaveAccessibleDescription(/Cliquez sur l’adresse pour la copier/);
+  await address.click();
+  await expect(page.getByRole("status")).toHaveText("Copie impossible : l’adresse est sélectionnée");
+  expect(await page.evaluate(() => getSelection()?.toString())).toBe("matteogallo.office@gmail.com");
 });

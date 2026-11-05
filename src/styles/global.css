@@ -198,7 +198,9 @@ a:hover {
 @media (prefers-reduced-motion: no-preference) {
   .segmented > button:active {
     transform: scale(0.97);
-    transition: transform var(--dur-press) var(--ease-out);
+    transition:
+      color var(--dur-hover) var(--ease-out),
+      transform var(--dur-press) var(--ease-out);
   }
 }
 
@@ -212,7 +214,6 @@ a:hover {
 .serif {
   font-family: var(--font-serif);
 }
-
 
 /* Glass (SPEC §4): only the navigation, the spotlight ring and the answer card. Frosted everywhere;
    refracted where the engine renders SVG filters in backdrop-filter (Glass.astro); the tokens
