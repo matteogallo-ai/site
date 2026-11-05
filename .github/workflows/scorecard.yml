@@ -21,7 +21,7 @@ jobs:
       # Uploads the SARIF to the repository's code-scanning alerts.
       security-events: write
       # publish_results: the OIDC token proves to api.scorecard.dev which
-      # repository and workflow produced the results behind the README badge.
+      # repository and workflow produced the published results.
       id-token: write
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
