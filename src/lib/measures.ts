@@ -17,3 +17,15 @@ export const decimal = (x: number, digits: number, lang: "fr" | "en") => {
   const s = x.toFixed(digits);
   return lang === "fr" ? s.replace(".", ",") : s;
 };
+
+/**
+ * The 95 % interval in whole percents. Whole percents because some sources print their
+ * interval at that precision (Praxis's SYSTEM_CARD); more digits would claim precision
+ * the source does not give.
+ */
+export function interval(m: VerifiedMeasure, lang: "fr" | "en"): string {
+  if (!m.ci95) throw new Error(`${m.id} has no interval`);
+  const [lo, hi] = m.ci95.map((x) => (x * 100).toFixed(0));
+  // The no-break space keeps "%" on the line of its number; the sans subset has U+00A0.
+  return lang === "fr" ? `${lo} % – ${hi} %` : `${lo}%–${hi}%`;
+}
