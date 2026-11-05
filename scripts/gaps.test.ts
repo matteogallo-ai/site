@@ -46,7 +46,7 @@ test("an announcement of content that is not there is a gap", () => {
     "<p>Version anglaise bientôt</p>",
     "<p>Prochainement : les études de cas</p>",
     "<p>Case studies coming soon</p>",
-    "<p>A forthcoming article</p>",
+    "<p>J’ai piégé mon propre juge (forthcoming)</p>",
   ]) {
     const found = gapsIn(html);
     assert.equal(found.length, 1, html);
@@ -79,4 +79,19 @@ test("an alternate language link to a page that was not built is a gap", () => {
   const found = gapsIn('<link rel="alternate" hreflang="en" href="https://matteogallo.pages.dev/en/">', { site: "https://matteogallo.pages.dev", built: built(["index.html"]) });
   assert.equal(found.length, 1);
   assert.match(found[0]!, /language/);
+});
+
+test("announcements with non-breaking spaces are found; candour and code-free prose are not announcements", () => {
+  assert.equal(gapsIn("<p>À paraître</p>").length, 1);
+  assert.equal(gapsIn("<p>À&nbsp;paraître</p>").length, 1);
+  assert.equal(gapsIn("<p>Coming&#160;soon</p>").length, 1);
+  assert.equal(gapsIn("<p>J’ai piégé mon propre juge (forthcoming)</p>").length, 1);
+  assert.deepEqual(gapsIn("<p>I am forthcoming about defects.</p>"), []);
+});
+
+test("only a language selector is a language label: a list of languages is not", () => {
+  const options = { site: "https://matteogallo.pages.dev", built: built(["index.html", "en/index.html"]) };
+  assert.deepEqual(gapsIn("<ul><li>Français</li><li>English</li><li>Italiano</li></ul>", options), []);
+  assert.deepEqual(gapsIn('<a href="/en/" hreflang="en"><span lang="en">EN</span></a>', options), []);
+  assert.deepEqual(gapsIn('<link hreflang="en" data-href="/x" href="/en/">', options), []);
 });

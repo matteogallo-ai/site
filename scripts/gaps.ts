@@ -13,14 +13,28 @@ const MARKERS: [RegExp, string][] = [
   [new RegExp(`class="value(?:\\s[^"]*)?"[^>]*>${GAP_DISPLAY}<`, "g"), "gap measure"],
   [/\b(?:TODO|TBD|FIXME)\b[^<]*/g, "placeholder text"],
   // Content announced instead of shown: it stays off the page until it exists.
-  [/(?<!\p{L})(?:à paraître|bientôt|prochainement|coming soon|forthcoming)(?!\p{L})[^<]*/giu, "announcement"],
+  // French text puts non-breaking spaces between words; bare "forthcoming" also means candid.
+  [/(?<!\p{L})(?:à(?:\s|&nbsp;|&#160;)+paraître|bientôt|prochainement|coming(?:\s|&nbsp;|&#160;)+soon|\(forthcoming\))(?!\p{L})[^<]*/giu, "announcement"],
 ];
 
-/** A language label: the whole text of an element is a language code or name. */
-const LANGUAGE_LABEL = /<([a-z][a-z0-9]*)\b([^>]*)>\s*(?:FR|EN|DE|IT|Français|English|Deutsch|Italiano)\s*<\/\1\s*>/g;
+/**
+ * A language selector's label: an element marked with the language it names (lang or
+ * hreflang) whose whole text is that language's code or name. A plain list of languages
+ * carries no such mark.
+ */
+const LANGUAGE_LABEL = /<([a-z][a-z0-9]*)\b([^>]*\s(?:hreflang|lang)=[^>]*)>\s*(?:FR|EN|DE|IT|Français|English|Deutsch|Italiano)\s*<\/\1\s*>/g;
 /** Any tag that names the language of the page it links to. */
-const HREFLANG = /<[a-z][a-z0-9]*\b[^>]*\bhreflang=[^>]*>/gi;
-const HREF = /\bhref="([^"]*)"/;
+const HREFLANG = /<[a-z][a-z0-9]*\b[^>]*\shreflang=[^>]*>/gi;
+// Astro writes attributes double-quoted; a space before href keeps data-href out.
+const HREF = /\shref="([^"]*)"/;
+
+/** The opening tag of the link `at` sits in, if any. */
+function enclosingLink(html: string, at: number): string | undefined {
+  const before = html.slice(0, at);
+  const open = before.lastIndexOf("<a ");
+  if (open < 0 || before.lastIndexOf("</a") > open) return undefined;
+  return html.slice(open, html.indexOf(">", open) + 1);
+}
 
 export interface Site {
   /** The production origin: absolute links to it are links to built pages. */
@@ -57,7 +71,7 @@ export function gapsIn(html: string, site?: Site): string[] {
   // A label that is also an hreflang link starts at the same tag: it is reported once, as a label.
   const labelAt = new Set(labels.map((m) => m.index));
   const languages = [
-    ...labels.filter((m) => !(m[1] === "a" && leads(m[2]!))),
+    ...labels.filter((m) => !(m[1] === "a" && leads(m[0])) && !leads(enclosingLink(html, m.index) ?? "")),
     ...[...html.matchAll(HREFLANG)].filter((m) => !labelAt.has(m.index) && !leads(m[0])),
   ].filter((m) => !inCode(m.index));
   return [...found, ...languages.map((m) => `language without a page: ${m[0].trim()}`)];
