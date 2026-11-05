@@ -1,0 +1,108 @@
+import { expect, test } from "@playwright/test";
+import { interval, measure } from "../src/lib/measures.ts";
+
+// SPEC §3.2, in its order: problem, what I built (one SVG diagram), measures, what did not
+// work, three decisions (ADR), how it is built, what comes next.
+const SECTIONS = [
+  "Le problème",
+  "Ce que j’ai construit",
+  "Mesures",
+  "Ce qui n’a pas marché, et ce que j’ai fait",
+  "Trois décisions",
+  "Comment c’est construit",
+  "La suite",
+];
+const CASES = ["verity", "promptlang", "praxis"];
+const PINNED = (repo: string) => new RegExp(`^https://github\\.com/matteogallo-ai/${repo}/blob/[0-9a-f]{40}/`);
+
+// Numbers a reader sees outside a measure must not be figures. Skipped, each for a reason:
+// - .figure, [data-measure], [data-label]: a measure's value, interval and label, read from
+//   measures.json (measures-lib checks every number of a label against its evidence; the
+//   interval and label texts are compared with the measure below);
+// - a, code, .mono: identifiers, not quantities (ADR and PR numbers, commits, model ids,
+//   calibre numbers);
+// - thead: the column headers name the interval level;
+// - blockquote: verbatim quotes, read by the page from data that check:sources compares with
+//   GitHub (the demo trace, a measure's evidence).
+// Anything else with a digit fails here.
+const IDENTIFIERS = ".figure, [data-measure], [data-label], a, code, .mono, thead, blockquote";
+
+/** Runs in the page: text with a digit under main, outside `skip`, the SVG's title and desc included. */
+function strayNumbers(skip: string): string[] {
+  const found: string[] = [];
+  const walker = document.createTreeWalker(document.querySelector("main")!, NodeFilter.SHOW_TEXT);
+  for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+    const parent = node.parentElement!;
+    if (parent.closest("style, script")) continue;
+    // Title and desc are what a screen reader announces for the diagram: checked, never skipped.
+    if (!parent.closest("title, desc") && parent.closest(skip)) continue;
+    if (/\d/.test(node.textContent ?? "")) found.push(`${parent.tagName.toLowerCase()}: ${node.textContent!.trim()}`);
+  }
+  return found;
+}
+
+for (const slug of CASES) {
+  const path = `/projets/${slug}/`;
+
+  test(`${path}: the seven sections of SPEC §3.2, in order`, async ({ page }) => {
+    await page.goto(path);
+    await expect(page.locator("main h2")).toHaveText(SECTIONS);
+  });
+
+  test(`${path}: one SVG diagram, named, in "what I built"`, async ({ page }) => {
+    await page.goto(path);
+    await expect(page.locator("main svg")).toHaveCount(1);
+    const diagram = page.locator("#construit svg[role='img']");
+    await expect(diagram).toHaveCount(1);
+    expect(((await diagram.getAttribute("aria-labelledby")) ?? "").split(" ")).toHaveLength(2);
+    await expect(page.getByRole("img", { name: /\S/ })).toHaveCount(1);
+  });
+
+  test(`${path}: every figure links to its artefact at a pinned commit, every interval is its measure's`, async ({ page }) => {
+    await page.goto(path);
+    const rows = page.locator("#mesures tbody tr");
+    expect(await rows.count()).toBeGreaterThanOrEqual(2);
+    for (const href of await page.locator("#mesures .figure").evaluateAll((els) => els.map((a) => a.getAttribute("href")))) {
+      expect(href).toMatch(PINNED(slug));
+    }
+    for (const row of await rows.all()) await expect(row.locator(".figure").first()).toBeVisible();
+    const intervals = await page.locator("[data-measure]").evaluateAll((els) => els.map((e) => [e.getAttribute("data-measure")!, e.textContent!.trim()]));
+    expect(intervals.length).toBeGreaterThan(0);
+    for (const [id, text] of intervals) expect(text, id).toBe(interval(measure(id!), "fr"));
+    const labels = await page.locator("[data-label]").evaluateAll((els) => els.map((e) => [e.getAttribute("data-label")!, e.textContent!.trim()]));
+    for (const [id, text] of labels) expect(text, id).toBe(measure(id!).label.fr);
+    // SPEC §6: defects at the same level as measures, in the same table.
+    await expect(page.locator("#mesures tbody .figure.defect")).not.toHaveCount(0);
+  });
+
+  test(`${path}: three decisions, each linking to its ADR at a pinned commit`, async ({ page }) => {
+    await page.goto(path);
+    await expect(page.locator("#decisions .decisions > li")).toHaveCount(3);
+    const hrefs = await page.locator("#decisions .decisions > li a").evaluateAll((els) => els.map((a) => a.getAttribute("href")!));
+    expect(hrefs).toHaveLength(3);
+    for (const href of hrefs) expect(href).toMatch(new RegExp(`${PINNED(slug).source}docs/adr/\\d{4}-[a-z0-9-]+\\.md$`));
+  });
+
+  test(`${path}: no number outside a measure, a link or code`, async ({ page }) => {
+    await page.goto(path);
+    const stray = await page.evaluate(strayNumbers, IDENTIFIERS);
+    expect(stray).toEqual([]);
+  });
+}
+
+test("the number check reports a figure typed into the prose, and one inside a link is not its concern", async ({ page }) => {
+  await page.goto("/projets/verity/");
+  expect(await page.evaluate(strayNumbers, IDENTIFIERS)).toEqual([]);
+  await page.evaluate(() => {
+    const prose = document.querySelector("#probleme > p:not(.rule-label)")!;
+    prose.append(" 17 sur 20.");
+    const link = document.createElement("a");
+    link.textContent = "ADR 0009";
+    prose.append(link);
+    document.querySelector("#construit svg desc")!.append(" 8 passages.");
+  });
+  const stray = await page.evaluate(strayNumbers, IDENTIFIERS);
+  expect(stray).toHaveLength(2);
+  expect(stray[0]).toMatch(/^p: .*17 sur 20\.$/s);
+  expect(stray[1]).toMatch(/^desc: .*8 passages\.$/);
+});
