@@ -29,7 +29,7 @@ linkinator.config.json   link check; the production origin is skipped because th
 
 ## Commands
 
-Node version: `.nvmrc` (Astro 7 needs >= 22.23.4).
+Node version: `.nvmrc` (24); `.npmrc` sets `engine-strict`. Install with nvm: see README.
 
 ```
 npm ci                 install exactly the lockfile

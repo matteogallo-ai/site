@@ -6,9 +6,13 @@ what is proven by which check is in [`docs/CLAIMS.md`](docs/CLAIMS.md).
 
 ## Run it
 
-Node per `.nvmrc`, then:
+Node 24 (`.nvmrc`; `engines` is `^24.0.0` and `.npmrc` sets `engine-strict`, so `npm ci` refuses any other major).
+With [nvm](https://github.com/nvm-sh/nvm):
 
 ```
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.41.0/install.sh | bash
+nvm install    # reads .nvmrc and installs Node 24
+nvm use
 npm ci
 npm run build && npm run preview
 ```
