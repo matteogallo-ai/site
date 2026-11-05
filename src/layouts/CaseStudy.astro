@@ -111,6 +111,13 @@ const cases = [
     max-width: 40rem;
   }
 
+  /* The section's first sentence: what it gives the reader. */
+  .case :global(.case-section > .lead) {
+    margin: 0.5rem 0 1.25rem;
+    font-size: var(--step-16);
+    color: var(--graphite);
+  }
+
   .case :global(.case-section > h3) {
     margin-top: 2.5rem;
     font-size: var(--step-21);

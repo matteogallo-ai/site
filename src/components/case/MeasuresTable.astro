@@ -10,7 +10,11 @@ import { interval, measure } from "../../lib/measures.ts";
  */
 interface Row {
   id: string;
-  /** Row label when the measure's own label names its arm ("… — Verity"). */
+  /**
+   * Row label in place of the measure's own: when that label names its arm ("… — Verity"), or uses
+   * words a non-specialist reader would have to look up. The test compares a row's label with its
+   * measure only when this is absent.
+   */
   label?: string;
   base?: string;
   noInterval?: string;
@@ -43,49 +47,49 @@ const cells = rows.map((r) => {
 ---
 
 <h3 class="caption" id={`${where}-caption`}>{caption}</h3>
-{/* The caption sits outside the scrolling region so that it stays in view on a narrow screen. */}
-<div class="scroll" role="region" aria-labelledby={`${where}-caption`} tabindex="0">
-  <table aria-labelledby={`${where}-caption`}>
-    <thead>
-      <tr>
-        <th scope="col">Mesure</th>
-        <th scope="col">{ours}</th>
-        <th scope="col" class="ci-head">IC 95&nbsp;%</th>
-        {baseline && <th scope="col">{baseline}</th>}
-        {baseline && <th scope="col" class="ci-head">IC 95&nbsp;%</th>}
-        <th scope="col">Lecture</th>
-      </tr>
-    </thead>
-    <tbody>
-      {
-        cells.map((r) => (
-          <tr>
-            <th scope="row" data-label={r.ownLabel ? r.id : undefined}>
-              {r.label}
-            </th>
-            <td class="value">
-              <Figure id={r.id} where={where} defect={r.defect ?? false} />
+{/* Explicit roles: the narrow-screen cards set display: block, which makes some engines drop table semantics. */}
+<table role="table" aria-labelledby={`${where}-caption`}>
+  <thead role="rowgroup">
+    <tr role="row">
+      <th scope="col" role="columnheader">Mesure</th>
+      <th scope="col" role="columnheader">{ours}</th>
+      <th scope="col" role="columnheader" class="ci-level">IC 95&nbsp;%</th>
+      {baseline && <th scope="col" role="columnheader">{baseline}</th>}
+      {baseline && <th scope="col" role="columnheader" class="ci-level">IC 95&nbsp;%</th>}
+      <th scope="col" role="columnheader">Lecture</th>
+    </tr>
+  </thead>
+  <tbody role="rowgroup">
+    {
+      cells.map((r) => (
+        <tr role="row">
+          <th scope="row" role="rowheader" data-label={r.ownLabel ? r.id : undefined}>
+            {r.label}
+          </th>
+          <td role="cell" class="value" data-col={ours}>
+            <Figure id={r.id} where={where} defect={r.defect ?? false} />
+          </td>
+          <td role="cell" class:list={["ci", { reason: !r.ci.measured }]} data-col="IC 95 %" data-measure={r.ci.measured ? r.id : undefined}>
+            {r.ci.text}
+          </td>
+          {r.base && (
+            <td role="cell" class="value" data-col={baseline}>
+              <Figure id={r.base} where={where} />
             </td>
-            <td class:list={["ci", { reason: !r.ci.measured }]} data-measure={r.ci.measured ? r.id : undefined}>
-              {r.ci.text}
+          )}
+          {r.base && (
+            <td role="cell" class="ci" data-col="IC 95 %" data-measure={r.base}>
+              {r.baseCi!.text}
             </td>
-            {r.base && (
-              <td class="value">
-                <Figure id={r.base} where={where} />
-              </td>
-            )}
-            {r.base && (
-              <td class="ci" data-measure={r.base}>
-                {r.baseCi!.text}
-              </td>
-            )}
-            <td class="reading">{r.reading}</td>
-          </tr>
-        ))
-      }
-    </tbody>
-  </table>
-</div>
+          )}
+          <td role="cell" class="reading" data-col="Lecture">
+            {r.reading}
+          </td>
+        </tr>
+      ))
+    }
+  </tbody>
+</table>
 
 <style>
   .caption {
@@ -93,14 +97,9 @@ const cells = rows.map((r) => {
     font-size: var(--step-16);
   }
 
-  .scroll {
-    margin-top: 0.75rem;
-    overflow-x: auto;
-  }
-
   table {
     width: 100%;
-    min-width: 40rem;
+    margin-top: 0.75rem;
     border-collapse: collapse;
     font-size: var(--step-14);
   }
@@ -145,5 +144,58 @@ const cells = rows.map((r) => {
   .reading {
     color: var(--graphite);
     min-width: 14rem;
+  }
+
+  /* Narrow screens: each row becomes a card, each cell names its column, nothing scrolls sideways. */
+  @media (max-width: 47.99rem) {
+    thead {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+    }
+
+    table,
+    tbody,
+    tr,
+    th,
+    td {
+      display: block;
+    }
+
+    tr {
+      padding-block: 0.75rem;
+      border-top: 1px solid var(--rule);
+    }
+
+    th,
+    td {
+      border-top: 0;
+      padding: 0.2rem 0;
+      max-width: none;
+      min-width: 0;
+    }
+
+    .value,
+    .ci,
+    .ci.reason,
+    .reading {
+      min-width: 0;
+      white-space: normal;
+    }
+
+    tbody th {
+      font-weight: 600;
+    }
+
+    /* Seen, not announced: the cell's role already gives a screen reader its column header. */
+    td[data-col]::before {
+      content: attr(data-col) " : ";
+      content: attr(data-col) " : " / "";
+      color: var(--graphite);
+      font-size: var(--step-12);
+    }
   }
 </style>

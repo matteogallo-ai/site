@@ -5,10 +5,14 @@ import { builtPages } from "../scripts/built-pages.ts";
 const WCAG_TAGS = ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"];
 
 for (const path of builtPages()) {
-  for (const colorScheme of ["light", "dark"] as const) {
-    test(`axe: ${path} (${colorScheme})`, async ({ page }) => {
+  // 375 px: the measures tables turn into stacked cards there, a layout of their own to check.
+  for (const [colorScheme, width] of [["light", 1280], ["dark", 1280], ["light", 375], ["dark", 375]] as const) {
+    test(`axe: ${path} (${colorScheme}, ${width} px)`, async ({ page }) => {
+      await page.setViewportSize({ width, height: 800 });
       await page.emulateMedia({ colorScheme });
       await page.goto(path);
+      // axe skips hidden content: folded sections are opened so what they hold is checked too.
+      await page.locator("details").evaluateAll((all) => all.forEach((d) => ((d as HTMLDetailsElement).open = true)));
       const { violations } = await new AxeBuilder({ page }).withTags(WCAG_TAGS).analyze();
       expect(violations.map((v) => `${v.id}: ${v.nodes.map((n) => n.target.join(" ")).join(", ")}`)).toEqual([]);
     });

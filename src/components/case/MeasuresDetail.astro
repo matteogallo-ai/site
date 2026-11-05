@@ -1,0 +1,46 @@
+---
+/** The full measures tables, folded: the section's prose carries the reading, the tables the detail. */
+---
+
+<details class="measures-detail">
+  <summary>Détail des mesures</summary>
+  <p class="ci-note">
+    Une proportion porte son intervalle de confiance à <span class="ci-level">95&nbsp;%</span> (IC) : la plage où se trouve probablement la vraie valeur, large quand l’échantillon est petit.
+  </p>
+  <slot />
+</details>
+
+<style>
+  .measures-detail {
+    margin-top: 2rem;
+    border-top: 1px solid var(--rule);
+    border-bottom: 1px solid var(--rule);
+    padding-block: 0.75rem;
+  }
+
+  summary {
+    cursor: pointer;
+    font-weight: 600;
+    list-style: none;
+  }
+
+  summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .ci-note {
+    margin-top: 1rem;
+  }
+
+  /* The native marker is a triangle the sans subset does not have: replaced by text it has. */
+  summary::before {
+    content: "+ ";
+    font-family: var(--font-mono);
+    /* The mono subset ships one weight: the bold summary would ask for a face that is not there. */
+    font-weight: 400;
+  }
+
+  details[open] > summary::before {
+    content: "– ";
+  }
+</style>
