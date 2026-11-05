@@ -41,11 +41,14 @@ jobs:
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version-file: .nvmrc
-      # Node built-ins only: no install needed. Reads the public repos at their pinned commits.
+      # check-sources uses Node built-ins only; npm ci comes after it, for sharp in media-frame.
       - run: npm run check:sources
         env:
           # Read-only (permissions: contents: read): lifts the API quota for directory listings.
           GITHUB_TOKEN: ${{ github.token }}
+      - run: npm ci
+      - name: the PromptLang still has the pixels of the pinned recording's last frame
+        run: node --experimental-strip-types scripts/media-frame.ts --check
 
   links:
     name: build + links
