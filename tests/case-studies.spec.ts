@@ -13,6 +13,11 @@ const SECTIONS = [
   "La suite",
 ];
 const CASES = ["verity", "promptlang", "praxis"];
+// Words a recruiter would have to look up; each page says it in plain French instead. Code,
+// links and verbatim quotes keep their own words. A list catches only the words on it: terms
+// the pages keep and explain where they first appear (kappa, RAG, API, JSON, README, ADR)
+// cannot be listed, and whether each is explained is the reviewer's to check.
+const JARGON = /\b(split|runs?|baseline|fixtures?|pipeline|LLM|lexer|parser|runtime|semver)\b/i;
 const PINNED = (repo: string) => new RegExp(`^https://github\\.com/matteogallo-ai/${repo}/blob/[0-9a-f]{40}/`);
 
 // Numbers a reader sees outside a measure must not be figures. Skipped, each for a reason:
@@ -21,12 +26,12 @@ const PINNED = (repo: string) => new RegExp(`^https://github\\.com/matteogallo-a
 //   interval and label texts are compared with the measure below);
 // - a, code, .mono: identifiers, not quantities (ADR and PR numbers, commits, model ids,
 //   calibre numbers);
-// - .ci-head: the column header names the interval level;
+// - .ci-level: the interval level, named in the column header and in the note above the tables;
 // - blockquote > p: verbatim quotes, read by the page from data that check:sources compares
 //   with GitHub (the demo trace, a measure's evidence); the quote's footer is checked.
 // The check reads digits only: a figure written in words is the reviewer's to catch.
 // Anything else with a digit fails here.
-const IDENTIFIERS = ".figure, [data-measure], [data-label], a, code, .mono, .ci-head, blockquote > p";
+const IDENTIFIERS = ".figure, [data-measure], [data-label], a, code, .mono, .ci-level, blockquote > p";
 
 /** Runs in the page: text with a digit under main, outside `skip`, the SVG's title and desc included. */
 function strayNumbers(skip: string): string[] {
@@ -47,7 +52,62 @@ for (const slug of CASES) {
 
   test(`${path}: the seven sections of SPEC §3.2, in order`, async ({ page }) => {
     await page.goto(path);
-    await expect(page.locator("main h2")).toHaveText(SECTIONS);
+    await expect(page.locator(".case-section > h2")).toHaveText(SECTIONS);
+  });
+
+  test(`${path}: "En bref" first, three plain lines and three figures, the main defect among them`, async ({ page }) => {
+    await page.goto(path);
+    await expect(page.locator("main h2").first()).toHaveText("En bref");
+    const brief = page.locator(".brief");
+    await expect(brief.locator("dt")).toHaveText(["Ce que ça fait", "Ce qui est mesuré", "Défaut principal"]);
+    for (const dd of await brief.locator("dd").all()) await expect(dd).toHaveText(/\S/);
+    await expect(brief.locator(".big .figure")).toHaveCount(3);
+    await expect(brief.locator(".big .figure.defect")).toHaveCount(1);
+    for (const href of await brief.locator(".figure").evaluateAll((els) => els.map((a) => a.getAttribute("href")))) expect(href).toMatch(PINNED(slug));
+  });
+
+  test(`${path}: every section opens with a sentence saying what it gives the reader`, async ({ page }) => {
+    await page.goto(path);
+    const firsts = await page.locator(".case-section > h2").evaluateAll((hs) => hs.map((h) => [h.nextElementSibling?.className ?? "", h.nextElementSibling?.textContent?.trim() ?? ""]));
+    expect(firsts).toHaveLength(SECTIONS.length);
+    for (const [cls, text] of firsts) {
+      expect(cls).toContain("lead");
+      expect(text).toMatch(/\S.*[.:]$/);
+    }
+  });
+
+  test(`${path}: no unexplained jargon in the running text`, async ({ page }) => {
+    await page.goto(path);
+    const words = await page.evaluate((source) => {
+      const re = new RegExp(source, "i");
+      const found: string[] = [];
+      const walker = document.createTreeWalker(document.querySelector("main")!, NodeFilter.SHOW_TEXT);
+      for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+        const parent = node.parentElement!;
+        if (parent.closest("style, script, a, code, blockquote")) continue;
+        const m = re.exec(node.textContent ?? "");
+        if (m) found.push(`${m[0]} in: ${node.textContent!.trim().slice(0, 80)}`);
+      }
+      return found;
+    }, JARGON.source);
+    expect(words).toEqual([]);
+  });
+
+  test(`${path}: the measures tables are folded, and open as stacked cards on a 375 px screen`, async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 800 });
+    await page.goto(path);
+    const detail = page.locator("#mesures details.measures-detail");
+    await expect(detail).toHaveCount(1);
+    await expect(detail.locator("table").first()).toBeHidden();
+    await detail.locator("summary").click();
+    await expect(detail.locator("table").first()).toBeVisible();
+    for (const row of await detail.locator("tbody tr").all()) {
+      expect(await row.evaluate((r) => getComputedStyle(r).display)).toBe("block");
+    }
+    expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(0);
+    for (const table of await detail.locator("table").all()) {
+      expect(await table.evaluate((t) => t.scrollWidth - t.clientWidth)).toBeLessThanOrEqual(0);
+    }
   });
 
   test(`${path}: one SVG diagram, named, in "what I built"`, async ({ page }) => {
@@ -73,6 +133,7 @@ for (const slug of CASES) {
 
   test(`${path}: every figure links to its artefact at a pinned commit, every interval is its measure's`, async ({ page }) => {
     await page.goto(path);
+    await page.locator("#mesures summary").click();
     const rows = page.locator("#mesures tbody tr");
     expect(await rows.count()).toBeGreaterThanOrEqual(2);
     for (const href of await page.locator("#mesures .figure").evaluateAll((els) => els.map((a) => a.getAttribute("href")))) {

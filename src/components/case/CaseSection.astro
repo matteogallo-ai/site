@@ -4,13 +4,17 @@ interface Props {
   n: number;
   id: string;
   title: string;
+  /** First sentence of the section: what it gives the reader. Required, so no section opens without one. */
+  lead: string;
 }
 
-const { n, id, title } = Astro.props;
+const { n, id, title, lead } = Astro.props;
+if (!lead.trim()) throw new Error(`section ${id} needs a lead sentence`);
 ---
 
 <section class="section case-section" id={id} aria-labelledby={`${id}-title`}>
   <p class="mono rule-label" aria-hidden="true">+ {String(n).padStart(2, "0")}</p>
   <h2 id={`${id}-title`}>{title}</h2>
+  <p class="lead">{lead}</p>
   <slot />
 </section>
