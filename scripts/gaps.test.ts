@@ -39,3 +39,44 @@ test("code in upper case or with spaced closing tags is still code", () => {
 test("a marker after a script is still found", () => {
   assert.equal(gapsIn("<script>x</script><p>TODO: bio</p>").length, 1);
 });
+
+test("an announcement of content that is not there is a gap", () => {
+  for (const html of [
+    '<li><span class="date">À paraître</span> J’ai piégé mon propre juge</li>',
+    "<p>Version anglaise bientôt</p>",
+    "<p>Prochainement : les études de cas</p>",
+    "<p>Case studies coming soon</p>",
+    "<p>A forthcoming article</p>",
+  ]) {
+    const found = gapsIn(html);
+    assert.equal(found.length, 1, html);
+    assert.match(found[0]!, /announcement/);
+  }
+});
+
+const built = (paths: string[]) => (path: string) => paths.includes(path);
+
+test("a language label with no page behind it is a gap", () => {
+  for (const html of [
+    '<li><span class="lang" aria-current="true" lang="fr">FR</span></li>',
+    '<li><a href="/en/" hreflang="en" lang="en">EN</a></li>',
+    '<li><a href="https://matteogallo.pages.dev/en/" hreflang="en">English</a></li>',
+  ]) {
+    const found = gapsIn(html, { site: "https://matteogallo.pages.dev", built: built(["index.html"]) });
+    assert.equal(found.length, 1, html);
+    assert.match(found[0]!, /language/);
+  }
+});
+
+test("a language link or alternate to a built page is not a gap", () => {
+  const options = { site: "https://matteogallo.pages.dev", built: built(["index.html", "en/index.html"]) };
+  assert.deepEqual(gapsIn('<a href="/en/" hreflang="en" lang="en">EN</a>', options), []);
+  assert.deepEqual(gapsIn('<link rel="alternate" hreflang="fr" href="https://matteogallo.pages.dev/">', options), []);
+  assert.deepEqual(gapsIn('<a href="/en/#projects" hreflang="en">English</a>', options), []);
+});
+
+test("an alternate language link to a page that was not built is a gap", () => {
+  const found = gapsIn('<link rel="alternate" hreflang="en" href="https://matteogallo.pages.dev/en/">', { site: "https://matteogallo.pages.dev", built: built(["index.html"]) });
+  assert.equal(found.length, 1);
+  assert.match(found[0]!, /language/);
+});

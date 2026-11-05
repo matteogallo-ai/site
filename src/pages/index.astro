@@ -20,9 +20,7 @@ const nb = " ";
     <ul class="glass">
       <li><a href="#projets">Projets</a></li>
       <li><a href="#methode">Méthode</a></li>
-      <li><a href="#ecrits">Écrits</a></li>
       <li><a href="#a-propos">À propos</a></li>
-      <li><span class="lang" aria-current="true" lang="fr">FR</span></li>
     </ul>
   </nav>
 
@@ -99,22 +97,14 @@ const nb = " ";
     <p><a href={repo("how-i-build")}>Toutes les règles et leurs incidents : how-i-build</a></p>
   </section>
 
-  <section class="container section" id="ecrits" aria-labelledby="ecrits-title">
-    <p class="mono rule-label">+ 03</p>
-    <h2 id="ecrits-title">Écrits</h2>
-    <ul class="writing">
-      <li><span class="date">À paraître</span> J’ai piégé mon propre juge</li>
-    </ul>
-  </section>
-
   <section class="container section" id="a-propos" aria-labelledby="a-propos-title">
-    <p class="mono rule-label">+ 04</p>
+    <p class="mono rule-label">+ 03</p>
     <h2 id="a-propos-title">À propos</h2>
     <Bio />
   </section>
 
   <section class="container section" id="contact" aria-labelledby="contact-title">
-    <p class="mono rule-label">+ 05</p>
+    <p class="mono rule-label">+ 04</p>
     <h2 id="contact-title">Contact</h2>
     <p class="email"><a href="mailto:matteogallo.office@gmail.com">matteogallo.office@gmail.com</a></p>
     <ul class="contact-links">
@@ -160,10 +150,6 @@ const nb = " ";
 
   .nav a:hover {
     text-decoration: underline;
-  }
-
-  .lang {
-    font-weight: 600;
   }
 
   .hero {
@@ -334,19 +320,6 @@ const nb = " ";
 
   .rules p {
     margin: 0.4rem 0 0;
-  }
-
-  .writing {
-    margin: 0;
-    padding: 0;
-    list-style: none;
-  }
-
-  .date {
-    display: inline-block;
-    min-width: 8rem;
-    font-size: var(--step-14);
-    color: var(--graphite);
   }
 
   .email {
