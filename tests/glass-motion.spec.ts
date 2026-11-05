@@ -273,6 +273,7 @@ test("on a change of mode the ring fades out before it moves: no frame shows it 
   const first = frames[0]!.box;
   const moved = frames.findIndex((f) => f.box !== first);
   expect(moved, "the ring never moved").toBeGreaterThan(0);
-  // Every frame from the move on, until it is back, starts from an invisible ring.
-  expect(frames[moved]!.opacity, JSON.stringify(frames.slice(0, moved + 1))).toBeLessThan(0.05);
+  // The last frame before it moved shows it invisible: it moved unseen. (The frame of the move
+  // can already show it fading back in, when frames are far apart.)
+  expect(frames[moved - 1]!.opacity, JSON.stringify(frames.slice(0, moved + 1))).toBeLessThan(0.05);
 });
