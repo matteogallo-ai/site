@@ -1,30 +1,209 @@
 ---
+import { Picture } from "astro:assets";
 import Base from "../layouts/Base.astro";
+import Figure from "../components/Figure.astro";
+import Gap from "../components/Gap.astro";
+import VerityDemo from "../components/VerityDemo.astro";
+import Projects from "../components/Projects.astro";
+import Bio from "../components/Bio.astro";
+import portrait from "../assets/matteo.jpg";
+
+const repo = (name: string) => `https://github.com/matteogallo-ai/${name}`;
+const nb = " ";
 ---
 
 <Base
   title="Matteo Gallo — Software & AI Engineer"
   description="Matteo Gallo, Software & AI Engineer à Lausanne. Je construis des produits IA complets et je publie leurs mesures, défauts compris."
+  serif
 >
-  <section class="container hero">
-    <p class="mono label">No. 00</p>
-    <h1>Matteo Gallo</h1>
-    <p class="title">Software &amp; AI Engineer.</p>
-    <p class="message">
-      Je construis des produits IA complets et je publie leurs mesures, <mark>défauts compris</mark>.
+  <nav class="nav" aria-label="Principale">
+    <ul>
+      <li><a href="#projets">Projets</a></li>
+      <li><a href="#methode">Méthode</a></li>
+      <li><a href="#ecrits">Écrits</a></li>
+      <li><a href="#a-propos">À propos</a></li>
+      <li><span class="lang" aria-current="true" lang="fr">FR</span></li>
+      <li><Gap>version EN</Gap></li>
+    </ul>
+  </nav>
+
+  <section class="container hero" aria-labelledby="name">
+    <div class="intro">
+      <div class="who">
+        <Picture src={portrait} formats={["avif", "webp"]} width={120} height={120} densities={[1, 2]} alt="Portrait de Matteo Gallo" class="portrait" loading="eager" fetchpriority="high" />
+        <div>
+          <h1 id="name">Matteo Gallo</h1>
+          <p class="status"><span class="dot" aria-hidden="true"></span>Disponible · Lausanne, CH</p>
+        </div>
+      </div>
+      <p class="title">Software &amp; AI Engineer.</p>
+      <p class="message">
+        Je construis des produits IA complets et je publie leurs mesures, <mark>défauts compris</mark>.
+      </p>
+      <p class="actions">
+        <a class="button primary" href="#projets">Voir les projets</a>
+        <a class="button" href="#contact">Écrire un e-mail</a>
+      </p>
+      <p class="note">
+        <span class="wide">À droite</span><span class="narrow">Ci-dessous</span>{nb}: Verity, mon agent RAG, sur un contrat de démonstration.
+      </p>
+    </div>
+    <div class="stage">
+      <VerityDemo />
+    </div>
+  </section>
+
+  <section class="container band" aria-label="Verity en trois chiffres">
+    <p class="cell">
+      <Figure id="verity.hallucination_rate" where="band" />
+      <span>réponses avec une hallucination, selon un juge LLM, parmi les questions avec réponse auxquelles Verity a répondu</span>
+    </p>
+    <p class="cell">
+      <Figure id="verity.refusal_recall" where="band" />
+      <span>questions sans réponse correctement refusées</span>
+    </p>
+    <p class="cell">
+      <Figure id="verity.unanswerable_answered" where="band" defect />
+      <span class="defect-label">questions sans réponse auxquelles il a quand même répondu : son défaut principal</span>
     </p>
   </section>
+
+  <Projects />
+
+  <section class="container section" id="methode" aria-labelledby="methode-title">
+    <p class="mono rule-label">+ 02</p>
+    <h2 id="methode-title">Méthode</h2>
+    <ol class="rules">
+      <li>
+        <h3>Une revue humaine est pré-enregistrée, et son résultat publié tel qu’il est sorti.</h3>
+        <p>
+          L’échantillon de signalements du linter IA a été tiré avec une graine fixe et commité avant toute annotation. La revue a mesuré{" "}
+          <Figure id="promptlang.linter_precision_reviewed" where="method" defect />, ce qui ne distingue pas la précision de la borne déjà publiée ; c’est publié avec cette lecture.
+        </p>
+        <p class="links"><a href="https://github.com/matteogallo-ai/promptlang/pull/39">promptlang#39</a></p>
+      </li>
+      <li>
+        <h3>Un humain lit les vraies sorties : la relecture trouve ce que les tests ratent.</h3>
+        <p>
+          Ma relecture d’un briefing live de Praxis a trouvé des estimations de risque présentées comme des faits de première main. Une décision d’architecture les excluait déjà ; le code ne l’appliquait pas. Le validateur est corrigé, la relecture publiée, aucun enregistrement réécrit.
+        </p>
+        <p class="links"><a href="https://github.com/matteogallo-ai/praxis/pull/47">praxis#47</a></p>
+      </li>
+      <li>
+        <h3>Un agent sans contexte audite main ; chaque constat est corrigé, réfuté ou laissé ouvert, par écrit.</h3>
+        <p>
+          L’audit de PromptLang a produit <Figure id="promptlang.audit_findings" where="method" /> constats, chacun suivi par écrit.
+        </p>
+        <p class="links"><a href="https://github.com/matteogallo-ai/promptlang/pull/32">promptlang#32</a></p>
+      </li>
+    </ol>
+    <p><a href={repo("how-i-build")}>Toutes les règles et leurs incidents : how-i-build</a></p>
+  </section>
+
+  <section class="container section" id="ecrits" aria-labelledby="ecrits-title">
+    <p class="mono rule-label">+ 03</p>
+    <h2 id="ecrits-title">Écrits</h2>
+    <ul class="writing">
+      <li><span class="date">À paraître</span> J’ai piégé mon propre juge</li>
+    </ul>
+  </section>
+
+  <section class="container section" id="a-propos" aria-labelledby="a-propos-title">
+    <p class="mono rule-label">+ 04</p>
+    <h2 id="a-propos-title">À propos</h2>
+    <Bio />
+  </section>
+
+  <section class="container section" id="contact" aria-labelledby="contact-title">
+    <p class="mono rule-label">+ 05</p>
+    <h2 id="contact-title">Contact</h2>
+    <p class="email"><Gap>adresse e-mail publique</Gap></p>
+    <ul class="contact-links">
+      <li>LinkedIn : <Gap>URL du profil</Gap></li>
+      <li><a href="https://github.com/matteogallo-ai">GitHub</a></li>
+    </ul>
+  </section>
+
+  <footer class="container footer">
+    <p>Mesures du site (poids, Lighthouse, date du build, commit) : <Gap>publiées depuis la CI de production</Gap></p>
+    <p>Colophon : <Gap>page du colophon</Gap></p>
+    <p>Code sous licence MIT, contenu tous droits réservés. <a href={repo("site")}>Code du site</a></p>
+  </footer>
 </Base>
 
+
 <style>
-  .hero {
-    padding-block: 6rem;
+  .nav {
+    position: sticky;
+    top: 0.75rem;
+    z-index: 10;
+    display: flex;
+    justify-content: center;
+    margin-top: 0.75rem;
+    pointer-events: none;
   }
 
-  .label {
-    margin: 0 0 1rem;
-    font-size: var(--step-12);
-    color: var(--graphite);
+  .nav ul {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.25rem 1rem;
+    margin: 0;
+    padding: 0.5rem 1.1rem;
+    list-style: none;
+    font-size: var(--step-14);
+    border-radius: 999px;
+    background: var(--glass-fill);
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    backdrop-filter: blur(var(--glass-blur));
+    box-shadow: 0 0 0 1px var(--glass-edge), 0 8px 24px -16px rgb(17 17 17 / 0.4);
+    pointer-events: auto;
+  }
+
+  .nav a {
+    text-decoration: none;
+  }
+
+  .nav a:hover {
+    text-decoration: underline;
+  }
+
+  .lang {
+    font-weight: 600;
+  }
+
+  .hero {
+    display: grid;
+    gap: 2.5rem;
+    padding-block: 2.5rem 3rem;
+  }
+
+  @media (min-width: 64rem) {
+    .hero {
+      grid-template-columns: 5fr 7fr;
+      gap: var(--gutter) 3rem;
+      align-items: start;
+      padding-top: 4rem;
+    }
+
+    .intro {
+      position: sticky;
+      top: 5rem;
+    }
+  }
+
+  .who {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+  }
+
+  .who :global(.portrait) {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    flex: none;
   }
 
   h1 {
@@ -32,28 +211,176 @@ import Base from "../layouts/Base.astro";
     letter-spacing: var(--track-44);
   }
 
-  @media (min-width: 48rem) {
-    h1 {
-      font-size: var(--step-68);
-      letter-spacing: var(--track-68);
-    }
-  }
-
-  .title {
+  .status {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
     margin: 0.5rem 0 0;
-    font-size: var(--step-28);
+    font-size: var(--step-14);
     color: var(--graphite);
   }
 
-  .message {
-    max-width: 34em;
+  .dot {
+    width: 0.55rem;
+    height: 0.55rem;
+    border-radius: 50%;
+    background: var(--proof);
+  }
+
+  .title {
     margin: 1.5rem 0 0;
+    font-size: var(--step-28);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+
+  .message {
+    margin: 0.75rem 0 0;
     font-size: var(--step-21);
+    max-width: 30em;
   }
 
   mark {
     background: var(--proof-wash);
     color: var(--ink);
     padding-inline: 0.15em;
+  }
+
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin: 1.75rem 0 0;
+  }
+
+  .button {
+    display: inline-block;
+    padding: 0.6rem 1.1rem;
+    border-radius: 999px;
+    border: 1px solid var(--ink);
+    text-decoration: none;
+    font-size: var(--step-16);
+  }
+
+  .button.primary {
+    background: var(--ink);
+    color: var(--paper);
+  }
+
+  .note {
+    margin: 1.5rem 0 0;
+    font-size: var(--step-14);
+    color: var(--graphite);
+  }
+
+  .wide {
+    display: none;
+  }
+
+  @media (min-width: 64rem) {
+    .wide {
+      display: inline;
+    }
+
+    .narrow {
+      display: none;
+    }
+  }
+
+  .band {
+    display: grid;
+    gap: var(--gutter);
+    padding-block: 2rem;
+    border-block: 1px dotted var(--rule);
+  }
+
+  @media (min-width: 48rem) {
+    .band {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  .cell {
+    margin: 0;
+    font-size: var(--step-14);
+    color: var(--graphite);
+  }
+
+  .cell :global(.figure) {
+    display: block;
+    width: max-content;
+  }
+
+  .cell :global(.value) {
+    display: block;
+    font-size: var(--step-44);
+    letter-spacing: var(--track-44);
+    border-bottom: 0;
+  }
+
+  .defect-label {
+    color: var(--defect);
+  }
+
+  figcaption {
+    margin-top: 0.4rem;
+    font-size: var(--step-12);
+    color: var(--graphite);
+  }
+
+  .links {
+    font-size: var(--step-14);
+  }
+
+  .rules {
+    margin: 0;
+    padding-left: 1.25rem;
+    display: grid;
+    gap: 1.75rem;
+    max-width: 46rem;
+  }
+
+  .rules h3 {
+    font-size: var(--step-16);
+  }
+
+  .rules p {
+    margin: 0.4rem 0 0;
+  }
+
+  .writing {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .date {
+    display: inline-block;
+    min-width: 8rem;
+    font-size: var(--step-14);
+    color: var(--graphite);
+  }
+
+  .email {
+    font-size: var(--step-28);
+    margin: 0;
+  }
+
+  .contact-links {
+    margin: 1rem 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .footer {
+    margin-top: 4rem;
+    padding-block: 2rem 3rem;
+    border-top: 1px dotted var(--rule);
+    font-size: var(--step-14);
+    color: var(--graphite);
+  }
+
+  .footer p {
+    margin: 0.25rem 0;
   }
 </style>
