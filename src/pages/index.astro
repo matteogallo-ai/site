@@ -64,7 +64,7 @@ const repo = (name: string) => `https://github.com/matteogallo-ai/${name}`;
 
   <Projects />
 
-  <section class="container section" id="methode" aria-labelledby="methode-title">
+  <section class="container section reveal" id="methode" aria-labelledby="methode-title">
     <p class="mono rule-label">+ 02</p>
     <h2 id="methode-title">Méthode</h2>
     <ul class="rules">
@@ -87,7 +87,7 @@ const repo = (name: string) => `https://github.com/matteogallo-ai/${name}`;
     <p><a href={repo("how-i-build")}>Toutes les règles et leurs incidents : how-i-build</a></p>
   </section>
 
-  <section class="container section closing" id="a-propos" aria-label="À propos et contact">
+  <section class="container section closing reveal" id="a-propos" aria-label="À propos et contact">
     <div class="about">
       <p class="mono rule-label">+ 03</p>
       <h2>À propos</h2>
@@ -102,6 +102,12 @@ const repo = (name: string) => `https://github.com/matteogallo-ai/${name}`;
       </p>
     </div>
   </section>
+
+  <script>
+    import { countOnSight } from "../scripts/count.ts";
+    // The band's three figures count up once, as they come into view (SPEC §4).
+    countOnSight(document.querySelectorAll<HTMLElement>(".band .value"));
+  </script>
 
   <footer class="container footer">
     <p>Code sous licence MIT, contenu tous droits réservés. <a href={repo("site")}>Code du site</a></p>

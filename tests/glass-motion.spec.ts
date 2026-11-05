@@ -182,3 +182,44 @@ test("an answer below the fold at load writes itself even when the page scrolls 
   await page.goto("/");
   await expect(page.locator("#verity-panel-answer")).toHaveAttribute("data-written", "", { timeout: 3000 });
 });
+
+test("the band's figures count up as they come into view, over their real value kept in the page", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 800 });
+  await page.goto("/");
+  const value = page.locator(".band .value").nth(1);
+  const final = (await value.evaluate((v) => v.firstChild!.textContent))!;
+  await value.scrollIntoViewIfNeeded();
+  await expect(value).toHaveAttribute("data-counting", "");
+  // While it counts: the figure keeps its value for assistive tech; only the aria-hidden copy moves.
+  const during = await value.evaluate((v) => ({ own: v.firstChild!.textContent, layer: v.querySelector(".count-layer")?.getAttribute("aria-hidden") }));
+  expect(during).toEqual({ own: final, layer: "true" });
+  await expect(value).not.toHaveAttribute("data-counting", { timeout: 2000 });
+  await expect(value).toHaveText(final);
+});
+
+test("under reduced motion the figures do not count and the sections do not move", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.setViewportSize({ width: 1440, height: 800 });
+  await page.goto("/");
+  await page.locator(".band").scrollIntoViewIfNeeded();
+  await page.waitForTimeout(300);
+  expect(await page.locator(".band [data-counting], .count-layer").count()).toBe(0);
+  expect(await page.locator("#methode").evaluate((s) => getComputedStyle(s).animationName)).toBe("none");
+});
+
+test("each section comes fully into place once scrolled into view", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 800 });
+  await page.goto("/");
+  const ids = ["projets", "methode", "a-propos"];
+  // At load all three are below the screen: they wait, transparent, for their entry.
+  for (const id of ids) {
+    const section = page.locator(`#${id}`);
+    expect(await section.evaluate((s) => getComputedStyle(s).animationName)).toBe("reveal");
+    await expect.poll(async () => Number(await section.evaluate((s) => getComputedStyle(s).opacity))).toBeLessThan(0.5);
+  }
+  for (const id of ids) {
+    const section = page.locator(`#${id}`);
+    await section.evaluate((s) => s.scrollIntoView({ block: "start" }));
+    await expect.poll(() => section.evaluate((s) => getComputedStyle(s).opacity)).toBe("1");
+  }
+});

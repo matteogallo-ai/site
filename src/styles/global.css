@@ -165,3 +165,40 @@ a {
 .tip-host:is(:hover, :focus-visible):not([data-dismissed]) .tip {
   display: block;
 }
+
+/* A figure counting up (src/scripts/count.ts): its own text stays in place and keeps the line's
+   width, unpainted; the aria-hidden copy over it counts, aligned on the right so the fixed part
+   ("/20") holds still while the number grows. */
+.value[data-counting] {
+  position: relative;
+  -webkit-text-fill-color: transparent;
+}
+
+.count-layer {
+  position: absolute;
+  right: 0;
+  top: 0;
+  -webkit-text-fill-color: currentColor;
+}
+
+/* Sections come into place as they scroll into view, where the engine ties animations to the
+   scroll; elsewhere, and under reduced motion, they are simply there. */
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    /* The timeline goes through a variable: the minifier otherwise folds it into an animation
+       shorthand ("animation: linear both reveal view()") that Chromium rejects whole. */
+    .reveal {
+      --reveal-timeline: view();
+      animation: reveal linear both;
+      animation-timeline: var(--reveal-timeline);
+      animation-range: entry 0% entry 30%;
+    }
+  }
+}
+
+@keyframes reveal {
+  from {
+    opacity: 0;
+    translate: 0 1.5rem;
+  }
+}

@@ -51,7 +51,7 @@ How the site is built: stack, budgets, real measures, accessibility choices, wha
 - **Colours:** paper `#F5F4F0`, ink `#111111`, graphite `#5C5C58`, rules `#DAD8D2`, proof `#1E8A4C`/`#17703D`, defect `#A8382A`, night blue `#1C2A44`. Automatic dark mode (`prefers-color-scheme`). AA contrast checked for every pair.
 - **Grid:** 12 columns, 24 px gutter, 1200 px container. Dotted vertical rules, "+" marks between sections, numbered sections.
 - **Glass:** only the navigation, the spotlight's ring and the answer card. Frosted glass everywhere; SVG refraction as progressive enhancement (Chromium); opaque version under `prefers-reduced-transparency`. Text on glass only over a known, controlled background.
-- **Motion:** transitions last 150–400 ms, `cubic-bezier(.2,.8,.2,1)`. The spotlight glides to the clause, the answer writes itself, the ticks appear in order. Writing the answer is a reading animation, not a transition: about 35 ms a word, at most 1.5 s; a click or a key shows it whole, and only an `aria-hidden` visual layer is animated, so assistive tech reads the whole answer from the start. Everything is cut under `prefers-reduced-motion` (final state shown at once).
+- **Motion:** transitions last 150–400 ms, `cubic-bezier(.2,.8,.2,1)`. The spotlight glides to the clause, the answer writes itself, the ticks appear in order. Writing the answer is a reading animation, not a transition: about 35 ms a word, at most 1.5 s; a click or a key shows it whole, and only an `aria-hidden` visual layer is animated, so assistive tech reads the whole answer from the start. The three figures of the band count up once as they come into view (700 ms, an `aria-hidden` copy over the real value); the sections below the first screen come into place as they scroll into view (CSS scroll-driven animation, where supported). Everything is cut under `prefers-reduced-motion` (final state shown at once).
 
 ## 5. Signature details
 1. The Verity demo with the spotlight computed on the citation.
@@ -71,7 +71,7 @@ How the site is built: stack, budgets, real measures, accessibility choices, wha
 French at `/`, English at `/en/`, translated by hand, correct `hreflang`.
 
 ## 8. Technique
-- **Astro**, static, zero JS by default. JS islands: the Verity demo, the Short/Detailed toggle.
+- **Astro**, static, zero JS by default. JS islands: the Verity demo, the Short/Detailed toggle, the band's counters.
 - **Cloudflare Pages** through its Git integration (no token). Address: `matteogallo.pages.dev` (fallback: `matteo-gallo.pages.dev`); custom domain `matteogallo.ch`.
 - **Blocking budgets in CI:** home ≤ 200 KB transferred excluding deferred screenshots, measured with gzip (stricter than the brotli Cloudflare serves, on purpose); fonts ≤ 90 000 bytes on any page; LCP < 1.5 s; CLS < 0.05; Lighthouse ≥ 98 on all 4 categories; 0 axe violation.
 - **CI:** build, typecheck, links, Lighthouse CI, axe, budgets, spotlight position test at 3 widths, generation of `site-measures.json`.
