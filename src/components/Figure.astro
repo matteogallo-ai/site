@@ -17,28 +17,18 @@ const m = measure(id);
 const proof = lang === "fr" ? "Preuve\u00A0:" : "Proof:";
 ---
 
-<a class:list={["figure", { defect }]} href={m.url} aria-describedby={tip}>
+<a class:list={["figure", "tip-host", { defect }]} href={m.url} aria-describedby={tip}>
   <span class="value mono">{m.display[lang]}</span>
-  <span class="path mono" id={tip} role="tooltip">{proof} {m.repo.split("/")[1]}/{m.path}</span>
+  <span class="path tip mono" id={tip} role="tooltip">{proof} {m.repo.split("/")[1]}/{m.path}</span>
 </a>
 
 <script>
-  // WCAG 1.4.13: content shown on hover or focus can be dismissed without moving either.
-  document.addEventListener("keydown", (event) => {
-    if (event.key !== "Escape") return;
-    for (const figure of document.querySelectorAll<HTMLElement>(".figure:hover, .figure:focus-visible")) figure.dataset["dismissed"] = "";
-  });
-  for (const figure of document.querySelectorAll<HTMLElement>(".figure")) {
-    const reset = () => delete figure.dataset["dismissed"];
-    figure.addEventListener("blur", reset);
-    figure.addEventListener("mouseleave", reset);
-  }
+  import { dismissibleTips } from "../scripts/tips.ts";
+  dismissibleTips();
 </script>
 
 <style>
-  /* The tooltip is positioned against the figure's block (the cell, list item or paragraph
-     that contains it), not the figure: it can then never be wider than that block, and a
-     figure near the right edge cannot widen the page. */
+  /* The artefact path appears on hover and keyboard focus (SPEC §5.2), as a .tip (global.css). */
   .figure {
     display: inline-block;
     color: var(--proof-text);
@@ -54,27 +44,4 @@ const proof = lang === "fr" ? "Preuve\u00A0:" : "Proof:";
     border-bottom: 1px dotted currentColor;
   }
 
-  /* The artefact path appears on hover and keyboard focus (SPEC §5.2). */
-  .path {
-    position: absolute;
-    left: 0;
-    top: calc(100% + 0.35rem);
-    z-index: 2;
-    width: max-content;
-    max-width: 100%;
-    padding: 0.3rem 0.5rem;
-    font-size: var(--step-12);
-    line-height: 1.4;
-    color: var(--ink);
-    background: var(--paper);
-    border: 1px solid var(--rule);
-    border-radius: 4px;
-    overflow-wrap: anywhere;
-    /* display, not visibility: a hidden box would still widen the page on narrow screens. */
-    display: none;
-  }
-
-  .figure:is(:hover, :focus-visible):not([data-dismissed]) .path {
-    display: block;
-  }
 </style>

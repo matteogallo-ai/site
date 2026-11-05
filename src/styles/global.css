@@ -139,3 +139,30 @@ a {
     backdrop-filter: none;
   }
 }
+
+/* A tooltip shown on hover and keyboard focus of its .tip-host, dismissed with Escape
+   (src/scripts/tips.ts). It is positioned against the host's block (the cell, list item or
+   paragraph around it), not the host: it can then never be wider than that block, and a host
+   near the right edge cannot widen the page. */
+.tip {
+  position: absolute;
+  left: 0;
+  top: calc(100% + 0.35rem);
+  z-index: 2;
+  width: max-content;
+  max-width: 100%;
+  padding: 0.3rem 0.5rem;
+  font-size: var(--step-12);
+  line-height: 1.4;
+  color: var(--ink);
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  overflow-wrap: anywhere;
+  /* display, not visibility: a hidden box would still widen the page on narrow screens. */
+  display: none;
+}
+
+.tip-host:is(:hover, :focus-visible):not([data-dismissed]) .tip {
+  display: block;
+}

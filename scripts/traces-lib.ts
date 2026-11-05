@@ -116,3 +116,22 @@ export function traceMatchesRun(trace: DemoTrace, run: unknown): string[] {
   if (!Array.isArray(hits) || !isDeepStrictEqual(trace.hits_used, hits.slice(0, trace.hits_used.length))) errors.push(`${trace.example_id}: hits_used is not a prefix of the run's`);
   return errors;
 }
+
+export interface Translation {
+  en: string;
+  fr: string;
+}
+
+export type DemoTranslations = Record<string, { question: Translation; answer: Translation } | string>;
+
+/** Why a trace's French lines would not translate what the trace says (empty when they do). */
+export function translationErrors(trace: DemoTrace, translations: DemoTranslations): string[] {
+  const entry = translations[trace.example_id];
+  if (typeof entry !== "object") return [`${trace.example_id}: no translation`];
+  return (["question", "answer"] as const).flatMap((field) => {
+    const t = entry[field];
+    const said = field === "question" ? trace.question : trace.answer_text;
+    if (t.en !== said) return [`${trace.example_id}: the ${field} translated is not the trace's ${field}`];
+    return t.fr.trim() === "" ? [`${trace.example_id}: empty ${field} translation`] : [];
+  });
+}

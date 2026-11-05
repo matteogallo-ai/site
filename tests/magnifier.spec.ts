@@ -141,6 +141,21 @@ test("figures: the proof path shows on focus without widening the page, and Esca
   await expect(figures.nth(count - 1).locator(".path")).toBeHidden();
 });
 
+test("demo: the run's source shows its files on focus without widening the page, and Escape dismisses it", async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 800 });
+  await page.goto("/");
+  const link = page.getByRole("link", { name: "Source du run" });
+  const tip = page.locator("#verity-run-tip");
+  await expect(tip).toBeHidden();
+  await link.focus();
+  await expect(tip).toBeVisible();
+  await expect(tip).toContainText("eval_969e1d5_test.json");
+  await expect(tip).toContainText("sla.md");
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(375);
+  await page.keyboard.press("Escape");
+  await expect(tip).toBeHidden();
+});
+
 test("demo tabs: an ARIA tablist operated from the keyboard", async ({ page }) => {
   await page.goto("/");
   const answerTab = page.getByRole("tab", { name: "Répond, en citant" });
@@ -155,7 +170,7 @@ test("demo tabs: an ARIA tablist operated from the keyboard", async ({ page }) =
   await expect(refusalTab).toBeFocused();
   await expect(refusalTab).toHaveAttribute("aria-selected", "true");
   await expect(answerTab).toHaveAttribute("tabindex", "-1");
-  await expect(page.getByRole("tabpanel", { name: "Refuse, faute de preuve" })).toContainText("Refus du modèle · confiance 0,97");
+  await expect(page.getByRole("tabpanel", { name: "Refuse, faute de preuve" })).toContainText("Refus du modèle, confiance 0,97");
   await expect(page.locator("#verity-panel-answer")).toBeHidden();
 
   await page.keyboard.press("Home");
