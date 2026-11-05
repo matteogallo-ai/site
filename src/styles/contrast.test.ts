@@ -89,6 +89,24 @@ test("--lens-fill is the sheet at 85 % or more", () => {
   assert.ok(lensFill.weight >= 0.85, `${lensFill.weight * 100} % < 85 %`);
 });
 
+// The answer card lies over the contract on wide screens: same worst case, for every colour it uses.
+const cardFill = readMix(css, "card-fill");
+test("--card-fill is the paper at 85 % or more", () => {
+  assert.equal(cardFill.first, "paper");
+  assert.equal(cardFill.second, "transparent");
+  assert.ok(cardFill.weight >= 0.85, `${cardFill.weight * 100} % < 85 %`);
+});
+
+for (const [name, theme] of Object.entries(themes)) {
+  const overInk = mix(theme.paper!, theme.ink!, cardFill.weight);
+  for (const fg of ["ink", "graphite", "proof-text", "defect"]) {
+    test(`${name}: --${fg} on the answer card over ink (${overInk}) >= 4.5:1`, () => {
+      const ratio = contrastRatio(theme[fg]!, overInk);
+      assert.ok(ratio >= 4.5, `${ratio.toFixed(2)}:1 < 4.5:1`);
+    });
+  }
+}
+
 for (const [name, theme] of Object.entries(themes)) {
   const defectTint = mix(theme.defect!, theme.paper!, tint.weight);
   for (const fg of ["defect", "ink"]) {

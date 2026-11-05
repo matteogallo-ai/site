@@ -50,6 +50,7 @@ export function readThemes(source: string): { light: Theme; dark: Theme } {
 
 /** `a` and `b` mixed in sRGB with `weight` of `a`, as CSS color-mix(in srgb, a weight, b) does. */
 export function mix(a: string, b: string, weight: number): string {
+  // luminance() rejects anything but six-digit hex: a token in another format must fail here, not mix as NaN.
   luminance(a);
   luminance(b);
   const at = (hex: string, i: number) => Number.parseInt(hex.slice(i, i + 2), 16);

@@ -17,13 +17,10 @@ function targetBoxes(doc: Element, mode: Mode, sheet: HTMLElement): Box[] {
   );
 }
 
-/**
- * Where the target's centre sits in the window, as a fraction of its height: the middle of
- * the part the answer card leaves uncovered (--target-at, set by the layout in VerityDemo.astro).
- */
-function targetAt(sheet: HTMLElement): number {
-  const at = Number.parseFloat(getComputedStyle(sheet).getPropertyValue("--target-at"));
-  return Number.isFinite(at) ? at : 0.5;
+/** A unitless or px custom property of the sheet, set by the layout in VerityDemo.astro. */
+function layoutValue(sheet: HTMLElement, name: string, fallback: number): number {
+  const value = Number.parseFloat(getComputedStyle(sheet).getPropertyValue(name));
+  return Number.isFinite(value) ? value : fallback;
 }
 
 const still = matchMedia("(prefers-reduced-motion: reduce)");
@@ -99,7 +96,6 @@ export function mountVerityDemo(root: HTMLElement): void {
     const width = sheet.clientWidth;
     const target = unionBox(targetBoxes(doc, root.dataset["mode"] as Mode, sheet));
     if (!target) return;
-    sheet.scrollTo({ top: target.top + target.height / 2 - sheet.clientHeight * targetAt(sheet), behavior });
     const { lens: box, view: at, origin, scale } = lensLayout(target, width);
     Object.assign(lens.style, { left: `${box.left}px`, top: `${box.top}px`, width: `${box.width}px`, height: `${box.height}px` });
     Object.assign(view.style, {
@@ -112,6 +108,12 @@ export function mountVerityDemo(root: HTMLElement): void {
     Object.assign(tag.style, { left: `${Math.min(box.left + box.width, width)}px`, top: `${box.top}px` });
     lens.hidden = false;
     tag.hidden = false;
+    // The target's centre goes to --target-at of the window's height (the middle of the part
+    // the card leaves uncovered), but never so far up that the tag above the lens enters the
+    // top fade, where it would lose its contrast.
+    const tagTop = box.top - tag.offsetHeight - layoutValue(sheet, "--tag-gap", 10);
+    const centred = target.top + target.height / 2 - sheet.clientHeight * layoutValue(sheet, "--target-at", 0.5);
+    sheet.scrollTo({ top: Math.min(centred, tagTop - layoutValue(sheet, "--fade", 40)), behavior });
   };
 
   const panelOf = (t: HTMLButtonElement) => document.getElementById(t.getAttribute("aria-controls") ?? "");

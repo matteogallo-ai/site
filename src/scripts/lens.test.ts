@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import { test } from "node:test";
 import { type Box, lensLayout, RING, SCALE, unionBox } from "./lens.ts";
 
@@ -39,9 +40,12 @@ test("words near a sheet edge are enlarged less, never cut, and the lens stays o
 test("with room on the sheet, the lens keeps its ring on the sheet", () => {
   // 10 px from the left edge: without the inset the lens would reach x = 0 and lose its ring.
   const { lens } = lensLayout({ left: 10, top: 0, width: 300, height: 20 }, 400);
-  // The ring .lens draws in VerityDemo.astro: box-shadow out to 7 px.
-  const drawn = 7;
-  assert.ok(RING >= drawn);
+  // The widest ring .lens draws in VerityDemo.astro (its box-shadow spreads).
+  const css = readFileSync(new URL("../components/VerityDemo.astro", import.meta.url), "utf8");
+  const block = /\n  \.lens \{([^}]*)\}/.exec(css)?.[1] ?? "";
+  const drawn = Math.max(...[...block.matchAll(/0 0 0 (\d+)px/g)].map((m) => Number(m[1])));
+  assert.ok(drawn > 0, "no ring found in .lens");
+  assert.ok(RING >= drawn, `RING ${RING} < ring drawn ${drawn}`);
   assert.ok(lens.left >= drawn && lens.left + lens.width <= 400 - drawn, JSON.stringify(lens));
 });
 

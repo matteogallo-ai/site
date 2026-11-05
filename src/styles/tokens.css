@@ -21,10 +21,12 @@
   --night: #1c2a44;
   /* Not in the SPEC: the demo contract page, a shade lighter than the paper it lies on. */
   --sheet: #fcfbf8;
-  /* Not in the SPEC: the « Défaut connu » box, a trace of the defect colour on the paper. */
+  /* SPEC §3.1: the « Défaut connu » box, a trace of the defect colour on the paper (≤ 8 %). */
   --defect-tint: color-mix(in srgb, var(--defect) 7%, var(--paper));
-  /* Not in the SPEC: the loupe's frosted glass, near-opaque so the words behind it stay out of the way. */
+  /* SPEC §2: the loupe's frosted glass, near-opaque so the words behind it stay out of the way (≥ 85 %). */
   --lens-fill: color-mix(in srgb, var(--sheet) 90%, transparent);
+  /* The answer card's glass, as near-opaque, because it lies over the contract's words. */
+  --card-fill: color-mix(in srgb, var(--paper) 90%, transparent);
 
   /* Type scale (SPEC §4): 12 · 14 · 16 · 21 · 28 · 44 · 68 px. */
   --step-12: 0.75rem;
@@ -89,5 +91,6 @@
     --glass-fill: var(--paper);
     --glass-blur: 0px;
     --lens-fill: var(--sheet);
+    --card-fill: var(--paper);
   }
 }

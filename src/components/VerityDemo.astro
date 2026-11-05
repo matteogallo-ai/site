@@ -40,10 +40,6 @@ const runFile = fileOf(answer.source.path);
     <button type="button" role="tab" id="verity-tab-refusal" aria-controls="verity-panel-refusal" aria-selected="false" tabindex="-1" data-mode="refusal">Refuse, faute de preuve</button>
   </div>
 
-  <p class="source mono">
-    <a href={sla.source.url}>{fileOf(slaPath)}</a> · run <a href={answer.source.url}>{runFile}</a>
-  </p>
-
   <div class="window">
     <div class="sheet" data-sheet tabindex="0" role="region" aria-label="Contrat de démonstration : Service Level Agreement">
     <article class="doc serif" lang="en">
@@ -113,6 +109,10 @@ const runFile = fileOf(answer.source.path);
     <p class="ref">Passage le plus proche{"\u00A0"}: <span class="mono" lang="en">{fileOf(slaPath)} · {sectionOf(closest.section)}</span>, jugé insuffisant</p>
     <p class="why" lang="en">{refusal.refusal_rationale}</p>
   </section>
+
+  <p class="source mono">
+    <a href={sla.source.url}>{fileOf(slaPath)}</a> · run <a href={answer.source.url}>{runFile}</a>
+  </p>
 </div>
 
 <noscript>
@@ -125,6 +125,15 @@ const runFile = fileOf(answer.source.path);
       display: block;
       margin-top: 1rem;
     }
+    /* Nothing scrolls the window to the passage: the whole contract is shown, the cards below it. */
+    [data-verity-demo] [data-sheet] {
+      height: auto;
+      padding-bottom: 1.25rem;
+      mask-image: none;
+    }
+    [data-verity-demo] .card {
+      margin: 1rem 0 0;
+    }
   </style>
 </noscript>
 
@@ -136,14 +145,10 @@ const runFile = fileOf(answer.source.path);
 <style>
   .demo {
     position: relative;
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
   }
 
   .tabs {
     display: inline-flex;
-    align-self: flex-start;
     gap: 0.25rem;
     padding: 0.25rem;
     margin-bottom: 0.75rem;
@@ -179,21 +184,26 @@ const runFile = fileOf(answer.source.path);
     height: 18rem;
     padding: 1.5rem 1.5rem 1.25rem;
     overflow-y: auto;
-    overscroll-behavior: contain;
     scrollbar-width: none;
     border-radius: inherit;
+    /* Read by verity-demo.ts: where the passage goes, and what the tag above the lens keeps clear of. */
     --target-at: 0.5;
-    mask-image: linear-gradient(to bottom, transparent, #000 2.5rem, #000 calc(100% - 2.5rem), transparent);
+    --fade: 40px;
+    --tag-gap: 10px;
+    mask-image: linear-gradient(to bottom, transparent, #000 var(--fade), #000 calc(100% - var(--fade)), transparent);
   }
 
-  /* The mask would also fade a focus outline drawn by the sheet: the window draws it. */
-  .sheet:focus-visible {
-    outline: none;
-  }
+  /* The mask would also fade a focus outline drawn by the sheet: the window draws it, where
+     the browser can select it. */
+  @supports selector(:has(*)) {
+    .sheet:focus-visible {
+      outline: none;
+    }
 
-  .window:has(.sheet:focus-visible) {
-    outline: 2px solid var(--ink);
-    outline-offset: 2px;
+    .window:has(.sheet:focus-visible) {
+      outline: 2px solid var(--ink);
+      outline-offset: 2px;
+    }
   }
 
   .doc {
@@ -296,7 +306,7 @@ const runFile = fileOf(answer.source.path);
   .lens-tag {
     position: absolute;
     margin: 0;
-    transform: translate(-100%, calc(-100% - 10px));
+    transform: translate(-100%, calc(-100% - var(--tag-gap)));
     padding: 0.05rem 0.45rem;
     box-shadow: 0 0 0 1px var(--rule);
     transition:
@@ -319,7 +329,7 @@ const runFile = fileOf(answer.source.path);
   }
 
   .source {
-    margin: 0 0 0.75rem;
+    margin: 0.75rem 0 0;
     font-size: var(--step-12);
     color: var(--graphite);
     overflow-wrap: anywhere;
@@ -329,9 +339,12 @@ const runFile = fileOf(answer.source.path);
     color: inherit;
   }
 
+  /* Over the contract, the card's glass is near-opaque: its text then never sits on the words
+     behind it (worst case checked in contrast.test.ts). */
   .card {
     margin-top: 1rem;
     padding: 1.25rem;
+    background: var(--card-fill);
     border-radius: 14px;
     box-shadow: 0 0 0 1px var(--glass-edge), 0 12px 32px -20px rgb(17 17 17 / 0.4);
   }
@@ -457,6 +470,9 @@ const runFile = fileOf(answer.source.path);
     .sheet {
       height: 22.5rem;
       padding-bottom: 12rem;
+      /* Wide screens only: on a phone the window spans the screen, and a swipe on it must still
+         scroll the page once the window is at its end. */
+      overscroll-behavior: contain;
       --target-at: 0.27;
     }
 
@@ -479,12 +495,6 @@ const runFile = fileOf(answer.source.path);
 
     .k {
       margin-top: 0.5rem !important;
-    }
-
-    /* The source line would sit under the card: it closes the demo instead. */
-    .source {
-      order: 1;
-      margin: 0.75rem 0 0;
     }
   }
 </style>

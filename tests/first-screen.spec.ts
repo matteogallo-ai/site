@@ -22,12 +22,18 @@ async function boxes(page: Page, mode: "answer" | "refusal") {
       window: box(document.querySelector("[data-sheet]")!),
       target,
       lens: box(document.querySelector("[data-lens]")!),
+      tag: box(document.querySelector("[data-lens-tag]")!),
+      fade: Number.parseFloat(getComputedStyle(document.querySelector("[data-sheet]")!).getPropertyValue("--fade")),
       card: box(document.querySelector(`#verity-panel-${m}`)!),
     };
   }, mode);
 }
 
 const within = (inner: Box, outer: Box) => inner.top >= outer.top && inner.bottom <= outer.bottom && inner.left >= outer.left && inner.right <= outer.right;
+const settled = async (page: Page, mode: "answer" | "refusal") => {
+  const b = await boxes(page, mode);
+  return within(b.target, b.window);
+};
 const apart = (a: Box, b: Box) => a.bottom <= b.top || b.bottom <= a.top || a.right <= b.left || b.right <= a.left;
 
 for (const [width, height] of [
@@ -44,7 +50,7 @@ for (const [width, height] of [
       await expect(page.locator(`#verity-panel-${mode}`)).toBeVisible();
       expect(await page.evaluate(() => scrollY)).toBe(0);
       // The window scrolls to the passage: measure once it has settled.
-      await expect.poll(async () => within((await boxes(page, mode)).target, (await boxes(page, mode)).window)).toBe(true);
+      await expect.poll(() => settled(page, mode)).toBe(true);
       const b = await boxes(page, mode);
       for (const name of ["tabs", "window", "target", "lens", "card"] as const) {
         expect(within(b[name], b.viewport), `${name} ${JSON.stringify(b[name])} in ${JSON.stringify(b.viewport)}`).toBe(true);
@@ -61,7 +67,31 @@ test("narrow screens: the card follows the window, the passage is in view inside
   await page.setViewportSize({ width: 375, height: 812 });
   await page.goto("/");
   await page.evaluate(() => document.fonts.ready);
-  await expect.poll(async () => within((await boxes(page, "answer")).target, (await boxes(page, "answer")).window)).toBe(true);
+  await expect.poll(() => settled(page, "answer")).toBe(true);
   const b = await boxes(page, "answer");
   expect(b.card.top).toBeGreaterThanOrEqual(b.window.bottom);
 });
+
+// The window fades out over --fade at its top: the tag and the lens ring above the passage stay below it.
+const RING_DRAWN = 7;
+for (const [width, height] of [
+  [1440, 800],
+  [1280, 720],
+  [1024, 768],
+  [375, 812],
+] as const) {
+  for (const mode of ["answer", "refusal"] as const) {
+    test(`at ${width}×${height}, the ${mode} tag and lens stay clear of the window's top fade`, async ({ page }) => {
+      await page.setViewportSize({ width, height });
+      await page.emulateMedia({ reducedMotion: "reduce" });
+      await page.goto("/");
+      await page.evaluate(() => document.fonts.ready);
+      if (mode === "refusal") await page.getByRole("tab", { name: "Refuse, faute de preuve" }).click();
+      await expect.poll(() => settled(page, mode)).toBe(true);
+      const b = await boxes(page, mode);
+      expect(b.fade).toBeGreaterThan(0);
+      expect(b.tag.top - b.window.top, JSON.stringify(b)).toBeGreaterThanOrEqual(b.fade - 0.5);
+      expect(b.lens.top - RING_DRAWN - b.window.top, JSON.stringify(b)).toBeGreaterThanOrEqual(b.fade - 0.5);
+    });
+  }
+}
