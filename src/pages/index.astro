@@ -69,7 +69,7 @@ const repo = (name: string) => `https://github.com/matteogallo-ai/${name}`;
     <h2 id="methode-title">Méthode</h2>
     <ul class="rules">
       <li>
-        <h3>Revue humaine pré-enregistrée, publiée telle quelle</h3>
+        <h3>Revue humaine <span class="word">pré-enregistrée</span>, publiée telle quelle</h3>
         <p>Échantillon tiré avec une graine fixe, commité avant toute annotation : <Figure id="promptlang.linter_precision_reviewed" where="method" defect /> signalements jugés justes, publié avec sa limite.</p>
         <p class="links"><a href="https://github.com/matteogallo-ai/promptlang/pull/39">PR promptlang#39</a></p>
       </li>
@@ -236,6 +236,11 @@ const repo = (name: string) => `https://github.com/matteogallo-ai/${name}`;
     background: var(--proof-wash);
     color: var(--ink);
     padding-inline: 0.15em;
+    white-space: nowrap;
+  }
+
+  /* A compound kept on one line: "pré-" alone at a line end reads as a cut word. */
+  .word {
     white-space: nowrap;
   }
 
