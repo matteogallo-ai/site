@@ -806,41 +806,28 @@
           "contains": "Every one is flagged insufficiently sourced"
         },
         {
-          "path": "benchmarks/outputs/live/05-supply-chain-acquisition/run-2026-11-04T08-33-09-131Z/metadata.json",
-          "pointer": "/sourcing/insufficiently_sourced",
-          "equals": true
-        },
-        {
-          "path": "benchmarks/outputs/live/05-supply-chain-acquisition/run-2026-11-04T10-52-05-822Z/metadata.json",
-          "pointer": "/sourcing/insufficiently_sourced",
-          "equals": true
-        },
-        {
-          "path": "benchmarks/outputs/live/08-ai-regulation-position/run-2026-11-04T12-56-19-902Z/metadata.json",
-          "pointer": "/sourcing/insufficiently_sourced",
-          "equals": true
-        },
-        {
-          "path": "benchmarks/outputs/live/10-esg-position/run-2026-11-04T13-04-11-831Z/metadata.json",
-          "pointer": "/sourcing/insufficiently_sourced",
-          "equals": true
-        },
-        {
-          "path": "benchmarks/outputs/live/11-family-office-co-investment/run-2026-11-04T13-12-35-988Z/metadata.json",
-          "pointer": "/sourcing/insufficiently_sourced",
-          "equals": true
-        },
-        {
-          "path": "benchmarks/outputs/live/12-sodium-ion-plant-morocco/run-2026-11-04T13-20-16-572Z/metadata.json",
-          "pointer": "/sourcing/insufficiently_sourced",
-          "equals": true
-        },
-        {
           "contains": "13 live attempts: 7 failed"
+        },
+        {
+          "listing": "benchmarks/outputs/live",
+          "matching": "^[^/]+/run-[^/]+/metadata\\.json$",
+          "files": [
+            "05-supply-chain-acquisition/run-2026-11-04T08-33-09-131Z/metadata.json",
+            "05-supply-chain-acquisition/run-2026-11-04T10-52-05-822Z/metadata.json",
+            "08-ai-regulation-position/run-2026-11-04T12-56-19-902Z/metadata.json",
+            "10-esg-position/run-2026-11-04T13-04-11-831Z/metadata.json",
+            "11-family-office-co-investment/run-2026-11-04T13-12-35-988Z/metadata.json",
+            "12-sodium-ion-plant-morocco/run-2026-11-04T13-20-16-572Z/metadata.json"
+          ],
+          "pointer": "/sourcing/insufficiently_sourced",
+          "each": true,
+          "binds": [
+            "k",
+            "n"
+          ]
         }
       ],
       "status": "verified",
-      "derived": "Count of the six committed live-run metadata files whose /sourcing/insufficiently_sourced is true.",
       "note": "The main Praxis defect. Six completed runs over five questions (question 05 twice); 7 other attempts failed. The quality of the briefings is not reviewed."
     },
     {

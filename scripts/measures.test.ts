@@ -5,6 +5,8 @@ import {
   evidenceError,
   GAP_DISPLAY,
   type GapMeasure,
+  type ListingEvidence,
+  listingError,
   type MeasuresFile,
   measuresErrors,
   rawUrl,
@@ -133,4 +135,48 @@ test("a pointer never reads inherited properties nor non-index array keys", () =
 
 test("raw URLs are pinned to the commit and escape path segments", () => {
   assert.equal(rawUrl({ repo: "matteogallo-ai/x", commit: COMMIT }, "a b/c#d.json"), `https://raw.githubusercontent.com/matteogallo-ai/x/${COMMIT}/a%20b/c%23d.json`);
+});
+
+const listing = (): ListingEvidence => ({
+  listing: "runs",
+  matching: "^[^/]+/run-[^/]+/metadata\\.json$",
+  files: ["q1/run-a/metadata.json", "q2/run-b/metadata.json"],
+  pointer: "/flagged",
+  each: true,
+  binds: ["k", "n"],
+});
+const counted = (e: ListingEvidence): VerifiedMeasure => ({ ...base(), display: { fr: "2/2", en: "2/2" }, value: 1, k: 2, n: 2, evidence: [e] });
+
+test("a listing binds k and n to its number of files", () => {
+  const m = counted(listing());
+  delete m.ci95;
+  assert.deepEqual(errorsOf(m), []);
+  m.n = 3;
+  m.value = 2 / 3;
+  m.display = { fr: "2/3", en: "2/3" };
+  assert.ok(errorsOf(m).some((e) => /binds n to 2 files, not 3/.test(e)));
+});
+
+test("a listing refuses files that do not match, repeat, or sit at different depths", () => {
+  const cases: [string, (e: ListingEvidence) => void, RegExp][] = [
+    ["a file outside the pattern", (e) => e.files.push("q3/notes.md"), /does not match/],
+    ["a repeated file", (e) => e.files.push(e.files[0]!), /repeat/],
+    ["mixed depths", (e) => ((e.matching = ".*"), e.files.push("top.json")), /one depth/],
+    ["an invalid pattern", (e) => (e.matching = "("), /not a regular expression/],
+  ];
+  for (const [name, mutate, expected] of cases) {
+    const e = listing();
+    mutate(e);
+    const m = counted(e);
+    delete m.ci95;
+    assert.ok(errorsOf(m).some((x) => expected.test(x)), `${name}: ${JSON.stringify(errorsOf(m))}`);
+  }
+});
+
+test("the directory at the commit must hold exactly the listed files", () => {
+  const e = listing();
+  const found = ["q1/run-a/metadata.json", "q2/run-b/metadata.json", "q2/error-x.json", "README.md"];
+  assert.equal(listingError(found, e), null);
+  assert.equal(listingError([...found, "q3/run-c/metadata.json"], e), "runs: unlisted q3/run-c/metadata.json");
+  assert.equal(listingError(found.slice(1), e), "runs: missing q1/run-a/metadata.json");
 });

@@ -43,6 +43,9 @@ jobs:
           node-version-file: .nvmrc
       # Node built-ins only: no install needed. Reads the public repos at their pinned commits.
       - run: npm run check:sources
+        env:
+          # Read-only (permissions: contents: read): lifts the API quota for directory listings.
+          GITHUB_TOKEN: ${{ github.token }}
 
   links:
     name: build + links

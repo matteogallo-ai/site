@@ -15,9 +15,15 @@ export type Binding = "value" | "k" | "n" | "ci95";
  * One fact the file must state for the figure to stand: a JSON value, or a passage of text.
  * `binds` names the measure field that the value must equal.
  */
-export type Evidence =
-  | { path?: string; pointer: string; equals: unknown; binds?: Binding }
-  | { path?: string; contains: string };
+export type PointerEvidence = { path?: string; pointer: string; equals: unknown; binds?: Binding };
+export type TextEvidence = { path?: string; contains: string };
+/**
+ * The files of a directory at the commit whose path (relative to `listing`) matches
+ * `matching` are exactly `files`, and each states `each` at `pointer`. It binds k and n
+ * to the number of files: every listed file has the property.
+ */
+export type ListingEvidence = { listing: string; matching: string; files: string[]; pointer: string; each: unknown; binds?: ("k" | "n")[] };
+export type Evidence = PointerEvidence | TextEvidence | ListingEvidence;
 
 interface MeasureText {
   id: string;
@@ -115,6 +121,11 @@ function verifiedErrors(m: VerifiedMeasure): string[] {
     if (typeof m.value !== "number" || !(lo <= m.value + 1e-9 && m.value <= hi + 1e-9)) errors.push(`${at}: ci95 [${lo}, ${hi}] does not contain ${m.value}`);
   }
   for (const e of m.evidence) {
+    if ("listing" in e) {
+      errors.push(...listingRuleErrors(at, e));
+      for (const f of e.binds ?? []) if (m[f] !== e.files.length) errors.push(`${at}: ${e.listing} binds ${f} to ${e.files.length} files, not ${m[f]}`);
+      continue;
+    }
     if (e.path !== undefined && (e.path.startsWith("/") || e.path.includes(".."))) errors.push(`${at}: evidence path ${e.path} must be repo-relative`);
     if ("pointer" in e && !e.pointer.startsWith("/")) errors.push(`${at}: pointer ${e.pointer} must start with /`);
     if ("contains" in e && !e.contains) errors.push(`${at}: empty contains`);
@@ -130,7 +141,7 @@ const isRatio = (m: VerifiedMeasure) => m.k !== undefined && m.n !== undefined &
 
 /** Fields the measure carries that no evidence item binds. A value equal to k/n is bound through k and n. */
 export function unboundFields(m: VerifiedMeasure): Binding[] {
-  const bound = new Set(m.evidence.flatMap((e) => ("binds" in e && e.binds ? [e.binds] : [])));
+  const bound = new Set<Binding>(m.evidence.flatMap((e) => ("binds" in e && e.binds ? [e.binds].flat() : [])));
   const present: Binding[] = [...(isRatio(m) ? [] : ["value" as const]), ...(["k", "n", "ci95"] as const).filter((f) => m[f] !== undefined)];
   return present.filter((f) => !bound.has(f));
 }
@@ -151,7 +162,7 @@ const numberTokens = (text: string) => (text.match(/\d+(?:[.,]\d+)?/g) ?? []).ma
  */
 export function textNumberErrors(m: VerifiedMeasure): string[] {
   const figures = [...numbersIn(m.value), ...numbersIn(m.k), ...numbersIn(m.n), ...numbersIn(m.ci95)];
-  const stated = [...figures, ...m.evidence.flatMap((e) => ("equals" in e ? numbersIn(e.equals) : []))];
+  const stated = [...figures, ...m.evidence.flatMap((e) => ("equals" in e ? numbersIn(e.equals) : "listing" in e ? [e.files.length] : []))];
   const matches = (pool: number[]) => (t: string) => pool.some((x) => x.toFixed(t.split(".")[1]?.length ?? 0) === t);
   const errors: string[] = [];
   for (const lang of ["fr", "en"] as const) {
@@ -174,8 +185,40 @@ export function resolvePointer(doc: unknown, pointer: string): unknown {
   return node;
 }
 
+function listingRuleErrors(at: string, e: ListingEvidence): string[] {
+  const errors: string[] = [];
+  if (!e.listing || e.listing.startsWith("/") || e.listing.includes("..")) errors.push(`${at}: listing ${e.listing} must be repo-relative`);
+  if (!e.pointer.startsWith("/")) errors.push(`${at}: pointer ${e.pointer} must start with /`);
+  let pattern: RegExp;
+  try {
+    pattern = new RegExp(e.matching);
+  } catch (error) {
+    return [...errors, `${at}: matching is not a regular expression: ${(error as Error).message}`];
+  }
+  if (!e.files.length) errors.push(`${at}: a listing names its files`);
+  if (new Set(e.files).size !== e.files.length) errors.push(`${at}: listing files repeat`);
+  for (const f of e.files) if (!pattern.test(f)) errors.push(`${at}: ${f} does not match ${e.matching}`);
+  // The checker walks the directory only to this depth: a deeper match would go unseen.
+  if (new Set(e.files.map(listingDepth)).size > 1) errors.push(`${at}: listing files must all be at one depth`);
+  return errors;
+}
+
+/** How many directory levels the checker walks for a listing. */
+export const listingDepth = (file: string) => file.split("/").length;
+
+/** null when the files found at the commit are exactly the ones the evidence names. */
+export function listingError(found: string[], e: ListingEvidence): string | null {
+  const pattern = new RegExp(e.matching);
+  const matched = found.filter((f) => pattern.test(f)).sort();
+  const expected = [...e.files].sort();
+  if (isDeepStrictEqual(matched, expected)) return null;
+  const extra = matched.filter((f) => !expected.includes(f));
+  const missing = expected.filter((f) => !matched.includes(f));
+  return `${e.listing}: ${extra.length ? `unlisted ${extra.join(", ")}` : ""}${extra.length && missing.length ? "; " : ""}${missing.length ? `missing ${missing.join(", ")}` : ""}`;
+}
+
 /** null when the file states the evidence; otherwise why it does not. */
-export function evidenceError(fileText: string, e: Evidence): string | null {
+export function evidenceError(fileText: string, e: PointerEvidence | TextEvidence): string | null {
   if ("contains" in e) return fileText.includes(e.contains) ? null : `text not found: ${JSON.stringify(e.contains)}`;
   let doc: unknown;
   try {
