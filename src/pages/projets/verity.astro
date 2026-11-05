@@ -43,15 +43,15 @@ if (!thresholdSentence || !("contains" in thresholdSentence)) throw new Error("t
       steps={[
         { title: "Question", lines: ["sur un corpus de contrats et de politiques"] },
         { title: "Recherche hybride", lines: ["dense et lexicale, fusion des rangs,", "reranker cross-encoder local"] },
-        { title: "Synthèse avec citations", lines: ["chaque citation doit être un extrait exact", "du document, sinon elle est écartée"] },
-        { title: "Contrôles déterministes", lines: ["citation absente, couverture, pertinence,", "marqueurs d’injection : un échec refuse"] },
-        { title: "Score de confiance et seuil", lines: ["ne peut pas annuler un contrôle précédent"] },
+        { title: "Synthèse avec citations", lines: ["chaque citation doit être un extrait exact", "du document ; sans citation, refus"] },
+        { title: "Contrôles déterministes", lines: ["couverture des citations, pertinence,", "marqueurs d’injection : un échec refuse"] },
+        { title: "Score de confiance et seuil", lines: ["le modèle de score peut refuser ; il ne", "peut pas annuler un contrôle précédent"] },
       ]}
       outcomes={[
         { title: "Réponse citée", lines: ["clause et position"], tone: "proof" },
         { title: "Refus motivé", lines: ["cause enregistrée"], tone: "defect" },
       ]}
-      caption="Le refus est décidé dans l’ordre : pas de citation, puis les contrôles déterministes, puis le score et son seuil. Le juge LLM n’est pas sur ce chemin : il note les runs d’évaluation après coup."
+      caption="Le refus est décidé dans l’ordre : pas de citation, puis les contrôles déterministes, puis le modèle de score et son seuil. Le juge LLM n’est pas sur ce chemin : il note les runs d’évaluation après coup."
     />
     <p>
       Verity indexe des contrats, des politiques et des formulaires de commande, garde la position de chaque passage dans son document, et renvoie soit une réponse dont chaque citation est retrouvée
@@ -79,7 +79,7 @@ if (!thresholdSentence || !("contains" in thresholdSentence)) throw new Error("t
         {
           id: "verity.judge_kappa_real",
           noInterval: "Kappa n’est pas une proportion : l’artefact ne lui donne pas d’intervalle.",
-          reading: "Fragile : une seule affirmation réelle est dans la classe minoritaire humaine.",
+          reading: "Fragile : presque aucune affirmation réelle n’est dans la classe minoritaire humaine, si bien qu’un désaccord le déplace fortement.",
         },
         { id: "verity.judge_traps_detected", reading: "Borne haute : une affirmation piégée compte comme détectée dès qu’une de ses sous-affirmations est rejetée." },
       ]}
@@ -102,10 +102,16 @@ if (!thresholdSentence || !("contains" in thresholdSentence)) throw new Error("t
           label: "Taux d’hallucination (juge)",
           reading: "Aucune hallucination mesurée d’un côté comme de l’autre : rien à départager.",
         },
+        {
+          id: "verity.baseline_verity_unanswerable_answered",
+          base: "verity.baseline_naive_unanswerable_answered",
+          label: "Questions sans réponse auxquelles il a répondu",
+          reading: "L’avantage attendu de Verity, mais sur si peu de questions que l’artefact ne le distingue pas.",
+        },
       ]}
     />
     <p>
-      Sur ces données, un RAG naïf fait aussi bien que Verity. Le budget a arrêté les deux runs avant la fin ; la comparaison porte sur les questions que les deux bras ont terminées (<a
+      Sur ces données, aucune différence avec un RAG naïf n’est distinguable, sur aucune ligne. Le budget a arrêté les deux runs avant la fin ; la comparaison porte sur les questions que les deux bras ont terminées (<a
         href={at("scorecards/naive-baseline-comparison.json")}>comparaison</a
       >). C’est le résultat publié, pas le résultat favorable.
     </p>
@@ -125,7 +131,7 @@ if (!thresholdSentence || !("contains" in thresholdSentence)) throw new Error("t
       <footer><a href={at("docs/results.md")}>docs/results.md</a></footer>
     </blockquote>
     <p>
-      Chaque refus du run a une cause déterministe ; aucun n’est « sous le seuil ». Le score est l’auto-évaluation du modèle et il n’est pas calibré. Ce que j’ai fait : le publier. Le seuil réel figure à
+      Chaque refus du run vient d’une cause déterministe ou du modèle de score lui-même ; aucun n’est « sous le seuil ». Le score est l’auto-évaluation du modèle et il n’est pas calibré. Ce que j’ai fait : le publier. Le seuil réel figure à
       côté du défaut du code, et le refus calibré est dans la feuille de route au lieu d’être revendiqué.
     </p>
 
@@ -142,8 +148,10 @@ if (!thresholdSentence || !("contains" in thresholdSentence)) throw new Error("t
       fidèle au document.
     </p>
     <p>
-      Le même défaut a fait tomber une règle que je voulais ajouter : refuser toute réponse dont un chiffre n’est pas cité. Ici la réponse écrit la durée en chiffres et la citation en lettres. Mesurée sur les
-      runs publiés, la règle refusait des réponses justes ; elle n’est pas activée (<a href={at("docs/audit/2026-11-03-figure-rule-measurement.md")}>mesure</a>).
+      Un audit a proposé une règle : refuser toute réponse dont un chiffre n’est pas dans ses citations. Mesurée sur les runs publiés avant de l’activer, elle refusait des réponses justes, pour des
+      chiffres calculés, des chiffres repris de la question, des identifiants, et ici une durée écrite en chiffres dans la réponse et en lettres dans la citation fautive. Elle n’est pas activée (<a
+        href={at("docs/audit/2026-11-03-figure-rule-measurement.md")}>mesure</a
+      >).
     </p>
   </CaseSection>
 

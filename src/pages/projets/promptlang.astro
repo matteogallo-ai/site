@@ -3,10 +3,10 @@ import CaseStudy from "../../layouts/CaseStudy.astro";
 import CaseSection from "../../components/case/CaseSection.astro";
 import Diagram from "../../components/case/Diagram.astro";
 import MeasuresTable from "../../components/case/MeasuresTable.astro";
-import { pinned } from "../../lib/sources.ts";
+import { pinned, pull } from "../../lib/sources.ts";
 
 const at = (path: string) => pinned("promptlang", path);
-const pr = (n: number) => `https://github.com/matteogallo-ai/promptlang/pull/${n}`;
+const pr = (n: number) => pull("promptlang", n);
 ---
 
 <CaseStudy
@@ -28,16 +28,16 @@ const pr = (n: number) => `https://github.com/matteogallo-ai/promptlang/pull/${n
       id="promptlang-pipeline"
       title="Ce que devient un fichier .prompt"
       steps={[
-        { title: "Fichier .prompt", lines: ["paramètres typés, type de sortie, modèle cible"] },
+        { title: "Fichier .prompt", lines: ["paramètres typés, sortie, modèle cible"] },
         { title: "Lexer", lines: ["texte vers jetons"] },
-        { title: "Parser", lines: ["jetons vers arbre syntaxique, imports résolus"] },
+        { title: "Parser", lines: ["jetons vers arbre syntaxique (AST)"] },
       ]}
       outcomes={[
         { title: "Générer", lines: ["code typé", "TypeScript", "et Python"] },
-        { title: "Versionner", lines: ["semver-check", "juge le bump"] },
-        { title: "Analyser", lines: ["règles", "statiques et", "linter IA"] },
+        { title: "Versions", lines: ["compare", "l’interface", "à la base"] },
+        { title: "Analyser", lines: ["règles", "statiques,", "linter IA"] },
       ]}
-      caption="L’arbre syntaxique sert trois usages indépendants. Le code généré vérifie chaque réponse du modèle contre le type de sortie déclaré ; semver-check dit si la version a assez bougé ; l’analyse signale les défauts du texte du prompt."
+      caption="L’arbre syntaxique sert trois usages indépendants. Le code généré vérifie chaque réponse du modèle contre le type de sortie déclaré ; semver-check compare l’interface à celle de la base Git et dit si la version a assez bougé ; l’analyse signale les défauts du texte du prompt."
     />
     <p>
       Un fichier <code>.prompt</code> déclare ses paramètres, le type de sa sortie et son modèle. Le compilateur en tire une fonction typée ; <code>semver-check</code> compare l’interface avec celle de la
@@ -64,7 +64,7 @@ const pr = (n: number) => `https://github.com/matteogallo-ai/promptlang/pull/${n
         {
           id: "promptlang.audit_findings",
           noInterval: "Un décompte, pas une estimation.",
-          reading: "Audit du dépôt par un agent sans contexte. Chaque constat est corrigé dans une PR ou réfuté par écrit.",
+          reading: "Audit du dépôt par un agent sans contexte : des défauts, et un constat de contexte. Chaque défaut est corrigé dans une PR ou réfuté par écrit.",
         },
       ]}
     />
@@ -102,7 +102,7 @@ const pr = (n: number) => `https://github.com/matteogallo-ai/promptlang/pull/${n
     </p>
     <h3>Un linter IA déclaré livré, sans baseline</h3>
     <p>
-      Le README présentait le linter comme livré alors que sa précision était faible et qu’aucune baseline ne disait ce qu’elle valait. Un linter qui signale tout trouve presque tous les défauts conçus :
+      Le README présentait le linter comme livré alors que sa précision était faible et qu’aucune baseline ne disait ce qu’elle valait. Un linter qui signale tout trouve tous les défauts conçus :
       le rappel était presque gratuit. J’ai publié la précision à côté de cette baseline (<a href={pr(29)}>#29</a>), puis fait relire des signalements à la main ; le linter est décrit comme une aide au
       relecteur, pas comme une barrière.
     </p>
@@ -113,8 +113,9 @@ const pr = (n: number) => `https://github.com/matteogallo-ai/promptlang/pull/${n
     </p>
     <h3>Un score de mutation qui ne couvre pas le code risqué</h3>
     <p>
-      Le score ne porte que sur le lexer, le parser et semver ; les défauts trouvés par l’audit étaient dans le compilateur et le runtime. Le rapport de mutation liste désormais ce qu’il ne couvre pas
-      (<a href={at("docs/mutation/README.md")}>rapport</a>), pour que le score ne se lise pas comme une mesure de ce code.
+      Le score ne porte que sur le lexer, le parser et semver. L’audit a trouvé des défauts hors de ce périmètre (compilateur, runtime, CLI, analyseur, plafond de dépense), et un dans semver même : un
+      type exporté renommé était classé en patch. C’était un choix écrit dans l’ADR, et aucun mutant ne révèle une spécification fausse. Le rapport de mutation liste désormais ce
+      qu’il ne couvre pas (<a href={at("docs/mutation/README.md")}>rapport</a>), et le renommage est un changement majeur (<a href={pr(25)}>#25</a>).
     </p>
   </CaseSection>
 
@@ -149,15 +150,16 @@ const pr = (n: number) => `https://github.com/matteogallo-ai/promptlang/pull/${n
 
   <CaseSection n={6} id="construction" title="Comment c’est construit">
     <p>
-      TypeScript strict sur Bun, sans transpilation séparée. Tests <code>bun test</code>, tests de propriétés fast-check sur le lexer, le parser et semver, mutation Stryker, Biome, knip. Runtime
+      TypeScript strict sur Bun. Tests <code>bun test</code>, tests de propriétés fast-check sur le lexer, le parser et semver, mutation Stryker, Biome, knip. Runtime
       multi-fournisseur : Anthropic, OpenAI, Ollama ou un client fourni. Le linter IA appelle <code>claude-haiku-5-5</code>. Architecture : <a href={at("docs/architecture.md")}>docs/architecture.md</a>.
     </p>
   </CaseSection>
 
   <CaseSection n={7} id="suite" title="La suite">
+    <p>Rien n’est planifié. Ce qui manque, d’après la feuille de route :</p>
     <ul>
       <li>Exécuter les blocs <code>eval</code> : ils sont analysés, pas exécutés.</li>
-      <li>Des tests de mutation sur le compilateur et le runtime, là où l’audit a trouvé les défauts.</li>
+      <li>Des tests de mutation sur le compilateur et le runtime, hors du périmètre mesuré.</li>
       <li>Un linter IA sur d’autres fournisseurs que Claude, chacun avec sa propre mesure.</li>
       <li>Le streaming des réponses, et un support d’éditeur (coloration, LSP).</li>
     </ul>

@@ -502,6 +502,126 @@
       "note": "Dev split, incomplete runs (Verity 23/39, naive 28/39), compared on the 23 questions both completed; the artefact reads the difference as not distinguishable."
     },
     {
+      "id": "verity.baseline_verity_unanswerable_answered",
+      "label": {
+        "fr": "Questions sans réponse auxquelles il a répondu — Verity (comparaison)",
+        "en": "Unanswerable questions answered — Verity (comparison)"
+      },
+      "display": {
+        "fr": "0/2",
+        "en": "0/2"
+      },
+      "value": 0.0,
+      "k": 0,
+      "n": 2,
+      "ci95": [
+        0.0,
+        0.65762
+      ],
+      "repo": "matteogallo-ai/verity",
+      "commit": "162a055dee9ec26297b204c669a6a9b6e667b52a",
+      "path": "scorecards/naive-baseline-comparison.json",
+      "url": "https://github.com/matteogallo-ai/verity/blob/162a055dee9ec26297b204c669a6a9b6e667b52a/scorecards/naive-baseline-comparison.json",
+      "evidence": [
+        {
+          "pointer": "/arms/verity/metrics/unanswerable_answered/k",
+          "equals": 0,
+          "binds": "k"
+        },
+        {
+          "pointer": "/arms/verity/metrics/unanswerable_answered/n",
+          "equals": 2,
+          "binds": "n"
+        },
+        {
+          "pointer": "/arms/verity/metrics/unanswerable_answered/ci95_wilson",
+          "equals": [
+            0.0,
+            0.65762
+          ],
+          "binds": "ci95"
+        },
+        {
+          "pointer": "/readings/unanswerable_answered",
+          "equals": "not distinguishable"
+        },
+        {
+          "pointer": "/arms/verity/n_completed",
+          "equals": 23
+        },
+        {
+          "pointer": "/arms/naive/n_completed",
+          "equals": 28
+        },
+        {
+          "pointer": "/n_dataset",
+          "equals": 39
+        }
+      ],
+      "status": "verified",
+      "note": "Dev split, incomplete runs (Verity 23/39, naive 28/39), compared on the 23 questions both completed; the artefact reads the difference as not distinguishable."
+    },
+    {
+      "id": "verity.baseline_naive_unanswerable_answered",
+      "label": {
+        "fr": "Questions sans réponse auxquelles il a répondu — RAG naïf",
+        "en": "Unanswerable questions answered — naive RAG"
+      },
+      "display": {
+        "fr": "2/2",
+        "en": "2/2"
+      },
+      "value": 1.0,
+      "k": 2,
+      "n": 2,
+      "ci95": [
+        0.34238,
+        1.0
+      ],
+      "repo": "matteogallo-ai/verity",
+      "commit": "162a055dee9ec26297b204c669a6a9b6e667b52a",
+      "path": "scorecards/naive-baseline-comparison.json",
+      "url": "https://github.com/matteogallo-ai/verity/blob/162a055dee9ec26297b204c669a6a9b6e667b52a/scorecards/naive-baseline-comparison.json",
+      "evidence": [
+        {
+          "pointer": "/arms/naive/metrics/unanswerable_answered/k",
+          "equals": 2,
+          "binds": "k"
+        },
+        {
+          "pointer": "/arms/naive/metrics/unanswerable_answered/n",
+          "equals": 2,
+          "binds": "n"
+        },
+        {
+          "pointer": "/arms/naive/metrics/unanswerable_answered/ci95_wilson",
+          "equals": [
+            0.34238,
+            1.0
+          ],
+          "binds": "ci95"
+        },
+        {
+          "pointer": "/readings/unanswerable_answered",
+          "equals": "not distinguishable"
+        },
+        {
+          "pointer": "/arms/verity/n_completed",
+          "equals": 23
+        },
+        {
+          "pointer": "/arms/naive/n_completed",
+          "equals": 28
+        },
+        {
+          "pointer": "/n_dataset",
+          "equals": 39
+        }
+      ],
+      "status": "verified",
+      "note": "Dev split, incomplete runs (Verity 23/39, naive 28/39), compared on the 23 questions both completed; the artefact reads the difference as not distinguishable."
+    },
+    {
       "id": "verity.baseline_verity_hallucination_rate",
       "label": {
         "fr": "Taux d'hallucination — Verity (comparaison)",
