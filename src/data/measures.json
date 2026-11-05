@@ -246,6 +246,380 @@
       "status": "verified",
       "derived": "The default of the confidence_threshold field in the code.",
       "note": "Default of `verity ask`; the run of record used 0.0."
+    },
+    {
+      "id": "verity.judge_kappa_all",
+      "label": {
+        "fr": "Accord juge–humain à l'aveugle, κ de Cohen (60 affirmations)",
+        "en": "Judge–blind human agreement, Cohen's κ (60 claims)"
+      },
+      "display": {
+        "fr": "κ 0,71",
+        "en": "κ 0.71"
+      },
+      "value": 0.7099447513812154,
+      "repo": "matteogallo-ai/verity",
+      "commit": "162a055dee9ec26297b204c669a6a9b6e667b52a",
+      "path": "datasets/eval/judge_validation/agreement.json",
+      "url": "https://github.com/matteogallo-ai/verity/blob/162a055dee9ec26297b204c669a6a9b6e667b52a/datasets/eval/judge_validation/agreement.json",
+      "evidence": [
+        {
+          "pointer": "/agreement_mixed/cohen_kappa",
+          "equals": 0.7099447513812154,
+          "binds": "value"
+        },
+        {
+          "pointer": "/agreement_mixed/n_claims",
+          "equals": 60
+        },
+        {
+          "path": "docs/results.md",
+          "contains": "Judge `claude-opus-5-5` with judge prompt v0.1.0"
+        },
+        {
+          "path": "docs/results.md",
+          "contains": "The κ below belongs to this prompt version"
+        }
+      ],
+      "status": "verified",
+      "note": "Judge prompt v0.1.0, the one the runs of record used; 40 real and 20 perturbed claims. A changed judge prompt needs its own κ."
+    },
+    {
+      "id": "verity.judge_kappa_real",
+      "label": {
+        "fr": "Accord juge–humain à l'aveugle, κ de Cohen (40 affirmations réelles)",
+        "en": "Judge–blind human agreement, Cohen's κ (40 real claims)"
+      },
+      "display": {
+        "fr": "κ 0,48",
+        "en": "κ 0.48"
+      },
+      "value": 0.48051948051948035,
+      "repo": "matteogallo-ai/verity",
+      "commit": "162a055dee9ec26297b204c669a6a9b6e667b52a",
+      "path": "datasets/eval/judge_validation/agreement.json",
+      "url": "https://github.com/matteogallo-ai/verity/blob/162a055dee9ec26297b204c669a6a9b6e667b52a/datasets/eval/judge_validation/agreement.json",
+      "evidence": [
+        {
+          "pointer": "/agreement_real_only/cohen_kappa",
+          "equals": 0.48051948051948035,
+          "binds": "value"
+        },
+        {
+          "pointer": "/agreement_real_only/n_claims",
+          "equals": 40
+        },
+        {
+          "path": "docs/results.md",
+          "contains": "Judge `claude-opus-5-5` with judge prompt v0.1.0"
+        },
+        {
+          "path": "docs/results.md",
+          "contains": "The κ below belongs to this prompt version"
+        },
+        {
+          "path": "docs/results.md",
+          "contains": "only 1 of 40 claims is in the smaller human class"
+        }
+      ],
+      "status": "verified",
+      "note": "Judge prompt v0.1.0. Fragile: only 1 of the 40 claims is in the smaller human class, so one or two disagreements move κ widely."
+    },
+    {
+      "id": "verity.judge_traps_detected",
+      "label": {
+        "fr": "Affirmations piégées que le juge trouve non étayées (borne haute)",
+        "en": "Perturbed claims the judge finds unsupported (upper bound)"
+      },
+      "display": {
+        "fr": "16/20",
+        "en": "16/20"
+      },
+      "value": 0.8,
+      "k": 16,
+      "n": 20,
+      "ci95": [
+        0.584,
+        0.9193
+      ],
+      "repo": "matteogallo-ai/verity",
+      "commit": "162a055dee9ec26297b204c669a6a9b6e667b52a",
+      "path": "datasets/eval/judge_validation/agreement.json",
+      "url": "https://github.com/matteogallo-ai/verity/blob/162a055dee9ec26297b204c669a6a9b6e667b52a/datasets/eval/judge_validation/agreement.json",
+      "evidence": [
+        {
+          "pointer": "/sensitivity/judge_detected/k",
+          "equals": 16,
+          "binds": "k"
+        },
+        {
+          "pointer": "/sensitivity/judge_detected/n",
+          "equals": 20,
+          "binds": "n"
+        },
+        {
+          "pointer": "/sensitivity/judge_detected/ci95_wilson",
+          "equals": [
+            0.584,
+            0.9193
+          ],
+          "binds": "ci95"
+        },
+        {
+          "pointer": "/notes/1",
+          "equals": "a perturbed claim counts as detected if any sub-claim the judge made of it is unsupported, even outside the changed span: sensitivity is an upper bound (per-claim detail in perturbed_verdicts.json)"
+        },
+        {
+          "pointer": "/sensitivity/human_unsupported/k",
+          "equals": 13
+        },
+        {
+          "pointer": "/sensitivity/human_unsupported/n",
+          "equals": 20
+        }
+      ],
+      "status": "verified",
+      "note": "Upper bound: a perturbed claim counts as detected if any sub-claim the judge made of it is unsupported, even outside the changed span. The blind human found 13 of the 20 unsupported."
+    },
+    {
+      "id": "verity.baseline_verity_answerable_answered",
+      "label": {
+        "fr": "Questions avec réponse traitées — Verity",
+        "en": "Answerable questions answered — Verity"
+      },
+      "display": {
+        "fr": "16/21",
+        "en": "16/21"
+      },
+      "value": 0.761905,
+      "k": 16,
+      "n": 21,
+      "ci95": [
+        0.549088,
+        0.89372
+      ],
+      "repo": "matteogallo-ai/verity",
+      "commit": "162a055dee9ec26297b204c669a6a9b6e667b52a",
+      "path": "scorecards/naive-baseline-comparison.json",
+      "url": "https://github.com/matteogallo-ai/verity/blob/162a055dee9ec26297b204c669a6a9b6e667b52a/scorecards/naive-baseline-comparison.json",
+      "evidence": [
+        {
+          "pointer": "/arms/verity/metrics/answerable_answered/k",
+          "equals": 16,
+          "binds": "k"
+        },
+        {
+          "pointer": "/arms/verity/metrics/answerable_answered/n",
+          "equals": 21,
+          "binds": "n"
+        },
+        {
+          "pointer": "/arms/verity/metrics/answerable_answered/ci95_wilson",
+          "equals": [
+            0.549088,
+            0.89372
+          ],
+          "binds": "ci95"
+        },
+        {
+          "pointer": "/readings/answerable_answered",
+          "equals": "not distinguishable"
+        },
+        {
+          "pointer": "/arms/verity/n_completed",
+          "equals": 23
+        },
+        {
+          "pointer": "/arms/naive/n_completed",
+          "equals": 28
+        },
+        {
+          "pointer": "/n_dataset",
+          "equals": 39
+        }
+      ],
+      "status": "verified",
+      "note": "Dev split, incomplete runs (Verity 23/39, naive 28/39), compared on the 23 questions both completed; the artefact reads the difference as not distinguishable."
+    },
+    {
+      "id": "verity.baseline_naive_answerable_answered",
+      "label": {
+        "fr": "Questions avec réponse traitées — RAG naïf",
+        "en": "Answerable questions answered — naive RAG"
+      },
+      "display": {
+        "fr": "21/21",
+        "en": "21/21"
+      },
+      "value": 1.0,
+      "k": 21,
+      "n": 21,
+      "ci95": [
+        0.845361,
+        1.0
+      ],
+      "repo": "matteogallo-ai/verity",
+      "commit": "162a055dee9ec26297b204c669a6a9b6e667b52a",
+      "path": "scorecards/naive-baseline-comparison.json",
+      "url": "https://github.com/matteogallo-ai/verity/blob/162a055dee9ec26297b204c669a6a9b6e667b52a/scorecards/naive-baseline-comparison.json",
+      "evidence": [
+        {
+          "pointer": "/arms/naive/metrics/answerable_answered/k",
+          "equals": 21,
+          "binds": "k"
+        },
+        {
+          "pointer": "/arms/naive/metrics/answerable_answered/n",
+          "equals": 21,
+          "binds": "n"
+        },
+        {
+          "pointer": "/arms/naive/metrics/answerable_answered/ci95_wilson",
+          "equals": [
+            0.845361,
+            1.0
+          ],
+          "binds": "ci95"
+        },
+        {
+          "pointer": "/readings/answerable_answered",
+          "equals": "not distinguishable"
+        },
+        {
+          "pointer": "/arms/verity/n_completed",
+          "equals": 23
+        },
+        {
+          "pointer": "/arms/naive/n_completed",
+          "equals": 28
+        },
+        {
+          "pointer": "/n_dataset",
+          "equals": 39
+        }
+      ],
+      "status": "verified",
+      "note": "Dev split, incomplete runs (Verity 23/39, naive 28/39), compared on the 23 questions both completed; the artefact reads the difference as not distinguishable."
+    },
+    {
+      "id": "verity.baseline_verity_hallucination_rate",
+      "label": {
+        "fr": "Taux d'hallucination — Verity (comparaison)",
+        "en": "Hallucination rate — Verity (comparison)"
+      },
+      "display": {
+        "fr": "0/16",
+        "en": "0/16"
+      },
+      "value": 0.0,
+      "k": 0,
+      "n": 16,
+      "ci95": [
+        0.0,
+        0.193608
+      ],
+      "repo": "matteogallo-ai/verity",
+      "commit": "162a055dee9ec26297b204c669a6a9b6e667b52a",
+      "path": "scorecards/naive-baseline-comparison.json",
+      "url": "https://github.com/matteogallo-ai/verity/blob/162a055dee9ec26297b204c669a6a9b6e667b52a/scorecards/naive-baseline-comparison.json",
+      "evidence": [
+        {
+          "pointer": "/arms/verity/metrics/hallucination_rate/k",
+          "equals": 0,
+          "binds": "k"
+        },
+        {
+          "pointer": "/arms/verity/metrics/hallucination_rate/n",
+          "equals": 16,
+          "binds": "n"
+        },
+        {
+          "pointer": "/arms/verity/metrics/hallucination_rate/ci95_wilson",
+          "equals": [
+            0.0,
+            0.193608
+          ],
+          "binds": "ci95"
+        },
+        {
+          "pointer": "/readings/hallucination_rate",
+          "equals": "not distinguishable"
+        },
+        {
+          "pointer": "/arms/verity/n_completed",
+          "equals": 23
+        },
+        {
+          "pointer": "/arms/naive/n_completed",
+          "equals": 28
+        },
+        {
+          "pointer": "/n_dataset",
+          "equals": 39
+        }
+      ],
+      "status": "verified",
+      "note": "Dev split, incomplete runs (Verity 23/39, naive 28/39), compared on the 23 questions both completed; the artefact reads the difference as not distinguishable."
+    },
+    {
+      "id": "verity.baseline_naive_hallucination_rate",
+      "label": {
+        "fr": "Taux d'hallucination — RAG naïf",
+        "en": "Hallucination rate — naive RAG"
+      },
+      "display": {
+        "fr": "0/21",
+        "en": "0/21"
+      },
+      "value": 0.0,
+      "k": 0,
+      "n": 21,
+      "ci95": [
+        0.0,
+        0.154639
+      ],
+      "repo": "matteogallo-ai/verity",
+      "commit": "162a055dee9ec26297b204c669a6a9b6e667b52a",
+      "path": "scorecards/naive-baseline-comparison.json",
+      "url": "https://github.com/matteogallo-ai/verity/blob/162a055dee9ec26297b204c669a6a9b6e667b52a/scorecards/naive-baseline-comparison.json",
+      "evidence": [
+        {
+          "pointer": "/arms/naive/metrics/hallucination_rate/k",
+          "equals": 0,
+          "binds": "k"
+        },
+        {
+          "pointer": "/arms/naive/metrics/hallucination_rate/n",
+          "equals": 21,
+          "binds": "n"
+        },
+        {
+          "pointer": "/arms/naive/metrics/hallucination_rate/ci95_wilson",
+          "equals": [
+            0.0,
+            0.154639
+          ],
+          "binds": "ci95"
+        },
+        {
+          "pointer": "/readings/hallucination_rate",
+          "equals": "not distinguishable"
+        },
+        {
+          "pointer": "/arms/verity/n_completed",
+          "equals": 23
+        },
+        {
+          "pointer": "/arms/naive/n_completed",
+          "equals": 28
+        },
+        {
+          "pointer": "/n_dataset",
+          "equals": 39
+        }
+      ],
+      "status": "verified",
+      "note": "Dev split, incomplete runs (Verity 23/39, naive 28/39), compared on the 23 questions both completed; the artefact reads the difference as not distinguishable."
     }
   ]
 }
