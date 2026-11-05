@@ -28,8 +28,15 @@ import Base from "../layouts/Base.astro";
   }
 
   h1 {
-    font-size: clamp(var(--step-44), 8vw, var(--step-68));
-    letter-spacing: var(--track-68);
+    font-size: var(--step-44);
+    letter-spacing: var(--track-44);
+  }
+
+  @media (min-width: 48rem) {
+    h1 {
+      font-size: var(--step-68);
+      letter-spacing: var(--track-68);
+    }
   }
 
   .title {

@@ -27,10 +27,8 @@ const skipLabel = lang === "fr" ? "Aller au contenu" : "Skip to content";
   </head>
   <body>
     <a class="skip-link" href="#main">{skipLabel}</a>
-    <slot name="header" />
     <main id="main">
       <slot />
     </main>
-    <slot name="footer" />
   </body>
 </html>

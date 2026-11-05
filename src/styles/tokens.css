@@ -66,11 +66,11 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  /* Zero durations make every transition land on its final state at once. */
+  /* Near-zero rather than 0: transitions land on their final state at once and still fire transitionend. */
   :root {
-    --dur-fast: 0ms;
-    --dur-base: 0ms;
-    --dur-slow: 0ms;
+    --dur-fast: 0.01ms;
+    --dur-base: 0.01ms;
+    --dur-slow: 0.01ms;
   }
 }
 
