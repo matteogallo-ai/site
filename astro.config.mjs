@@ -1,8 +1,8 @@
 // @ts-check
 import { defineConfig, fontProviders } from "astro/config";
 
-/** @param {string} pkg @param {string} name */
-const files = (pkg, name) => `./node_modules/@fontsource-variable/${pkg}/files/${name}`;
+// Subsets built by scripts/fonts/subset.py from pinned upstream releases (see coverage.json for the characters).
+const font = (/** @type {string} */ name) => `./src/assets/fonts/${name}`;
 
 export default defineConfig({
   // Canonical production origin (SPEC §8); hreflang, Open Graph and the sitemap derive from it.
@@ -14,20 +14,18 @@ export default defineConfig({
       name: "Inter",
       cssVariable: "--font-sans",
       provider: fontProviders.local(),
-      // The opsz axis is what gives the large headings their display optics (SPEC §4).
-      options: {
-        variants: [{ src: [files("inter", "inter-latin-opsz-normal.woff2")], weight: "100 900", style: "normal" }],
-      },
+      options: { variants: [{ src: [font("inter-wght.woff2")], weight: "400 700", style: "normal" }] },
       fallbacks: ["system-ui", "sans-serif"],
     },
     {
-      name: "Source Serif 4",
+      // Not "Source Serif 4": the subset is a modified font, and "Source" is a Reserved Font Name (OFL).
+      name: "Site Serif",
       cssVariable: "--font-serif",
       provider: fontProviders.local(),
       options: {
         variants: [
-          { src: [files("source-serif-4", "source-serif-4-latin-wght-normal.woff2")], weight: "200 900", style: "normal" },
-          { src: [files("source-serif-4", "source-serif-4-latin-wght-italic.woff2")], weight: "200 900", style: "italic" },
+          { src: [font("serif-400.woff2")], weight: "400", style: "normal" },
+          { src: [font("serif-600.woff2")], weight: "600", style: "normal" },
         ],
       },
       fallbacks: ["Georgia", "serif"],
@@ -36,11 +34,7 @@ export default defineConfig({
       name: "JetBrains Mono",
       cssVariable: "--font-mono",
       provider: fontProviders.local(),
-      options: {
-        variants: [
-          { src: [files("jetbrains-mono", "jetbrains-mono-latin-wght-normal.woff2")], weight: "100 800", style: "normal" },
-        ],
-      },
+      options: { variants: [{ src: [font("mono-400.woff2")], weight: "400", style: "normal" }] },
       fallbacks: ["ui-monospace", "monospace"],
     },
   ],

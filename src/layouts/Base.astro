@@ -6,9 +6,11 @@ interface Props {
   title: string;
   description: string;
   lang?: "fr" | "en";
+  /** Pages that set text in the serif (the Verity contract, quotes) declare it; others never get its @font-face. */
+  serif?: boolean;
 }
 
-const { title, description, lang = "fr" } = Astro.props;
+const { title, description, lang = "fr", serif = false } = Astro.props;
 const skipLabel = lang === "fr" ? "Aller au contenu" : "Skip to content";
 ---
 
@@ -22,7 +24,7 @@ const skipLabel = lang === "fr" ? "Aller au contenu" : "Skip to content";
     <link rel="canonical" href={new URL(Astro.url.pathname, Astro.site)} />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <Font cssVariable="--font-sans" preload />
-    <Font cssVariable="--font-serif" />
+    {serif && <Font cssVariable="--font-serif" />}
     <Font cssVariable="--font-mono" />
   </head>
   <body>

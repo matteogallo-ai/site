@@ -17,6 +17,13 @@ npm ci
 npm run build && npm run preview
 ```
 
+The font subsets in `src/assets/fonts/` are committed. To rebuild them (Python 3.9+):
+
+```
+python3 -m venv .venv && .venv/bin/pip install --require-hashes -r scripts/fonts/requirements.txt
+npm run fonts
+```
+
 The checks CI runs, and how to run each one locally, are listed in [`CLAUDE.md`](CLAUDE.md#commands).
 
 ## Why it exists

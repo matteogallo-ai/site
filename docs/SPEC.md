@@ -46,7 +46,7 @@ How the site is built: stack, budgets, real measures, accessibility choices, wha
 "No proof at this address." and a link home.
 
 ## 4. Visual system
-- **Type:** Inter (headings in display optics, body), Source Serif 4 (only the demo contract and quotes), JetBrains Mono (measures, traces). Self-hosted, latin subsets.
+- **Type:** Inter (headings and body; no optical-size axis, the display look of headings comes from the negative tracking), Source Serif 4 at 400 and 600 (only the demo contract and quotes, loaded only by the pages that declare it; renamed "Site Serif" inside the font files because "Source" is a Reserved Font Name under the OFL), JetBrains Mono at 400 (measures, traces). Self-hosted strict subsets, built by `scripts/fonts/subset.py` from pinned upstream releases.
 - **Scale:** 12 · 14 · 16 · 21 · 28 · 44 · 68 px. Negative tracking on large headings.
 - **Colours:** paper `#F5F4F0`, ink `#111111`, graphite `#5C5C58`, rules `#DAD8D2`, proof `#1E8A4C`/`#17703D`, defect `#A8382A`, night blue `#1C2A44`. Automatic dark mode (`prefers-color-scheme`). AA contrast checked for every pair.
 - **Grid:** 12 columns, 24 px gutter, 1200 px container. Dotted vertical rules, "+" marks between sections, numbered sections.
@@ -71,7 +71,7 @@ French at `/`, English at `/en/`, translated by hand, correct `hreflang`.
 ## 8. Technique
 - **Astro**, static, zero JS by default. JS islands: the Verity demo, the Short/Detailed toggle.
 - **Cloudflare Pages** through its Git integration (no token). Address: `matteogallo.pages.dev` (fallback: `matteo-gallo.pages.dev`); custom domain `matteogallo.ch`.
-- **Blocking budgets in CI:** home ≤ 200 KB transferred excluding deferred screenshots; LCP < 1.5 s; CLS < 0.05; Lighthouse ≥ 98 on all 4 categories; 0 axe violation.
+- **Blocking budgets in CI:** home ≤ 200 KB transferred excluding deferred screenshots, measured with gzip (stricter than the brotli Cloudflare serves, on purpose); fonts ≤ 90 000 bytes on any page; LCP < 1.5 s; CLS < 0.05; Lighthouse ≥ 98 on all 4 categories; 0 axe violation.
 - **CI:** build, typecheck, links, Lighthouse CI, axe, budgets, magnifier test at 3 widths, generation of `site-measures.json`.
 - Portrait: `src/assets/matteo.jpg` (800 × 800), served as AVIF/WebP at the sizes used.
 - Metadata: Open Graph (image generated from the first screen), favicon, sitemap, robots. No tracker.

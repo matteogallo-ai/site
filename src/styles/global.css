@@ -18,7 +18,8 @@ body {
   font-family: var(--font-sans);
   font-size: var(--step-16);
   line-height: 1.55;
-  font-optical-sizing: auto;
+  /* Each subset ships only the weights it needs: a missing weight or italic must not be faked. */
+  font-synthesis: none;
   font-variant-numeric: tabular-nums;
 }
 
@@ -29,6 +30,14 @@ h3 {
   font-weight: 600;
   line-height: 1.1;
   text-wrap: balance;
+}
+
+/* Form controls default to the system font, which no subset covers. */
+button,
+input,
+select,
+textarea {
+  font: inherit;
 }
 
 a {

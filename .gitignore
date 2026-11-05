@@ -10,3 +10,4 @@ site-measures.json
 .env.*
 # Private working notes (French spec): never published.
 docs/private/
+.venv/
