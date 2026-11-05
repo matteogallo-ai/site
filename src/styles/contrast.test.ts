@@ -46,3 +46,13 @@ test("contrastRatio matches known WCAG values", () => {
 test("readThemes refuses a file without a dark block", () => {
   assert.throws(() => readThemes(":root { --ink: #111111; }"), /dark-scheme/);
 });
+
+test("readThemes refuses a dark colour written in another format instead of falling back to light", () => {
+  const css = ":root { --ink: #111111; }\n@media (prefers-color-scheme: dark) { :root { --ink: #eee; } }";
+  assert.throws(() => readThemes(css), /--ink.*six-digit hex/);
+});
+
+test("readThemes ignores braces and declarations inside comments", () => {
+  const css = ":root { /* not {this} --ink: #ffffff; */ --ink: #111111; }\n@media (prefers-color-scheme: dark) { :root { --ink: #eeeeee; } }";
+  assert.deepEqual(readThemes(css), { light: { ink: "#111111" }, dark: { ink: "#eeeeee" } });
+});
