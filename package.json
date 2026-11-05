@@ -12,7 +12,7 @@
     "preview": "astro preview",
     "typecheck": "astro check",
     "test": "node --experimental-strip-types --test \"scripts/**/*.test.ts\" \"src/**/*.test.ts\"",
-    "check:links": "linkinator dist --config linkinator.config.json",
+    "check:links": "node --experimental-strip-types scripts/check-links.ts",
     "test:a11y": "playwright test",
     "lighthouse": "lhci autorun",
     "measures": "node --experimental-strip-types scripts/site-measures.ts",

@@ -250,8 +250,8 @@
     {
       "id": "verity.judge_kappa_all",
       "label": {
-        "fr": "Accord juge–humain à l'aveugle, κ de Cohen (60 affirmations)",
-        "en": "Judge–blind human agreement, Cohen's κ (60 claims)"
+        "fr": "Accord juge–humain à l'aveugle, kappa de Cohen (60 affirmations)",
+        "en": "Judge–blind human agreement, Cohen's kappa (60 claims)"
       },
       "display": {
         "fr": "κ 0,71",
@@ -287,8 +287,8 @@
     {
       "id": "verity.judge_kappa_real",
       "label": {
-        "fr": "Accord juge–humain à l'aveugle, κ de Cohen (40 affirmations réelles)",
-        "en": "Judge–blind human agreement, Cohen's κ (40 real claims)"
+        "fr": "Accord juge–humain à l'aveugle, kappa de Cohen (40 affirmations réelles)",
+        "en": "Judge–blind human agreement, Cohen's kappa (40 real claims)"
       },
       "display": {
         "fr": "κ 0,48",
@@ -483,6 +483,126 @@
         },
         {
           "pointer": "/readings/answerable_answered",
+          "equals": "not distinguishable"
+        },
+        {
+          "pointer": "/arms/verity/n_completed",
+          "equals": 23
+        },
+        {
+          "pointer": "/arms/naive/n_completed",
+          "equals": 28
+        },
+        {
+          "pointer": "/n_dataset",
+          "equals": 39
+        }
+      ],
+      "status": "verified",
+      "note": "Dev split, incomplete runs (Verity 23/39, naive 28/39), compared on the 23 questions both completed; the artefact reads the difference as not distinguishable."
+    },
+    {
+      "id": "verity.baseline_verity_unanswerable_answered",
+      "label": {
+        "fr": "Questions sans réponse auxquelles il a répondu — Verity (comparaison)",
+        "en": "Unanswerable questions answered — Verity (comparison)"
+      },
+      "display": {
+        "fr": "0/2",
+        "en": "0/2"
+      },
+      "value": 0.0,
+      "k": 0,
+      "n": 2,
+      "ci95": [
+        0.0,
+        0.65762
+      ],
+      "repo": "matteogallo-ai/verity",
+      "commit": "162a055dee9ec26297b204c669a6a9b6e667b52a",
+      "path": "scorecards/naive-baseline-comparison.json",
+      "url": "https://github.com/matteogallo-ai/verity/blob/162a055dee9ec26297b204c669a6a9b6e667b52a/scorecards/naive-baseline-comparison.json",
+      "evidence": [
+        {
+          "pointer": "/arms/verity/metrics/unanswerable_answered/k",
+          "equals": 0,
+          "binds": "k"
+        },
+        {
+          "pointer": "/arms/verity/metrics/unanswerable_answered/n",
+          "equals": 2,
+          "binds": "n"
+        },
+        {
+          "pointer": "/arms/verity/metrics/unanswerable_answered/ci95_wilson",
+          "equals": [
+            0.0,
+            0.65762
+          ],
+          "binds": "ci95"
+        },
+        {
+          "pointer": "/readings/unanswerable_answered",
+          "equals": "not distinguishable"
+        },
+        {
+          "pointer": "/arms/verity/n_completed",
+          "equals": 23
+        },
+        {
+          "pointer": "/arms/naive/n_completed",
+          "equals": 28
+        },
+        {
+          "pointer": "/n_dataset",
+          "equals": 39
+        }
+      ],
+      "status": "verified",
+      "note": "Dev split, incomplete runs (Verity 23/39, naive 28/39), compared on the 23 questions both completed; the artefact reads the difference as not distinguishable."
+    },
+    {
+      "id": "verity.baseline_naive_unanswerable_answered",
+      "label": {
+        "fr": "Questions sans réponse auxquelles il a répondu — RAG naïf",
+        "en": "Unanswerable questions answered — naive RAG"
+      },
+      "display": {
+        "fr": "2/2",
+        "en": "2/2"
+      },
+      "value": 1.0,
+      "k": 2,
+      "n": 2,
+      "ci95": [
+        0.34238,
+        1.0
+      ],
+      "repo": "matteogallo-ai/verity",
+      "commit": "162a055dee9ec26297b204c669a6a9b6e667b52a",
+      "path": "scorecards/naive-baseline-comparison.json",
+      "url": "https://github.com/matteogallo-ai/verity/blob/162a055dee9ec26297b204c669a6a9b6e667b52a/scorecards/naive-baseline-comparison.json",
+      "evidence": [
+        {
+          "pointer": "/arms/naive/metrics/unanswerable_answered/k",
+          "equals": 2,
+          "binds": "k"
+        },
+        {
+          "pointer": "/arms/naive/metrics/unanswerable_answered/n",
+          "equals": 2,
+          "binds": "n"
+        },
+        {
+          "pointer": "/arms/naive/metrics/unanswerable_answered/ci95_wilson",
+          "equals": [
+            0.34238,
+            1.0
+          ],
+          "binds": "ci95"
+        },
+        {
+          "pointer": "/readings/unanswerable_answered",
           "equals": "not distinguishable"
         },
         {
@@ -915,6 +1035,144 @@
       ],
       "status": "verified",
       "derived": "Count of the numbered principles under that heading."
+    },
+    {
+      "id": "promptlang.linter_precision_test",
+      "label": {
+        "fr": "Précision du linter IA (test, répétition 1)",
+        "en": "AI linter precision (test, repeat 1)"
+      },
+      "display": {
+        "fr": "44/217",
+        "en": "44/217"
+      },
+      "value": 0.202765,
+      "k": 44,
+      "n": 217,
+      "ci95": [
+        0.15465676368708492,
+        0.26121378592136296
+      ],
+      "repo": "matteogallo-ai/promptlang",
+      "commit": "804f1be95261da6a82763e7acfc80251a1db81d1",
+      "path": "runs/live/linter-eval-2026-11-03T08-39-28-817Z.json",
+      "url": "https://github.com/matteogallo-ai/promptlang/blob/804f1be95261da6a82763e7acfc80251a1db81d1/runs/live/linter-eval-2026-11-03T08-39-28-817Z.json",
+      "evidence": [
+        {
+          "pointer": "/metrics/0/repeat",
+          "equals": 1
+        },
+        {
+          "pointer": "/metrics/0/test/overall/precision/k",
+          "equals": 44,
+          "binds": "k"
+        },
+        {
+          "pointer": "/metrics/0/test/overall/precision/n",
+          "equals": 217,
+          "binds": "n"
+        },
+        {
+          "pointer": "/metrics/0/test/overall/precision/ci95",
+          "equals": [
+            0.15465676368708492,
+            0.26121378592136296
+          ],
+          "binds": "ci95"
+        }
+      ],
+      "status": "verified",
+      "note": "Findings that match a designed label, on the same test run as the recall; the human review of 40 findings gives 12/40."
+    },
+    {
+      "id": "promptlang.baseline_report_all_precision",
+      "label": {
+        "fr": "Précision de la baseline « tout signaler » (test)",
+        "en": "Precision of the report-everything baseline (test)"
+      },
+      "display": {
+        "fr": "45/360",
+        "en": "45/360"
+      },
+      "value": 0.125,
+      "k": 45,
+      "n": 360,
+      "ci95": [
+        0.095,
+        0.163
+      ],
+      "repo": "matteogallo-ai/promptlang",
+      "commit": "804f1be95261da6a82763e7acfc80251a1db81d1",
+      "path": "docs/SYSTEM_CARD.md",
+      "url": "https://github.com/matteogallo-ai/promptlang/blob/804f1be95261da6a82763e7acfc80251a1db81d1/docs/SYSTEM_CARD.md",
+      "evidence": [
+        {
+          "contains": "| Baseline: report every category | 12.5% (45/360, 95% CI [9.5%, 16.3%]) |"
+        }
+      ],
+      "derived": "k, n and the interval as docs/SYSTEM_CARD.md prints them; the baseline is computed by flagAllBaseline() in scripts/eval-report.ts and is not stored in the run JSON.",
+      "status": "verified",
+      "note": "Reporting every category on every prompt of the test split."
+    },
+    {
+      "id": "promptlang.baseline_report_all_recall",
+      "label": {
+        "fr": "Rappel de la baseline « tout signaler » (test)",
+        "en": "Recall of the report-everything baseline (test)"
+      },
+      "display": {
+        "fr": "45/45",
+        "en": "45/45"
+      },
+      "value": 1.0,
+      "k": 45,
+      "n": 45,
+      "ci95": [
+        0.921,
+        1.0
+      ],
+      "repo": "matteogallo-ai/promptlang",
+      "commit": "804f1be95261da6a82763e7acfc80251a1db81d1",
+      "path": "docs/SYSTEM_CARD.md",
+      "url": "https://github.com/matteogallo-ai/promptlang/blob/804f1be95261da6a82763e7acfc80251a1db81d1/docs/SYSTEM_CARD.md",
+      "evidence": [
+        {
+          "contains": "| Baseline: report every category | 12.5% (45/360, 95% CI [9.5%, 16.3%]) | 100.0% (45/45, 95% CI [92.1%, 100.0%]) |"
+        }
+      ],
+      "derived": "k, n and the interval as docs/SYSTEM_CARD.md prints them; the baseline is computed by flagAllBaseline() in scripts/eval-report.ts and is not stored in the run JSON.",
+      "status": "verified",
+      "note": "Reporting every category finds every designed defect: recall alone does not separate the linter from it."
+    },
+    {
+      "id": "praxis.live_completed",
+      "label": {
+        "fr": "Briefings live terminés, sur les tentatives",
+        "en": "Live briefings completed, of the attempts"
+      },
+      "display": {
+        "fr": "6/13",
+        "en": "6/13"
+      },
+      "value": 0.461538,
+      "k": 6,
+      "n": 13,
+      "ci95": [
+        0.23,
+        0.71
+      ],
+      "repo": "matteogallo-ai/praxis",
+      "commit": "8fe756a414625f03dad5f98791b0df7834047e1c",
+      "path": "docs/SYSTEM_CARD.md",
+      "url": "https://github.com/matteogallo-ai/praxis/blob/8fe756a414625f03dad5f98791b0df7834047e1c/docs/SYSTEM_CARD.md",
+      "evidence": [
+        {
+          "contains": "| Live briefings completed | 13 attempts | 6 of 13 | 23%–71% (Wilson) |"
+        }
+      ],
+      "derived": "k, n and the Wilson interval as docs/SYSTEM_CARD.md prints them, the interval at its whole-percent precision. Only 8 of the 13 attempts have committed records; the 5 others are described in CHANGELOG.md 1.2.1.",
+      "status": "verified",
+      "note": "7 attempts failed: sourcing policy, prose before the JSON, timeouts, truncated output, a refused section."
     }
   ]
 }

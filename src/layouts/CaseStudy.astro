@@ -1,0 +1,219 @@
+---
+import Base from "./Base.astro";
+import { repoUrl } from "../lib/sources.ts";
+
+interface Props {
+  /** Calibre number of the project, as on the home page cards ("01"). */
+  no: string;
+  name: string;
+  /** One sentence: what the project is. */
+  summary: string;
+  description: string;
+  repo: string;
+  /** The page quotes a source in the serif (SPEC §4: quotes only). */
+  serif?: boolean;
+}
+
+const { no, name, summary, description, repo, serif = false } = Astro.props;
+const cases = [
+  { no: "01", name: "Verity", href: "/projets/verity/" },
+  { no: "02", name: "PromptLang", href: "/projets/promptlang/" },
+  { no: "03", name: "Praxis", href: "/projets/praxis/" },
+];
+---
+
+<Base title={`${name} — étude de cas · Matteo Gallo`} description={description} serif={serif}>
+  <div class="container case">
+    <nav class="crumbs" aria-label="Fil d’Ariane">
+      <a href="/">Matteo Gallo</a>
+      <span aria-hidden="true">/</span>
+      <a href="/#projets">Projets</a>
+    </nav>
+    <header class="head">
+      <p class="no"><span class="mono">No. {no}</span> · Étude de cas</p>
+      <h1>{name}</h1>
+      <p class="summary">{summary}</p>
+      <p class="code"><a href={repoUrl(repo)}>Code : matteogallo-ai/{repo}</a></p>
+    </header>
+    <slot />
+    <nav class="others" aria-label="Autres études de cas">
+      <p class="rule-label">Études de cas</p>
+      <ul>
+        {
+          cases.map((c) => (
+            <li>
+              {c.name === name ? (
+                <span aria-current="page">
+                  <span class="mono">No. {c.no}</span> {c.name}
+                </span>
+              ) : (
+                <a href={c.href}>
+                  <span class="mono">No. {c.no}</span> {c.name}
+                </a>
+              )}
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+  </div>
+</Base>
+
+<style>
+  .case {
+    padding-block: 2rem 5rem;
+  }
+
+  .crumbs {
+    display: flex;
+    gap: 0.5rem;
+    font-size: var(--step-14);
+    color: var(--graphite);
+  }
+
+  .head {
+    padding-block: 3rem 1rem;
+    max-width: 44rem;
+  }
+
+  .no {
+    margin: 0 0 0.75rem;
+    font-size: var(--step-12);
+    color: var(--graphite);
+  }
+
+  h1 {
+    font-size: var(--step-44);
+    letter-spacing: var(--track-44);
+  }
+
+  @media (min-width: 48rem) {
+    h1 {
+      font-size: var(--step-68);
+      letter-spacing: var(--track-68);
+    }
+  }
+
+  .summary {
+    margin: 1rem 0 0;
+    font-size: var(--step-21);
+  }
+
+  .code {
+    margin: 1rem 0 0;
+  }
+
+  /* Prose of the sections: a reading measure, tables and diagrams may run wider. */
+  .case :global(.case-section > p),
+  .case :global(.case-section > ul),
+  .case :global(.case-section > ol),
+  .case :global(.case-section > blockquote) {
+    max-width: 40rem;
+  }
+
+  /* The section's first sentence: what it gives the reader. */
+  .case :global(.case-section > .lead) {
+    margin: 0.5rem 0 1.25rem;
+    font-size: var(--step-16);
+    color: var(--graphite);
+  }
+
+  .case :global(.case-section > h3) {
+    margin-top: 2.5rem;
+    font-size: var(--step-21);
+  }
+
+  /* The sans subset has no bullet (U+2022): the en dash it does have marks the items, as
+     pseudo-element text that the glyph test reads. */
+  .case :global(.case-section > ul) {
+    padding: 0;
+    list-style: none;
+  }
+
+  .case :global(.case-section > ul > li) {
+    position: relative;
+    padding-left: 1.25em;
+  }
+
+  .case :global(.case-section > ul > li)::before {
+    content: "–";
+    position: absolute;
+    left: 0;
+    color: var(--graphite);
+  }
+
+  .case :global(.case-section li + li) {
+    margin-top: 0.5rem;
+  }
+
+  .case :global(blockquote) {
+    margin: 1.5rem 0;
+    padding-left: 1rem;
+    border-left: 2px solid var(--rule);
+  }
+
+  .case :global(blockquote p) {
+    margin: 0;
+    font-family: var(--font-serif);
+    font-size: var(--step-21);
+    line-height: 1.45;
+  }
+
+  .case :global(blockquote footer) {
+    margin-top: 0.5rem;
+    font-size: var(--step-14);
+    color: var(--graphite);
+  }
+
+  .case :global(.sic) {
+    font-family: var(--font-sans);
+    font-size: var(--step-14);
+    color: var(--defect);
+  }
+
+  .case :global(code) {
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+  }
+
+  .case :global(.decisions) {
+    padding: 0;
+    list-style: none;
+  }
+
+  .case :global(.decisions li + li) {
+    margin-top: 1.5rem;
+  }
+
+  .case :global(.decisions h3) {
+    font-size: var(--step-16);
+  }
+
+  .case :global(.decisions p) {
+    margin: 0.35rem 0 0;
+  }
+
+  .others {
+    margin-top: 5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--rule);
+  }
+
+  .others ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 2rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .others .mono {
+    font-size: var(--step-12);
+    color: var(--graphite);
+  }
+
+  [aria-current="page"] {
+    color: var(--graphite);
+  }
+</style>
