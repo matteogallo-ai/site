@@ -1,0 +1,26 @@
+{
+  "generatedAt": "2026-11-05T18:04:24.438Z",
+  "commit": "6e28ca009f93e8b7bd6ad7ee630185aee5148900",
+  "lighthouse": {
+    "version": "13.6.0",
+    "formFactor": "mobile",
+    "runsPerPage": 5,
+    "aggregation": "median-run",
+    "transfer": "gzip, served by the lhci local static server"
+  },
+  "pages": [
+    {
+      "path": "/",
+      "transferBytes": 167813,
+      "fontBytes": 82112,
+      "scores": {
+        "performance": 100,
+        "accessibility": 100,
+        "bestPractices": 100,
+        "seo": 100
+      },
+      "lcpMs": 951,
+      "cls": 0.009
+    }
+  ]
+}

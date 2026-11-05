@@ -1,0 +1,7 @@
+{
+  "run": "https://github.com/matteogallo-ai/site/actions/runs/42080507746",
+  "artifact": "site-measures",
+  "artifactDigest": "sha256:7d479587492b3a3040e48e8f455ea34e331c81b2c8dc820f4245b03e008a630c",
+  "artifactExpires": "2026-12-05",
+  "sha256": "26541e35beb6d0520fe87f3c16143ecad0087ab032ce13ee1023a3e3ab5f3018"
+}
