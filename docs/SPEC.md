@@ -62,6 +62,7 @@ How the site is built: stack, budgets, real measures, accessibility choices, wha
 - No figure without a source: everything comes from `src/data/measures.json`, filled from the published artefacts of the repositories at their current commit, with link and hash.
 - No skills wall, no technology logos, no carousel, no form, no templated developer-portfolio layout.
 - Defects shown at the same level as measures.
+- Public resume: no postal address, phone or date of birth. The PDF published on the site carries only e-mail, LinkedIn, GitHub and city.
 - Languages: French and Italian native, English intermediate, Spanish basics.
 - Path: self-taught; automation technician training (ETML) interrupted in the second year to focus on software development.
 
