@@ -13,7 +13,7 @@ export interface ManifestEntry {
 
 interface Audit {
   numericValue?: number;
-  details?: { items?: Array<{ resourceType?: string; transferSize?: number }> };
+  details?: { items?: Array<{ resourceType?: string; transferSize?: number; url?: string }> };
 }
 
 export interface Lhr {
@@ -115,4 +115,14 @@ export function buildMeasures(
     },
     pages,
   };
+}
+
+/**
+ * Files a run must have requested for its transfer total to include them: the home
+ * budget counts the project screenshots, which load lazily, so a run that never
+ * reached them would pass the budget without measuring it.
+ */
+export function unrequested(lhr: Lhr, stems: string[]): string[] {
+  const urls = (lhr.audits["network-requests"]?.details?.items ?? []).map((i) => i.url ?? "");
+  return stems.filter((stem) => !urls.some((u) => u.split("/").at(-1)!.startsWith(`${stem}.`)));
 }

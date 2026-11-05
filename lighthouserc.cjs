@@ -25,8 +25,8 @@ module.exports = {
         "categories:seo": ["error", { minScore: 0.98, aggregationMethod: "median-run" }],
         "largest-contentful-paint": ["error", { maxNumericValue: 1499, aggregationMethod: "median-run" }],
         "cumulative-layout-shift": ["error", { maxNumericValue: 0.049, aggregationMethod: "median-run" }],
-        // Counts every request made during the run. Assumption, unverified while the site has no
-        // screenshot: lazy images far enough below the fold are not requested, so they stay outside.
+        // Counts every request made during the run, the lazy project screenshots included:
+        // Lighthouse's full-page capture loads them, and `npm run measures` fails if a home run did not.
         "resource-summary:total:size": ["error", { maxNumericValue: TRANSFER_BUDGET_BYTES, aggregationMethod: "median-run" }],
         "resource-summary:font:size": ["error", { maxNumericValue: FONT_BUDGET_BYTES, aggregationMethod: "median-run" }],
       },

@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { test } from "node:test";
-import { buildMeasures, type Lhr, type ManifestEntry } from "./site-measures-lib.ts";
+import { buildMeasures, type Lhr, type ManifestEntry, unrequested } from "./site-measures-lib.ts";
 
 // Plumbing fixture: a trimmed local Lighthouse report, used only to check parsing.
 const fixture = JSON.parse(readFileSync(new URL("./fixtures/lhr-index.json", import.meta.url), "utf8")) as Lhr;
@@ -69,4 +69,12 @@ test("refuses a report without the font row (Lighthouse always emits it, 0 inclu
   const items = noFont.audits["resource-summary"]?.details?.items ?? [];
   noFont.audits["resource-summary"] = { details: { items: items.filter((i) => i.resourceType !== "font") } };
   assert.throws(() => buildMeasures(manifest, () => noFont, ctx()), /font row/);
+});
+
+test("reports the files a run never requested, by Astro asset stem", () => {
+  const lhr = structuredClone(fixture);
+  lhr.audits["network-requests"] = { details: { items: [{ url: "http://localhost:1/_astro/verity-answer.CmA4bkZH_2g4DBv.avif" }] } };
+  assert.deepEqual(unrequested(lhr, ["verity-answer", "promptlang-demo-last"]), ["promptlang-demo-last"]);
+  // A prefix of a stem is not that file.
+  assert.deepEqual(unrequested(lhr, ["verity"]), ["verity"]);
 });

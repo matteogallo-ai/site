@@ -113,9 +113,21 @@ for (const name of ["answer", "refusal"]) {
     .catch(record(`demo/${name}.json`));
 }
 
+// Project images: a copied file must be byte-identical to its source; a derived still's
+// source must be the file it was derived from (scripts/media-frame.ts re-derives it in CI).
+const { media } = read<{ media: { id: string; sha256: string; repo: string; commit: string; path: string; from?: { sha256: string } }[] }>("media.json");
+for (const m of media) {
+  await get(rawUrl(m, m.path))
+    .then((bytes) => {
+      const expected = m.from?.sha256 ?? m.sha256;
+      if (sha256(bytes) !== expected) errors.push(`media ${m.id}: ${m.path} sha256 is ${sha256(bytes)}, expected ${expected}`);
+    })
+    .catch(record(`media ${m.id}`));
+}
+
 if (errors.length) {
   console.error(errors.join("\n"));
   process.exit(1);
 }
 const verified = measures.measures.filter((m) => m.status === "verified").length;
-console.log(`${verified} measures, ${checked} evidence items and 2 demo traces match their sources at the pinned commits.`);
+console.log(`${verified} measures, ${checked} evidence items, 2 demo traces and ${media.length} project images match their sources at the pinned commits.`);
