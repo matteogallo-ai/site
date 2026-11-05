@@ -164,3 +164,16 @@ test("states under reduced motion: colours still change on hover, briefly, and n
   // The underline appears at once: no scale in between.
   expect(await nav.evaluate((e) => getComputedStyle(e, "::after").transitionDuration)).toBe("0s");
 });
+
+test("states: the navigation marks the section in view, and none on the first screen", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/");
+  const current = () => page.locator('.nav a[aria-current="location"]');
+  await expect(current()).toHaveCount(0);
+  await expect(page.locator("[data-spy-dot]")).toBeHidden();
+  await page.locator("#methode").evaluate((s) => s.scrollIntoView({ block: "start" }));
+  await expect(current()).toHaveText("Méthode");
+  await expect(page.locator("[data-spy-dot]")).toBeVisible();
+  await page.evaluate(() => scrollTo(0, 0));
+  await expect(current()).toHaveCount(0);
+});

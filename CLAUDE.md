@@ -22,7 +22,9 @@ src/pages/               one file per route
 src/components/          VerityDemo (contract, spotlight, tabs, cards), Figure (a measure with its proof),
                          Glass (SVG refraction filters, Chromium only), Projects, Bio
 src/lib/                 document.ts (Markdown blocks keeping source offsets), measures.ts (figures by id)
-src/scripts/             client code of the demo: lens.ts (geometry), typing.ts (answer writing), verity-demo.ts (DOM)
+src/scripts/             client code: the demo's lens.ts (geometry), typing.ts (answer writing), verity-demo.ts (DOM);
+                         count.ts (band counters), reveal.ts (sections in once), spy.ts (nav section in view),
+                         copy.ts (e-mail copy), resize.ts (height follows content), tips.ts (Escape on tooltips)
 src/data/media.json      project images with their source; scripts/media-frame.ts re-derives the recording stills,
                          scripts/media/pdf_page.py (PyMuPDF, hash-pinned; venv .venv-media) the Praxis page
 astro.config.mjs         site origin, self-hosted fonts, the no-placeholder check on every built page
@@ -41,6 +43,7 @@ tests/                   Playwright on every built page: axe (light + dark), key
                          the ring or its tag, dimming, tablist keyboard;
                          glass-motion.spec.ts: answer writing, glass refracted / frosted / opaque
                          first-screen.spec.ts: tabs, passage, ring and whole card in view at 1440×800 and 1280×720
+                         states.spec.ts: hover, focus, transitions and cursor of every interactive element
 scripts/site-measures*   Lighthouse CI output -> site-measures.json (weight, scores, date, commit)
 scripts/built-pages.ts   list of built HTML pages, shared by the axe tests and site-measures
 linkinator.config.json   link check; the production origin is skipped because the crawl
