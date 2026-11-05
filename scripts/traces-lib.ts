@@ -69,7 +69,7 @@ export const sha256 = (data: string | Uint8Array) => createHash("sha256").update
 
 /**
  * Offline consistency of a trace with the document page it is shown on: every offset
- * the magnifier will use must select exactly the quoted words.
+ * the spotlight uses must select exactly the quoted words.
  */
 export function traceErrors(trace: DemoTrace, doc: DemoDocument): string[] {
   const errors: string[] = [];
@@ -130,6 +130,7 @@ export function translationErrors(trace: DemoTrace, translations: DemoTranslatio
   if (typeof entry !== "object") return [`${trace.example_id}: no translation`];
   return (["question", "answer"] as const).flatMap((field) => {
     const t = entry[field];
+    if (typeof t?.en !== "string" || typeof t.fr !== "string") return [`${trace.example_id}: no ${field} translation`];
     const said = field === "question" ? trace.question : trace.answer_text;
     if (t.en !== said) return [`${trace.example_id}: the ${field} translated is not the trace's ${field}`];
     return t.fr.trim() === "" ? [`${trace.example_id}: empty ${field} translation`] : [];

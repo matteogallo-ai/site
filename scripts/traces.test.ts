@@ -84,4 +84,7 @@ test("a translation of an answer the trace no longer gives is rejected", () => {
   t.answer_text += " Edited.";
   assert.deepEqual(translationErrors(t, translations), [`${t.example_id}: the answer translated is not the trace's answer`]);
   assert.deepEqual(translationErrors({ ...t, example_id: "q-999" }, translations), ["q-999: no translation"]);
+  // A hand-edited file missing a field reports it instead of throwing on undefined.
+  const partial = { [t.example_id]: { answer: (translations[t.example_id] as { answer: unknown }).answer } } as unknown as DemoTranslations;
+  assert.deepEqual(translationErrors({ ...t, answer_text: answer.answer_text }, partial), [`${t.example_id}: no question translation`]);
 });
