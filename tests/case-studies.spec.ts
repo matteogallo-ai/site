@@ -21,11 +21,12 @@ const PINNED = (repo: string) => new RegExp(`^https://github\\.com/matteogallo-a
 //   interval and label texts are compared with the measure below);
 // - a, code, .mono: identifiers, not quantities (ADR and PR numbers, commits, model ids,
 //   calibre numbers);
-// - thead: the column headers name the interval level;
-// - blockquote: verbatim quotes, read by the page from data that check:sources compares with
-//   GitHub (the demo trace, a measure's evidence).
+// - .ci-head: the column header names the interval level;
+// - blockquote > p: verbatim quotes, read by the page from data that check:sources compares
+//   with GitHub (the demo trace, a measure's evidence); the quote's footer is checked.
+// The check reads digits only: a figure written in words is the reviewer's to catch.
 // Anything else with a digit fails here.
-const IDENTIFIERS = ".figure, [data-measure], [data-label], a, code, .mono, thead, blockquote";
+const IDENTIFIERS = ".figure, [data-measure], [data-label], a, code, .mono, .ci-head, blockquote > p";
 
 /** Runs in the page: text with a digit under main, outside `skip`, the SVG's title and desc included. */
 function strayNumbers(skip: string): string[] {
@@ -56,6 +57,18 @@ for (const slug of CASES) {
     await expect(diagram).toHaveCount(1);
     expect(((await diagram.getAttribute("aria-labelledby")) ?? "").split(" ")).toHaveLength(2);
     await expect(page.getByRole("img", { name: /\S/ })).toHaveCount(1);
+    for (const id of ((await diagram.getAttribute("aria-labelledby")) ?? "").split(" ")) await expect(page.locator(`#${id}`)).toHaveText(/\S/);
+  });
+
+  test(`${path}: the diagram's smallest text renders at 12 px or more on a 375 px screen`, async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 800 });
+    await page.goto(path);
+    // Rendered size = font-size in user units x the scale of the viewBox to the drawn width.
+    const smallest = await page.locator("#construit svg").evaluate((svg: SVGSVGElement) => {
+      const scale = svg.getBoundingClientRect().width / svg.viewBox.baseVal.width;
+      return Math.min(...[...svg.querySelectorAll("text")].map((t) => Number(t.getAttribute("font-size")) * scale));
+    });
+    expect(smallest).toBeGreaterThanOrEqual(12);
   });
 
   test(`${path}: every figure links to its artefact at a pinned commit, every interval is its measure's`, async ({ page }) => {
@@ -68,7 +81,7 @@ for (const slug of CASES) {
     for (const row of await rows.all()) await expect(row.locator(".figure").first()).toBeVisible();
     const intervals = await page.locator("[data-measure]").evaluateAll((els) => els.map((e) => [e.getAttribute("data-measure")!, e.textContent!.trim()]));
     expect(intervals.length).toBeGreaterThan(0);
-    for (const [id, text] of intervals) expect(text, id).toBe(interval(measure(id!), "fr"));
+    for (const [id, text] of intervals) expect(text, id).toBe(interval(measure(id!)));
     const labels = await page.locator("[data-label]").evaluateAll((els) => els.map((e) => [e.getAttribute("data-label")!, e.textContent!.trim()]));
     for (const [id, text] of labels) expect(text, id).toBe(measure(id!).label.fr);
     // SPEC §6: defects at the same level as measures, in the same table.
@@ -83,7 +96,7 @@ for (const slug of CASES) {
     for (const href of hrefs) expect(href).toMatch(new RegExp(`${PINNED(slug).source}docs/adr/\\d{4}-[a-z0-9-]+\\.md$`));
   });
 
-  test(`${path}: no number outside a measure, a link or code`, async ({ page }) => {
+  test(`${path}: no digit outside a measure, an identifier or a verified quote`, async ({ page }) => {
     await page.goto(path);
     const stray = await page.evaluate(strayNumbers, IDENTIFIERS);
     expect(stray).toEqual([]);
