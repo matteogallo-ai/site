@@ -43,7 +43,9 @@ scripts/site-measures*   Lighthouse CI output -> site-measures.json (weight, sco
 scripts/built-pages.ts   list of built HTML pages, shared by the axe tests and site-measures
 linkinator.config.json   link check; the production origin is skipped because the crawl
                          already covers the same pages locally and the site may not be live;
-                         LinkedIn is skipped because it answers HTTP 999 to every crawler
+                         LinkedIn is skipped because it answers HTTP 999 to every crawler;
+                         5xx answers are retried 3 times: github.com answered 504 to CI
+                         on links that load (PR #3, two runs)
 ```
 
 ## Commands

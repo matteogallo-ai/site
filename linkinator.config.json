@@ -5,5 +5,9 @@
   "skip": [
     "^https://matteogallo\\.pages\\.dev(/|$)",
     "^https://www\\.linkedin\\.com/"
-  ]
+  ],
+  "retry": true,
+  "retryErrors": true,
+  "retryErrorsCount": 3,
+  "retryErrorsJitter": 3000
 }
