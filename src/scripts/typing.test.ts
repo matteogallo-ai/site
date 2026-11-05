@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { durationMs, revealed } from "./typing.ts";
+import { revealed, writingDuration } from "./typing.ts";
 
 const text = "I don't know based on the provided documents.";
 
@@ -32,10 +32,8 @@ test("an empty or one-word text", () => {
   assert.equal(revealed("Yes.", 1), 4);
 });
 
-test("a CSS time in seconds or milliseconds, as the minified stylesheet writes it", () => {
-  assert.equal(durationMs(".4s"), 400);
-  assert.equal(durationMs(" 400ms"), 400);
-  assert.equal(durationMs("0.01ms"), 0.01);
-  assert.equal(durationMs(""), undefined);
-  assert.equal(durationMs("fast"), undefined);
+test("about 35 ms a word, never more than 1.5 s", () => {
+  assert.equal(writingDuration("one two three four"), 4 * 35);
+  assert.equal(writingDuration(""), 0);
+  assert.equal(writingDuration(Array(100).fill("w").join(" ")), 1500);
 });

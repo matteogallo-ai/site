@@ -81,7 +81,7 @@ const runFile = fileOf(answer.source.path);
     <p class="k">Question · {answer.example_id}</p>
     <p class="q" lang="en">{answer.question}</p>
     <p class="k">Réponse</p>
-    <p class="a" lang="en">{answer.answer_text}</p>
+    <p class="a" lang="en"><span class="a-text">{answer.answer_text}</span></p>
     <blockquote class="serif" lang="en">{cited.quote}</blockquote>
     <p class="ref mono" lang="en">{fileOf(slaPath)} · {sectionOf(chunkOf(cited.chunk_id)!.section)}</p>
     {
@@ -105,7 +105,7 @@ const runFile = fileOf(answer.source.path);
     <p class="k">Question · {refusal.example_id}</p>
     <p class="q" lang="en">{refusal.question}</p>
     <p class="k">Réponse</p>
-    <p class="a" lang="en">{refusal.answer_text}</p>
+    <p class="a" lang="en"><span class="a-text">{refusal.answer_text}</span></p>
     <p class="verdict">Refus du modèle · confiance <span class="mono">{decimal(refusal.confidence_score, 2, "fr")}</span></p>
     <p class="ref">Passage le plus proche{"\u00A0"}: <span class="mono" lang="en">{fileOf(slaPath)} · {sectionOf(closest.section)}</span>, jugé insuffisant</p>
     <p class="why" lang="en">{refusal.refusal_rationale}</p>
@@ -350,10 +350,24 @@ const runFile = fileOf(answer.source.path);
     font-size: var(--step-14);
   }
 
-  /* The answer writes itself (verity-demo.ts), then the checks appear in order. */
-  .a :global(.unwritten),
-  .card[data-writing] .checks li {
+  /* The answer writes itself (verity-demo.ts) in an aria-hidden layer over the answer, which
+     is only made transparent: assistive tech keeps the whole answer and the checks throughout. */
+  .a {
+    position: relative;
+  }
+
+  .a :global(.a-layer) {
+    position: absolute;
+    inset: 0;
+  }
+
+  .a :global(.unwritten) {
     visibility: hidden;
+  }
+
+  .card[data-writing] .a-text,
+  .card[data-writing] .checks li {
+    opacity: 0;
   }
 
   .card[data-written] .checks li {

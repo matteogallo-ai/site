@@ -51,7 +51,7 @@ How the site is built: stack, budgets, real measures, accessibility choices, wha
 - **Colours:** paper `#F5F4F0`, ink `#111111`, graphite `#5C5C58`, rules `#DAD8D2`, proof `#1E8A4C`/`#17703D`, defect `#A8382A`, night blue `#1C2A44`. Automatic dark mode (`prefers-color-scheme`). AA contrast checked for every pair.
 - **Grid:** 12 columns, 24 px gutter, 1200 px container. Dotted vertical rules, "+" marks between sections, numbered sections.
 - **Glass:** only the navigation, the magnifier and the answer card. Frosted glass everywhere; SVG refraction as progressive enhancement (Chromium); opaque version under `prefers-reduced-transparency`. Text on glass only over a known, controlled background.
-- **Motion:** 150–400 ms, `cubic-bezier(.2,.8,.2,1)`. The magnifier glides to the clause, the answer writes itself, the ticks appear in order. Everything is cut under `prefers-reduced-motion` (final state shown at once).
+- **Motion:** transitions last 150–400 ms, `cubic-bezier(.2,.8,.2,1)`. The magnifier glides to the clause, the answer writes itself, the ticks appear in order. Writing the answer is a reading animation, not a transition: about 35 ms a word, at most 1.5 s; a click or a key shows it whole, and only an `aria-hidden` visual layer is animated, so assistive tech reads the whole answer from the start. Everything is cut under `prefers-reduced-motion` (final state shown at once).
 
 ## 5. Signature details
 1. The Verity demo with the magnifier computed on the citation.

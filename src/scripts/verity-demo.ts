@@ -1,5 +1,5 @@
 import { type Box, lensLayout, relativeBox, unionBox } from "./lens.ts";
-import { durationMs, revealed } from "./typing.ts";
+import { revealed, writingDuration } from "./typing.ts";
 
 type Mode = "answer" | "refusal";
 
@@ -12,28 +12,46 @@ const still = matchMedia("(prefers-reduced-motion: reduce)");
 
 /**
  * Writes the card's answer word by word, then lets its checks appear in order (CSS on
- * data-written). The unwritten words keep their place, hidden, so the card never reflows.
- * Returns a function that ends the writing at once.
+ * data-written). Only an aria-hidden copy laid over the answer is animated: the answer
+ * itself stays whole in the page, so assistive tech reads it from the start. A click or a
+ * key shows it whole at once. Returns a function that ends the writing.
  */
 function writeOut(card: HTMLElement): () => void {
   const answer = card.querySelector<HTMLElement>(".a");
+  const text = answer?.querySelector(".a-text")?.textContent ?? "";
   // Under reduced motion the final state is shown at once (SPEC §4).
-  if (!answer || still.matches) return () => {};
-  const text = answer.textContent ?? "";
-  const duration = durationMs(getComputedStyle(card).getPropertyValue("--dur-slow")) ?? 400;
+  if (!answer || !text || still.matches) return () => {};
+  const duration = writingDuration(text);
+  const layer = document.createElement("span");
+  layer.className = "a-layer";
+  layer.setAttribute("aria-hidden", "true");
   const shown = document.createElement("span");
   const rest = document.createElement("span");
   rest.className = "unwritten";
-  answer.replaceChildren(shown, rest);
+  layer.append(shown, rest);
+  answer.append(layer);
   delete card.dataset["written"];
   card.dataset["writing"] = "";
+
+  const start = performance.now();
   let frame = 0;
+  let done = false;
   const finish = () => {
-    answer.textContent = text;
+    if (done) return;
+    done = true;
+    cancelAnimationFrame(frame);
+    document.removeEventListener("pointerdown", skip, true);
+    document.removeEventListener("keydown", skip, true);
+    layer.remove();
     delete card.dataset["writing"];
     card.dataset["written"] = "";
   };
-  const start = performance.now();
+  // The click or key that started this writing was created before it: it does not skip it.
+  const skip = (event: Event) => {
+    if (event.timeStamp >= start) finish();
+  };
+  document.addEventListener("pointerdown", skip, true);
+  document.addEventListener("keydown", skip, true);
   const step = (now: number) => {
     const n = revealed(text, (now - start) / duration);
     shown.textContent = text.slice(0, n);
@@ -42,10 +60,7 @@ function writeOut(card: HTMLElement): () => void {
     else finish();
   };
   step(start);
-  return () => {
-    cancelAnimationFrame(frame);
-    finish();
-  };
+  return finish;
 }
 
 export function mountVerityDemo(root: HTMLElement): void {

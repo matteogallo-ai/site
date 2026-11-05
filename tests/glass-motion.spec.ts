@@ -10,11 +10,11 @@ async function recordWriting(page: Page, panel: string) {
     const frames: { written: string; checks: boolean }[] = [];
     (window as unknown as { frames_: typeof frames }).frames_ = frames;
     const tick = () => {
-      const a = card.querySelector(".a")!;
-      const unwritten = a.querySelector(".unwritten");
+      // What the eye sees: the animated layer while it exists, the answer once it is gone.
+      const layer = card.querySelector(".a-layer");
       const first = card.querySelector(".checks li");
-      frames.push({ written: unwritten ? a.firstElementChild!.textContent! : a.textContent!, checks: first ? getComputedStyle(first).visibility === "visible" : true });
-      if (frames.length < 120) requestAnimationFrame(tick);
+      frames.push({ written: layer ? layer.firstElementChild!.textContent! : card.querySelector(".a-text")!.textContent!, checks: first ? getComputedStyle(first).opacity !== "0" : true });
+      if (frames.length < 200) requestAnimationFrame(tick);
     };
     requestAnimationFrame(tick);
   }, panel);
@@ -25,9 +25,9 @@ test("the answer writes itself word by word, then its checks appear", async ({ p
   await refusalTab(page).click();
   await recordWriting(page, "verity-panel-answer");
   await answerTab(page).click();
-  await expect.poll(() => page.evaluate(() => (window as unknown as { frames_: unknown[] }).frames_.length), { timeout: 5000 }).toBe(120);
+  await expect.poll(() => page.evaluate(() => (window as unknown as { frames_: unknown[] }).frames_.length), { timeout: 8000 }).toBe(200);
   const frames = await page.evaluate(() => (window as unknown as { frames_: { written: string; checks: boolean }[] }).frames_);
-  const full = await page.locator("#verity-panel-answer .a").textContent();
+  const full = await page.locator("#verity-panel-answer .a-text").textContent();
   const partial = frames.filter((f) => f.written !== full);
   expect(partial.length, "some frames show a partial answer").toBeGreaterThan(2);
   for (const f of partial) {
@@ -40,6 +40,62 @@ test("the answer writes itself word by word, then its checks appear", async ({ p
   const lengths = frames.slice(frames.indexOf(partial[0]!)).map((f) => f.written.length);
   expect(lengths).toEqual([...lengths].sort((a, b) => a - b));
   expect(frames.at(-1)).toEqual({ written: full, checks: true });
+});
+
+test("assistive tech gets the whole answer and its checks while the answer is being written", async ({ page }) => {
+  await page.goto("/");
+  await refusalTab(page).click();
+  await answerTab(page).click();
+  const panel = page.locator("#verity-panel-answer");
+  await expect(panel).toHaveAttribute("data-writing", "");
+  const full = (await panel.locator(".a-text").textContent())!;
+  const tree = await panel.ariaSnapshot();
+  // Taken mid-writing: the visual layer is still partial.
+  await expect(panel).toHaveAttribute("data-writing", "");
+  expect(tree).toContain(full);
+  expect(tree).toContain("affirmations étayées par leur citation");
+  expect(await panel.locator(".a-layer").getAttribute("aria-hidden")).toBe("true");
+});
+
+/** How long a card stays in its writing state, timed from inside the page. */
+const writingTime = (page: Page, panel: string) =>
+  page.evaluate(
+    (id) =>
+      new Promise<number>((resolve) => {
+        const start = performance.now();
+        const card = document.getElementById(id)!;
+        const poll = () => ("writing" in card.dataset ? requestAnimationFrame(poll) : resolve(performance.now() - start));
+        poll();
+      }),
+    panel,
+  );
+
+test("about 35 ms a word, at most 1.5 s, and a key or a click shows the answer whole", async ({ page }) => {
+  await page.goto("/");
+  const panel = page.locator("#verity-panel-answer");
+  const words = async (id: string) => (await page.locator(`#${id} .a-text`).textContent())!.split(/\s+/).length;
+  // Timed from after the click's round trip: the lower bounds leave room for it.
+  // The answer (44 words) reaches the 1.5 s cap; the refusal (8 words) shows the pace itself.
+  expect((await words("verity-panel-answer")) * 35).toBeGreaterThan(1500);
+  await refusalTab(page).click();
+  await answerTab(page).click();
+  const answerTook = await writingTime(page, "verity-panel-answer");
+  expect(answerTook).toBeGreaterThan(1500 * 0.8);
+  expect(answerTook).toBeLessThan(1500 + 250);
+  const refusalWords = await words("verity-panel-refusal");
+  await refusalTab(page).click();
+  const refusalTook = await writingTime(page, "verity-panel-refusal");
+  expect(refusalTook).toBeGreaterThan(refusalWords * 35 * 0.5);
+  expect(refusalTook).toBeLessThan(refusalWords * 35 + 250);
+
+  for (const skip of [() => page.keyboard.press("Shift"), () => page.mouse.click(5, 5)]) {
+    await refusalTab(page).click();
+    await answerTab(page).click();
+    await expect(panel).toHaveAttribute("data-writing", "");
+    await skip();
+    await expect(panel).toHaveAttribute("data-written", "", { timeout: 100 });
+    await expect(panel.locator(".a-layer")).toHaveCount(0);
+  }
 });
 
 test("under reduced motion the answer is shown whole at once", async ({ page }) => {
