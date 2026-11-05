@@ -34,6 +34,11 @@ linkinator.config.json   link check; the production origin is skipped because th
 ## Commands
 
 Node version: `.nvmrc` (24); `.npmrc` sets `engine-strict`. Install with nvm: see README.
+Agents on the owner's machine never run `nvm use` and never edit `~/.npmrc` (it holds a
+global `prefix`); they call Node 24 by absolute path, e.g.
+`export PATH="$HOME/.nvm/versions/node/v24.22.2/bin:$PATH"` at the start of each command.
+
+`docs/private/` is git-ignored and holds working notes that must never be committed.
 
 ```
 npm ci                 install exactly the lockfile
