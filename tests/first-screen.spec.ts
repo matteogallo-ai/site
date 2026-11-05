@@ -75,8 +75,7 @@ test("narrow screens: the card follows the window, the passage is in view inside
   expect(b.card.top).toBeGreaterThanOrEqual(b.window.bottom);
 });
 
-// The window fades out over --fade at its top: the tag and the lens ring above the passage stay below it.
-const RING_DRAWN = 7;
+// The window fades out over --fade at its top: the tag and the lens (its ring included) stay below it.
 for (const [width, height] of [
   [1440, 800],
   [1280, 720],
@@ -94,7 +93,7 @@ for (const [width, height] of [
       const b = await boxes(page, mode);
       expect(b.fade).toBeGreaterThan(0);
       expect(b.tag.top - b.window.top, JSON.stringify(b)).toBeGreaterThanOrEqual(b.fade - 0.5);
-      expect(b.lens.top - RING_DRAWN - b.window.top, JSON.stringify(b)).toBeGreaterThanOrEqual(b.fade - 0.5);
+      expect(b.lens.top - b.window.top, JSON.stringify(b)).toBeGreaterThanOrEqual(b.fade - 0.5);
     });
   }
 }

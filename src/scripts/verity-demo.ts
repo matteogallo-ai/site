@@ -82,38 +82,30 @@ export function mountVerityDemo(root: HTMLElement): void {
   const sheet = root.querySelector<HTMLElement>("[data-sheet]");
   const doc = sheet?.querySelector("article");
   const lens = root.querySelector<HTMLElement>("[data-lens]");
-  const view = root.querySelector<HTMLElement>("[data-lens-view]");
   const tag = root.querySelector<HTMLElement>("[data-lens-tag]");
   const tabs = [...root.querySelectorAll<HTMLButtonElement>('[role="tab"]')];
   // Missing markup means a broken build, not a state to recover from: leave the static page as is.
-  if (!sheet || !doc || !lens || !view || !tag || tabs.length !== 2) return;
+  if (!sheet || !doc || !lens || !tag || tabs.length !== 2) return;
 
-  // The copy is the page's own markup, so it lays out exactly like the original.
-  view.replaceChildren(doc.cloneNode(true));
+  // Spotlight on: the contract dims around the passage (CSS on data-lit).
+  root.dataset["lit"] = "";
 
   // The window scrolls to its target on load, on a change of mode and when the layout moves.
   const place = (behavior: ScrollBehavior = "instant") => {
     const width = sheet.clientWidth;
     const target = unionBox(targetBoxes(doc, root.dataset["mode"] as Mode, sheet));
     if (!target) return;
-    const { lens: box, view: at, origin, scale } = lensLayout(target, width);
+    const box = lensLayout(target, width);
     Object.assign(lens.style, { left: `${box.left}px`, top: `${box.top}px`, width: `${box.width}px`, height: `${box.height}px` });
-    Object.assign(view.style, {
-      left: `${at.left}px`,
-      top: `${at.top}px`,
-      width: `${width}px`,
-      transformOrigin: `${origin.x}px ${origin.y}px`,
-      transform: `scale(${scale})`,
-    });
     Object.assign(tag.style, { left: `${Math.min(box.left + box.width, width)}px`, top: `${box.top}px` });
     lens.hidden = false;
     tag.hidden = false;
     // The target's centre goes to --target-at of the window's height (the middle of the part
     // the card leaves uncovered), but never so far up that the tag above the lens enters the
     // top fade, where it would lose its contrast.
-    const tagTop = box.top - tag.offsetHeight - layoutValue(sheet, "--tag-gap", 10);
+    const tagTop = box.top - tag.offsetHeight - layoutValue(sheet, "--tag-gap", 14);
     const centred = target.top + target.height / 2 - sheet.clientHeight * layoutValue(sheet, "--target-at", 0.5);
-    sheet.scrollTo({ top: Math.min(centred, tagTop - layoutValue(sheet, "--fade", 40)), behavior });
+    sheet.scrollTo({ top: Math.floor(Math.min(centred, tagTop - layoutValue(sheet, "--fade", 40))), behavior });
   };
 
   const panelOf = (t: HTMLButtonElement) => document.getElementById(t.getAttribute("aria-controls") ?? "");

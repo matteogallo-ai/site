@@ -115,7 +115,7 @@ const glassOf = (page: Page) =>
   page.evaluate(() => ({
     nav: getComputedStyle(document.querySelector("nav ul")!).backdropFilter,
     card: getComputedStyle(document.querySelector("#verity-panel-answer")!).backdropFilter,
-    lens: getComputedStyle(document.querySelector(".lens-glass")!).filter,
+    lens: getComputedStyle(document.querySelector("[data-lens] .ring")!).backdropFilter,
     fill: getComputedStyle(document.querySelector("#verity-panel-answer")!).backgroundColor,
   }));
 
@@ -125,7 +125,7 @@ test("glass: refracted in Chromium", async ({ page }) => {
   const glass = await glassOf(page);
   expect(glass.nav).toBe('url("#glass-refraction") blur(14px)');
   expect(glass.card).toBe('url("#glass-refraction") blur(14px)');
-  expect(glass.lens).toBe('url("#lens-refraction")');
+  expect(glass.lens).toBe('url("#glass-refraction") blur(14px)');
 });
 
 test("glass: frosted, without refraction, where the engine cannot refract", async ({ page }) => {
@@ -136,7 +136,7 @@ test("glass: frosted, without refraction, where the engine cannot refract", asyn
   const glass = await glassOf(page);
   expect(glass.nav).toBe("blur(14px)");
   expect(glass.card).toBe("blur(14px)");
-  expect(glass.lens).toBe("none");
+  expect(glass.lens).toBe("blur(14px)");
 });
 
 test("glass: opaque under prefers-reduced-transparency", async ({ page }) => {

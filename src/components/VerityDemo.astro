@@ -11,7 +11,7 @@ const refusal = refusalData as DemoTrace;
 const slaPath = sla.source.path;
 const slaId = Object.entries(answer.documents).find(([, path]) => path === slaPath)![0];
 
-// The quote the magnifier goes to is the citation on the page's document; the other one is a reference.
+// The quote the spotlight goes to is the citation on the page's document; the other one is a reference.
 const cited = answer.citations.find((c) => c.document_id === slaId)!;
 const elsewhere = answer.citations.filter((c) => c.document_id !== slaId);
 const closest = refusal.hits_used[0]!.chunk;
@@ -65,13 +65,9 @@ const runFile = fileOf(answer.source.path);
         )
       }
     </article>
-    <div class="lens" data-lens hidden aria-hidden="true">
-      <div class="lens-glass">
-        <div class="lens-view" data-lens-view></div>
-      </div>
-    </div>
+    <div class="lens" data-lens hidden aria-hidden="true"><div class="ring glass"></div></div>
     <p class="lens-tag" data-lens-tag hidden aria-hidden="true">
-      <span data-tag-answer>Citation</span><span class="defect" data-tag-refusal>Jugé insuffisant</span>
+      <span class="n">2</span><span data-tag-answer>Le passage retrouvé dans le contrat</span><span data-tag-refusal>Le passage le plus proche, jugé insuffisant</span>
     </p>
     </div>
   </div>
@@ -189,7 +185,7 @@ const runFile = fileOf(answer.source.path);
     /* Read by verity-demo.ts: where the passage goes, and what the tag above the lens keeps clear of. */
     --target-at: 0.5;
     --fade: 40px;
-    --tag-gap: 10px;
+    --tag-gap: 14px;
     mask-image: linear-gradient(to bottom, transparent, #000 var(--fade), #000 calc(100% - var(--fade)), transparent);
   }
 
@@ -237,31 +233,40 @@ const runFile = fileOf(answer.source.path);
     list-style-type: "–\00A0";
   }
 
+  /* Spotlight: once the script runs, the contract steps back and the passage in play keeps the
+     ink. --dimmed still meets AA on the sheet (contrast.test.ts): the words around stay legible. */
+  .demo[data-lit] .doc {
+    color: var(--dimmed);
+  }
+
+  .doc [data-o] {
+    transition: color var(--dur-slow) var(--ease);
+  }
+
   /* Highlight follows the mode; the spans were cut at the cited offsets at build time. */
   .demo[data-mode="answer"] [data-mark~="answer"] {
+    color: var(--ink);
     background: var(--proof-wash);
     box-shadow: 0 2px 0 var(--proof);
   }
 
   .demo[data-mode="refusal"] [data-mark~="refusal"] {
+    color: var(--ink);
     background: var(--defect-wash);
     box-shadow: 0 2px 0 var(--defect);
   }
 
+  /* The lens box holds the passage; its glass ring is drawn --ring wide outside it. */
   .lens {
+    --ring: 7px;
     position: absolute;
     left: 0;
     top: 0;
-    overflow: hidden;
-    border-radius: 14px;
-    /* Frosted, near-opaque: the words behind blur out of the way of the enlarged ones. */
-    background: var(--lens-fill);
-    backdrop-filter: blur(12px);
-    box-shadow:
-      0 0 0 1px var(--glass-edge),
-      0 0 0 6px var(--glass-fill),
-      0 0 0 7px var(--glass-edge),
-      0 18px 40px -16px rgb(17 17 17 / 0.45);
+    box-sizing: content-box;
+    margin: calc(-1 * var(--ring));
+    padding: var(--ring);
+    border-radius: 16px;
+    box-shadow: 0 14px 30px -18px rgb(17 17 17 / 0.5);
     transition:
       left var(--dur-slow) var(--ease),
       top var(--dur-slow) var(--ease),
@@ -270,57 +275,37 @@ const runFile = fileOf(answer.source.path);
     pointer-events: none;
   }
 
-  /* The rim of the glass bends the enlarged words (Glass.astro); the shadow ring stays on .lens. */
-  .lens-glass {
+  /* Glass only in the ring: the mask cuts out the middle, so the passage stays sharp while the
+     ring bends and frosts the dimmed lines around it (.glass, global.css). */
+  .ring {
     position: absolute;
     inset: 0;
-    overflow: hidden;
+    padding: var(--ring);
+    border: 1px solid var(--glass-edge);
     border-radius: inherit;
+    mask-image: linear-gradient(#000 0 0), linear-gradient(#000 0 0);
+    mask-clip: content-box, border-box;
+    mask-composite: exclude;
   }
 
-  :global(:root[data-refraction]) .lens-glass {
-    filter: url(#lens-refraction);
-  }
-
-  /* The copy moves with the lens: lens position + copy offset stays constant while it glides. */
-  .lens-view {
-    position: absolute;
-    padding: 1.5rem 1.5rem 1.25rem;
-    transition:
-      left var(--dur-slow) var(--ease),
-      top var(--dur-slow) var(--ease),
-      transform var(--dur-slow) var(--ease);
-  }
-
-  /* The lens enlarges its words only: the rest of the copy would overlap the lines around. */
-  .lens-view :global(*) {
-    visibility: hidden;
-  }
-
-  .demo[data-mode="answer"] .lens-view :global([data-mark~="answer"]),
-  .demo[data-mode="refusal"] .lens-view :global([data-mark~="refusal"]) {
-    visibility: visible;
-  }
-
-  /* Above the lens, never over the words it enlarges. */
+  /* Above the lens, never over the passage. */
   .lens-tag {
     position: absolute;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
     margin: 0;
     transform: translate(-100%, calc(-100% - var(--tag-gap)));
-    padding: 0.05rem 0.45rem;
+    padding: 0.15rem 0.55rem 0.15rem 0.2rem;
     box-shadow: 0 0 0 1px var(--rule);
     transition:
       left var(--dur-slow) var(--ease),
       top var(--dur-slow) var(--ease);
     font-size: var(--step-12);
     white-space: nowrap;
-    color: var(--proof-text);
+    color: var(--ink);
     background: var(--paper);
-    border-radius: 4px;
-  }
-
-  .lens-tag .defect {
-    color: var(--defect);
+    border-radius: 999px;
   }
 
   .demo[data-mode="answer"] [data-tag-refusal],
@@ -456,14 +441,8 @@ const runFile = fileOf(answer.source.path);
     color: var(--graphite);
   }
 
-  @media (prefers-reduced-transparency: reduce) {
-    :global(:root[data-refraction]) .lens-glass {
-      filter: none;
-    }
-  }
-
   /* Wide screens: the answer card overlaps the bottom right of the window, so the question,
-     its passage under the lens and the answer fit on the first screen together. */
+     its passage in the spotlight and the answer fit on the first screen together. */
   @media (min-width: 64rem) {
     /* The card covers the lower half of the window: the passage is centred in the upper part,
        and the padding lets the end of the contract scroll up there too. */

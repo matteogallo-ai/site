@@ -11,10 +11,10 @@ rules, technique and accessibility.
 
 ## 2. Concept: "Verity at work"
 Plain text on the left, one strong visual on the right: Verity working on a contract.
-- **The contract page:** real text from Verity's demo corpus, never invented, set in a serif like a real document. It is seen through a window of fixed height (about 360 px on wide screens), scrolled by code to the passage in play, fading out at the top and bottom; on wide screens the answer card overlaps its bottom right, so the tabs, the passage, the magnifier and the whole card fit on the first screen (tested at 1440×800 and 1280×720). On narrow screens the card follows the document.
-- **The glass magnifier** sits on the cited clause and enlarges it. Its position is **computed** from the real position of the cited words in the page (Range API / `getBoundingClientRect`), never hard-coded, and recomputed on resize. It shows only the enlarged words, on near-opaque frosted glass (fill of 85 % or more), so the lines around them never show through; their contrast is AA.
+- **The contract page:** real text from Verity's demo corpus, never invented, set in a serif like a real document. It is seen through a window of fixed height (about 360 px on wide screens), scrolled by code to the passage in play, fading out at the top and bottom; on wide screens the answer card overlaps its bottom right, so the tabs, the passage, its ring and the whole card fit on the first screen (tested at 1440×800 and 1280×720). On narrow screens the card follows the document.
+- **The spotlight:** the contract dims (still AA) and the passage in play keeps the ink, held whole inside a ring of glass; nothing is enlarged, so no line is covered. The ring's position is **computed** from the real position of the cited words in the page (Range API / `getBoundingClientRect`), never hard-coded, and recomputed on resize.
 - **The glass answer card:** question, answer, verbatim quote with its reference, checks (quote found, support vs threshold).
-- **Two modes:** "Answers, with a citation" (magnifier on the cited passage) and "Refuses, for lack of evidence" (magnifier on the closest passage retrieved, marked "judged insufficient"). Highlight, magnifier and card change with a transition. Both traces come from **real committed runs** of Verity.
+- **Two modes:** "Answers, with a citation" (spotlight on the cited passage) and "Refuses, for lack of evidence" (spotlight on the closest passage retrieved, marked "judged insufficient"). Highlight, spotlight and card change with a transition. Both traces come from **real committed runs** of Verity.
 - **Colour of proof:** green (`#1E8A4C`, text `#17703D`) for everything proven (highlights, ticks). Brick red `#A8382A` for defects and refusals. Night blue `#1C2A44` as the secondary colour, taken from the portrait.
 - Watchmaking stays in the DNA without being drawn: calibre numbers (`No. 01`), monospace figures, precision.
 
@@ -50,11 +50,11 @@ How the site is built: stack, budgets, real measures, accessibility choices, wha
 - **Scale:** 12 · 14 · 16 · 21 · 28 · 44 · 68 px. Negative tracking on large headings.
 - **Colours:** paper `#F5F4F0`, ink `#111111`, graphite `#5C5C58`, rules `#DAD8D2`, proof `#1E8A4C`/`#17703D`, defect `#A8382A`, night blue `#1C2A44`. Automatic dark mode (`prefers-color-scheme`). AA contrast checked for every pair.
 - **Grid:** 12 columns, 24 px gutter, 1200 px container. Dotted vertical rules, "+" marks between sections, numbered sections.
-- **Glass:** only the navigation, the magnifier and the answer card. Frosted glass everywhere; SVG refraction as progressive enhancement (Chromium); opaque version under `prefers-reduced-transparency`. Text on glass only over a known, controlled background.
-- **Motion:** transitions last 150–400 ms, `cubic-bezier(.2,.8,.2,1)`. The magnifier glides to the clause, the answer writes itself, the ticks appear in order. Writing the answer is a reading animation, not a transition: about 35 ms a word, at most 1.5 s; a click or a key shows it whole, and only an `aria-hidden` visual layer is animated, so assistive tech reads the whole answer from the start. Everything is cut under `prefers-reduced-motion` (final state shown at once).
+- **Glass:** only the navigation, the spotlight's ring and the answer card. Frosted glass everywhere; SVG refraction as progressive enhancement (Chromium); opaque version under `prefers-reduced-transparency`. Text on glass only over a known, controlled background.
+- **Motion:** transitions last 150–400 ms, `cubic-bezier(.2,.8,.2,1)`. The spotlight glides to the clause, the answer writes itself, the ticks appear in order. Writing the answer is a reading animation, not a transition: about 35 ms a word, at most 1.5 s; a click or a key shows it whole, and only an `aria-hidden` visual layer is animated, so assistive tech reads the whole answer from the start. Everything is cut under `prefers-reduced-motion` (final state shown at once).
 
 ## 5. Signature details
-1. The Verity demo with the magnifier computed on the citation.
+1. The Verity demo with the spotlight computed on the citation.
 2. Every figure is a link to its proof (the artefact path shown on hover and focus).
 3. The footer that measures itself, and the Colophon page.
 
@@ -74,7 +74,7 @@ French at `/`, English at `/en/`, translated by hand, correct `hreflang`.
 - **Astro**, static, zero JS by default. JS islands: the Verity demo, the Short/Detailed toggle.
 - **Cloudflare Pages** through its Git integration (no token). Address: `matteogallo.pages.dev` (fallback: `matteo-gallo.pages.dev`); custom domain `matteogallo.ch`.
 - **Blocking budgets in CI:** home ≤ 200 KB transferred excluding deferred screenshots, measured with gzip (stricter than the brotli Cloudflare serves, on purpose); fonts ≤ 90 000 bytes on any page; LCP < 1.5 s; CLS < 0.05; Lighthouse ≥ 98 on all 4 categories; 0 axe violation.
-- **CI:** build, typecheck, links, Lighthouse CI, axe, budgets, magnifier test at 3 widths, generation of `site-measures.json`.
+- **CI:** build, typecheck, links, Lighthouse CI, axe, budgets, spotlight position test at 3 widths, generation of `site-measures.json`.
 - Portrait: `src/assets/matteo.jpg` (800 × 800), served as AVIF/WebP at the sizes used.
 - Metadata: Open Graph (image generated from the first screen), favicon, sitemap, robots. No tracker.
 

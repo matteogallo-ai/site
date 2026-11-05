@@ -1,6 +1,5 @@
 import { readFileSync } from "node:fs";
 import { expect, type Page, test } from "@playwright/test";
-import { PAD, RING, SCALE } from "../src/scripts/lens.ts";
 
 const read = (name: string) => JSON.parse(readFileSync(new URL(`../src/data/demo/${name}.json`, import.meta.url), "utf8"));
 const answer = read("answer");
@@ -54,31 +53,22 @@ async function centres(page: Page, text: string) {
     }
     const t = union(textRects);
     const l = document.querySelector("[data-lens]")!.getBoundingClientRect();
-    // The enlarged copy of the same words, inside the lens.
-    const mode = document.querySelector("[data-verity-demo]")!.getAttribute("data-mode")!;
-    const copy = [...document.querySelectorAll(`[data-lens-view] [data-mark~="${mode}"]`)];
-    const c = union(copy.flatMap((s) => [...s.getClientRects()]));
-    const sheetBox = document.querySelector("[data-sheet]")!.getBoundingClientRect();
-    // Room on each side of the words' centre, inside the sheet.
-    const half = Math.min(t.left + t.width / 2 - sheetBox.left, sheetBox.right - (t.left + t.width / 2));
     const box = (r: DOMRect) => ({ left: r.left, top: r.top, right: r.right, bottom: r.bottom, width: r.width });
     return {
       target: { x: t.left + t.width / 2, y: t.top + t.height / 2 },
       lens: { x: l.left + l.width / 2, y: l.top + l.height / 2 },
-      copy: { x: c.left + c.width / 2, y: c.top + c.height / 2 },
-      boxes: { target: box(t), lens: box(l), copy: box(c) },
-      half,
+      boxes: { target: box(t), lens: box(l) },
     };
   }, text);
 }
 
 type Centres = Awaited<ReturnType<typeof centres>>;
-const pair = (c: Centres, other: "target" | "copy") => [c.lens, c[other]] as const;
+const pair = (c: Centres) => [c.lens, c.target] as const;
 const distance = (a: { x: number; y: number }, b: { x: number; y: number }) => Math.hypot(a.x - b.x, a.y - b.y);
 
 for (const width of [375, 1024, 1440]) {
   for (const mode of ["answer", "refusal"] as const) {
-    test(`magnifier: ${mode} at ${width}px is centred on its words, enlarged under the lens`, async ({ page }) => {
+    test(`magnifier: ${mode} at ${width}px is centred on its words and holds them whole`, async ({ page }) => {
       await page.setViewportSize({ width, height: 900 });
       await page.emulateMedia({ reducedMotion: "reduce" });
       await page.goto("/");
@@ -87,21 +77,14 @@ for (const width of [375, 1024, 1440]) {
       await expect(page.locator("[data-lens]")).toBeVisible();
       await expect(page.locator("[data-verity-demo]")).toHaveAttribute("data-mode", mode);
       // The lens glides to its target: measure once it has arrived.
-      await expect.poll(async () => distance(...pair(await centres(page, TARGETS[mode]), "target"))).toBeLessThan(MAX_DISTANCE);
+      await expect.poll(async () => distance(...pair(await centres(page, TARGETS[mode])))).toBeLessThan(MAX_DISTANCE);
       const c = await centres(page, TARGETS[mode]);
       expect(distance(c.lens, c.target)).toBeLessThan(MAX_DISTANCE);
-      expect(distance(c.lens, c.copy)).toBeLessThan(MAX_DISTANCE);
-      // The lens covers its words vertically and enlarges them (it may be capped at the sheet width).
+      // The words are whole inside the lens, first and last letters included, at every width.
       expect(c.boxes.lens.top).toBeLessThanOrEqual(c.boxes.target.top);
       expect(c.boxes.lens.bottom).toBeGreaterThanOrEqual(c.boxes.target.bottom);
-      // The enlarged words are whole under the lens, first letter included, at every width;
-      // only words with too little room on either side of their centre are enlarged less than SCALE.
-      expect(c.boxes.copy.left).toBeGreaterThanOrEqual(c.boxes.lens.left);
-      expect(c.boxes.copy.right).toBeLessThanOrEqual(c.boxes.lens.right);
-      expect(c.boxes.copy.width).toBeGreaterThan(c.boxes.target.width * 1.02);
-      if (c.boxes.target.width * SCALE + 2 * PAD <= 2 * (c.half - RING)) {
-        expect(c.boxes.copy.width).toBeGreaterThan(c.boxes.target.width * (SCALE - 0.01));
-      }
+      expect(c.boxes.lens.left).toBeLessThanOrEqual(c.boxes.target.left);
+      expect(c.boxes.lens.right).toBeGreaterThanOrEqual(c.boxes.target.right);
       // No horizontal scroll: an overhanging lens is clipped, not added to the page width.
       expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);
     });
@@ -114,30 +97,31 @@ for (const mode of ["answer", "refusal"] as const) {
     await page.goto("/");
     if (mode === "refusal") await page.getByRole("tab", { name: "Refuse, faute de preuve" }).click();
     await page.setViewportSize({ width: 390, height: 900 });
-    for (const other of ["target", "copy"] as const) {
-      await expect.poll(async () => distance(...pair(await centres(page, TARGETS[mode]), other)), { timeout: 5000 }).toBeLessThan(MAX_DISTANCE);
-    }
+    await expect.poll(async () => distance(...pair(await centres(page, TARGETS[mode]))), { timeout: 5000 }).toBeLessThan(MAX_DISTANCE);
   });
 }
 
 for (const mode of ["answer", "refusal"] as const) {
-  test(`magnifier: ${mode} shows its enlarged words only, never the lines around them`, async ({ page }) => {
+  test(`spotlight: ${mode} keeps its passage in ink and dims the rest of the contract`, async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: "reduce" });
     await page.goto("/");
     if (mode === "refusal") await page.getByRole("tab", { name: "Refuse, faute de preuve" }).click();
     await expect(page.locator("[data-lens]")).toBeVisible();
-    const shown = await page.evaluate((m) => {
-      const view = document.querySelector("[data-lens-view]")!;
-      const walker = document.createTreeWalker(view, NodeFilter.SHOW_TEXT);
-      const visible: { text: string; target: boolean }[] = [];
-      for (let n = walker.nextNode(); n; n = walker.nextNode()) {
-        const parent = n.parentElement!;
-        if (!n.textContent?.trim() || getComputedStyle(parent).visibility !== "visible") continue;
-        visible.push({ text: n.textContent, target: parent.closest(`[data-mark~="${m}"]`) !== null });
-      }
-      return visible;
-    }, mode);
-    expect(shown.length).toBeGreaterThan(0);
-    expect(shown.filter((s) => !s.target)).toEqual([]);
+    const read = () =>
+      page.evaluate((m) => {
+        const ink = getComputedStyle(document.body).color;
+        const spans = [...document.querySelectorAll<HTMLElement>("[data-sheet] article [data-o]")];
+        const of = (target: boolean) => [...new Set(spans.filter((s) => s.matches(`[data-mark~="${m}"]`) === target).map((s) => getComputedStyle(s).color))];
+        return { ink, target: of(true), rest: of(false) };
+      }, mode);
+    // The colours cross-fade on a change of mode (a frame even under reduced motion).
+    await expect.poll(async () => {
+      const c = await read();
+      return c.target.length === 1 && c.target[0] === c.ink;
+    }).toBe(true);
+    const colours = await read();
+    expect(colours.rest).toHaveLength(1);
+    expect(colours.rest[0]).not.toBe(colours.ink);
   });
 }
 

@@ -80,16 +80,15 @@ test("--defect-tint is at most 8 % of --defect over the paper", () => {
   assert.ok(tint.weight <= 0.08, `${tint.weight * 100} % > 8 %`);
 });
 
-// The lens is frosted glass: whatever lies behind it shows through the fill, blurred. Worst
-// case for the enlarged words is a solid patch of ink behind them.
-const lensFill = readMix(css, "lens-fill");
-test("--lens-fill is the sheet at 85 % or more", () => {
-  assert.equal(lensFill.first, "sheet");
-  assert.equal(lensFill.second, "transparent");
-  assert.ok(lensFill.weight >= 0.85, `${lensFill.weight * 100} % < 85 %`);
+// Spotlight: the contract around the passage is dimmed, and still AA on the sheet.
+const dimmed = readMix(css, "dimmed");
+test("--dimmed is the ink mixed into the sheet", () => {
+  assert.equal(dimmed.first, "ink");
+  assert.equal(dimmed.second, "sheet");
 });
 
-// The answer card lies over the contract on wide screens: same worst case, for every colour it uses.
+// The answer card lies over the contract on wide screens. Worst case for every colour it uses: a
+// solid patch of ink behind its glass.
 const cardFill = readMix(css, "card-fill");
 test("--card-fill is the paper at 85 % or more", () => {
   assert.equal(cardFill.first, "paper");
@@ -115,10 +114,10 @@ for (const [name, theme] of Object.entries(themes)) {
       assert.ok(ratio >= 4.5, `${ratio.toFixed(2)}:1 < 4.5:1`);
     });
   }
-  const underLens = mix(theme.sheet!, theme.ink!, lensFill.weight);
-  // The lens shows only its target words, in ink, on their wash (tested above) or on the fill.
-  test(`${name}: --ink on the lens over ink (${underLens}) >= 4.5:1`, () => {
-    const ratio = contrastRatio(theme.ink!, underLens);
+  const dim = mix(theme.ink!, theme.sheet!, dimmed.weight);
+  test(`${name}: --dimmed (${dim}) on --sheet >= 4.5:1, and at most half the contrast of --ink`, () => {
+    const ratio = contrastRatio(dim, theme.sheet!);
     assert.ok(ratio >= 4.5, `${ratio.toFixed(2)}:1 < 4.5:1`);
+    assert.ok(ratio <= contrastRatio(theme.ink!, theme.sheet!) / 2, `${ratio.toFixed(2)}:1 is not dimmed`);
   });
 }

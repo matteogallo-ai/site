@@ -1,71 +1,43 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { test } from "node:test";
-import { type Box, lensLayout, RING, SCALE, unionBox } from "./lens.ts";
+import { type Box, lensLayout, PAD, RING, unionBox } from "./lens.ts";
 
-const centre = (b: { left: number; top: number; width: number; height: number }) => ({ x: b.left + b.width / 2, y: b.top + b.height / 2 });
+const centre = (b: Box) => ({ x: b.left + b.width / 2, y: b.top + b.height / 2 });
+const holds = (lens: Box, t: Box) => t.left >= lens.left && t.left + t.width <= lens.left + lens.width && t.top >= lens.top && t.top + t.height <= lens.top + lens.height;
 
-test("the lens is centred on the target", () => {
+test("the lens is centred on the target and holds it with PAD around", () => {
   const target = { left: 40, top: 300, width: 220, height: 22 };
-  const { lens } = lensLayout(target, 520);
+  const lens = lensLayout(target, 520);
   assert.deepEqual(centre(lens), centre(target));
-  assert.ok(lens.width > target.width && lens.height > target.height);
+  assert.deepEqual(lens, { left: 40 - PAD, top: 300 - PAD, width: 220 + 2 * PAD, height: 22 + 2 * PAD });
 });
 
-const enlarged = (target: Box, origin: { x: number }, scale: number) => ({
-  left: origin.x - (origin.x - target.left) * scale,
-  right: origin.x + (target.left + target.width - origin.x) * scale,
-});
-
-const holds = (target: Box, sheetWidth: number) => {
-  const { lens, origin, scale } = lensLayout(target, sheetWidth);
-  const words = enlarged(target, origin, scale);
-  return { lens, scale, inside: words.left >= lens.left - 1e-9 && words.right <= lens.left + lens.width + 1e-9, onSheet: lens.left >= 0 && lens.left + lens.width <= sheetWidth + 1e-9 };
-};
-
-test("words near a sheet edge are enlarged less, never cut, and the lens stays on the sheet", () => {
-  // Off-centre targets: close to the left edge, close to the right edge.
+test("words near a sheet edge stay whole and centred; the lens stays on the sheet", () => {
   for (const [target, sheet] of [
     [{ left: 0, top: 0, width: 300, height: 20 }, 320],
     [{ left: 200, top: 0, width: 310, height: 20 }, 520],
     [{ left: 8, top: 100, width: 469, height: 68 }, 541],
   ] as const) {
-    const r = holds(target, sheet);
-    assert.ok(r.inside && r.onSheet, JSON.stringify({ target, sheet, ...r }));
-    assert.ok(r.scale >= 1 && r.scale <= SCALE);
-    assert.deepEqual(centre(r.lens), centre(target));
+    const lens = lensLayout(target, sheet);
+    assert.ok(holds(lens, target), JSON.stringify({ target, sheet, lens }));
+    assert.ok(lens.left >= 0 && lens.left + lens.width <= sheet + 1e-9, JSON.stringify({ target, sheet, lens }));
+    assert.deepEqual(centre(lens), centre(target));
   }
 });
 
-test("with room on the sheet, the lens keeps its ring on the sheet", () => {
-  // 10 px from the left edge: without the inset the lens would reach x = 0 and lose its ring.
-  const { lens } = lensLayout({ left: 10, top: 0, width: 300, height: 20 }, 400);
-  // The widest ring .lens draws in VerityDemo.astro (its box-shadow spreads).
+test("with room on the sheet, the lens keeps its whole ring on the sheet", () => {
+  // The widest ring .lens draws in VerityDemo.astro (its padding, masked to a ring).
   const css = readFileSync(new URL("../components/VerityDemo.astro", import.meta.url), "utf8");
-  const block = /\n  \.lens \{([^}]*)\}/.exec(css)?.[1] ?? "";
-  const drawn = Math.max(...[...block.matchAll(/0 0 0 (\d+)px/g)].map((m) => Number(m[1])));
-  assert.ok(drawn > 0, "no ring found in .lens");
+  const drawn = Number(/\n  \.lens \{[^}]*?--ring:\s*(\d+)px/.exec(css)?.[1]);
+  assert.ok(drawn > 0, "no --ring found in .lens");
   assert.ok(RING >= drawn, `RING ${RING} < ring drawn ${drawn}`);
+  // 10 px from the left edge: without the inset the lens would reach x = 2 and lose its ring.
+  const lens = lensLayout({ left: 10, top: 0, width: 300, height: 20 }, 400);
   assert.ok(lens.left >= drawn && lens.left + lens.width <= 400 - drawn, JSON.stringify(lens));
 });
 
-test("words with no room to grow are shown at their size", () => {
-  assert.equal(lensLayout({ left: 0, top: 0, width: 300, height: 20 }, 300).scale, 1);
-});
-
-test("the enlarged copy puts the target's centre under the lens centre", () => {
-  const target = { left: 64, top: 410, width: 300, height: 66 };
-  const { lens, view, origin, scale } = lensLayout(target, 520);
-  // A point p of the copy, aligned with the sheet, lands at view + origin + (p - origin) * scale in lens coordinates.
-  const at = (p: number, v: number, o: number) => v + o + (p - o) * scale;
-  const c = centre(target);
-  assert.ok(Math.abs(at(c.x, view.left, origin.x) - lens.width / 2) < 1e-9);
-  assert.ok(Math.abs(at(c.y, view.top, origin.y) - lens.height / 2) < 1e-9);
-  assert.equal(scale, SCALE);
-});
-
 test("the target is the union of its text boxes, not of the elements around them", () => {
-  // Three list lines of different lengths: the union spans the longest, from the shared left edge.
   const lines = [
     { left: 42, top: 100, width: 389, height: 20 },
     { left: 42, top: 124, width: 469, height: 20 },
@@ -73,12 +45,4 @@ test("the target is the union of its text boxes, not of the elements around them
   ];
   assert.deepEqual(unionBox(lines), { left: 42, top: 100, width: 469, height: 68 });
   assert.equal(unionBox([]), null);
-});
-
-test("an enlarged target that fits the sheet stays inside the lens at full scale", () => {
-  const target = { left: 60, top: 100, width: 469, height: 68 };
-  const { lens, origin, scale } = lensLayout(target, 672);
-  const words = enlarged(target, origin, scale);
-  assert.equal(scale, SCALE);
-  assert.ok(words.left >= lens.left && words.right <= lens.left + lens.width);
 });

@@ -119,7 +119,7 @@ a {
   }
 }
 
-/* Glass (SPEC §4): only the navigation, the magnifier and the answer card. Frosted everywhere;
+/* Glass (SPEC §4): only the navigation, the spotlight ring and the answer card. Frosted everywhere;
    refracted where the engine renders SVG filters in backdrop-filter (Glass.astro); the tokens
    make it opaque under prefers-reduced-transparency. */
 .glass {
