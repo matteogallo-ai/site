@@ -247,12 +247,41 @@ a {
   border: 1px solid var(--rule);
   border-radius: 4px;
   overflow-wrap: anywhere;
-  /* display, not visibility: a hidden box would still widen the page on narrow screens. */
+  /* display, not visibility: a hidden box would still widen the page on narrow screens. The
+     display change waits for the fade (allow-discrete); engines without it show and hide at once. */
   display: none;
+  opacity: 0;
+  transform: scale(0.96);
+  transform-origin: top left;
+  transition:
+    opacity var(--dur-tip-out) var(--ease-out),
+    transform var(--dur-tip-out) var(--ease-out),
+    display var(--dur-tip-out) allow-discrete;
 }
 
+/* In after --delay-tip, so a pointer crossing the page does not flash every tooltip on its way. */
 .tip-host:is(:hover, :focus-visible):not([data-dismissed]) .tip {
   display: block;
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity var(--dur-tip-in) var(--ease-out) var(--delay-tip),
+    transform var(--dur-tip-in) var(--ease-out) var(--delay-tip),
+    display 0s allow-discrete;
+}
+
+@starting-style {
+  .tip-host:is(:hover, :focus-visible):not([data-dismissed]) .tip {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tip,
+  .tip-host:is(:hover, :focus-visible):not([data-dismissed]) .tip {
+    transform: none;
+  }
 }
 
 /* A figure counting up (src/scripts/count.ts): its own text stays in place and keeps the line's

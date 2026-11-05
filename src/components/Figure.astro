@@ -44,4 +44,9 @@ const proof = lang === "fr" ? "Preuve\u00A0:" : "Proof:";
     border-bottom: 1px dotted currentColor;
   }
 
+  /* Under the pointer or the keyboard the dotted rule turns solid: this figure is a link. */
+  .figure:is(:hover, :focus-visible) .value {
+    border-bottom-style: solid;
+  }
+
 </style>

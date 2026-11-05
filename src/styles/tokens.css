@@ -65,6 +65,10 @@
   --dur-hover: 180ms;
   --dur-move: 280ms;
   --dur-reveal: 480ms;
+  /* Tooltips: in after a short wait, out faster than in. */
+  --delay-tip: 80ms;
+  --dur-tip-in: 150ms;
+  --dur-tip-out: 100ms;
 
   /* Glass: navigation, loupe and answer card only (SPEC §4). */
   --glass-fill: rgb(245 244 240 / 0.72);
@@ -100,6 +104,7 @@
     --dur-hover: 120ms;
     --dur-move: 0s;
     --dur-reveal: 0s;
+    --delay-tip: 0s;
   }
 }
 
