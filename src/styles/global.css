@@ -288,9 +288,21 @@ a:hover {
   backdrop-filter: url(#glass-refraction) blur(var(--glass-blur));
 }
 
+/* The navigation's glass (Home.astro's pill): the same material, far denser. */
+.glass.glass-nav {
+  background: var(--nav-fill);
+  -webkit-backdrop-filter: blur(var(--nav-blur));
+  backdrop-filter: blur(var(--nav-blur));
+}
+
+:root[data-refraction] .glass.glass-nav {
+  backdrop-filter: url(#glass-refraction) blur(var(--nav-blur));
+}
+
 @media (prefers-reduced-transparency: reduce) {
   .glass,
-  :root[data-refraction] .glass {
+  :root[data-refraction] .glass,
+  :root[data-refraction] .glass.glass-nav {
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
   }

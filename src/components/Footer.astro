@@ -1,0 +1,25 @@
+---
+import { langOf } from "../lib/i18n.ts";
+
+const fr = langOf(Astro.url.pathname) === "fr";
+---
+
+<footer class="container footer">
+  <p>
+    {fr ? "Code sous licence MIT, contenu tous droits réservés." : "Code under the MIT licence, content all rights reserved."} <a href="https://github.com/matteogallo-ai/site">{fr ? "Code du site" : "Site code"}</a> · <a href={fr ? "/colophon/" : "/en/colophon/"}>Colophon</a>
+  </p>
+</footer>
+
+<style>
+  .footer {
+    margin-top: 4rem;
+    padding-block: 2rem 3rem;
+    border-top: 1px dotted var(--rule);
+    font-size: var(--step-14);
+    color: var(--graphite);
+  }
+
+  .footer p {
+    margin: 0.25rem 0;
+  }
+</style>

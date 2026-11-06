@@ -5,6 +5,8 @@ import { langOf } from "../lib/i18n.ts";
 import { decimal } from "../lib/measures.ts";
 import { route } from "../lib/sitemap.ts";
 import LangSwitch from "./LangSwitch.astro";
+import Contact from "./Contact.astro";
+import Footer from "./Footer.astro";
 
 // The Colophon in either language (src/pages/colophon.astro, src/pages/en/colophon.astro).
 const lang = langOf(Astro.url.pathname);
@@ -185,6 +187,10 @@ const unmeasured = Object.keys(import.meta.glob("../pages/**/*.astro"))
       )
     }
   </section>
+  <section class="container section closing-contact" aria-label="Contact">
+    <Contact />
+  </section>
+  <Footer />
 </Base>
 
 <style>

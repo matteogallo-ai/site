@@ -117,13 +117,29 @@ const glassOf = (page: Page) =>
     card: getComputedStyle(document.querySelector("#verity-panel-answer")!).backdropFilter,
     lens: getComputedStyle(document.querySelector("[data-lens] .ring")!).backdropFilter,
     fill: getComputedStyle(document.querySelector("#verity-panel-answer")!).backgroundColor,
+    navFill: getComputedStyle(document.querySelector(".pill")!).backgroundColor,
   }));
+
+/** The alpha of a computed rgb()/rgba() colour. */
+const alpha = (colour: string) => Number(/rgba?\([^)]*?,\s*([\d.]+)\)$/.exec(colour)?.[1] ?? (colour.startsWith("rgb(") ? 1 : 0));
+
+// The navigation floats over headings, images and code as the page scrolls: text under it must not
+// read through. It is far more opaque and more blurred than the spotlight ring and the answer card.
+for (const colorScheme of ["light", "dark"] as const) {
+  test(`glass: the navigation hides what scrolls under it (${colorScheme})`, async ({ page }) => {
+    await page.emulateMedia({ colorScheme });
+    await page.goto("/");
+    const glass = await glassOf(page);
+    expect(alpha(glass.navFill)).toBeGreaterThanOrEqual(0.9);
+    expect(glass.nav).toContain("blur(24px)");
+  });
+}
 
 test("glass: refracted in Chromium", async ({ page }) => {
   await page.goto("/");
   await expect(page.locator("html")).toHaveAttribute("data-refraction", "");
   const glass = await glassOf(page);
-  expect(glass.nav).toBe('url("#glass-refraction") blur(14px)');
+  expect(glass.nav).toBe('url("#glass-refraction") blur(24px)');
   expect(glass.card).toBe('url("#glass-refraction") blur(14px)');
   expect(glass.lens).toBe('url("#glass-refraction") blur(14px)');
 });
@@ -134,7 +150,7 @@ test("glass: frosted, without refraction, where the engine cannot refract", asyn
   await page.goto("/");
   await expect(page.locator("html")).not.toHaveAttribute("data-refraction");
   const glass = await glassOf(page);
-  expect(glass.nav).toBe("blur(14px)");
+  expect(glass.nav).toBe("blur(24px)");
   expect(glass.card).toBe("blur(14px)");
   expect(glass.lens).toBe("blur(14px)");
 });
@@ -217,7 +233,7 @@ test("each section comes into place once, its children one after the other, and 
   const ids = ["projets", "methode", "a-propos"];
   const children = (id: string) =>
     page.locator(`#${id}`).evaluate((s) =>
-      [...s.children].map((c) => ({ opacity: getComputedStyle(c).opacity, transform: getComputedStyle(c).transform, delay: getComputedStyle(c).transitionDelay.split(",")[0] })),
+      [...s.children].filter((c) => c.tagName !== "SCRIPT").map((c) => ({ opacity: getComputedStyle(c).opacity, transform: getComputedStyle(c).transform, delay: getComputedStyle(c).transitionDelay.split(",")[0] })),
     );
   // At load all three are below the screen: their children wait, transparent and lower, with
   // delays 60 ms apart (at most 180 ms).

@@ -76,6 +76,10 @@
   --glass-fill: rgb(245 244 240 / 0.72);
   --glass-edge: rgb(17 17 17 / 0.08);
   --glass-blur: 14px;
+  /* The navigation floats over headings, images and code: nearly opaque and more blurred, so
+     nothing under it reads through. */
+  --nav-fill: rgb(245 244 240 / 0.92);
+  --nav-blur: 24px;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -94,6 +98,7 @@
     --sheet: #1b1c1a;
 
     --glass-fill: rgb(18 19 17 / 0.72);
+    --nav-fill: rgb(18 19 17 / 0.92);
     --glass-edge: rgb(237 235 229 / 0.1);
   }
 }
@@ -115,6 +120,8 @@
   :root {
     --glass-fill: var(--paper);
     --glass-blur: 0px;
+    --nav-fill: var(--paper);
+    --nav-blur: 0px;
     --card-fill: var(--paper);
   }
 }

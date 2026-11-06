@@ -3,6 +3,8 @@ import Base from "./Base.astro";
 import { langOf, twin } from "../lib/i18n.ts";
 import { repoUrl } from "../lib/sources.ts";
 import LangSwitch from "../components/LangSwitch.astro";
+import Contact from "../components/Contact.astro";
+import Footer from "../components/Footer.astro";
 
 interface Props {
   /** Calibre number of the project, as on the home page cards ("01"). */
@@ -67,11 +69,15 @@ const cases = [
       </ul>
     </nav>
   </div>
+  <section class="container section closing-contact" aria-label="Contact">
+    <Contact />
+  </section>
+  <Footer />
 </Base>
 
 <style>
   .case {
-    padding-block: 2rem 5rem;
+    padding-block: 2rem 1rem;
   }
 
   .crumbs {

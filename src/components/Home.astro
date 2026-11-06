@@ -6,6 +6,8 @@ import VerityDemo from "./VerityDemo.astro";
 import Projects from "./Projects.astro";
 import Bio from "./Bio.astro";
 import LangSwitch from "./LangSwitch.astro";
+import Contact from "./Contact.astro";
+import Footer from "./Footer.astro";
 import { langOf } from "../lib/i18n.ts";
 import portrait from "../assets/matteo.jpg";
 
@@ -25,7 +27,7 @@ const id = fr ? { projects: "projets", method: "methode", about: "a-propos" } : 
   stickyHeader
 >
   <div class="bar" slot="header">
-    <div class="pill glass">
+    <div class="pill glass glass-nav">
       <nav class="nav" aria-label={fr ? "Principale" : "Main"}>
         <ul>
           <li><a href={`#${id.projects}`}>{fr ? "Projets" : "Projects"}</a></li>
@@ -67,7 +69,7 @@ const id = fr ? { projects: "projets", method: "methode", about: "a-propos" } : 
       }
       <p class="actions">
         <a class="button primary" href={`#${id.projects}`}>{fr ? "Voir les projets" : "See the projects"}</a>
-        <a class="button" href="#contact">{fr ? "Écrire un e-mail" : "Write an e-mail"}</a>
+        <a class="button" href="#contact">{fr ? "Écrire un e-mail" : "Get in touch"}</a>
       </p>
     </div>
     <div class="stage">
@@ -121,44 +123,21 @@ const id = fr ? { projects: "projets", method: "methode", about: "a-propos" } : 
       <h2>{fr ? "À propos" : "About"}</h2>
       <Bio />
     </div>
-    <div class="contact" id="contact">
-      <h2>{fr ? "Un poste d’ingénieur logiciel et IA en Suisse romande ? Écrivez-moi." : "A software and AI engineering role in French-speaking Switzerland? Write to me."}</h2>
-      <p class="email">
-        <a class="address" href="mailto:matteogallo.office@gmail.com" data-copy>matteogallo.office@gmail.com</a>
-        <span class="copied" id="copy-status" role="status" data-copied={fr ? "Copié" : "Copied"} data-failed={fr ? "Copie impossible : l’adresse est sélectionnée" : "Copy failed: the address is selected"}></span>
-      </p>
-      <p class="hint" id="copy-hint" data-copy-hint hidden>{fr ? "Cliquez sur l’adresse pour la copier." : "Click the address to copy it."}</p>
-      <p class="actions">
-        <a class="button primary" href="mailto:matteogallo.office@gmail.com">{fr ? "Écrire" : "Write"}</a>
-        <a class="button" href="https://www.linkedin.com/in/matteogallo-ai">LinkedIn</a>
-        <a class="button" href="https://github.com/matteogallo-ai">GitHub</a>
-      </p>
-    </div>
+    <Contact />
   </section>
 
   <script>
     import { countOnSight } from "../scripts/count.ts";
     import { spyOn } from "../scripts/spy.ts";
-    import { copyOnClick } from "../scripts/copy.ts";
     import { revealOnSight } from "../scripts/reveal.ts";
     revealOnSight(document.querySelectorAll<HTMLElement>(".reveal"));
     const nav = document.querySelector<HTMLElement>(".nav");
     if (nav) spyOn(nav);
-    // The address copies itself on click; without this script it stays a mailto link.
-    const address = document.querySelector<HTMLAnchorElement>("a[data-copy]");
-    const status = document.getElementById("copy-status");
-    if (address && status && navigator.clipboard) {
-      // The page gives the outcomes in its language.
-      copyOnClick(address, status, { copied: status.dataset["copied"] ?? "", failed: status.dataset["failed"] ?? "" });
-      document.querySelector<HTMLElement>("[data-copy-hint]")?.removeAttribute("hidden");
-    }
     // The band's three figures count up once, as they come into view (SPEC §4).
     countOnSight(document.querySelectorAll<HTMLElement>(".band .value"));
   </script>
 
-  <footer class="container footer">
-    <p>{fr ? "Code sous licence MIT, contenu tous droits réservés." : "Code under the MIT licence, content all rights reserved."} <a href={repo("site")}>{fr ? "Code du site" : "Site code"}</a> · <a href={fr ? "/colophon/" : "/en/colophon/"}>Colophon</a></p>
-  </footer>
+  <Footer />
 </Base>
 
 
@@ -441,69 +420,9 @@ const id = fr ? { projects: "projets", method: "methode", about: "a-propos" } : 
       align-items: start;
     }
 
-    .contact {
+    .closing :global(.contact) {
       padding-top: 2.4rem;
     }
   }
 
-  .contact h2 {
-    font-size: var(--step-21);
-    line-height: 1.2;
-    text-wrap: balance;
-  }
-
-  .email {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: baseline;
-    gap: 0.25rem 0.75rem;
-    margin: 1rem 0 0;
-  }
-
-  /* The address, a link or (with the script) a button that copies it. */
-  .address {
-    padding: 0;
-    border: 0;
-    font-size: var(--step-28);
-    font-weight: 600;
-    letter-spacing: -0.01em;
-    text-align: left;
-    color: var(--ink);
-    background: none;
-    text-decoration: underline;
-    text-decoration-thickness: 1px;
-    text-underline-offset: 0.2em;
-    text-decoration-color: var(--rule);
-    cursor: pointer;
-    /* The address is one unbroken word, wider than a 375 px screen at this size. */
-    overflow-wrap: anywhere;
-    transition: text-decoration-color var(--dur-hover) var(--ease-out);
-  }
-
-  .address:hover {
-    text-decoration-color: var(--ink);
-  }
-
-  .copied {
-    font-size: var(--step-14);
-    color: var(--proof-text);
-  }
-
-  .hint {
-    margin: 0.25rem 0 0;
-    font-size: var(--step-14);
-    color: var(--graphite);
-  }
-
-  .footer {
-    margin-top: 4rem;
-    padding-block: 2rem 3rem;
-    border-top: 1px dotted var(--rule);
-    font-size: var(--step-14);
-    color: var(--graphite);
-  }
-
-  .footer p {
-    margin: 0.25rem 0;
-  }
 </style>

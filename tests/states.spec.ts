@@ -60,11 +60,11 @@ const W = {
   en: {
     home: "/en/",
     see: "See the projects",
-    email: "Write an e-mail",
+    email: "Get in touch",
     refuses: "Refuses, for lack of evidence",
     source: "Run source",
     detailed: "Detailed",
-    write: "Write",
+    write: "Email me",
     method: "method",
     methodLabel: "Method",
     study: "Case study",
