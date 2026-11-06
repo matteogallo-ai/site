@@ -102,7 +102,7 @@ test("under reduced motion the answer is shown whole at once", async ({ page }) 
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/");
   // Read in the same task as the click: a retrying assertion would also pass on writing that
-  // merely ends fast (the motion tokens are 0.01ms under reduced motion).
+  // merely ends fast.
   const state = await page.evaluate(() => {
     document.querySelector<HTMLElement>("#verity-tab-refusal")!.click();
     const panel = document.getElementById("verity-panel-refusal")!;
@@ -204,22 +204,76 @@ test("under reduced motion the figures do not count and the sections do not move
   await page.locator(".band").scrollIntoViewIfNeeded();
   await page.waitForTimeout(300);
   expect(await page.locator(".band [data-counting], .count-layer").count()).toBe(0);
-  expect(await page.locator("#methode").evaluate((s) => getComputedStyle(s).animationName)).toBe("none");
+  // Sections below the screen are not held back: their children are in place before any scroll.
+  const held = await page.evaluate(() =>
+    [...document.querySelectorAll(".reveal > *")].filter((c) => getComputedStyle(c).opacity !== "1" || getComputedStyle(c).transform !== "none").length,
+  );
+  expect(held).toBe(0);
 });
 
-test("each section comes fully into place once scrolled into view", async ({ page }) => {
+test("each section comes into place once, its children one after the other, and stays", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 800 });
   await page.goto("/");
   const ids = ["projets", "methode", "a-propos"];
-  // At load all three are below the screen: they wait, transparent, for their entry.
+  const children = (id: string) =>
+    page.locator(`#${id}`).evaluate((s) =>
+      [...s.children].map((c) => ({ opacity: getComputedStyle(c).opacity, transform: getComputedStyle(c).transform, delay: getComputedStyle(c).transitionDelay.split(",")[0] })),
+    );
+  // At load all three are below the screen: their children wait, transparent and lower, with
+  // delays 60 ms apart (at most 180 ms).
   for (const id of ids) {
-    const section = page.locator(`#${id}`);
-    expect(await section.evaluate((s) => getComputedStyle(s).animationName)).toBe("reveal");
-    await expect.poll(async () => Number(await section.evaluate((s) => getComputedStyle(s).opacity))).toBeLessThan(0.5);
+    await expect.poll(async () => (await children(id)).every((c) => c.opacity === "0" && c.transform !== "none")).toBe(true);
+    expect((await children(id)).map((c) => c.delay).slice(0, 4)).toEqual(["0s", "0.06s", "0.12s", "0.18s"].slice(0, (await children(id)).length));
   }
   for (const id of ids) {
-    const section = page.locator(`#${id}`);
-    await section.evaluate((s) => s.scrollIntoView({ block: "start" }));
-    await expect.poll(() => section.evaluate((s) => getComputedStyle(s).opacity)).toBe("1");
+    await page.locator(`#${id}`).evaluate((s) => s.scrollIntoView({ block: "start" }));
+    await expect.poll(async () => (await children(id)).every((c) => c.opacity === "1" && c.transform === "none"), { timeout: 3000 }).toBe(true);
   }
+  // Once: back at the top and down again, nothing is held back any more.
+  await page.evaluate(() => scrollTo(0, 0));
+  await page.waitForTimeout(200);
+  for (const id of ids) expect((await children(id)).every((c) => c.opacity === "1")).toBe(true);
+});
+
+test("figures already on screen at load do not count: nothing above the fold moves but the answer", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 1400 });
+  const counted: string[] = [];
+  await page.exposeFunction("sawCounting", (v: string) => counted.push(v));
+  await page.addInitScript(() => {
+    new MutationObserver((records) => {
+      for (const r of records) if (r.attributeName === "data-counting") (window as unknown as { sawCounting: (v: string) => void }).sawCounting((r.target as Element).textContent ?? "");
+    }).observe(document, { attributes: true, subtree: true });
+  });
+  await page.goto("/");
+  await expect(page.locator(".band")).toBeInViewport();
+  await page.waitForTimeout(1200);
+  expect(counted).toEqual([]);
+});
+
+test("on a change of mode the ring fades out before it moves: no frame shows it changing shape while visible", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/");
+  await expect(page.locator("[data-lens]")).toBeVisible();
+  await page.waitForTimeout(500);
+  const frames = await page.evaluate(
+    () =>
+      new Promise<{ box: string; opacity: number }[]>((done) => {
+        const lens = document.querySelector<HTMLElement>("[data-lens]")!;
+        const seen: { box: string; opacity: number }[] = [];
+        const start = performance.now();
+        const tick = () => {
+          seen.push({ box: `${lens.style.getPropertyValue("--x")} ${lens.style.getPropertyValue("--y")} ${lens.style.width} ${lens.style.height}`, opacity: Number(getComputedStyle(lens).opacity) });
+          if (performance.now() - start < 900) requestAnimationFrame(tick);
+          else done(seen);
+        };
+        document.querySelector<HTMLElement>("#verity-tab-refusal")!.click();
+        requestAnimationFrame(tick);
+      }),
+  );
+  const first = frames[0]!.box;
+  const moved = frames.findIndex((f) => f.box !== first);
+  expect(moved, "the ring never moved").toBeGreaterThan(0);
+  // The last frame before it moved shows it invisible: it moved unseen. (The frame of the move
+  // can already show it fading back in, when frames are far apart.)
+  expect(frames[moved - 1]!.opacity, JSON.stringify(frames.slice(0, moved + 1))).toBeLessThan(0.05);
 });

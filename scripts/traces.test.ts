@@ -88,3 +88,16 @@ test("a translation of an answer the trace no longer gives is rejected", () => {
   const partial = { [t.example_id]: { answer: (translations[t.example_id] as { answer: unknown }).answer } } as unknown as DemoTranslations;
   assert.deepEqual(translationErrors({ ...t, answer_text: answer.answer_text }, partial), [`${t.example_id}: no question translation`]);
 });
+
+test("a refusal's rationale is translated too, from the English the trace gives", () => {
+  const r = clone(refusal);
+  r.refusal_rationale += " Edited.";
+  assert.deepEqual(translationErrors(r, translations), [`${r.example_id}: the rationale translated is not the trace's rationale`]);
+  const without = { ...translations, [r.example_id]: { ...(translations[r.example_id] as object), rationale: undefined } } as unknown as DemoTranslations;
+  assert.deepEqual(translationErrors(refusal, without), [`${r.example_id}: no rationale translation`]);
+});
+
+test("the French rationale carries no internal reference", () => {
+  const t = translations[refusal.example_id] as { rationale: { fr: string } };
+  assert.doesNotMatch(t.rationale.fr, /document index|index du document/i);
+});

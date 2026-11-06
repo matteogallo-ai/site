@@ -41,7 +41,9 @@ const canonical = hasCanonical ? new URL(Astro.url.pathname, Astro.site).href : 
     <meta name="twitter:card" content="summary_large_image" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <Font cssVariable="--font-sans" preload />
-    {serif && <Font cssVariable="--font-serif" />}
+    {/* Preloaded too: the contract is on the first screen, and a late serif re-flows it after the
+        first paint (layout shift seen in CI, where no Georgia backs the metric-matched fallback). */}
+    {serif && <Font cssVariable="--font-serif" preload />}
     <Font cssVariable="--font-mono" />
   </head>
   <body>

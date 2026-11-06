@@ -39,9 +39,16 @@ textarea {
   font: inherit;
 }
 
+/* A link's underline is a quiet rule at rest and takes the full colour under the pointer. */
 a {
   color: inherit;
   text-underline-offset: 0.2em;
+  text-decoration-color: color-mix(in srgb, currentColor 40%, transparent);
+  transition: text-decoration-color var(--dur-hover) var(--ease-out);
+}
+
+a:hover {
+  text-decoration-color: currentColor;
 }
 
 :focus-visible {
@@ -93,6 +100,154 @@ a {
   top: var(--gutter);
 }
 
+/* Buttons (links styled as actions). Secondary by default; .primary in ink. Colours change
+   under any motion preference; the lift and the press only when motion is welcome. */
+.button {
+  display: inline-block;
+  padding: 0.6rem 1.1rem;
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  font-size: var(--step-16);
+  line-height: 1.4;
+  color: var(--ink);
+  background-color: transparent;
+  text-decoration: none;
+  transition:
+    background-color var(--dur-hover) var(--ease-out),
+    border-color var(--dur-hover) var(--ease-out),
+    box-shadow var(--dur-hover) var(--ease-out),
+    transform var(--dur-hover) var(--ease-out);
+}
+
+.button:hover {
+  border-color: var(--ink);
+  background-color: var(--ink-wash);
+}
+
+.button.primary {
+  border-color: var(--ink);
+  color: var(--paper);
+  background-color: var(--ink);
+}
+
+.button.primary:hover {
+  background-color: var(--ink-lifted);
+  box-shadow: 0 6px 16px -10px rgb(17 17 17 / 0.6);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .button:hover {
+    transform: translateY(-1px);
+  }
+
+  .button:active {
+    transform: scale(0.97);
+    transition-duration: var(--dur-press);
+  }
+}
+
+/* A card that one link opens as a whole (method cards, project cards): the .card-link's box is
+   stretched over the card, and the card draws that link's focus ring. A block in the card that
+   holds links of its own gets z-index 1 in its component, so those links stay clickable above
+   the stretched box. */
+.card {
+  position: relative;
+  border: 1px solid var(--rule);
+  border-radius: 14px;
+  transition:
+    border-color var(--dur-hover) var(--ease-out),
+    transform var(--dur-hover) var(--ease-out);
+}
+
+.card-link::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+}
+
+.card:hover {
+  border-color: var(--edge-hover);
+}
+
+.card:has(.card-link:focus-visible) {
+  outline: 2px solid var(--proof);
+  outline-offset: 3px;
+}
+
+.card-link:focus-visible {
+  outline: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .card:hover {
+    transform: translateY(-2px);
+  }
+
+  .card:active {
+    transform: translateY(0);
+    transition-duration: var(--dur-press);
+  }
+}
+
+/* Two options in a pill, the chosen one on an ink pill that slides between them (demo tabs, bio
+   length). The columns are equal, so the pill moves by translateX alone; data-at holds the
+   chosen index. */
+.segmented {
+  position: relative;
+  isolation: isolate;
+  display: inline-grid;
+  grid-template-columns: 1fr 1fr;
+  padding: 0.25rem;
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+}
+
+.segmented::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  top: 0.25rem;
+  bottom: 0.25rem;
+  left: 0.25rem;
+  width: calc(50% - 0.25rem);
+  border-radius: 999px;
+  background: var(--ink);
+  transition: transform var(--dur-move) var(--ease-in-out);
+}
+
+.segmented[data-at="1"]::before {
+  transform: translateX(100%);
+}
+
+.segmented > button {
+  padding: 0.4rem 0.9rem;
+  border: 0;
+  border-radius: 999px;
+  font-size: var(--step-14);
+  color: var(--graphite);
+  background: transparent;
+  cursor: pointer;
+  transition: color var(--dur-hover) var(--ease-out);
+}
+
+.segmented > button:hover {
+  color: var(--ink);
+}
+
+.segmented > button:is([aria-selected="true"], [aria-pressed="true"]) {
+  color: var(--paper);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .segmented > button:active {
+    transform: scale(0.97);
+    transition:
+      color var(--dur-hover) var(--ease-out),
+      transform var(--dur-press) var(--ease-out);
+  }
+}
+
 /* The mono subset ships one weight: bold mono would be synthesised (font-synthesis: none) or fall back. */
 .mono {
   font-family: var(--font-mono);
@@ -102,20 +257,6 @@ a {
 /* Only pages built with Base's `serif` prop load this face. */
 .serif {
   font-family: var(--font-serif);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  /* SPEC §4: everything is cut, including durations written outside the motion tokens.
-     0.01ms rather than 0 so transitionend still fires for scripts that wait on it. */
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-delay: 0s !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
-  }
 }
 
 /* Glass (SPEC §4): only the navigation, the spotlight ring and the answer card. Frosted everywhere;
@@ -158,12 +299,41 @@ a {
   border: 1px solid var(--rule);
   border-radius: 4px;
   overflow-wrap: anywhere;
-  /* display, not visibility: a hidden box would still widen the page on narrow screens. */
+  /* display, not visibility: a hidden box would still widen the page on narrow screens. The
+     display change waits for the fade (allow-discrete); engines without it show and hide at once. */
   display: none;
+  opacity: 0;
+  transform: scale(0.96);
+  transform-origin: top left;
+  transition:
+    opacity var(--dur-tip-out) var(--ease-out),
+    transform var(--dur-tip-out) var(--ease-out),
+    display var(--dur-tip-out) allow-discrete;
 }
 
+/* In after --delay-tip, so a pointer crossing the page does not flash every tooltip on its way. */
 .tip-host:is(:hover, :focus-visible):not([data-dismissed]) .tip {
   display: block;
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity var(--dur-tip-in) var(--ease-out) var(--delay-tip),
+    transform var(--dur-tip-in) var(--ease-out) var(--delay-tip),
+    display 0s allow-discrete;
+}
+
+@starting-style {
+  .tip-host:is(:hover, :focus-visible):not([data-dismissed]) .tip {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tip,
+  .tip-host:is(:hover, :focus-visible):not([data-dismissed]) .tip {
+    transform: none;
+  }
 }
 
 /* A figure counting up (src/scripts/count.ts): its own text stays in place and keeps the line's
@@ -182,24 +352,28 @@ a {
   -webkit-text-fill-color: currentColor;
 }
 
-/* Sections come into place as they scroll into view, where the engine ties animations to the
-   scroll; elsewhere, and under reduced motion, they are simply there. */
-@media (prefers-reduced-motion: no-preference) {
-  @supports (animation-timeline: view()) {
-    /* The timeline goes through a variable: the minifier otherwise folds it into an animation
-       shorthand ("animation: linear both reveal view()") that Chromium rejects whole. */
-    .reveal {
-      --reveal-timeline: view();
-      animation: reveal linear both;
-      animation-timeline: var(--reveal-timeline);
-      animation-range: entry 0% entry 30%;
-    }
-  }
+/* Sections come into place once as they scroll into view (src/scripts/reveal.ts): their children
+   rise 12 px and fade in, one after the other, 60 ms apart (the fourth and later together). The
+   script sets data-reveal only when motion is welcome. */
+:root[data-reveal] .reveal > * {
+  transition:
+    opacity var(--dur-reveal) var(--ease-out),
+    transform var(--dur-reveal) var(--ease-out);
 }
 
-@keyframes reveal {
-  from {
-    opacity: 0;
-    translate: 0 1.5rem;
-  }
+:root[data-reveal] .reveal:not([data-shown]) > * {
+  opacity: 0;
+  transform: translateY(12px);
+}
+
+:root[data-reveal] .reveal > :nth-child(2) {
+  transition-delay: 60ms;
+}
+
+:root[data-reveal] .reveal > :nth-child(3) {
+  transition-delay: 120ms;
+}
+
+:root[data-reveal] .reveal > :nth-child(n + 4) {
+  transition-delay: 180ms;
 }

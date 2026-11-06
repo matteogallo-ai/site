@@ -37,7 +37,9 @@ scripts/check-rulesets.ts  go-live check that an active ruleset requires a pull 
                          GitHub's own resolution of the rules on the branch (decision in rulesets-lib.ts)
 scripts/og.ts            draws public/og.png (1200x630) with the site's fonts and tokens through Playwright;
                          src/data/og.json pins the hash of its inputs and of the PNG (og.test.ts)
-src/scripts/             client code of the demo: lens.ts (geometry), typing.ts (answer writing), verity-demo.ts (DOM)
+src/scripts/             client code: the demo's lens.ts (geometry), typing.ts (answer writing), verity-demo.ts (DOM);
+                         count.ts (band counters), reveal.ts (sections in once), spy.ts (nav section in view),
+                         copy.ts (e-mail copy), resize.ts (height follows content), tips.ts (Escape on tooltips)
 src/data/media.json      project images with their source; scripts/media-frame.ts re-derives the recording stills,
                          scripts/media/pdf_page.py (PyMuPDF, hash-pinned; venv .venv-media) the Praxis page
 astro.config.mjs         site origin, self-hosted fonts, the no-placeholder check on every built page
@@ -60,7 +62,9 @@ tests/                   Playwright on every built page: axe (light + dark), key
                          no number outside a measure, a link or code; brief, lead sentences, jargon list,
                          folded tables as cards at 375 px;
                          seo.spec.ts: sitemap = built pages at their canonical URLs, robots, Open Graph on every
-                         page, OG headline = home headline, the 404, the Colophon's figures = their sources
+                         page, OG headline = home headline, the 404, the Colophon's figures = their sources;
+                         states.spec.ts: hover, focus, transitions and cursor of every interactive element (home,
+                         case studies), project cards opening their case study, the measures fold
 scripts/site-measures*   Lighthouse CI output -> site-measures.json (weight, scores, date, commit)
 scripts/built-pages.ts   list of built HTML pages, shared by the axe tests, seo.spec.ts, site-measures and the link check
 scripts/check-links.ts   runs linkinator with every built page as an entry point: from the home page

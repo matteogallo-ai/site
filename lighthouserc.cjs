@@ -28,7 +28,7 @@ module.exports = {
         "categories:best-practices": ["error", { minScore: 0.98, aggregationMethod: "median-run" }],
         "categories:seo": ["error", { minScore: 0.98, aggregationMethod: "median-run" }],
         "largest-contentful-paint": ["error", { maxNumericValue: 1499, aggregationMethod: "median-run" }],
-        "cumulative-layout-shift": ["error", { maxNumericValue: 0.049, aggregationMethod: "median-run" }],
+        "cumulative-layout-shift": ["error", { maxNumericValue: 0.019, aggregationMethod: "median-run" }],
         // Counts every request made during the run; a lazy project image the run did not load is
         // added by `npm run measures` at its heaviest variant, which fails over this budget.
         "resource-summary:total:size": ["error", { maxNumericValue: TRANSFER_BUDGET_BYTES, aggregationMethod: "median-run" }],

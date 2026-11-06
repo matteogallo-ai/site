@@ -122,16 +122,18 @@ export interface Translation {
   fr: string;
 }
 
-export type DemoTranslations = Record<string, { question: Translation; answer: Translation } | string>;
+export type DemoTranslations = Record<string, { question: Translation; answer: Translation; rationale?: Translation } | string>;
 
 /** Why a trace's French lines would not translate what the trace says (empty when they do). */
 export function translationErrors(trace: DemoTrace, translations: DemoTranslations): string[] {
   const entry = translations[trace.example_id];
   if (typeof entry !== "object") return [`${trace.example_id}: no translation`];
-  return (["question", "answer"] as const).flatMap((field) => {
+  // A refusal shows why it refused: that explanation is translated as well.
+  const fields = trace.refused ? (["question", "answer", "rationale"] as const) : (["question", "answer"] as const);
+  return fields.flatMap((field) => {
     const t = entry[field];
     if (typeof t?.en !== "string" || typeof t.fr !== "string") return [`${trace.example_id}: no ${field} translation`];
-    const said = field === "question" ? trace.question : trace.answer_text;
+    const said = { question: trace.question, answer: trace.answer_text, rationale: trace.refusal_rationale }[field];
     if (t.en !== said) return [`${trace.example_id}: the ${field} translated is not the trace's ${field}`];
     return t.fr.trim() === "" ? [`${trace.example_id}: empty ${field} translation`] : [];
   });

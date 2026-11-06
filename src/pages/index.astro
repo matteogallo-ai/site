@@ -20,6 +20,7 @@ const repo = (name: string) => `https://github.com/matteogallo-ai/${name}`;
       <li><a href="#projets">Projets</a></li>
       <li><a href="#methode">Méthode</a></li>
       <li><a href="#a-propos">À propos</a></li>
+      <li class="spy" data-spy-dot hidden aria-hidden="true"></li>
     </ul>
   </nav>
 
@@ -68,20 +69,20 @@ const repo = (name: string) => `https://github.com/matteogallo-ai/${name}`;
     <p class="mono rule-label">+ 02</p>
     <h2 id="methode-title">Méthode</h2>
     <ul class="rules">
-      <li>
+      <li class="card">
         <h3>Revue humaine <span class="word">pré-enregistrée</span>, publiée telle quelle</h3>
         <p>Échantillon tiré avec une graine fixe, commité avant toute annotation : <Figure id="promptlang.linter_precision_reviewed" where="method" defect /> signalements jugés justes, publié avec sa limite.</p>
-        <p class="links"><a href="https://github.com/matteogallo-ai/promptlang/pull/39">PR promptlang#39</a></p>
+        <p class="links"><a class="card-link" href="https://github.com/matteogallo-ai/promptlang/pull/39">PR promptlang#39</a></p>
       </li>
-      <li>
+      <li class="card">
         <h3>Lire les vraies sorties, pas seulement les tests</h3>
         <p>Ma relecture d’un briefing Praxis a trouvé des estimations présentées comme des faits. Validateur corrigé, relecture publiée.</p>
-        <p class="links"><a href="https://github.com/matteogallo-ai/praxis/pull/47">PR praxis#47</a></p>
+        <p class="links"><a class="card-link" href="https://github.com/matteogallo-ai/praxis/pull/47">PR praxis#47</a></p>
       </li>
-      <li>
+      <li class="card">
         <h3>Audit à froid, chaque constat suivi par écrit</h3>
         <p>Un agent sans contexte a audité PromptLang : <Figure id="promptlang.audit_findings" where="method" /> constats, chacun corrigé, réfuté ou laissé ouvert.</p>
-        <p class="links"><a href="https://github.com/matteogallo-ai/promptlang/pull/32">PR promptlang#32</a></p>
+        <p class="links"><a class="card-link" href="https://github.com/matteogallo-ai/promptlang/pull/32">PR promptlang#32</a></p>
       </li>
     </ul>
     <p><a href={repo("how-i-build")}>Toutes les règles et leurs incidents : how-i-build</a></p>
@@ -95,8 +96,13 @@ const repo = (name: string) => `https://github.com/matteogallo-ai/${name}`;
     </div>
     <div class="contact" id="contact">
       <h2>Un poste d’ingénieur logiciel et IA en Suisse romande ? Écrivez-moi.</h2>
-      <p class="email"><a href="mailto:matteogallo.office@gmail.com">matteogallo.office@gmail.com</a></p>
+      <p class="email">
+        <a class="address" href="mailto:matteogallo.office@gmail.com" data-copy>matteogallo.office@gmail.com</a>
+        <span class="copied" id="copy-status" role="status"></span>
+      </p>
+      <p class="hint" id="copy-hint" data-copy-hint hidden>Cliquez sur l’adresse pour la copier.</p>
       <p class="actions">
+        <a class="button primary" href="mailto:matteogallo.office@gmail.com">Écrire</a>
         <a class="button" href="https://www.linkedin.com/in/matteogallo-ai">LinkedIn</a>
         <a class="button" href="https://github.com/matteogallo-ai">GitHub</a>
       </p>
@@ -105,6 +111,19 @@ const repo = (name: string) => `https://github.com/matteogallo-ai/${name}`;
 
   <script>
     import { countOnSight } from "../scripts/count.ts";
+    import { spyOn } from "../scripts/spy.ts";
+    import { copyOnClick } from "../scripts/copy.ts";
+    import { revealOnSight } from "../scripts/reveal.ts";
+    revealOnSight(document.querySelectorAll<HTMLElement>(".reveal"));
+    const nav = document.querySelector<HTMLElement>(".nav");
+    if (nav) spyOn(nav);
+    // The address copies itself on click; without this script it stays a mailto link.
+    const address = document.querySelector<HTMLAnchorElement>("a[data-copy]");
+    const status = document.getElementById("copy-status");
+    if (address && status && navigator.clipboard) {
+      copyOnClick(address, status);
+      document.querySelector<HTMLElement>("[data-copy-hint]")?.removeAttribute("hidden");
+    }
     // The band's three figures count up once, as they come into view (SPEC §4).
     countOnSight(document.querySelectorAll<HTMLElement>(".band .value"));
   </script>
@@ -140,12 +159,44 @@ const repo = (name: string) => `https://github.com/matteogallo-ai/${name}`;
     pointer-events: auto;
   }
 
+  .nav ul {
+    position: relative;
+  }
+
+  /* The underline draws itself from the left on hover; it stays drawn on the section in view. */
   .nav a {
+    position: relative;
     text-decoration: none;
   }
 
-  .nav a:hover {
-    text-decoration: underline;
+  .nav a::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -0.1rem;
+    height: 1px;
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform var(--dur-move) var(--ease-out);
+  }
+
+  .nav a:hover::after {
+    transform: scaleX(1);
+  }
+
+  /* The dot under the link of the section in view (src/scripts/spy.ts): it travels by
+     translateX from the list's left edge, so only its transform moves. */
+  .spy {
+    position: absolute;
+    left: -2px;
+    bottom: 0.2rem;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--proof);
+    transition: transform var(--dur-move) var(--ease-in-out);
   }
 
   .hero {
@@ -251,20 +302,6 @@ const repo = (name: string) => `https://github.com/matteogallo-ai/${name}`;
     margin: 1.75rem 0 0;
   }
 
-  .button {
-    display: inline-block;
-    padding: 0.6rem 1.1rem;
-    border-radius: 999px;
-    border: 1px solid var(--ink);
-    text-decoration: none;
-    font-size: var(--step-16);
-  }
-
-  .button.primary {
-    background: var(--ink);
-    color: var(--paper);
-  }
-
   .band {
     display: grid;
     gap: var(--gutter);
@@ -329,8 +366,12 @@ const repo = (name: string) => `https://github.com/matteogallo-ai/${name}`;
     display: flex;
     flex-direction: column;
     padding: 1.25rem;
-    border: 1px solid var(--rule);
-    border-radius: 14px;
+  }
+
+  /* The paragraph holding a figure sits above the stretched PR link (.card, global.css), so the
+     figure keeps its own link and proof tooltip. */
+  .rules li > p:has(> :global(.figure)) {
+    z-index: 1;
   }
 
   .rules h3 {
@@ -375,12 +416,46 @@ const repo = (name: string) => `https://github.com/matteogallo-ai/${name}`;
   }
 
   .email {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.25rem 0.75rem;
+    margin: 1rem 0 0;
+  }
+
+  /* The address, a link or (with the script) a button that copies it. */
+  .address {
+    padding: 0;
+    border: 0;
     font-size: var(--step-28);
     font-weight: 600;
     letter-spacing: -0.01em;
-    margin: 1rem 0 0;
+    text-align: left;
+    color: var(--ink);
+    background: none;
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.2em;
+    text-decoration-color: var(--rule);
+    cursor: pointer;
     /* The address is one unbroken word, wider than a 375 px screen at this size. */
     overflow-wrap: anywhere;
+    transition: text-decoration-color var(--dur-hover) var(--ease-out);
+  }
+
+  .address:hover {
+    text-decoration-color: var(--ink);
+  }
+
+  .copied {
+    font-size: var(--step-14);
+    color: var(--proof-text);
+  }
+
+  .hint {
+    margin: 0.25rem 0 0;
+    font-size: var(--step-14);
+    color: var(--graphite);
   }
 
   .footer {

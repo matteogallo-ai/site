@@ -1,6 +1,6 @@
 {
   "schema": "site.demo-translations/v1",
-  "note": "French translations shown under the demo's English question and answer. Each keeps the English it translates: the build and scripts/traces.test.ts fail if a trace no longer says it.",
+  "note": "French translations shown under the demo's English question and answer, and for a refusal its rationale (internal references such as a document index are left out of the French). Each keeps the English it translates: the build and scripts/traces.test.ts fail if a trace no longer says it.",
   "q-010": {
     "question": {
       "en": "What is the response time for a Priority 1 support request?",
@@ -19,6 +19,10 @@
     "answer": {
       "en": "I don't know based on the provided documents.",
       "fr": "Je ne sais pas, d’après les documents fournis."
+    },
+    "rationale": {
+      "en": "The SLA section (document index 0) explicitly lists only Priority 1, 2, and 3; no Priority 4 tier exists in any evidence, so the answer correctly refuses to fabricate a response time.",
+      "fr": "La section SLA ne prévoit explicitement que les priorités 1, 2 et 3 ; aucune priorité 4 n’apparaît dans les preuves, donc la réponse refuse à juste titre d’inventer un délai de réponse."
     }
   }
 }

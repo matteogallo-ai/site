@@ -10,12 +10,13 @@ for (const path of builtPages()) {
     test(`axe: ${path} (${colorScheme}, ${width} px)`, async ({ page }) => {
       await page.setViewportSize({ width, height: 800 });
       // Reduced motion shows the final state: sections that come in on scroll would otherwise wait
-      // at opacity 0 below the screen, and axe skips what it cannot see.
+      // at opacity 0 below the screen, and axe skips what it cannot see. Elements not rendered
+      // (closed tooltips) or invisible (the demo card that is off) are hidden from everyone.
       await page.emulateMedia({ colorScheme, reducedMotion: "reduce" });
       await page.goto(path);
       // axe skips hidden content: folded sections are opened so what they hold is checked too.
       await page.locator("details").evaluateAll((all) => all.forEach((d) => ((d as HTMLDetailsElement).open = true)));
-      const unseen = await page.evaluate(() => [...document.querySelectorAll("body *")].filter((e) => Number(getComputedStyle(e).opacity) < 1).map((e) => e.id || e.getAttribute("class")));
+      const unseen = await page.evaluate(() => [...document.querySelectorAll("body *")].filter((e) => e.getClientRects().length > 0 && getComputedStyle(e).visibility !== "hidden" && Number(getComputedStyle(e).opacity) < 1).map((e) => e.id || e.getAttribute("class")));
       expect(unseen, "elements axe would skip as invisible").toEqual([]);
       const { violations } = await new AxeBuilder({ page }).withTags(WCAG_TAGS).analyze();
       expect(violations.map((v) => `${v.id}: ${v.nodes.map((n) => n.target.join(" ")).join(", ")}`)).toEqual([]);

@@ -96,8 +96,12 @@ export function mountVerityDemo(root: HTMLElement): void {
     const target = unionBox(targetBoxes(doc, root.dataset["mode"] as Mode, sheet));
     if (!target) return;
     const box = lensLayout(target, width);
-    Object.assign(lens.style, { left: `${box.left}px`, top: `${box.top}px`, width: `${box.width}px`, height: `${box.height}px` });
-    Object.assign(tag.style, { left: `${Math.min(box.left + box.width, width)}px`, top: `${box.top}px` });
+    // Placed by transform (CSS reads --x and --y): moving them then never counts as a layout shift.
+    lens.style.setProperty("--x", `${box.left}px`);
+    lens.style.setProperty("--y", `${box.top}px`);
+    Object.assign(lens.style, { width: `${box.width}px`, height: `${box.height}px` });
+    tag.style.setProperty("--x", `${Math.min(box.left + box.width, width)}px`);
+    tag.style.setProperty("--y", `${box.top}px`);
     lens.hidden = false;
     tag.hidden = false;
     // The target's centre goes to --target-at of the window's height (the middle of the part
@@ -118,21 +122,42 @@ export function mountVerityDemo(root: HTMLElement): void {
     if (panel) stopWriting = writeOut(panel);
   };
 
+  const tablist = root.querySelector<HTMLElement>('[role="tablist"]');
+  // The ring fades out; once it is invisible the contract changes mode (its margins move the
+  // text), the window scrolls and the ring fades in on the new passage. It never slides or
+  // changes shape in view. Under reduced motion all of it happens at once.
+  let away = 0;
+  const hop = (mode: string) => {
+    clearTimeout(away);
+    if (still.matches) {
+      root.dataset["mode"] = mode;
+      return place();
+    }
+    root.dataset["away"] = "";
+    away = window.setTimeout(() => {
+      root.dataset["mode"] = mode;
+      place("smooth");
+      delete root.dataset["away"];
+    }, Number.parseFloat(getComputedStyle(lens).transitionDuration) * 1000);
+  };
+
   const select = (tab: HTMLButtonElement, focus: boolean) => {
     for (const t of tabs) {
       const on = t === tab;
       t.setAttribute("aria-selected", String(on));
       t.tabIndex = on ? 0 : -1;
       const panel = panelOf(t);
-      if (panel) panel.hidden = !on;
+      // Both cards stay in the layout (they share a grid cell); the one that is off is invisible.
+      if (panel) panel.toggleAttribute("data-off", !on);
     }
-    if (root.dataset["mode"] !== tab.dataset["mode"]) {
-      root.dataset["switched"] = "";
-      write(panelOf(tab));
-    }
-    root.dataset["mode"] = tab.dataset["mode"];
+    if (tablist) tablist.dataset["at"] = String(tabs.indexOf(tab));
+    const mode = tab.dataset["mode"] ?? "answer";
+    const changed = (root.dataset["next"] ?? root.dataset["mode"]) !== mode;
+    root.dataset["next"] = mode;
+    if (changed) write(panelOf(tab));
     if (focus) tab.focus();
-    place(still.matches ? "instant" : "smooth");
+    if (changed) hop(mode);
+    else place();
   };
 
   for (const tab of tabs) {
@@ -148,11 +173,16 @@ export function mountVerityDemo(root: HTMLElement): void {
   }
 
   // Layout changes with the width, the zoom and the web fonts: the lens follows each one.
-  const observer = new ResizeObserver(() => place());
+  // Not while the ring is away: it is placed once the contract has changed mode.
+  const observer = new ResizeObserver(() => {
+    if (!("away" in root.dataset)) place();
+  });
   observer.observe(sheet);
   // A web font swap can move the words without resizing the sheet.
   observer.observe(doc);
-  document.fonts.addEventListener("loadingdone", () => place());
+  document.fonts.addEventListener("loadingdone", () => {
+    if (!("away" in root.dataset)) place();
+  });
   // A card already on screen at load is simply there (no flash, no late paint); one further
   // down writes itself as soon as its answer starts to enter the view, before it can be read.
   const first = panelOf(tabs[0]!);
