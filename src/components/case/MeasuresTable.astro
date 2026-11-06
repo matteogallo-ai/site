@@ -35,7 +35,7 @@ interface Props {
 const lang = langOf(Astro.url.pathname);
 const t = {
   fr: { value: "Valeur", measure: "Mesure", ci: "IC 95\u00A0%", reading: "Lecture" },
-  en: { value: "Value", measure: "Measure", ci: "95% CI", reading: "Reading" },
+  en: { value: "Value", measure: "Metric", ci: "95% CI", reading: "Reading" },
 }[lang];
 const { where, caption, ours = t.value, baseline, rows } = Astro.props;
 
@@ -57,12 +57,12 @@ const cells = rows.map((r) => {
 <table role="table" aria-labelledby={`${where}-caption`}>
   <thead role="rowgroup">
     <tr role="row">
-      <th scope="col" role="columnheader">{t.measure}</th>
-      <th scope="col" role="columnheader">{ours}</th>
-      <th scope="col" role="columnheader" class="ci-level">{t.ci}</th>
-      {baseline && <th scope="col" role="columnheader">{baseline}</th>}
-      {baseline && <th scope="col" role="columnheader" class="ci-level">{t.ci}</th>}
-      <th scope="col" role="columnheader">{t.reading}</th>
+      <th scope="col" role="columnheader" class="c-measure">{t.measure}</th>
+      <th scope="col" role="columnheader" class="c-value">{ours}</th>
+      <th scope="col" role="columnheader" class="ci-level c-ci">{t.ci}</th>
+      {baseline && <th scope="col" role="columnheader" class="c-value">{baseline}</th>}
+      {baseline && <th scope="col" role="columnheader" class="ci-level c-ci">{t.ci}</th>}
+      <th scope="col" role="columnheader" class="c-reading">{t.reading}</th>
     </tr>
   </thead>
   <tbody role="rowgroup">
@@ -108,6 +108,26 @@ const cells = rows.map((r) => {
     margin-top: 0.75rem;
     border-collapse: collapse;
     font-size: var(--step-14);
+  }
+
+  /* Wide screens: set column widths (fixed layout), so the interval columns stay narrow and the
+     reading column takes the rest. */
+  @media (min-width: 48rem) {
+    table {
+      table-layout: fixed;
+    }
+
+    .c-measure {
+      width: 26%;
+    }
+
+    .c-value {
+      width: 6.5rem;
+    }
+
+    .c-ci {
+      width: 8.5rem;
+    }
   }
 
   th,

@@ -113,17 +113,33 @@ test("under reduced motion the answer is shown whole at once", async ({ page }) 
 
 const glassOf = (page: Page) =>
   page.evaluate(() => ({
-    nav: getComputedStyle(document.querySelector("nav ul")!).backdropFilter,
+    nav: getComputedStyle(document.querySelector(".pill")!).backdropFilter,
     card: getComputedStyle(document.querySelector("#verity-panel-answer")!).backdropFilter,
     lens: getComputedStyle(document.querySelector("[data-lens] .ring")!).backdropFilter,
     fill: getComputedStyle(document.querySelector("#verity-panel-answer")!).backgroundColor,
+    navFill: getComputedStyle(document.querySelector(".pill")!).backgroundColor,
   }));
+
+/** The alpha of a computed rgb()/rgba() colour. */
+const alpha = (colour: string) => Number(/rgba?\([^)]*?,\s*([\d.]+)\)$/.exec(colour)?.[1] ?? (colour.startsWith("rgb(") ? 1 : 0));
+
+// The navigation floats over headings, images and code as the page scrolls: text under it must not
+// read through. It is far more opaque and more blurred than the spotlight ring and the answer card.
+for (const colorScheme of ["light", "dark"] as const) {
+  test(`glass: the navigation hides what scrolls under it (${colorScheme})`, async ({ page }) => {
+    await page.emulateMedia({ colorScheme });
+    await page.goto("/");
+    const glass = await glassOf(page);
+    expect(alpha(glass.navFill)).toBeGreaterThanOrEqual(0.9);
+    expect(glass.nav).toContain("blur(24px)");
+  });
+}
 
 test("glass: refracted in Chromium", async ({ page }) => {
   await page.goto("/");
   await expect(page.locator("html")).toHaveAttribute("data-refraction", "");
   const glass = await glassOf(page);
-  expect(glass.nav).toBe('url("#glass-refraction") blur(14px)');
+  expect(glass.nav).toBe('url("#glass-refraction") blur(24px)');
   expect(glass.card).toBe('url("#glass-refraction") blur(14px)');
   expect(glass.lens).toBe('url("#glass-refraction") blur(14px)');
 });
@@ -134,7 +150,7 @@ test("glass: frosted, without refraction, where the engine cannot refract", asyn
   await page.goto("/");
   await expect(page.locator("html")).not.toHaveAttribute("data-refraction");
   const glass = await glassOf(page);
-  expect(glass.nav).toBe("blur(14px)");
+  expect(glass.nav).toBe("blur(24px)");
   expect(glass.card).toBe("blur(14px)");
   expect(glass.lens).toBe("blur(14px)");
 });
@@ -183,27 +199,31 @@ test("an answer below the fold at load writes itself even when the page scrolls 
   await expect(page.locator("#verity-panel-answer")).toHaveAttribute("data-written", "", { timeout: 3000 });
 });
 
-test("the band's figures count up as they come into view, over their real value kept in the page", async ({ page }) => {
+test("the band's figures come into view once, and never show another value than their own", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 800 });
   await page.goto("/");
-  const value = page.locator(".band .value").nth(1);
-  const final = (await value.evaluate((v) => v.firstChild!.textContent))!;
-  await value.scrollIntoViewIfNeeded();
-  await expect(value).toHaveAttribute("data-counting", "");
-  // While it counts: the figure keeps its value for assistive tech; only the aria-hidden copy moves.
-  const during = await value.evaluate((v) => ({ own: v.firstChild!.textContent, layer: v.querySelector(".count-layer")?.getAttribute("aria-hidden") }));
-  expect(during).toEqual({ own: final, layer: "true" });
-  await expect(value).not.toHaveAttribute("data-counting", { timeout: 2000 });
-  await expect(value).toHaveText(final);
+  const finals = await page.locator(".band .value").allTextContents();
+  // Every text the band shows while it comes in: a screenshot at any moment must read a true figure.
+  await page.evaluate(() => {
+    const seen: string[] = [];
+    (window as unknown as { bandTexts: string[] }).bandTexts = seen;
+    const band = document.querySelector(".band")!;
+    new MutationObserver(() => seen.push(...[...band.querySelectorAll(".value")].map((v) => (v as HTMLElement).innerText))).observe(band, { subtree: true, childList: true, characterData: true, attributes: true });
+  });
+  await page.locator(".band").scrollIntoViewIfNeeded();
+  await expect.poll(() => page.locator(".band > *").first().evaluate((c) => getComputedStyle(c).opacity)).toBe("1");
+  await page.waitForTimeout(900);
+  const texts = await page.evaluate(() => (window as unknown as { bandTexts: string[] }).bandTexts);
+  expect(texts.filter((t) => !finals.includes(t))).toEqual([]);
+  await expect(page.locator(".band .count-layer")).toHaveCount(0);
 });
 
-test("under reduced motion the figures do not count and the sections do not move", async ({ page }) => {
+test("under reduced motion the sections do not move", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.setViewportSize({ width: 1440, height: 800 });
   await page.goto("/");
   await page.locator(".band").scrollIntoViewIfNeeded();
   await page.waitForTimeout(300);
-  expect(await page.locator(".band [data-counting], .count-layer").count()).toBe(0);
   // Sections below the screen are not held back: their children are in place before any scroll.
   const held = await page.evaluate(() =>
     [...document.querySelectorAll(".reveal > *")].filter((c) => getComputedStyle(c).opacity !== "1" || getComputedStyle(c).transform !== "none").length,
@@ -217,7 +237,7 @@ test("each section comes into place once, its children one after the other, and 
   const ids = ["projets", "methode", "a-propos"];
   const children = (id: string) =>
     page.locator(`#${id}`).evaluate((s) =>
-      [...s.children].map((c) => ({ opacity: getComputedStyle(c).opacity, transform: getComputedStyle(c).transform, delay: getComputedStyle(c).transitionDelay.split(",")[0] })),
+      [...s.children].filter((c) => c.tagName !== "SCRIPT").map((c) => ({ opacity: getComputedStyle(c).opacity, transform: getComputedStyle(c).transform, delay: getComputedStyle(c).transitionDelay.split(",")[0] })),
     );
   // At load all three are below the screen: their children wait, transparent and lower, with
   // delays 60 ms apart (at most 180 ms).
@@ -233,21 +253,6 @@ test("each section comes into place once, its children one after the other, and 
   await page.evaluate(() => scrollTo(0, 0));
   await page.waitForTimeout(200);
   for (const id of ids) expect((await children(id)).every((c) => c.opacity === "1")).toBe(true);
-});
-
-test("figures already on screen at load do not count: nothing above the fold moves but the answer", async ({ page }) => {
-  await page.setViewportSize({ width: 1440, height: 1400 });
-  const counted: string[] = [];
-  await page.exposeFunction("sawCounting", (v: string) => counted.push(v));
-  await page.addInitScript(() => {
-    new MutationObserver((records) => {
-      for (const r of records) if (r.attributeName === "data-counting") (window as unknown as { sawCounting: (v: string) => void }).sawCounting((r.target as Element).textContent ?? "");
-    }).observe(document, { attributes: true, subtree: true });
-  });
-  await page.goto("/");
-  await expect(page.locator(".band")).toBeInViewport();
-  await page.waitForTimeout(1200);
-  expect(counted).toEqual([]);
 });
 
 test("on a change of mode the ring fades out before it moves: no frame shows it changing shape while visible", async ({ page }) => {

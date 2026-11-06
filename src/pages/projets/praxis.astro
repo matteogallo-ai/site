@@ -19,6 +19,7 @@ const at = (path: string) => pinned("praxis", path);
   description="Étude de cas de Praxis, briefings d’analyse écrits par IA avec sources contrôlées : problème, architecture, mesures, défauts, décisions."
 >
   <Brief
+    slot="brief"
     does="À partir d’une question business, il cherche sur le web, vérifie en code que chaque fait a une source acceptable, puis rédige une note d’analyse qui dit elle-même ce qu’elle n’a pas pu sourcer."
     measured="Combien d’exécutions réelles, payées, aboutissent à une note, ce que coûte une note, et combien de notes passent le contrôle des sources."
     defect="Aucune note réelle ne passe le contrôle des sources. Ce que j’en ai fait : la note est livrée quand même, avec une section écrite par le code qui liste chaque élément non sourcé ; le défaut est publié, pas caché."
@@ -52,6 +53,7 @@ const at = (path: string) => pinned("praxis", path);
         { title: "Livré, sourcé", lines: ["tous les éléments", "ont une source"], tone: "proof" },
         { title: "Livré, signalé", lines: ["une section liste", "chaque élément", "sans source"], tone: "defect" },
       ]}
+      desc="Praxis cadre d’abord ce que couvre la question et le format attendu. Une recherche web rassemble faits, acteurs, risques et options, chacun avec sa source. Un contrôle écrit en code écarte une source absente, un site peu fiable, une page trop ancienne ou un doublon. Un modèle rédige ensuite chaque section, puis un autre cherche la faille et peut relancer la rédaction une fois au plus. Le fichier est livré en Markdown, PDF et Word. Il est sourcé quand tous les éléments ont une source ; sinon il est signalé : une section liste chaque élément sans source."
       caption="Chaque étape appelle un modèle d’Anthropic, sauf le contrôle des sources, qui est du code. En ligne de commande et dans le banc d’essai, une note qui ne passe pas ce contrôle est livrée avec une section qui liste ce qu’elle n’a pas pu sourcer ; l’exécution s’arrête si aucun fait de la recherche n’a de source."
     />
     <p>
@@ -167,8 +169,7 @@ const at = (path: string) => pinned("praxis", path);
   <CaseSection n={6} id="construction" title="Comment c’est construit" lead="Pour un lecteur technique : la pile, les modèles utilisés et les outils de test.">
     <p>
       TypeScript sur Bun. L’interface de programmation (API) Messages d’Anthropic, avec son outil de recherche web : <code>claude-opus-5-5</code> pour le cadrage, les options et la relecture contradictoire, <code>claude-sonnet-5-5</code> pour
-      la recherche, les acteurs, les risques et la rédaction. <code>@promptlang/core</code> depuis npm, épinglé par son empreinte ; pdfkit pour le PDF, le fichier Word écrit à la main. Tests
-      <code>bun test</code>, fast-check, Stryker. Architecture : <a href={at("docs/architecture.md")}>docs/architecture.md</a>.
+      la recherche, les acteurs, les risques et la rédaction. <code>@promptlang/core</code> depuis npm, épinglé par son empreinte ; pdfkit pour le PDF, le fichier Word écrit à la main. Tests <code>bun test</code>, fast-check, Stryker. Architecture : <a href={at("docs/architecture.md")}>docs/architecture.md</a>.
     </p>
   </CaseSection>
 

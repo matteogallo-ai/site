@@ -19,6 +19,7 @@
     "fonts": ".venv/bin/python scripts/fonts/subset.py",
     "check:sources": "node --experimental-strip-types scripts/check-sources.ts",
     "og": "node --experimental-strip-types scripts/og.ts",
+    "icons": "node --experimental-strip-types scripts/icons.ts",
     "check:rulesets": "node --experimental-strip-types scripts/check-rulesets.ts"
   },
   "dependencies": {

@@ -12,16 +12,18 @@ const codes = { fr: "FR", en: "EN" } as const;
 ---
 
 <span class="langs" role="group" aria-label={lang === "fr" ? "Langue" : "Language"}>
-  {lang === "fr" && <span class="current">{codes.fr}</span>}
+  {lang === "fr" && <span class="current" aria-current="true">{codes.fr}</span>}
   {lang === "en" && <a href={href} hreflang="fr" lang="fr">{codes.fr}</a>}
   <span aria-hidden="true">|</span>
-  {lang === "en" && <span class="current">{codes.en}</span>}
+  {lang === "en" && <span class="current" aria-current="true">{codes.en}</span>}
   {lang === "fr" && <a href={href} hreflang="en" lang="en">{codes.en}</a>}
 </span>
 
 <style>
   .langs {
     display: inline-flex;
+    /* The link is a taller box (a touch target) than the current code and the bar: one line. */
+    align-items: center;
     gap: 0.4em;
     font-size: var(--step-14);
     color: var(--graphite);

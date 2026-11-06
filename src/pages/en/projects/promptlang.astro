@@ -17,15 +17,16 @@ const pr = (n: number) => pull("promptlang", n);
   name="PromptLang"
   repo="promptlang"
   summary="A language for writing the instructions given to AI models (prompts) as code: typed, compiled to TypeScript or Python, versioned."
-  description="Case study of PromptLang, a language for writing prompts as code: problem, architecture, measures against a point of comparison, defects, decisions."
+  description="Case study of PromptLang, a language for writing prompts as code: problem, architecture, results against a reference point, defects, decisions."
 >
   <Brief
+    slot="brief"
     does="It turns a prompt into a checked file, compiled to TypeScript or Python code, and flags when a new version breaks the code of those who use it."
     measured="How solid the tests of the language reader and of the version check are, and how often an automatic reviewer, the AI linter, is right when it points at writing defects in prompts."
-    defect="Most of the AI linter’s flags are wrong, barely better than flagging everything. What I did about it: I measured it against that point of comparison, published it, and the linter is presented as an aid to the human reviewer, not as a check."
+    defect="Most of the AI linter’s flags are wrong, barely better than flagging everything. What I did about it: I measured it against that reference point, published it, and the linter is presented as an aid to the human reviewer, not as a check."
     figures={[
       { id: "promptlang.mutation_score", caption: "of the errors deliberately introduced into the language reader and the version check, caught by the tests" },
-      { id: "promptlang.linter_recall", caption: "designed defects found by the AI linter; flagging everything finds them all" },
+      { id: "promptlang.linter_recall", caption: "designed defects found by the AI linter; a linter that flags everything finds them all" },
       { id: "promptlang.linter_precision_reviewed", caption: "AI linter flags judged correct in human review", defect: true },
     ]}
   />
@@ -50,20 +51,20 @@ const pr = (n: number) => pull("promptlang", n);
         { title: "Versions", lines: ["does it", "break the", "caller?"] },
         { title: "Review", lines: ["defects", "in the", "prompt text"] },
       ]}
+      desc="A .prompt file declares typed parameters, an output and a target model. It is read: cut into the language’s words, then into a syntax tree. Three independent uses follow: generating typed code in TypeScript and Python, checking whether a new version breaks the calling code, and reviewing the prompt’s text for defects."
       caption="The file once read serves three independent uses. The generated code checks every model response against the declared output type; the version check compares the prompt with its previous version; the review flags writing defects."
     />
     <p>
       A <code>.prompt</code> file declares what the prompt receives, what it must return and the model it targets. The compiler derives a typed function from it. The version check compares this contract
-      with the previous version in Git and refuses a change that breaks the calling code without a major version number. The AI linter reads the prompt’s text before the human review. The
-      <code>@promptlang/core</code> package is published on npm, the JavaScript package registry, and Praxis uses it to read its own prompts.
+      with the previous version in Git and refuses a change that breaks the calling code without a major version number. The AI linter reads the prompt’s text before the human review. The <code>@promptlang/core</code> package is published on npm, the JavaScript package registry, and Praxis uses it to read its own prompts.
     </p>
   </CaseSection>
 
   <CaseSection
     n={3}
     id="mesures"
-    title="Measures"
-    lead="What the tests and the AI linter are worth, measured against a very simple point of comparison: flagging everything."
+    title="Results"
+    lead="What the tests and the AI linter are worth, measured against a very simple reference point: flagging everything."
   >
     <p>
       To measure the tests, small errors are deliberately introduced into the code (a reversed condition, a changed value) and we check whether the tests fail: they catch <Figure
@@ -75,7 +76,7 @@ const pr = (n: number) => pull("promptlang", n);
       On test prompts with known defects, the AI linter finds <Figure id="promptlang.linter_recall" where="prose" /> of them. But a linter that flags everything, on every prompt, finds them all: <Figure
         id="promptlang.baseline_report_all_recall"
         where="prose"
-      />. The difference lies in correctness, and the gap is modest: <Figure id="promptlang.linter_precision_test" where="prose" /> of the linter’s flags point at a real defect, against <Figure
+      />. The difference is in precision, and the gap is modest: <Figure id="promptlang.linter_precision_test" where="prose" /> of the linter’s flags point at a real defect, against <Figure
         id="promptlang.baseline_report_all_precision"
         where="prose"
       /> for flagging everything, and in human review only <Figure id="promptlang.linter_precision_reviewed" where="prose" defect /> are correct.
@@ -112,19 +113,19 @@ const pr = (n: number) => pull("promptlang", n);
           {
             id: "promptlang.linter_precision_test",
             base: "promptlang.baseline_report_all_precision",
-            label: "Correctness of the flags",
+            label: "Precision of the flags",
             reading: "The gain over a linter that flags every category on every prompt is modest.",
           },
           {
             id: "promptlang.linter_recall",
             base: "promptlang.baseline_report_all_recall",
             label: "Defects found",
-            reading: "Flagging everything finds everything: this figure alone does not tell the linter apart from the point of comparison.",
+            reading: "Flagging everything finds everything: this figure alone does not tell the linter apart from the reference point.",
           },
         ]}
       />
       <p>
-        Correctness on the test prompts counts the flags that land on a designed defect; human review reads flags one by one. Both say the same thing: the AI linter helps the reviewer, it does not
+        Precision on the test prompts counts the flags that land on a designed defect; human review reads flags one by one. Both say the same thing: the AI linter helps the reviewer, it does not
         replace them (<a href={at("docs/SYSTEM_CARD.md")}>system card</a>).
       </p>
     </MeasuresDetail>
@@ -135,10 +136,10 @@ const pr = (n: number) => pull("promptlang", n);
       I had the repository audited by an AI agent that knew nothing about the project, tasked with looking for the flaw. Its verdict: the promises of the project’s front page (the README) went beyond
       what the code actually did. What I did about it, finding by finding, is in the <a href={at("docs/audit/2026-11-03-f1-follow-up.md")}>audit follow-up</a>.
     </p>
-    <h3>An AI linter declared shipped, with no point of comparison</h3>
+    <h3>An AI linter declared shipped, with no reference point</h3>
     <p>
-      That page presented the linter as shipped although its correctness was low and nothing said what it was worth. A linter that flags everything finds every designed defect: finding many proved
-      almost nothing. I published its correctness next to that point of comparison (<a href={pr(29)}>#29</a>), then had flags reviewed by hand; the linter is described as an aid to the reviewer, not
+      That page presented the linter as shipped although its precision was low and nothing said what it was worth. A linter that flags everything finds every designed defect: finding many proved
+      almost nothing. I published its precision next to that reference point (<a href={pr(29)}>#29</a>), then had flags reviewed by hand; the linter is described as an aid to the reviewer, not
       as a check.
     </p>
     <h3>A typed output never checked</h3>

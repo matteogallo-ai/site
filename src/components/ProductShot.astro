@@ -1,0 +1,79 @@
+---
+import { Picture } from "astro:assets";
+import verityShot from "../assets/projects/verity-demo-110.png";
+import promptlangStill from "../assets/projects/promptlang-demo-last.png";
+import praxisPage from "../assets/projects/praxis-esg-brief-p1.png";
+import media from "../data/media.json";
+import { langOf } from "../lib/i18n.ts";
+
+// A product's image, its caption and the link to the recording or the PDF it comes from: on the
+// home page's card and, large, at the top of its case study.
+interface Props {
+  id: "verity" | "promptlang" | "praxis";
+  /** "card": a third of the page at most; "lead": the head of a case study. */
+  size: "card" | "lead";
+}
+
+const { id, size } = Astro.props;
+const lang = langOf(Astro.url.pathname);
+const images = { verity: verityShot, promptlang: promptlangStill, praxis: praxisPage };
+const item = media.media.find((m) => m.id === id);
+if (!item) throw new Error(`no media for ${id}`);
+const link = {
+  fr: { gif: "Voir l’enregistrement (GIF)", pdf: "Voir le PDF" },
+  en: { gif: "See the recording (GIF)", pdf: "See the PDF" },
+}[lang][item.url.endsWith(".pdf") ? "pdf" : "gif"];
+// Identifiers in a caption are marked `like this` in media.json and set as code.
+const caption = item.caption[lang].split("`").map((part, i) => ({ part, code: i % 2 === 1 }));
+// 412 px at 1.75x asks for 721 px: without 960 a phone would get the 1440 file.
+const widths = size === "card" ? [480, 960] : [480, 720, 960, 1440];
+const sizes = size === "card" ? "(min-width: 64rem) 360px, 100vw" : "(min-width: 64rem) 720px, 100vw";
+---
+
+<figure class:list={["shot", size]}>
+  <Picture src={images[id]} formats={["avif", "webp"]} alt={item.alt[lang]} widths={widths} sizes={sizes} loading={size === "lead" ? "eager" : "lazy"} decoding="async" />
+  <figcaption>{caption.map((c) => (c.code ? <code>{c.part}</code> : c.part))} <a href={item.url}>{link}</a></figcaption>
+</figure>
+
+<style>
+  .shot {
+    margin: 1rem 0 0;
+  }
+
+  .shot.lead {
+    max-width: 45rem;
+    margin-top: 2rem;
+  }
+
+  /* The picture clips its image, so the image can zoom under the pointer within its frame. */
+  .shot :global(picture) {
+    display: block;
+    overflow: hidden;
+    border-radius: 6px;
+    box-shadow: 0 0 0 1px var(--rule);
+  }
+
+  /* One frame for the three images, the Verity screenshot's own ratio: the others show their
+     top (the briefing's first page is a portrait A4 sheet, its title and verdict at the top). */
+  .shot :global(img) {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 10;
+    object-fit: cover;
+    object-position: top;
+    transition: transform var(--dur-image) var(--ease-out);
+  }
+
+  figcaption code {
+    font-family: var(--font-mono);
+    font-size: 0.95em;
+  }
+
+  figcaption {
+    margin-top: 0.6rem;
+    font-size: 0.8125rem;
+    line-height: 1.45;
+    color: var(--graphite);
+  }
+</style>

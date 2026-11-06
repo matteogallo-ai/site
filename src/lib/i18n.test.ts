@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { alternates, langOf, twin } from "./i18n.ts";
+import { alternates, caseStudies, langOf, numbered, twin } from "./i18n.ts";
 
 test("a page's language is read from its path: English under /en/, French elsewhere", () => {
   assert.equal(langOf("/"), "fr");
@@ -32,4 +32,14 @@ test("alternates name both languages and x-default (the French page), from eithe
   ];
   assert.deepEqual(alternates("/projets/verity/"), expected);
   assert.deepEqual(alternates("/en/projects/verity/"), expected);
+});
+
+test("a project's number: « N° 01 » in French, No. 01 in English, joined by a no-break space", () => {
+  assert.equal(numbered("01", "fr"), "N°\u00A001");
+  assert.equal(numbered("01", "en"), "No.\u00A001");
+});
+
+test("the case studies are listed at their address in each language", () => {
+  assert.deepEqual(caseStudies("fr").map((c) => c.href), ["/projets/verity/", "/projets/promptlang/", "/projets/praxis/"]);
+  assert.deepEqual(caseStudies("en").map((c) => c.href), ["/en/projects/verity/", "/en/projects/promptlang/", "/en/projects/praxis/"]);
 });

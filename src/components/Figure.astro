@@ -16,9 +16,13 @@ const tip = `src-${where}-${id.replaceAll(".", "-")}`;
 const m = measure(id);
 // French puts a no-break space before the colon; the mono subset has U+00A0, not U+202F.
 const proof = lang === "fr" ? "Preuve\u00A0:" : "Proof:";
+// Read aloud: the figure and what it counts, on a card, in a band or a table; within a sentence
+// the sentence already says it, and the value alone keeps the sentence whole. The proof path is
+// the link's description only (aria-describedby).
+const name = `${m.display[lang]}, ${m.label[lang]}`;
 ---
 
-<a class:list={["figure", "tip-host", { defect }]} href={m.url} aria-describedby={tip}>
+<a class:list={["figure", "tip-host", { defect }]} href={m.url} data-where={where} aria-label={where === "prose" ? undefined : name} aria-describedby={tip}>
   <span class="value mono">{m.display[lang]}</span>
   <span class="path tip mono" id={tip} role="tooltip">{proof} {m.repo.split("/")[1]}/{m.path}</span>
 </a>
@@ -32,6 +36,9 @@ const proof = lang === "fr" ? "Preuve\u00A0:" : "Proof:";
   /* The artefact path appears on hover and keyboard focus (SPEC §5.2), as a .tip (global.css). */
   .figure {
     display: inline-block;
+    /* A 24 px target (WCAG 2.5.8), also in the small type of the tables. */
+    min-width: 24px;
+    min-height: 24px;
     color: var(--proof-text);
     text-decoration: none;
   }

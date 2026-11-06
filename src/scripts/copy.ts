@@ -12,7 +12,8 @@ export function copyOnClick(link: HTMLAnchorElement, status: HTMLElement, words:
   button.type = "button";
   // The link's attributes come along, the scoped-style marker (data-astro-cid-*) included.
   for (const { name, value } of link.attributes) if (name !== "href" && name !== "data-copy") button.setAttribute(name, value);
-  button.textContent = address;
+  // Its nodes come along too: the break opportunity after the @ (<wbr>) stays.
+  button.append(...link.childNodes);
   // Described by the visible hint (what a press does) and by the outcome once said.
   const hint = document.querySelector("[data-copy-hint]");
   button.setAttribute("aria-describedby", [hint?.id, status.id].filter(Boolean).join(" "));

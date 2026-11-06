@@ -31,15 +31,16 @@ if (!thresholdSentence || !("contains" in thresholdSentence)) throw new Error("t
   repo="verity"
   serif
   summary="An agent that answers questions about contracts by quoting the clause word for word, and refuses when it has no evidence."
-  description="Case study of Verity, an agent that answers about contracts by citing its sources: problem, architecture, measures with their uncertainty, defects, decisions."
+  description="Case study of Verity, an agent that answers about contracts by citing its sources: problem, architecture, results with their uncertainty, defects, decisions."
 >
   <Brief
+    slot="brief"
     does="It answers questions about a set of contracts by quoting the exact clause, and says “I don’t know” when the documents do not contain the answer."
     measured="On test questions never seen during tuning: whether it refuses the unanswerable questions, and whether its answers make anything up."
     defect="It answered questions that had no answer in the documents. What I did about it: I published it, with the three questions involved named in the results."
     figures={[
       { id: "verity.refusal_recall", caption: "unanswerable questions correctly refused" },
-      { id: "verity.hallucination_rate", caption: "answers containing a fabrication, according to a judge checked against my own ratings" },
+      { id: "verity.hallucination_rate", caption: "answers containing a fabrication, according to a judge checked against my own ratings, among the answerable questions it answered; its answers to unanswerable questions are counted separately" },
       { id: "verity.unanswerable_answered", caption: "unanswerable questions it answered anyway", defect: true },
     ]}
   />
@@ -47,7 +48,7 @@ if (!thresholdSentence || !("contains" in thresholdSentence)) throw new Error("t
   <CaseSection n={1} id="probleme" title="The problem" lead="In three sentences, why this project exists.">
     <p>
       Assistants that answer over company documents do so with confidence, and are wrong just often enough to be dangerous. On a contract, a fluent but wrong answer costs more than an “I don’t
-      know”. Verity answers only by quoting the clause word for word, refuses otherwise, and measures whether it refuses rightly.
+      know”. Verity answers only by quoting the clause word for word, refuses otherwise, and measures whether it refuses correctly.
     </p>
   </CaseSection>
 
@@ -71,6 +72,7 @@ if (!thresholdSentence || !("contains" in thresholdSentence)) throw new Error("t
         { title: "Cited answer", lines: ["clause and position"], tone: "proof" },
         { title: "Refusal", lines: ["with its cause", "recorded"], tone: "defect" },
       ]}
+      desc="A question is asked over a corpus of contracts and policies. Verity searches for passages by meaning and by words, then ranks the most useful ones. It drafts an answer in which each quote must be an exact excerpt of the document; with no quote, it refuses. Checks written in code, with no model, verify that the quotes cover the answer, that they are relevant and that nothing manipulates them; a single failure refuses. Finally, a model rates the answer and may refuse below a threshold, but cannot overrule a check. Two outcomes: an answer citing its clause and position, or a refusal with its cause recorded."
       caption="The refusal is decided in order: no quote, then the checks written in code, then the confidence rating and its threshold. The judge, a second model that rates the answers, is not on this path: it evaluates the runs afterwards."
     />
     <p>
@@ -82,7 +84,7 @@ if (!thresholdSentence || !("contains" in thresholdSentence)) throw new Error("t
   <CaseSection
     n={3}
     id="mesures"
-    title="Measures"
+    title="Results"
     lead="What its answers and refusals are worth, in figures, with their uncertainty and a comparison with a simpler system."
   >
     <p>
@@ -102,7 +104,7 @@ if (!thresholdSentence || !("contains" in thresholdSentence)) throw new Error("t
       Compared with a naive RAG, the same principle without any check, on tuning questions and on runs the budget stopped before the end, Verity does not do measurably better: it handles <Figure
         id="verity.baseline_verity_answerable_answered"
         where="prose"
-      /> questions that have an answer, against <Figure id="verity.baseline_naive_answerable_answered" where="prose" />, and on so few questions the gap cannot be told apart from chance. This is the
+      /> questions that have an answer, against <Figure id="verity.baseline_naive_answerable_answered" where="prose" />, and on so few questions the gap cannot be distinguished from chance. This is the
       published result, not the favourable one.
     </p>
     <MeasuresDetail>
@@ -155,7 +157,7 @@ if (!thresholdSentence || !("contains" in thresholdSentence)) throw new Error("t
             id: "verity.baseline_verity_unanswerable_answered",
             base: "verity.baseline_naive_unanswerable_answered",
             label: "Unanswerable questions it answered",
-            reading: "The advantage expected of Verity, but on so few questions that it cannot be told apart from chance.",
+            reading: "The advantage expected of Verity, but on so few questions that it cannot be distinguished from chance.",
           },
         ]}
       />
@@ -172,7 +174,7 @@ if (!thresholdSentence || !("contains" in thresholdSentence)) throw new Error("t
       ran at <Figure id="verity.threshold_run_of_record" where="threshold" />: the threshold was chosen on the tuning questions by a rule fixed in advance, and no threshold did better than another.
     </p>
     <blockquote lang="en">
-      <p>{thresholdSentence.contains}</p>
+      <p data-verbatim>{thresholdSentence.contains}</p>
       <footer><a href={at("docs/results.md")}>docs/results.md</a></footer>
     </blockquote>
     <p>
@@ -182,7 +184,7 @@ if (!thresholdSentence || !("contains" in thresholdSentence)) throw new Error("t
 
     <h3>An exact quote of a badly extracted text</h3>
     <blockquote lang="en">
-      <p>
+      <p data-verbatim>
         {before}{DEFECT} <span class="sic" lang="en">[sic, PDF extraction defect]</span>{after}
       </p>
       <footer>Quote from the answer to <code>{answer.example_id}</code>, <a href={runOfRecord}>reference run</a></footer>
@@ -210,7 +212,7 @@ if (!thresholdSentence || !("contains" in thresholdSentence)) throw new Error("t
       <li>
         <h3>A refusal is an answer in its own right, and it is measured</h3>
         <p>
-          The evaluation set deliberately contains unanswerable questions, and the correctness of refusals is among the main measures. A change that makes it answer more often by answering wrongly is a
+          The evaluation set deliberately contains unanswerable questions, and the correctness of refusals is among the main metrics. A change that makes it answer more often by answering wrongly is a
           regression. The record promised a “calibrated” refusal, that is a confidence that matches the actual error rate; the measurement contradicted it, and the record says so at the top.
         </p>
         <p><a href={at("docs/adr/0003-refusal-as-headline-feature.md")}>ADR 0003</a></p>

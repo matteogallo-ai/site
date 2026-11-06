@@ -1,8 +1,11 @@
 ---
 import Base from "./Base.astro";
-import { langOf, twin } from "../lib/i18n.ts";
+import { caseStudies, langOf, numbered } from "../lib/i18n.ts";
 import { repoUrl } from "../lib/sources.ts";
 import LangSwitch from "../components/LangSwitch.astro";
+import Contact from "../components/Contact.astro";
+import Footer from "../components/Footer.astro";
+import ProductShot from "../components/ProductShot.astro";
 
 interface Props {
   /** Calibre number of the project, as on the home page cards ("01"). */
@@ -17,32 +20,36 @@ interface Props {
 }
 
 const { no, name, summary, description, repo, serif = false } = Astro.props;
+const shot = name.toLowerCase();
+if (shot !== "verity" && shot !== "promptlang" && shot !== "praxis") throw new Error(`no product image for ${name}`);
 const lang = langOf(Astro.url.pathname);
 const t = {
   fr: { title: "étude de cas", crumbs: "Fil d’Ariane", home: "/", projects: "/#projets", projectsLabel: "Projets", kind: "Étude de cas", code: "Code :", others: "Autres études de cas", all: "Études de cas" },
   en: { title: "case study", crumbs: "Breadcrumb", home: "/en/", projects: "/en/#projects", projectsLabel: "Projects", kind: "Case study", code: "Code:", others: "Other case studies", all: "Case studies" },
 }[lang];
-const cases = [
-  { no: "01", name: "Verity", href: "/projets/verity/" },
-  { no: "02", name: "PromptLang", href: "/projets/promptlang/" },
-  { no: "03", name: "Praxis", href: "/projets/praxis/" },
-].map((c) => ({ ...c, href: lang === "fr" ? c.href : twin(c.href) }));
+const cases = caseStudies(lang);
 ---
 
 <Base title={`${name} — ${t.title} · Matteo Gallo`} description={description} serif={serif}>
-  <div class="container case">
+  <div class="container topbar" slot="header">
     <nav class="crumbs" aria-label={t.crumbs}>
       <a href={t.home}>Matteo Gallo</a>
       <span aria-hidden="true">/</span>
       <a href={t.projects}>{t.projectsLabel}</a>
-      <LangSwitch />
     </nav>
+    <LangSwitch />
+  </div>
+  <div class="container case">
     <header class="head">
-      <p class="no"><span class="mono">No. {no}</span> · {t.kind}</p>
+      <p class="no"><span class="mono">{numbered(no, lang)}</span> · {t.kind}</p>
       <h1>{name}</h1>
       <p class="summary">{summary}</p>
       <p class="code"><a href={repoUrl(repo)}>{t.code} matteogallo-ai/{repo}</a></p>
     </header>
+    {/* After the brief, not above it: on a phone the image above the fold became the page's
+        largest paint and pushed LCP past the 1.5 s budget (SPEC §8); the brief's text paints first. */}
+    <slot name="brief" />
+    <div class="case-shot"><ProductShot id={shot} size="lead" /></div>
     <slot />
     <nav class="others" aria-label={t.others}>
       <p class="rule-label">{t.all}</p>
@@ -52,11 +59,11 @@ const cases = [
             <li>
               {c.name === name ? (
                 <span aria-current="page">
-                  <span class="mono">No. {c.no}</span> {c.name}
+                  <span class="mono">{numbered(c.no, lang)}</span> {c.name}
                 </span>
               ) : (
                 <a href={c.href}>
-                  <span class="mono">No. {c.no}</span> {c.name}
+                  <span class="mono">{numbered(c.no, lang)}</span> {c.name}
                 </a>
               )}
             </li>
@@ -65,23 +72,21 @@ const cases = [
       </ul>
     </nav>
   </div>
+  <section class="container section closing-contact" aria-label="Contact">
+    <Contact />
+  </section>
+  <Footer />
 </Base>
 
 <style>
   .case {
-    padding-block: 2rem 5rem;
+    padding-block: 2rem 1rem;
   }
 
   .crumbs {
     display: flex;
     gap: 0.5rem;
-    font-size: var(--step-14);
     color: var(--graphite);
-  }
-
-  /* The language selector sits at the end of the line, apart from the path. */
-  .crumbs :global(.langs) {
-    margin-left: auto;
   }
 
   .head {
@@ -116,12 +121,33 @@ const cases = [
     margin: 1rem 0 0;
   }
 
-  /* Prose of the sections: a reading measure, tables and diagrams may run wider. */
+  /* Prose of the sections: a reading measure of about 70 characters; tables run wider. */
   .case :global(.case-section > p),
   .case :global(.case-section > ul),
   .case :global(.case-section > ol),
   .case :global(.case-section > blockquote) {
-    max-width: 40rem;
+    max-width: 34rem;
+  }
+
+  /* Wide screens: the diagram stands in its own column beside the section's text, instead of a
+     narrow column with two thirds of the line empty. */
+  @media (min-width: 64rem) {
+    .case :global(.case-section:has(> .diagram)) {
+      display: grid;
+      grid-template-columns: minmax(0, 34rem) minmax(0, 30rem);
+      column-gap: 4rem;
+      align-items: start;
+    }
+
+    .case :global(.case-section:has(> .diagram) > *) {
+      grid-column: 1;
+    }
+
+    .case :global(.case-section:has(> .diagram) > .diagram) {
+      grid-column: 2;
+      grid-row: 2 / span 8;
+      margin-top: 0;
+    }
   }
 
   /* The section's first sentence: what it gives the reader. */
@@ -170,6 +196,21 @@ const cases = [
     font-family: var(--font-serif);
     font-size: var(--step-21);
     line-height: 1.45;
+  }
+
+  /* A French translation under an English quote, as in the demo: small, in the sans, indented. */
+  .case :global(blockquote .tr) {
+    margin-top: 0.4rem;
+    padding-left: 0.75rem;
+    font-family: var(--font-sans);
+    font-size: var(--step-14);
+    line-height: 1.5;
+    color: var(--graphite);
+  }
+
+  .case :global(blockquote .tr-k) {
+    margin-right: 0.25rem;
+    font-weight: 600;
   }
 
   .case :global(blockquote footer) {

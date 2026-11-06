@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { test } from "node:test";
-import { type DemoDocument, type DemoTrace, type DemoTranslations, traceErrors, traceMatchesRun, translationErrors, uuid5Url } from "./traces-lib.ts";
+import { type DemoDocument, type DemoTrace, type DemoTranslations, sectionAt, traceErrors, traceMatchesRun, translationErrors, uuid5Url } from "./traces-lib.ts";
 
 const read = <T>(path: string) => JSON.parse(readFileSync(new URL(`../src/data/demo/${path}`, import.meta.url), "utf8")) as T;
 const sla = read<DemoDocument>("sla.json");
@@ -100,4 +100,19 @@ test("a refusal's rationale is translated too, from the English the trace gives"
 test("the French rationale carries no internal reference", () => {
   const t = translations[refusal.example_id] as { rationale: { fr: string } };
   assert.doesNotMatch(t.rationale.fr, /document index|index du document/i);
+});
+
+test("a quote's section is the numbered heading above it in its chunk, not the chunk's first section", () => {
+  // The Northwind chunk starts in section 3; the quote sits under "5. Premium Support".
+  const elsewhere = answer.citations.find((c) => c.quote.startsWith("Premium Support"))!;
+  const chunk = answer.hits_used.find((h) => h.chunk.id === elsewhere.chunk_id)!.chunk;
+  assert.equal(chunk.section, "3. Billing and Payment");
+  assert.equal(sectionAt(chunk, elsewhere.char_start), "5");
+  // The SLA quote is under the chunk's own Markdown heading.
+  const sla = answer.citations.find((c) => c.quote.startsWith("Priority 1"))!;
+  assert.equal(sectionAt(answer.hits_used.find((h) => h.chunk.id === sla.chunk_id)!.chunk, sla.char_start), "3");
+  // No heading before the quote in the chunk: the section the chunk starts in.
+  assert.equal(sectionAt({ ...chunk, text: "Plain text.", section: "Doc > 7. Terms" }, chunk.char_start + 2), "7");
+  assert.throws(() => sectionAt({ ...chunk, text: "Plain text.", section: "Preamble" }, chunk.char_start), /no section number/);
+  assert.throws(() => sectionAt(chunk, chunk.char_end + 1), /outside its chunk/);
 });

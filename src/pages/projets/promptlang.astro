@@ -20,12 +20,13 @@ const pr = (n: number) => pull("promptlang", n);
   description="Étude de cas de PromptLang, langage pour écrire les prompts comme du code : problème, architecture, mesures contre un point de comparaison, défauts, décisions."
 >
   <Brief
+    slot="brief"
     does="Il transforme un prompt en fichier vérifié, compilé en code TypeScript ou Python, et signale quand une nouvelle version casse le code de ceux qui l’utilisent."
     measured="La solidité des tests de la lecture du langage et du contrôle de version, et la justesse d’un relecteur automatique, le linter IA, qui pointe les défauts d’écriture des prompts."
     defect="La plupart des signalements du linter IA sont faux, à peine mieux que tout signaler. Ce que j’en ai fait : je l’ai mesuré contre ce point de comparaison, publié, et le linter est présenté comme une aide au relecteur humain, pas comme un contrôle."
     figures={[
       { id: "promptlang.mutation_score", caption: "des erreurs introduites exprès dans la lecture du langage et le contrôle de version, repérées par les tests" },
-      { id: "promptlang.linter_recall", caption: "défauts conçus trouvés par le linter IA ; tout signaler les trouve tous" },
+      { id: "promptlang.linter_recall", caption: "défauts conçus trouvés par le linter IA ; un linter qui signale tout les trouve tous" },
       { id: "promptlang.linter_precision_reviewed", caption: "signalements du linter IA jugés justes à la relecture humaine", defect: true },
     ]}
   />
@@ -50,12 +51,12 @@ const pr = (n: number) => pull("promptlang", n);
         { title: "Versions", lines: ["casse-t-il", "le code", "appelant ?"] },
         { title: "Relire", lines: ["défauts", "du texte", "du prompt"] },
       ]}
+      desc="Un fichier .prompt déclare des paramètres typés, une sortie et un modèle cible. Il est lu : découpé en mots du langage, puis en arbre de syntaxe. Trois usages indépendants en partent : générer du code typé en TypeScript et en Python, vérifier si une nouvelle version casse le code appelant, et relire le texte du prompt pour y trouver des défauts."
       caption="Le fichier lu sert trois usages indépendants. Le code généré vérifie chaque réponse du modèle contre le type de sortie déclaré ; le contrôle de version compare le prompt à sa version précédente ; la relecture signale les défauts d’écriture."
     />
     <p>
       Un fichier <code>.prompt</code> déclare ce que le prompt reçoit, ce qu’il doit rendre et le modèle visé. Le compilateur en tire une fonction typée. Le contrôle de version compare ce contrat avec la version
-      précédente dans Git et refuse un changement qui casse le code appelant sans un numéro de version majeur. Le linter IA relit le texte du prompt avant la relecture humaine. Le paquet
-      <code>@promptlang/core</code> est publié sur npm, le registre des paquets JavaScript, et Praxis l’utilise pour lire ses propres prompts.
+      précédente dans Git et refuse un changement qui casse le code appelant sans un numéro de version majeur. Le linter IA relit le texte du prompt avant la relecture humaine. Le paquet <code>@promptlang/core</code> est publié sur npm, le registre des paquets JavaScript, et Praxis l’utilise pour lire ses propres prompts.
     </p>
   </CaseSection>
 

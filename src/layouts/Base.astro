@@ -3,7 +3,7 @@ import { Font } from "astro:assets";
 import "../styles/global.css";
 import Glass from "../components/Glass.astro";
 import { alternates, langOf } from "../lib/i18n.ts";
-import { OG } from "../lib/og.ts";
+import { OG, ogImage } from "../lib/og.ts";
 
 interface Props {
   title: string;
@@ -12,15 +12,17 @@ interface Props {
   serif?: boolean;
   /** False for the 404 page: it answers at every unknown address, so no URL is its own. */
   canonical?: boolean;
+  /** The header stays at the top of the screen as the page scrolls (the home page's navigation). */
+  stickyHeader?: boolean;
 }
 
-const { title, description, serif = false, canonical: hasCanonical = true } = Astro.props;
+const { title, description, serif = false, canonical: hasCanonical = true, stickyHeader = false } = Astro.props;
 const lang = langOf(Astro.url.pathname);
 const skipLabel = lang === "fr" ? "Aller au contenu" : "Skip to content";
 const canonical = hasCanonical ? new URL(Astro.url.pathname, Astro.site).href : undefined;
 // The page in each language (SPEC §7); a page with no address of its own (the 404) names none.
 const versions = hasCanonical ? alternates(Astro.url.pathname).map((a) => ({ ...a, href: new URL(a.path, Astro.site).href })) : [];
-const image = OG[lang];
+const image = ogImage(Astro.url.pathname);
 ---
 
 <!doctype html>
@@ -32,7 +34,7 @@ const image = OG[lang];
     <meta name="description" content={description} />
     {canonical && <link rel="canonical" href={canonical} />}
     {versions.map((v) => <link rel="alternate" hreflang={v.hreflang} href={v.href} />)}
-    {/* Link previews (Open Graph): one image per language, written by scripts/og.ts. */}
+    {/* Link previews (Open Graph): the home image of the page's language, or its case study's; written by scripts/og.ts. */}
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Matteo Gallo" />
     <meta property="og:locale" content={lang === "fr" ? "fr_CH" : "en_GB"} />
@@ -44,7 +46,9 @@ const image = OG[lang];
     <meta property="og:image:height" content={String(OG.height)} />
     <meta property="og:image:alt" content={image.alt} />
     <meta name="twitter:card" content="summary_large_image" />
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <Font cssVariable="--font-sans" preload />
     {/* Preloaded too: the contract is on the first screen, and a late serif re-flows it after the
         first paint (layout shift seen in CI, where no Georgia backs the metric-matched fallback). */}
@@ -54,6 +58,8 @@ const image = OG[lang];
   <body>
     <a class="skip-link" href="#main">{skipLabel}</a>
     <Glass />
+    {/* Navigation and language selector come before main, so the skip link passes them. */}
+    {Astro.slots.has("header") && <header class:list={["site-header", { sticky: stickyHeader }]}><slot name="header" /></header>}
     <main id="main">
       <slot />
     </main>

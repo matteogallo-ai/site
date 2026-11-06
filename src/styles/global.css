@@ -31,6 +31,14 @@ h3 {
   text-wrap: balance;
 }
 
+/* A paragraph does not end on a lone word. */
+p,
+li,
+figcaption,
+dd {
+  text-wrap: pretty;
+}
+
 /* Form controls default to the system font, which no subset covers. */
 button,
 input,
@@ -49,6 +57,22 @@ a {
 
 a:hover {
   text-decoration-color: currentColor;
+}
+
+/* WCAG 2.5.8: a link is a 24 px target at least. Vertical padding grows an inline link's box
+   without moving the line it sits on; links laid out as boxes set their own height. */
+a:where(:not(.button, .skip-link, .figure)) {
+  padding-block: max(0px, calc(12.5px - 0.6em));
+}
+
+.crumbs a,
+.langs a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  min-height: 24px;
+  padding-block: 0;
 }
 
 :focus-visible {
@@ -85,6 +109,22 @@ a:hover {
 /* The block holding a measure anchors its proof tooltip (src/components/Figure.astro). */
 :is(p, li):has(> .figure) {
   position: relative;
+}
+
+/* The header above main (Base.astro): the path on the left, the language selector on the right. */
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  padding-top: 1.5rem;
+  font-size: var(--step-14);
+}
+
+.site-header.sticky {
+  position: sticky;
+  top: 0.75rem;
+  z-index: 10;
 }
 
 .skip-link {
@@ -272,9 +312,21 @@ a:hover {
   backdrop-filter: url(#glass-refraction) blur(var(--glass-blur));
 }
 
+/* The navigation's glass (Home.astro's pill): the same material, far denser. */
+.glass.glass-nav {
+  background: var(--nav-fill);
+  -webkit-backdrop-filter: blur(var(--nav-blur));
+  backdrop-filter: blur(var(--nav-blur));
+}
+
+:root[data-refraction] .glass.glass-nav {
+  backdrop-filter: url(#glass-refraction) blur(var(--nav-blur));
+}
+
 @media (prefers-reduced-transparency: reduce) {
   .glass,
-  :root[data-refraction] .glass {
+  :root[data-refraction] .glass,
+  :root[data-refraction] .glass.glass-nav {
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
   }
@@ -334,22 +386,6 @@ a:hover {
   .tip-host:is(:hover, :focus-visible):not([data-dismissed]) .tip {
     transform: none;
   }
-}
-
-/* A figure counting up (src/scripts/count.ts): its own text stays in place and keeps the line's
-   width, unpainted; the aria-hidden copy over it counts, as wide as the figure (pre keeps the
-   spaces that pad the number), so nothing in it moves but the digits. */
-.value[data-counting] {
-  position: relative;
-  -webkit-text-fill-color: transparent;
-}
-
-.count-layer {
-  position: absolute;
-  left: 0;
-  top: 0;
-  white-space: pre;
-  -webkit-text-fill-color: currentColor;
 }
 
 /* Sections come into place once as they scroll into view (src/scripts/reveal.ts): their children

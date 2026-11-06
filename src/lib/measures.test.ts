@@ -14,12 +14,12 @@ test("decimals use the comma in French and the point in English", () => {
 
 test("an interval reads as whole percents rounded outwards, never narrower than its source", () => {
   // [0.639581, 0.947631]: the lower bound goes down, the upper bound up.
-  assert.equal(interval(measure("verity.refusal_recall"), "fr"), "63\u00A0% – 95\u00A0%");
+  assert.equal(interval(measure("verity.refusal_recall"), "fr"), "63–95\u00A0%");
   // Printed by its source as [9.5%, 16.3%]: rounding to nearest would show 10–16, inside it.
-  assert.equal(interval(measure("promptlang.baseline_report_all_precision"), "fr"), "9\u00A0% – 17\u00A0%");
+  assert.equal(interval(measure("promptlang.baseline_report_all_precision"), "fr"), "9–17\u00A0%");
   // Whole percents already ([0.23, 0.71]): floating-point error must not move them.
-  assert.equal(interval(measure("praxis.live_completed"), "fr"), "23\u00A0% – 71\u00A0%");
-  assert.equal(interval(measure("praxis.live_completed"), "en"), "23% – 71%");
+  assert.equal(interval(measure("praxis.live_completed"), "fr"), "23–71\u00A0%");
+  assert.equal(interval(measure("praxis.live_completed"), "en"), "23–71%");
 });
 
 test("an interval is refused for a measure that has none", () => {

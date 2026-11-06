@@ -1,12 +1,13 @@
 import { expect, test } from "@playwright/test";
 import { type Lang, twin } from "../src/lib/i18n.ts";
 import { interval, measure } from "../src/lib/measures.ts";
+import { plain } from "../scripts/typography.ts";
 
 // SPEC §3.2, in its order: problem, what I built (one SVG diagram), measures, what did not
 // work, three decisions (ADR), how it is built, what comes next.
 const SECTIONS: Record<Lang, string[]> = {
   fr: ["Le problème", "Ce que j’ai construit", "Mesures", "Ce qui n’a pas marché, et ce que j’ai fait", "Trois décisions", "Comment c’est construit", "La suite"],
-  en: ["The problem", "What I built", "Measures", "What did not work, and what I did", "Three decisions", "How it is built", "What comes next"],
+  en: ["The problem", "What I built", "Results", "What did not work, and what I did", "Three decisions", "How it is built", "What comes next"],
 };
 const BRIEF: Record<Lang, { title: string; terms: string[] }> = {
   fr: { title: "En bref", terms: ["Ce que ça fait", "Ce qui est mesuré", "Défaut principal"] },
@@ -120,7 +121,7 @@ for (const [lang, slug] of (["fr", "en"] as const).flatMap((l) => CASES.map((c) 
     const diagram = page.locator("#construit svg[role='img']");
     await expect(diagram).toHaveCount(1);
     expect(((await diagram.getAttribute("aria-labelledby")) ?? "").split(" ")).toHaveLength(2);
-    await expect(page.getByRole("img", { name: /\S/ })).toHaveCount(1);
+    await expect(page.locator("#construit").getByRole("img", { name: /\S/ })).toHaveCount(1);
     for (const id of ((await diagram.getAttribute("aria-labelledby")) ?? "").split(" ")) await expect(page.locator(`#${id}`)).toHaveText(/\S/);
   });
 
@@ -146,9 +147,9 @@ for (const [lang, slug] of (["fr", "en"] as const).flatMap((l) => CASES.map((c) 
     for (const row of await rows.all()) await expect(row.locator(".figure").first()).toBeVisible();
     const intervals = await page.locator("[data-measure]").evaluateAll((els) => els.map((e) => [e.getAttribute("data-measure")!, e.textContent!.trim()]));
     expect(intervals.length).toBeGreaterThan(0);
-    for (const [id, text] of intervals) expect(text, id).toBe(interval(measure(id!), lang));
+    for (const [id, text] of intervals) expect(plain(text!), id).toBe(plain(interval(measure(id!), lang)));
     const labels = await page.locator("[data-label]").evaluateAll((els) => els.map((e) => [e.getAttribute("data-label")!, e.textContent!.trim()]));
-    for (const [id, text] of labels) expect(text, id).toBe(measure(id!).label[lang]);
+    for (const [id, text] of labels) expect(plain(text!), id).toBe(plain(measure(id!).label[lang]));
     // SPEC §6: defects at the same level as measures, in the same table.
     await expect(page.locator("#mesures tbody .figure.defect")).not.toHaveCount(0);
   });

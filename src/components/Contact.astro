@@ -1,0 +1,109 @@
+---
+import { langOf } from "../lib/i18n.ts";
+
+// The ask and the address, closing the home page and every case study and the Colophon.
+const fr = langOf(Astro.url.pathname) === "fr";
+const address = "matteogallo.office@gmail.com";
+const [user, domain] = address.split("@");
+---
+
+<div class="contact" id="contact">
+  <h2>{fr ? "Un poste d’ingénieur logiciel et IA en Suisse romande ? Écrivez-moi." : "A software and AI engineering role in French-speaking Switzerland? Get in touch."}</h2>
+  <p class="email">
+    {/* If the address cannot hold on one line, it breaks after the @ and nowhere else. */}
+    <a class="address" href={`mailto:${address}`} data-copy>{user}@<wbr />{domain}</a>
+    <span class="copied" id="copy-status" role="status" data-copied={fr ? "Copié" : "Copied"} data-failed={fr ? "Copie impossible : l’adresse est sélectionnée" : "Copy failed: the address is selected"}></span>
+  </p>
+  <p class="hint" id="copy-hint" data-copy-hint hidden>
+    <span class="pointer">{fr ? "Cliquez sur l’adresse pour la copier." : "Click the address to copy it."}</span><span class="touch">{fr ? "Touchez l’adresse pour la copier." : "Tap the address to copy it."}</span>
+  </p>
+  <p class="actions">
+    <a class="button primary" href={`mailto:${address}`}>{fr ? "Écrire" : "Email me"}</a>
+    <a class="button" href="https://www.linkedin.com/in/matteogallo-ai">LinkedIn</a>
+    <a class="button" href="https://github.com/matteogallo-ai">GitHub</a>
+  </p>
+</div>
+
+<script>
+  import { copyOnClick } from "../scripts/copy.ts";
+  // The address copies itself on click; without this script it stays a mailto link.
+  const address = document.querySelector<HTMLAnchorElement>("a[data-copy]");
+  const status = document.getElementById("copy-status");
+  if (address && status && navigator.clipboard) {
+    // The page gives the outcomes in its language.
+    copyOnClick(address, status, { copied: status.dataset["copied"] ?? "", failed: status.dataset["failed"] ?? "" });
+    document.querySelector<HTMLElement>("[data-copy-hint]")?.removeAttribute("hidden");
+  }
+</script>
+
+<style>
+  .contact h2 {
+    font-size: var(--step-21);
+    line-height: 1.2;
+    text-wrap: balance;
+  }
+
+  .email {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.25rem 0.75rem;
+    margin: 1rem 0 0;
+  }
+
+  /* The address, a link or (with the script) a button that copies it. Its size follows the
+     screen so that it holds on one line down to 320 px; below that it breaks after the @. */
+  .address {
+    padding: 0;
+    border: 0;
+    font-size: clamp(1rem, 5.6vw, var(--step-28));
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    text-align: left;
+    color: var(--ink);
+    background: none;
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.2em;
+    text-decoration-color: var(--rule);
+    cursor: pointer;
+    transition: text-decoration-color var(--dur-hover) var(--ease-out);
+  }
+
+  .address:hover {
+    text-decoration-color: var(--ink);
+  }
+
+  .copied {
+    font-size: var(--step-14);
+    color: var(--proof-text);
+  }
+
+  .hint {
+    margin: 0.25rem 0 0;
+    font-size: var(--step-14);
+    color: var(--graphite);
+  }
+
+  /* On a screen without hover (a finger), the hint speaks of tapping. */
+  .touch {
+    display: none;
+  }
+
+  @media (hover: none) {
+    .pointer {
+      display: none;
+    }
+
+    .touch {
+      display: inline;
+    }
+  }
+
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin: 1.75rem 0 0;
+  }
+</style>
