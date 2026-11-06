@@ -21,8 +21,6 @@
   --night: #1c2a44;
   /* Not in the SPEC: the demo contract page, a shade lighter than the paper it lies on. */
   --sheet: #fcfbf8;
-  /* SPEC §3.1: the « Défaut connu » box, a trace of the defect colour on the paper (≤ 8 %). */
-  --defect-tint: color-mix(in srgb, var(--defect) 7%, var(--paper));
   /* SPEC §2: the contract around the passage in play, stepped back but still AA on the sheet. */
   --dimmed: color-mix(in srgb, var(--ink) 62%, var(--sheet));
   /* The answer card's glass, as near-opaque, because it lies over the contract's words. */

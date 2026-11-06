@@ -1,6 +1,6 @@
 ---
 import { langOf } from "../lib/i18n.ts";
-import { measure } from "../lib/measures.ts";
+import { measure, shownTextError } from "../lib/measures.ts";
 
 interface Props {
   id: string;
@@ -18,7 +18,7 @@ const tip = `src-${where}-${id.replaceAll(".", "-")}`;
 const m = measure(id);
 // French puts a no-break space before the colon; the mono subset has U+00A0, not U+202F.
 const proof = lang === "fr" ? "Preuve\u00A0:" : "Proof:";
-// Read aloud: the figure and what it counts, on a card, in a band or a table; within a sentence
+// Read aloud: the figure and what it counts, on a card or in a table; within a sentence
 // the sentence already says it, and the value alone keeps the sentence whole; so do words shown in
 // place of the value (`text`), which belong to their sentence. The proof path is
 // the link's description only (aria-describedby).
@@ -26,10 +26,8 @@ const name = `${m.display[lang]}, ${m.label[lang]}`;
 // A figure set in words ("12 of 40 findings") reads in the text face; a bare number in mono.
 const shown = text ?? m.display[lang];
 if (text !== undefined) {
-  const own = new Set([m.k, m.n].filter((v) => v !== undefined).map(String));
-  for (const n of m.display[lang].match(/\d+(?:[.,]\d+)?/g) ?? []) own.add(n);
-  const stray = (text.match(/\d+(?:[.,]\d+)?/g) ?? []).filter((n) => !own.has(n));
-  if (stray.length > 0) throw new Error(`${id}: "${text}" shows ${stray.join(", ")}, not a number of the measure`);
+  const error = shownTextError(m, text, lang);
+  if (error) throw new Error(error);
 }
 ---
 

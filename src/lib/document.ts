@@ -89,3 +89,15 @@ export function firstListIn(source: string, chunk: { char_start: number; char_en
   if (start < 0) throw new Error("the passage has no list");
   return { start, end };
 }
+
+/**
+ * Why a translated contract passage cannot be shown, or undefined: its English must be the
+ * contract's text at the trace's offsets, and its translation must carry the same numbers in the
+ * same order (a slip such as "(5) heures" would otherwise pass unseen).
+ */
+export function passageError(source: string, p: { en: string; fr: string; at: { char_start: number; char_end: number } }): string | undefined {
+  if (source.slice(p.at.char_start, p.at.char_end) !== p.en) return "the English is not the contract's text at the trace's offsets";
+  const digits = (s: string) => (s.match(/\d+/g) ?? []).join(" ");
+  if (digits(p.fr) !== digits(p.en)) return `the translation's numbers (${digits(p.fr)}) are not the passage's (${digits(p.en)})`;
+  return undefined;
+}

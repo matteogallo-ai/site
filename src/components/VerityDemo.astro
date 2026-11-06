@@ -5,7 +5,7 @@ import refusalData from "../data/demo/refusal.json";
 import translationsData from "../data/demo/translations.json";
 import passagesData from "../data/demo/passages.json";
 import { type DemoTrace, type DemoTranslations, sectionAt, translationErrors } from "../../scripts/traces-lib.ts";
-import { firstListIn, toBlocks, type Span } from "../lib/document.ts";
+import { firstListIn, passageError, toBlocks, type Span } from "../lib/document.ts";
 import { langOf } from "../lib/i18n.ts";
 import { decimal } from "../lib/measures.ts";
 
@@ -43,7 +43,8 @@ if (untranslated.length > 0) throw new Error(untranslated.join("\n"));
 // at the offsets the traces point to, or the build fails.
 const passages = { answer: { ...passagesData.answer, at: cited }, refusal: { ...passagesData.refusal, at: { char_start: refusalTarget.start, char_end: refusalTarget.end } } };
 for (const [mode, p] of Object.entries(passages)) {
-  if (sla.text.slice(p.at.char_start, p.at.char_end) !== p.en) throw new Error(`passages.json ${mode}: the English is not the contract's text at the trace's offsets`);
+  const error = passageError(sla.text, p);
+  if (error) throw new Error(`passages.json ${mode}: ${error}`);
 }
 const lines = (mode: "answer" | "refusal") => (lang === "fr" ? passages[mode].fr.split("\n") : passages[mode].en.split("\n- "));
 const translation = (trace: DemoTrace) => translations[trace.example_id] as { question: { fr: string }; answer: { fr: string }; rationale?: { en: string; fr: string } };
@@ -77,7 +78,6 @@ const t = {
     verdict: "Refus du modèle, confiance",
     closest: "Passage le plus proche\u00A0:",
     insufficient: "jugé insuffisant",
-    original: "Original anglais",
     note: "Traduit d’un run réel en anglais",
     trace: "Voir la trace originale",
     names: { "sla.md": "contrat SLA", "order_form_northwind_2025.pdf": "bon de commande Northwind" } as Record<string, string>,
@@ -106,7 +106,6 @@ const t = {
     verdict: "Refused by the model, confidence",
     closest: "Closest passage:",
     insufficient: "judged insufficient",
-    original: "",
     note: "Replay of a real run",
     trace: "See the original trace",
     names: { "sla.md": "SLA contract", "order_form_northwind_2025.pdf": "Northwind order form" } as Record<string, string>,
@@ -154,7 +153,7 @@ const nameOf = (path: string) => {
     </ul>
     {lang === "fr" && (
       <details class="original">
-        <summary>{t.original}</summary>
+        <summary>Original anglais</summary>
         <div lang="en" data-verbatim>
           <p>{answer.question}</p>
           <p>{answer.answer_text}</p>
@@ -175,7 +174,7 @@ const nameOf = (path: string) => {
     {lang === "fr" ? <p class="why">{translation(refusal).rationale!.fr}</p> : <p class="why"><span class="why-k">the model’s words, as recorded; document index 0 is the SLA</span> <span data-verbatim>{translation(refusal).rationale!.en}</span></p>}
     {lang === "fr" && (
       <details class="original">
-        <summary>{t.original}</summary>
+        <summary>Original anglais</summary>
         <div lang="en" data-verbatim>
           <p>{refusal.question}</p>
           <p>{refusal.answer_text}</p>
@@ -275,7 +274,7 @@ const nameOf = (path: string) => {
   }
 
   /* The three steps of a run, in the order Verity takes them: the question, the passage it
-     retrieves (on the contract, by the spotlight), the answer it checks. */
+     retrieves, the answer it checks. */
   .step {
     display: flex;
     align-items: center;

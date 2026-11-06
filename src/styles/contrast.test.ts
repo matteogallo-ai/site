@@ -92,14 +92,6 @@ test("readMix reads a color-mix token and refuses any other form", () => {
   assert.throws(() => readMix(":root {}", "t"), /no --t/);
 });
 
-// « Défaut connu »: a barely tinted box, its label in the defect colour, its text in ink.
-const tint = readMix(css, "defect-tint");
-test("--defect-tint is at most 8 % of --defect over the paper", () => {
-  assert.equal(tint.first, "defect");
-  assert.equal(tint.second, "paper");
-  assert.ok(tint.weight <= 0.08, `${tint.weight * 100} % > 8 %`);
-});
-
 // Spotlight: the contract around the passage is dimmed, and still AA on the sheet.
 const dimmed = readMix(css, "dimmed");
 test("--dimmed is the ink mixed into the sheet", () => {
@@ -127,13 +119,6 @@ for (const [name, theme] of Object.entries(themes)) {
 }
 
 for (const [name, theme] of Object.entries(themes)) {
-  const defectTint = mix(theme.defect!, theme.paper!, tint.weight);
-  for (const fg of ["defect", "ink"]) {
-    test(`${name}: --${fg} on --defect-tint (${defectTint}) >= 4.5:1`, () => {
-      const ratio = contrastRatio(theme[fg]!, defectTint);
-      assert.ok(ratio >= 4.5, `${ratio.toFixed(2)}:1 < 4.5:1`);
-    });
-  }
   const dim = mix(theme.ink!, theme.sheet!, dimmed.weight);
   test(`${name}: --dimmed (${dim}) on --sheet >= 4.5:1, and at most half the contrast of --ink`, () => {
     const ratio = contrastRatio(dim, theme.sheet!);

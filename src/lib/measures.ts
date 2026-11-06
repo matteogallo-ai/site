@@ -33,3 +33,18 @@ export function interval(m: VerifiedMeasure, lang: "fr" | "en"): string {
   // the build narrows it where the font has U+202F (scripts/typography.ts).
   return lang === "fr" ? `${lo}–${hi}\u00A0%` : `${lo}–${hi}%`;
 }
+
+const numbers = (s: string) => s.match(/\d+(?:[.,]\d+)?/g) ?? [];
+
+/**
+ * Why words shown in place of a figure's value ("3", "12 signalements justes sur 40") would
+ * misstate the measure, or undefined: each number in them must be the measure's k, n or a number
+ * of its display, and there must be one, so a figure never hides behind words.
+ */
+export function shownTextError(m: VerifiedMeasure, text: string, lang: "fr" | "en"): string | undefined {
+  const shown = numbers(text);
+  if (shown.length === 0) return `${m.id}: "${text}" shows no number`;
+  const own = new Set([...[m.k, m.n].filter((v) => v !== undefined).map(String), ...numbers(m.display[lang])]);
+  const stray = shown.filter((n) => !own.has(n));
+  return stray.length > 0 ? `${m.id}: "${text}" shows ${stray.join(", ")}, not a number of the measure` : undefined;
+}

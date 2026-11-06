@@ -78,8 +78,8 @@ const CALQUES = [
   /programming interface \(API\)/,
   /point of comparison|test bench/, // « point de comparaison », « banc de test »: baseline, test harness
 ];
-// The case studies call what Praxis delivers a briefing; the home page keeps its owner's own words,
-// "a sourced analysis note".
+// The case studies call what Praxis delivers a briefing; the home page alone keeps its owner's own
+// words, "a sourced analysis note".
 const CASE_CALQUES = [/\banalysis note|\bnotes?\b(?![^<]*<\/code>)/];
 for (const file of files.filter((f) => f.startsWith("en/"))) {
   test(`${file}: no French calque in the English`, () => {
@@ -98,7 +98,7 @@ for (const file of files.filter((f) => f.startsWith("en/"))) {
       } else if (!french) parts.push(token);
     }
     const text = parts.join("");
-    expect([...CALQUES, ...(file.startsWith("en/projects/") ? CASE_CALQUES : [])].flatMap((c) => around(text, c))).toEqual([]);
+    expect([...CALQUES, ...(file === "en/index.html" ? [] : CASE_CALQUES)].flatMap((c) => around(text, c))).toEqual([]);
   });
 }
 
