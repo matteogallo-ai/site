@@ -3,7 +3,7 @@
   "checkCss": true,
   "verbosity": "error",
   "skip": [
-    "^https://matteogallo\\.pages\\.dev(/|$)",
+    "^https://matteogallo\\.ch(/|$)",
     "^https://www\\.linkedin\\.com/"
   ],
   "retry": true,

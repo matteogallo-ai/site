@@ -10,6 +10,8 @@ import config from "../astro.config.mjs";
 
 const ORIGIN = new URL(config.site!).origin;
 const pages = builtPages();
+// The sitemap's namespace names are URLs that are not links.
+const XML_NAMESPACES = ["http://www.sitemaps.org", "http://www.w3.org"];
 
 test("the sitemap lists every built page but the 404, each at its canonical URL", async ({ page, request }) => {
   const xml = await (await request.get("/sitemap.xml")).text();
@@ -20,6 +22,24 @@ test("the sitemap lists every built page but the 404, each at its canonical URL"
     canonicals.push((await page.locator('link[rel="canonical"]').getAttribute("href"))!);
   }
   expect(locs).toEqual(canonicals.sort());
+});
+
+// The production address is the custom domain (SPEC §8): a *.pages.dev origin left in a canonical,
+// hreflang, sitemap, robots or Open Graph URL would split the site's ranking across two hosts.
+test("canonical, hreflang, sitemap, robots and Open Graph URLs all name https://matteogallo.ch", async ({ page, request }) => {
+  expect(ORIGIN).toBe("https://matteogallo.ch");
+  const urls: string[] = [];
+  for (const path of pages) {
+    await page.goto(path);
+    for (const selector of ['link[rel="canonical"]', 'link[rel="alternate"]']) urls.push(...(await page.locator(selector).evaluateAll((els) => els.map((e) => e.getAttribute("href")!))));
+    urls.push(...(await page.locator('meta[property^="og:"][content^="http"]').evaluateAll((els) => els.map((e) => e.getAttribute("content")!))));
+  }
+  const files = [await (await request.get("/sitemap.xml")).text(), await (await request.get("/robots.txt")).text()];
+  urls.push(...files.flatMap((f) => [...f.matchAll(/https?:\/\/[^\s<"]+/g)].map((m) => m[0]).filter((u) => !XML_NAMESPACES.includes(new URL(u).origin))));
+  // Each source must contribute: one og:image per page, and the sitemap's own URLs.
+  expect(urls.filter((u) => u.endsWith(".png")).length).toBe(pages.length);
+  expect(files[0]).toContain("<loc>");
+  expect(urls.filter((u) => new URL(u).origin !== ORIGIN)).toEqual([]);
 });
 
 test("robots.txt allows every crawler and names the sitemap", async ({ request }) => {
@@ -99,7 +119,9 @@ for (const path of ["/colophon/", twin("/colophon/")]) {
     await expect(page.locator(`section:has(#mesures) a[href$="${site.commit}"]`)).toHaveText(site.commit.slice(0, 7));
     // Every built page the recorded run did not measure is named, so the figures are not read as the whole site's.
     const unmeasured = pages.filter((p) => !site.pages.some((m) => m.path === p));
-    await expect(page.locator("section:has(#mesures) .note .mono")).toHaveText(unmeasured.join(", "));
+    const note = page.locator("section:has(#mesures) .note .mono");
+    if (unmeasured.length > 0) await expect(note).toHaveText(unmeasured.join(", "));
+    else await expect(note).toHaveCount(0);
   });
 }
 

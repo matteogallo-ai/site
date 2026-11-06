@@ -72,7 +72,7 @@ French at `/`, English at `/en/`, translated by hand, correct `hreflang` (x-defa
 
 ## 8. Technique
 - **Astro**, static, zero JS by default. JS islands: the Verity demo, the Short/Detailed toggle, the band's counters.
-- **Cloudflare Pages** through its Git integration (no token). Address: `matteogallo.pages.dev` (fallback: `matteo-gallo.pages.dev`); custom domain `matteogallo.ch`.
+- **Cloudflare Pages** through its Git integration (no token). Canonical address: `https://matteogallo.ch` (the custom domain; `site` in `astro.config.mjs` is the one place the pages take it from; `linkinator.config.json` also names it, to skip it, and `tests/seo.spec.ts` pins it); `matteogallo.pages.dev` is the Pages project's own address.
 - **Blocking budgets in CI:** home ≤ 200 KB transferred excluding deferred screenshots, measured with gzip (stricter than the brotli Cloudflare serves, on purpose); fonts ≤ 90 000 bytes on any page; LCP < 1.5 s; CLS < 0.02; Lighthouse ≥ 98 on all 4 categories; 0 axe violation.
 - **CI:** build, typecheck, links, Lighthouse CI, axe, budgets, spotlight position test at 3 widths, generation of `site-measures.json`.
 - Portrait: `src/assets/matteo.jpg` (800 × 800), served as AVIF/WebP at the sizes used.
