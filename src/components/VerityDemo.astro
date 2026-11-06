@@ -183,7 +183,7 @@ const nameOf = (path: string) => {
     {lang === "fr" && <p class="tr tr-a"><span class="tr-k">traduction</span> {translation(refusal).answer.fr}</p>}
     <p class="verdict">{t.verdict} <span class="mono">{decimal(refusal.confidence_score, 2, lang)}</span></p>
     <p class="ref">{t.closest} {nameOf(slaPath)} ({t.section} {sectionAt(closest, refusalTarget.start)}), {t.insufficient}</p>
-    {lang === "fr" ? <p class="tr why"><span class="tr-k">traduction</span> {translation(refusal).rationale!.fr}</p> : <p class="tr why">{translation(refusal).rationale!.en}</p>}
+    {lang === "fr" ? <p class="tr why"><span class="tr-k">traduction</span> {translation(refusal).rationale!.fr}</p> : <p class="tr why"><span class="tr-k">the model’s words, as recorded; document index 0 is the SLA</span> {translation(refusal).rationale!.en}</p>}
   </section>
   </div>
 

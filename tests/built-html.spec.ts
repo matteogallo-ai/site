@@ -82,3 +82,9 @@ for (const file of files.filter((f) => f.startsWith("en/"))) {
     expect(CALQUES.flatMap((c) => around(text, c))).toEqual([]);
   });
 }
+
+// D4: the English refusal rationale is the trace's own text, internal reference included; a short
+// label says so and what the reference points to.
+test("en/index.html: the refusal rationale is labelled as quoted from the run", () => {
+  expect(html("en/index.html")).toMatch(/<p class="tr why"[^>]*><span class="tr-k"[^>]*>the model’s words, as recorded; document index 0 is the SLA<\/span> The SLA section \(document index 0\)/);
+});
