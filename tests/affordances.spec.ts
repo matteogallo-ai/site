@@ -75,6 +75,26 @@ for (const home of HOMES) {
   });
 }
 
+// A card that opens as a whole leads into the site: a card whose only destination is elsewhere
+// (the method cards' pull requests) keeps that link to its own words, which carry the ↗.
+for (const path of ["/", "/en/"]) {
+  test(`${path}: a card that opens as a whole stays on the site; a method card's middle is not a link`, async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await page.goto(path);
+    const stretched = await page.locator(".card .card-link").evaluateAll((as) => as.map((a) => (a as HTMLAnchorElement).getAttribute("href")!));
+    expect(stretched.filter((h) => /^https?:/.test(h))).toEqual([]);
+    const method = page.locator(`#${path === "/" ? "methode" : "method"} .card`);
+    expect(await method.count()).toBe(3);
+    for (const card of await method.all()) {
+      await card.scrollIntoViewIfNeeded();
+      const box = (await card.boundingBox())!;
+      const hit = await page.evaluate(([x, y]) => document.elementFromPoint(x!, y!)?.closest("a")?.getAttribute("href") ?? null, [box.x + box.width / 2, box.y + box.height / 2]);
+      expect(hit).toBeNull();
+      expect(await card.evaluate((c) => getComputedStyle(c).cursor)).not.toBe("pointer");
+    }
+  });
+}
+
 // A figure inside a sentence is a word of it: one space, no more, between it and the next word.
 for (const path of ["/", "/en/"]) {
   test(`${path}: a figure in a sentence is followed by one space, measured on screen`, async ({ page }) => {

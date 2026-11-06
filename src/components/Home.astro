@@ -73,17 +73,17 @@ const id = fr ? { projects: "projets", method: "methode", about: "a-propos" } : 
       <li class="card">
         <h3>{fr ? "Audit indépendant" : "Independent audit"}</h3>
         <p>{fr ? "Audit à froid par un agent IA sans contexte. Sur PromptLang :" : "Cold audit by an AI agent with no prior context. On PromptLang:"} <Figure id="promptlang.audit_findings" where="method" /> {fr ? "constats, chacun corrigé, réfuté ou documenté." : "findings, each fixed, refuted or documented."}</p>
-        <p class="links"><a class="card-link" href="https://github.com/matteogallo-ai/promptlang/pull/32">PR promptlang#32<span aria-hidden="true"> ↗</span></a></p>
+        <p class="links"><a href="https://github.com/matteogallo-ai/promptlang/pull/32">PR promptlang#32</a></p>
       </li>
       <li class="card">
         <h3>{fr ? "Lecture des sorties réelles" : "Reading real outputs"}</h3>
         <p>{fr ? "Les tests ne suffisent pas. La relecture d’un briefing Praxis a révélé des estimations présentées comme des faits ; le validateur a été corrigé." : "Tests are not enough. Reviewing a Praxis briefing revealed estimates presented as facts; the validator was fixed."}</p>
-        <p class="links"><a class="card-link" href="https://github.com/matteogallo-ai/praxis/pull/47">PR praxis#47<span aria-hidden="true"> ↗</span></a></p>
+        <p class="links"><a href="https://github.com/matteogallo-ai/praxis/pull/47">PR praxis#47</a></p>
       </li>
       <li class="card">
         <h3>{fr ? "Évaluation pré-enregistrée" : "Pre-registered evaluation"}</h3>
         <p>{fr ? "Échantillon tiré avec une graine fixe et commité avant l’annotation. Le résultat est publié tel quel, même défavorable :" : "Sample drawn with a fixed seed and committed before annotation. The result is published as is, even when unfavourable:"} <Figure id="promptlang.linter_precision_reviewed" where="method" defect />.</p>
-        <p class="links"><a class="card-link" href="https://github.com/matteogallo-ai/promptlang/pull/39">PR promptlang#39<span aria-hidden="true"> ↗</span></a></p>
+        <p class="links"><a href="https://github.com/matteogallo-ai/promptlang/pull/39">PR promptlang#39</a></p>
       </li>
     </ul>
     <p><a href={repo("how-i-build")}>{fr ? "Toutes les règles et leurs incidents : how-i-build" : "All the rules and their incidents: how-i-build"}</a></p>
@@ -333,8 +333,9 @@ const id = fr ? { projects: "projets", method: "methode", about: "a-propos" } : 
     color: var(--graphite);
   }
 
-  /* The PR link sits at the foot of each card, level across the row. It stretches over its card
-     (.card-link, global.css), so its ↗ is in its text rather than in its ::after. */
+  /* The PR link sits at the foot of each card, level across the row. It is the card's only link
+     and it leaves the site, so it stays to its own words: a whole card that opened GitHub would
+     look like a project card and lead elsewhere. */
   .rules .links {
     margin-top: auto;
     padding-top: 0.75rem;

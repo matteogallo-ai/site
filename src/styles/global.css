@@ -186,7 +186,7 @@ a:where(:not(.button, .skip-link, .figure)) {
   }
 }
 
-/* A card that one link opens as a whole (method cards, project cards): the .card-link's box is
+/* A card that one link opens as a whole (project cards): the .card-link's box is
    stretched over the card, and the card draws that link's focus ring. A block in the card that
    holds links of its own gets z-index 1 in its component, so those links stay clickable above
    the stretched box. */
@@ -203,7 +203,7 @@ a:where(:not(.button, .skip-link, .figure)) {
 
 /* A link that leaves the site says so: ↗ after it, in the text face (the serif and mono subsets
    have no arrow), out of the accessible name. Internal links are written relative, so they never
-   match. A stretched .card-link uses its ::after for the stretch: its ↗, when external, is in its text. */
+   match. A stretched .card-link uses its ::after for the stretch and always leads into the site. */
 a[href^="http"]:not(.card-link)::after {
   content: "\00A0↗" / "";
   font-family: var(--font-sans);
@@ -220,7 +220,7 @@ a[href^="http"]:not(.card-link)::after {
   border-radius: inherit;
 }
 
-.card:hover {
+.card:has(.card-link):hover {
   border-color: var(--graphite);
 }
 
@@ -234,11 +234,11 @@ a[href^="http"]:not(.card-link)::after {
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  .card:hover {
+  .card:has(.card-link):hover {
     transform: translateY(-2px);
   }
 
-  .card:active {
+  .card:has(.card-link):active {
     transform: translateY(0);
     transition-duration: var(--dur-press);
   }

@@ -111,8 +111,8 @@ for (const [lang, w] of Object.entries(WORDS)) {
       const card = page.locator(".rules > li").nth(i);
       expect(plain(await card.locator("h3").innerText())).toBe(title);
       expect(plain(await card.locator("p:not(.links)").innerText()).replace(/\s+/g, " ")).toBe(body);
-      // The PR leaves the site: ↗ after its name (tests/affordances.spec.ts).
-      await expect(card.locator(".links a")).toHaveText(new RegExp(`^${pr}\\s↗$`));
+      // The PR leaves the site: its ↗ is drawn after it (tests/affordances.spec.ts).
+      await expect(card.locator(".links a")).toHaveText(pr);
     }
     expect(await texts(page, ".bio p")).toEqual([...w.bio]);
   });
