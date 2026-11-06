@@ -63,3 +63,19 @@ test("plain() reads a typeset text back as its source", () => {
   assert.equal(plain(fr("<p>l'adresse ? « oui » : 18–46 %</p>")), "<p>l'adresse ? « oui » : 18–46 %</p>");
   assert.equal(plain(en(`<p>Cohen's "kappa"</p>`)), `<p>Cohen's "kappa"</p>`);
 });
+
+test("a > inside a quoted attribute does not end the tag", () => {
+  assert.equal(en(`<a title="a > b">x</a> "q"`), `<a title="a > b">x</a> “q”`);
+});
+
+test("a URL written in the text keeps its ? and ;", () => {
+  assert.equal(fr("<p>Voir https://x.ch/?a=1;b ou pas ?</p>"), `<p>Voir https://x.ch/?a=1;b ou pas${" "}?</p>`);
+});
+
+test("text holding a private-use character fails loudly instead of being rewritten", () => {
+  assert.throws(() => fr("<p>icône  ici &amp; là</p>"), /private-use/);
+});
+
+test("an out-of-range numeric entity is kept as written", () => {
+  assert.equal(fr("<p>x &#9999999999; y</p>"), "<p>x &#9999999999; y</p>");
+});

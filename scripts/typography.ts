@@ -29,20 +29,28 @@ interface Context {
   mono: boolean;
 }
 
-// Entities other than the quotes and the no-break space stand for characters the rules must not
-// see as punctuation ("&amp;" ends in ";"): they travel as private-use characters and come back
-// unchanged.
+// Entities other than the quotes and the no-break space, and URLs written in the text, hold
+// characters the rules must not see as punctuation ("&amp;" ends in ";", "?a=1" is a query): they
+// travel as private-use characters and come back unchanged. A text that already holds one would
+// be rewritten by mistake, so it fails the build instead.
 function protect(text: string): { text: string; restore: (s: string) => string } {
+  if (/[\uE000-\uF8FF]/.test(text)) throw new Error(`typography: private-use character in ${JSON.stringify(text.slice(0, 80))}`);
   const kept: string[] = [];
-  const decoded = text.replace(/&(#\d+|#x[0-9a-f]+|[a-z]+\d*);/gi, (entity, body: string) => {
-    const code = body[0] === "#" ? Number.parseInt(body[1]?.toLowerCase() === "x" ? body.slice(2) : body.slice(1), body[1]?.toLowerCase() === "x" ? 16 : 10) : undefined;
-    const named: Record<string, string> = { quot: '"', apos: "'", nbsp: NBSP };
-    const char = code !== undefined && ![38, 60, 62].includes(code) ? String.fromCodePoint(code) : named[body.toLowerCase()];
-    if (char) return char;
-    kept.push(entity);
+  const keep = (s: string) => {
+    kept.push(s);
     return String.fromCharCode(0xe000 + kept.length - 1);
-  });
-  return { text: decoded, restore: (s) => s.replace(/[-]/g, (c) => kept[c.charCodeAt(0) - 0xe000] ?? c) };
+  };
+  const decoded = text
+    .replace(/\bhttps?:\/\/[^\s<]+/g, keep)
+    .replace(/&(#\d+|#x[0-9a-f]+|[a-z]+\d*);/gi, (entity, body: string) => {
+      const hex = body[1]?.toLowerCase() === "x";
+      const code = body[0] === "#" ? Number.parseInt(body.slice(hex ? 2 : 1), hex ? 16 : 10) : undefined;
+      const named: Record<string, string> = { quot: '"', apos: "'", nbsp: NBSP };
+      const valid = code !== undefined && code > 0 && code <= 0x10ffff && ![38, 60, 62].includes(code);
+      const char = valid ? String.fromCodePoint(code) : code === undefined ? named[body.toLowerCase()] : undefined;
+      return char ?? keep(entity);
+    });
+  return { text: decoded, restore: (s) => s.replace(/[\uE000-\uF8FF]/g, (c) => kept[c.charCodeAt(0) - 0xe000] ?? c) };
 }
 
 /** French rules on `text`, `before` being the character that precedes it on the page. */
@@ -97,7 +105,7 @@ function setAttributes(tag: string, name: string, lang: string): string {
 export function typeset(html: string): string {
   const stack: Context[] = [];
   let prev = " ";
-  const tokens = /<!--[\s\S]*?-->|<(script|style)\b[^>]*>[\s\S]*?<\/\1\s*>|<!DOCTYPE[^>]*>|<\/?[a-zA-Z][^>]*>|[^<]+/gi;
+  const tokens = /<!--[\s\S]*?-->|<(script|style)\b[^>]*>[\s\S]*?<\/\1\s*>|<!DOCTYPE[^>]*>|<\/?[a-zA-Z](?:[^>"]|"[^"]*")*>|[^<]+/gi;
   return html.replace(tokens, (token) => {
     const top = stack.at(-1);
     if (token[0] !== "<") {
