@@ -253,8 +253,14 @@ for (const path of ["/", "/en/projects/verity/"]) {
     await page.goto(path);
     const figures = page.locator("a.figure");
     expect(await figures.count()).toBeGreaterThan(3);
+    if (path !== "/") expect(await page.locator('a.figure[data-where="prose"]').count()).toBeGreaterThan(0);
     for (const figure of await figures.all()) {
       if (!(await figure.isVisible())) continue;
+      // Within a sentence the sentence says what the figure counts: its name is the value alone.
+      if ((await figure.getAttribute("data-where")) === "prose") {
+        await expect(figure).not.toHaveAttribute("aria-label");
+        continue;
+      }
       // The value in monospace takes U+00A0, the typeset label U+202F: compared as spaces.
       const value = (await figure.locator(".value").innerText()).trim().replace(/\s/g, " ");
       const name = (await figure.evaluate((a) => a.getAttribute("aria-label") ?? "")).replace(/\s/g, " ");
