@@ -1,5 +1,5 @@
 // Writes the Open Graph images (1200x630): public/og.png and public/og-en.png, each home page's
-// headline beside the figures of its band, and public/og/<case>[-en].png, each case study's name
+// headline beside one figure per project card, and public/og/<case>[-en].png, each case study's name
 // beside the first figure of its brief; the portrait on all, set with the site's own font subsets,
 // colour tokens and typography. Rendered by Chromium through Playwright, so the type is the type
 // of the site. The PNG is committed: browsers render
@@ -15,8 +15,7 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 import { chromium } from "@playwright/test";
 import config from "../astro.config.mjs";
 import { type Lang, numbered } from "../src/lib/i18n.ts";
-import { measure } from "../src/lib/measures.ts";
-import { OG, type OgImage, ogImages } from "../src/lib/og.ts";
+import { homeFigures, OG, type OgImage, ogImages } from "../src/lib/og.ts";
 import { english, french } from "./typography.ts";
 
 const root = new URL("../", import.meta.url);
@@ -40,7 +39,7 @@ const text = (s: string, lang: Lang) => escape(lang === "fr" ? french(s, " ", fa
 function page(image: OgImage): string {
   const { lang } = image;
   const portrait = `data:image/jpeg;base64,${readFileSync(new URL("src/assets/matteo.jpg", root)).toString("base64")}`;
-  const who = `<div class="who"><img src="${portrait}" alt=""><div><div class="name">${text(OG.name, lang)}</div><div class="role">${text(OG.role, lang)}</div></div></div>`;
+  const who = `<div class="who"><img src="${portrait}" alt=""><div><div class="name">${text(OG.name, lang)}</div><div class="role">${text(OG.role[lang], lang)}</div></div></div>`;
   const site = `<div class="site">${escape(new URL(config.site!).host)}</div>`;
   // Left, who and what; right, the proof: the figures fill the half a headline alone left empty.
   const left = image.case
@@ -48,7 +47,7 @@ function page(image: OgImage): string {
     : `${who}<h1>${text(OG[lang].headline, lang)}</h1>${site}`;
   const figures = image.case
     ? [{ value: image.case.value, caption: image.case.caption, defect: false, big: true }]
-    : OG.band.map((b) => ({ value: measure(b.id).display[lang], caption: b.caption[lang], defect: b.defect, big: false }));
+    : homeFigures(lang).map((f) => ({ value: f.value, caption: f.caption, defect: false, big: false }));
   const right = figures
     .map((f) => `<div class="figure${f.defect ? " defect" : ""}${f.big ? " big" : ""}"><div class="value">${escape(lang === "fr" ? french(f.value, " ", true) : f.value)}</div><div class="caption">${text(f.caption, lang)}</div></div>`)
     .join("");

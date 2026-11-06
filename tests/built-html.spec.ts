@@ -73,12 +73,14 @@ const CALQUES = [
   /refuses? rightly/, // « à raison »: correctly
   /technician training/, // « formation d’automaticien »: apprenticeship
   /\bWrite (to me|an e-mail)\b/,
-  /\banalysis note|\bnotes?\b(?![^<]*<\/code>)/, // Praxis delivers briefings
   /\bFrame of\b/, // « Image de l’enregistrement »: a still
   /told apart from chance|counted apart\b/,
   /programming interface \(API\)/,
   /point of comparison|test bench/, // « point de comparaison », « banc de test »: baseline, test harness
 ];
+// The case studies call what Praxis delivers a briefing; the home page keeps its owner's own words,
+// "a sourced analysis note".
+const CASE_CALQUES = [/\banalysis note|\bnotes?\b(?![^<]*<\/code>)/];
 for (const file of files.filter((f) => f.startsWith("en/"))) {
   test(`${file}: no French calque in the English`, () => {
     // What a reader or a link preview shows: the text, and the attributes written for people.
@@ -96,14 +98,14 @@ for (const file of files.filter((f) => f.startsWith("en/"))) {
       } else if (!french) parts.push(token);
     }
     const text = parts.join("");
-    expect(CALQUES.flatMap((c) => around(text, c))).toEqual([]);
+    expect([...CALQUES, ...(file.startsWith("en/projects/") ? CASE_CALQUES : [])].flatMap((c) => around(text, c))).toEqual([]);
   });
 }
 
 // D4: the English refusal rationale is the trace's own text, internal reference included; a short
 // label says so and what the reference points to.
 test("en/index.html: the refusal rationale is labelled as quoted from the run", () => {
-  expect(html("en/index.html")).toMatch(/<p class="tr why"[^>]*><span class="tr-k"[^>]*>the model’s words, as recorded; document index 0 is the SLA<\/span> <span data-verbatim[^>]*>The SLA section \(document index 0\)/);
+  expect(html("en/index.html")).toMatch(/<p class="why"[^>]*><span class="why-k"[^>]*>the model’s words, as recorded; document index 0 is the SLA<\/span> <span data-verbatim[^>]*>The SLA section \(document index 0\)/);
 });
 
 /**

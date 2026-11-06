@@ -19,10 +19,10 @@ const id = fr ? { projects: "projets", method: "methode", about: "a-propos" } : 
 ---
 
 <Base
-  title="Matteo Gallo — Software & AI Engineer"
+  title={fr ? "Matteo Gallo — Ingénieur logiciel & IA" : "Matteo Gallo — Software & AI Engineer"}
   description={fr
-    ? "Matteo Gallo, Software & AI Engineer à Lausanne. Je construis des produits IA qu’on peut vérifier : complets, de l’interface à la production, chaque mesure publiée, défauts compris."
-    : "Matteo Gallo, Software & AI Engineer in Lausanne. I build AI products you can verify: complete, from the interface to production, every result published, defects included."}
+    ? "Matteo Gallo, ingénieur logiciel et IA à Lausanne. Applications d’IA conçues et mises en production de bout en bout, évaluées et mesurées."
+    : "Matteo Gallo, software and AI engineer in Lausanne. AI applications designed and taken to production end to end, evaluated and measured."}
   serif
   stickyHeader
 >
@@ -46,27 +46,14 @@ const id = fr ? { projects: "projets", method: "methode", about: "a-propos" } : 
         <Picture src={portrait} formats={["avif", "webp"]} width={56} height={56} densities={[1, 2]} alt={fr ? "Portrait de Matteo Gallo" : "Portrait of Matteo Gallo"} class="portrait" loading="eager" fetchpriority="high" />
         <p>
           <span class="name">Matteo Gallo</span>
-          <span class="role">Software &amp; AI Engineer · Lausanne</span>
+          <span class="role">{fr ? "Ingénieur logiciel & IA · Lausanne" : "Software & AI Engineer · Lausanne"}</span>
           <span class="status"><span class="dot" aria-hidden="true"></span>{fr ? "Disponible" : "Available"}</span>
         </p>
       </div>
-      {
-        fr ? (
-          <>
-            <h1 id="claim">Je construis des produits IA qu’on peut vérifier.</h1>
-            <p class="message">
-              Des produits complets, de l’interface à la production. Chaque mesure est publiée, <mark>défauts compris</mark>.
-            </p>
-          </>
-        ) : (
-          <>
-            <h1 id="claim">I build AI products you can verify.</h1>
-            <p class="message">
-              Complete products, from the interface to production. Every result is published, <mark>defects included</mark>.
-            </p>
-          </>
-        )
-      }
+      <h1 id="claim">{fr ? "Je conçois des applications d’IA, de l’idée à la production." : "I build AI applications, from idea to production."}</h1>
+      <p class="message">
+        {fr ? "Ma spécialité : mesurer ce qu’elles valent vraiment. Tests, évaluations, limites publiées." : "My focus: measuring what they are actually worth. Tests, evaluations, published limits."}
+      </p>
       <p class="actions">
         <a class="button primary" href={`#${id.projects}`}>{fr ? "Voir les projets" : "See the projects"}</a>
         <a class="button" href="#contact">{fr ? "Écrire un e-mail" : "Get in touch"}</a>
@@ -77,21 +64,6 @@ const id = fr ? { projects: "projets", method: "methode", about: "a-propos" } : 
     </div>
   </section>
 
-  <section class="container band reveal" aria-label={fr ? "Verity en trois chiffres" : "Verity in three figures"}>
-    <p class="cell">
-      <Figure id="verity.hallucination_rate" where="band" />
-      <span>{fr ? "réponses avec une hallucination, selon un juge LLM, parmi les questions avec réponse auxquelles Verity a répondu" : "answers with a hallucination, according to an LLM judge, among the answerable questions Verity answered"}</span>
-    </p>
-    <p class="cell">
-      <Figure id="verity.refusal_recall" where="band" />
-      <span>{fr ? "questions sans réponse correctement refusées" : "unanswerable questions correctly refused"}</span>
-    </p>
-    <p class="cell">
-      <Figure id="verity.unanswerable_answered" where="band" defect />
-      <span class="defect-label">{fr ? "questions sans réponse auxquelles il a quand même répondu : son défaut principal" : "unanswerable questions it answered anyway: its main defect"}</span>
-    </p>
-  </section>
-
   <Projects />
 
   <section class="container section reveal" id={id.method} aria-labelledby={`${id.method}-title`}>
@@ -99,19 +71,19 @@ const id = fr ? { projects: "projets", method: "methode", about: "a-propos" } : 
     <h2 id={`${id.method}-title`}>{fr ? "Méthode" : "Method"}</h2>
     <ul class="rules">
       <li class="card">
-        <h3>{fr ? <>Revue humaine <span class="word">pré-enregistrée</span>, publiée telle quelle</> : <><span class="word">Pre-registered</span> human review, published as is</>}</h3>
-        <p>{fr ? "Échantillon tiré avec une graine fixe, commité avant toute annotation :" : "Sample drawn with a fixed seed, committed before any annotation:"} <Figure id="promptlang.linter_precision_reviewed" where="method" defect /> {fr ? "signalements jugés justes, publié avec sa limite." : "flags judged correct, published with its limit."}</p>
-        <p class="links"><a class="card-link" href="https://github.com/matteogallo-ai/promptlang/pull/39">PR promptlang#39</a></p>
+        <h3>{fr ? "Audit indépendant" : "Independent audit"}</h3>
+        <p>{fr ? "Chaque projet est relu par un auditeur sans contexte. Sur PromptLang :" : "Every project is reviewed by an auditor with no context. On PromptLang:"} <Figure id="promptlang.audit_findings" where="method" /> {fr ? "constats, chacun corrigé, réfuté ou documenté." : "findings, each fixed, refuted or documented."}</p>
+        <p class="links"><a class="card-link" href="https://github.com/matteogallo-ai/promptlang/pull/32">PR promptlang#32</a></p>
       </li>
       <li class="card">
-        <h3>{fr ? "Lire les vraies sorties, pas seulement les tests" : "Read the real outputs, not only the tests"}</h3>
-        <p>{fr ? "Ma relecture d’un briefing Praxis a trouvé des estimations présentées comme des faits. Validateur corrigé, relecture publiée." : "My review of a Praxis briefing found estimates presented as facts. Validator fixed, review published."}</p>
+        <h3>{fr ? "Lecture des sorties réelles" : "Reading real outputs"}</h3>
+        <p>{fr ? "Les tests ne suffisent pas. La relecture d’une note Praxis a révélé des estimations présentées comme des faits ; le validateur a été corrigé." : "Tests are not enough. Reviewing a Praxis note revealed estimates presented as facts; the validator was fixed."}</p>
         <p class="links"><a class="card-link" href="https://github.com/matteogallo-ai/praxis/pull/47">PR praxis#47</a></p>
       </li>
       <li class="card">
-        <h3>{fr ? "Audit à froid, chaque constat suivi par écrit" : "Cold audit, every finding followed up in writing"}</h3>
-        <p>{fr ? "Un agent sans contexte a audité PromptLang :" : "An agent with no context audited PromptLang:"} <Figure id="promptlang.audit_findings" where="method" /> {fr ? "constats, chacun corrigé, réfuté ou laissé ouvert." : "findings, each fixed, refuted or left open."}</p>
-        <p class="links"><a class="card-link" href="https://github.com/matteogallo-ai/promptlang/pull/32">PR promptlang#32</a></p>
+        <h3>{fr ? "Évaluation pré-enregistrée" : "Pre-registered evaluation"}</h3>
+        <p>{fr ? "Échantillon tiré avec une graine fixe et commité avant l’annotation. Le résultat est publié tel quel, même défavorable :" : "Sample drawn with a fixed seed and committed before annotation. The result is published as is, even when unfavourable:"} <Figure id="promptlang.linter_precision_reviewed" where="method" defect />.</p>
+        <p class="links"><a class="card-link" href="https://github.com/matteogallo-ai/promptlang/pull/39">PR promptlang#39</a></p>
       </li>
     </ul>
     <p><a href={repo("how-i-build")}>{fr ? "Toutes les règles et leurs incidents : how-i-build" : "All the rules and their incidents: how-i-build"}</a></p>
@@ -305,58 +277,11 @@ const id = fr ? { projects: "projets", method: "methode", about: "a-propos" } : 
     max-width: 30em;
   }
 
-  mark {
-    background: var(--proof-wash);
-    color: var(--ink);
-    padding-inline: 0.15em;
-    white-space: nowrap;
-  }
-
-  /* A compound kept on one line: "pré-" alone at a line end reads as a cut word. */
-  .word {
-    white-space: nowrap;
-  }
-
   .actions {
     display: flex;
     flex-wrap: wrap;
     gap: 0.75rem;
     margin: 1.75rem 0 0;
-  }
-
-  .band {
-    display: grid;
-    gap: var(--gutter);
-    padding-block: 2rem;
-    border-block: 1px dotted var(--rule);
-  }
-
-  @media (min-width: 48rem) {
-    .band {
-      grid-template-columns: repeat(3, 1fr);
-    }
-  }
-
-  .cell {
-    margin: 0;
-    font-size: var(--step-14);
-    color: var(--graphite);
-  }
-
-  .cell :global(.figure) {
-    display: block;
-    width: max-content;
-  }
-
-  .cell :global(.value) {
-    display: block;
-    font-size: var(--step-44);
-    letter-spacing: var(--track-44);
-    border-bottom: 0;
-  }
-
-  .defect-label {
-    color: var(--defect);
   }
 
   figcaption {
