@@ -50,7 +50,7 @@ test("glyph collector self-test: hidden places a missing glyph can hide are all 
   await page.evaluate(() => {
     const probe = document.createElement("div");
     probe.innerHTML = `
-      <style>.a::before{content:"→ "} .cap{text-transform:capitalize} .m{font-family:var(--font-mono)} .bold{font-weight:800} .qq{quotes:"⟨" "⟩"}</style>
+      <style>.a::before{content:"⇒ "} .cap{text-transform:capitalize} .m{font-family:var(--font-mono)} .bold{font-weight:800} .qq{quotes:"⟨" "⟩"}</style>
       <span class="a">x</span><ul><li>item</li></ul><q class="qq">cité</q>
       <input value="✓ ok" placeholder="⌘K"><span class="cap">µs</span>
       <span class="m">é</span><span class="m">\u202F</span><span class="bold">gras</span>`;
@@ -58,7 +58,7 @@ test("glyph collector self-test: hidden places a missing glyph can hide are all 
   });
   const { problems } = await check(page);
   expect(problems).toEqual(expect.arrayContaining([
-    'sans: "→" U+2192', 'sans: "•" U+2022', 'sans: "⟨" U+27E8', 'sans: "✓" U+2713', 'sans: "⌘" U+2318', 'sans: "Μ" U+039C',
+    'sans: "⇒" U+21D2', 'sans: "•" U+2022', 'sans: "⟨" U+27E8', 'sans: "✓" U+2713', 'sans: "⌘" U+2318', 'sans: "Μ" U+039C',
     'mono: "é" U+00E9', 'mono: "\u202F" U+202F', expect.stringMatching(/^sans has no 800 normal face/),
   ]));
 });

@@ -6,8 +6,10 @@ import praxisPage from "../assets/projects/praxis-esg-brief-p1.png";
 import media from "../data/media.json";
 import { langOf } from "../lib/i18n.ts";
 
-// A product's image, its caption and the link to the recording or the PDF it comes from: on the
-// home page's card and, large, at the top of its case study.
+// A product's image, a one-line caption and the link to the recording or the PDF it comes from:
+// on the home page's card, where the image belongs to the card's link to the case study, and
+// large after a case study's brief, where the image itself opens the recording or the PDF. What
+// the image shows in detail is its alt text.
 interface Props {
   id: "verity" | "promptlang" | "praxis";
   /** "card": a third of the page at most; "lead": the head of a case study. */
@@ -20,19 +22,25 @@ const images = { verity: verityShot, promptlang: promptlangStill, praxis: praxis
 const item = media.media.find((m) => m.id === id);
 if (!item) throw new Error(`no media for ${id}`);
 const link = {
-  fr: { gif: "Voir l’enregistrement (GIF)", pdf: "Voir le PDF" },
-  en: { gif: "See the recording (GIF)", pdf: "See the PDF" },
+  fr: { gif: "Voir le GIF", pdf: "Voir le PDF" },
+  en: { gif: "See the GIF", pdf: "See the PDF" },
 }[lang][item.url.endsWith(".pdf") ? "pdf" : "gif"];
-// Identifiers in a caption are marked `like this` in media.json and set as code.
-const caption = item.caption[lang].split("`").map((part, i) => ({ part, code: i % 2 === 1 }));
 // 412 px at 1.75x asks for 721 px: without 960 a phone would get the 1440 file.
 const widths = size === "card" ? [480, 960] : [480, 720, 960, 1440];
 const sizes = size === "card" ? "(min-width: 64rem) 360px, 100vw" : "(min-width: 64rem) 720px, 100vw";
 ---
 
 <figure class:list={["shot", size]}>
-  <Picture src={images[id]} formats={["avif", "webp"]} alt={item.alt[lang]} widths={widths} sizes={sizes} loading={size === "lead" ? "eager" : "lazy"} decoding="async" />
-  <figcaption>{caption.map((c) => (c.code ? <code>{c.part}</code> : c.part))} <a href={item.url}>{link}</a></figcaption>
+  {
+    size === "lead" ? (
+      <a class="open" href={item.url}>
+        <Picture src={images[id]} formats={["avif", "webp"]} alt={item.alt[lang]} widths={widths} sizes={sizes} loading="eager" decoding="async" />
+      </a>
+    ) : (
+      <Picture src={images[id]} formats={["avif", "webp"]} alt={item.alt[lang]} widths={widths} sizes={sizes} loading="lazy" decoding="async" />
+    )
+  }
+  <figcaption>{item.caption[lang]} <a href={item.url}>{link}</a></figcaption>
 </figure>
 
 <style>
@@ -65,9 +73,14 @@ const sizes = size === "card" ? "(min-width: 64rem) 360px, 100vw" : "(min-width:
     transition: transform var(--dur-image) var(--ease-out);
   }
 
-  figcaption code {
-    font-family: var(--font-mono);
-    font-size: 0.95em;
+  /* The image opens what it was taken from: no ↗ drawn after it, the caption's link says where. */
+  .open {
+    display: block;
+    padding: 0;
+  }
+
+  .open::after {
+    content: none !important;
   }
 
   figcaption {

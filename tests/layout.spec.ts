@@ -205,8 +205,8 @@ for (const path of ["/projets/verity/", "/en/projects/promptlang/"]) {
 
 // C2: each case study opens on its product, large, with the link to the recording or the PDF.
 for (const [path, link] of [
-  ["/projets/verity/", "Voir l’enregistrement (GIF)"],
-  ["/en/projects/promptlang/", "See the recording (GIF)"],
+  ["/projets/verity/", "Voir le GIF"],
+  ["/en/projects/promptlang/", "See the GIF"],
   ["/projets/praxis/", "Voir le PDF"],
 ] as const) {
   test(`${path}: the product image follows the brief, large, with its link`, async ({ page }) => {
@@ -218,7 +218,10 @@ for (const [path, link] of [
     // Right after the brief: above it, on a phone, it was the largest paint and broke the LCP budget.
     expect(await shot.evaluate((el) => el.previousElementSibling?.matches(".brief") ?? false)).toBe(true);
     expect((await shot.locator("img").boundingBox())!.width).toBeGreaterThan(600);
-    await expect(shot.getByRole("link", { name: link })).toHaveAttribute("href", /^https:\/\//);
+    const href = await shot.getByRole("link", { name: link, exact: true }).getAttribute("href");
+    expect(href).toMatch(/^https:\/\//);
+    // The image itself opens the same recording or PDF.
+    await expect(shot.locator("a:has(img)")).toHaveAttribute("href", href!);
   });
 }
 

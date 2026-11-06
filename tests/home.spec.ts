@@ -105,13 +105,14 @@ for (const [lang, w] of Object.entries(WORDS)) {
       expect(await texts(page, `.project:nth-child(${i + 1}) > p:not([class])`)).toEqual([sentence]);
       expect(plain(await card.locator(".figure-line").innerText())).toBe(figure);
       expect(plain(await card.locator(".limit").innerText()).replace(/\s+/g, " ")).toBe(limit);
-      await expect(card.locator(".links a")).toHaveText([lang === "fr" ? "Étude de cas" : "Case study", "Code"]);
+      await expect(card.locator(".links a")).toHaveText(lang === "fr" ? ["Lire l’étude de cas →", "Code sur GitHub"] : ["Read the case study →", "Code on GitHub"]);
     }
     for (const [i, [title, body, pr]] of w.method.entries()) {
       const card = page.locator(".rules > li").nth(i);
       expect(plain(await card.locator("h3").innerText())).toBe(title);
       expect(plain(await card.locator("p:not(.links)").innerText()).replace(/\s+/g, " ")).toBe(body);
-      await expect(card.locator(".links a")).toHaveText(pr);
+      // The PR leaves the site: ↗ after its name (tests/affordances.spec.ts).
+      await expect(card.locator(".links a")).toHaveText(new RegExp(`^${pr}\\s↗$`));
     }
     expect(await texts(page, ".bio p")).toEqual([...w.bio]);
   });

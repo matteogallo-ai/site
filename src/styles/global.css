@@ -201,15 +201,27 @@ a:where(:not(.button, .skip-link, .figure)) {
     transform var(--dur-hover) var(--ease-out);
 }
 
+/* A link that leaves the site says so: ↗ after it, in the text face (the serif and mono subsets
+   have no arrow), out of the accessible name. Internal links are written relative, so they never
+   match. A stretched .card-link uses its ::after for the stretch: its ↗, when external, is in its text. */
+a[href^="http"]:not(.card-link)::after {
+  content: "\00A0↗" / "";
+  font-family: var(--font-sans);
+  font-weight: 400;
+}
+
 .card-link::after {
   content: "";
   position: absolute;
   inset: 0;
+  /* Above the image that follows the title (its zoom on hover makes it a layer of its own); the
+     blocks with links of their own come later with z-index 1, so they stay above it. */
+  z-index: 1;
   border-radius: inherit;
 }
 
 .card:hover {
-  border-color: var(--edge-hover);
+  border-color: var(--graphite);
 }
 
 .card:has(.card-link:focus-visible) {

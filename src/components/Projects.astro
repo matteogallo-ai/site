@@ -8,8 +8,8 @@ const lang = langOf(Astro.url.pathname);
 const fr = lang === "fr";
 const study = (slug: string) => (lang === "fr" ? `/projets/${slug}/` : twin(`/projets/${slug}/`));
 const t = {
-  fr: { id: "projets", title: "Projets", limit: "Limite\u00A0:", study: "Étude de cas" },
-  en: { id: "projects", title: "Projects", limit: "Limit:", study: "Case study" },
+  fr: { id: "projets", title: "Projets", limit: "Limite\u00A0:", read: "Lire l’étude de cas →", code: "Code sur GitHub" },
+  en: { id: "projects", title: "Projects", limit: "Limit:", read: "Read the case study →", code: "Code on GitHub" },
 }[lang];
 ---
 
@@ -18,33 +18,33 @@ const t = {
   <h2 id={`${t.id}-title`}>{t.title}</h2>
   <div class="projects">
     <article class="project card" aria-labelledby="p-verity">
-      <h3 id="p-verity">Verity</h3>
+      <h3 id="p-verity"><a class="card-link" href={study("verity")}>Verity</a></h3>
       <ProductShot id="verity" size="card" />
       <p>{fr ? "Assistant de questions-réponses sur des documents d’entreprise : chaque réponse cite le passage source, et l’absence de preuve produit un refus." : "Question answering over company documents: every answer cites its source passage, and missing evidence produces a refusal."}</p>
       <p class="figure-line"><Figure id="verity.refusal_recall" where="card" /> — {fr ? "questions sans réponse correctement refusées" : "unanswerable questions correctly refused"}</p>
       <p class="limit"><span class="k">{t.limit}</span> <Figure id="verity.unanswerable_answered" where="card" defect text="3" /> {fr ? "questions sans réponse ont reçu une réponse au lieu d’un refus." : "unanswerable questions got an answer instead of a refusal."}</p>
       <p class="stack">Python 3.12, FastAPI, Postgres + pgvector, Next.js, Claude.</p>
-      <p class="links"><a class="card-link" href={study("verity")} aria-label={`${t.study} Verity`}>{t.study}</a> · <a href={repo("verity")}>Code</a></p>
+      <p class="links"><a class="button" href={study("verity")}>{t.read}</a> <a href={repo("verity")}>{t.code}</a></p>
     </article>
 
     <article class="project card" aria-labelledby="p-promptlang">
-      <h3 id="p-promptlang">PromptLang</h3>
+      <h3 id="p-promptlang"><a class="card-link" href={study("promptlang")}>PromptLang</a></h3>
       <ProductShot id="promptlang" size="card" />
       <p>{fr ? "Langage typé pour les prompts LLM, compilé vers TypeScript et Python, publié sur npm." : "A typed language for LLM prompts, compiled to TypeScript and Python, published on npm."}</p>
       <p class="figure-line"><Figure id="promptlang.mutation_score" where="card" /> — {fr ? "score de mutation (lexer, parser, semver ; exécution locale, hors CI)" : "mutation score (lexer, parser, semver; local run, not in CI)"}</p>
       <p class="limit"><span class="k">{t.limit}</span> {fr ? "Linter IA :" : "AI linter,"} <Figure id="promptlang.linter_precision_reviewed" where="card" defect text={fr ? "12 signalements justes sur 40" : "12 of 40 findings"} /> {fr ? "en revue humaine." : "correct in human review."}</p>
       <p class="stack">{fr ? "TypeScript strict, Bun, npm." : "Strict TypeScript, Bun, npm."}</p>
-      <p class="links"><a class="card-link" href={study("promptlang")} aria-label={`${t.study} PromptLang`}>{t.study}</a> · <a href={repo("promptlang")}>Code</a></p>
+      <p class="links"><a class="button" href={study("promptlang")}>{t.read}</a> <a href={repo("promptlang")}>{t.code}</a></p>
     </article>
 
     <article class="project card" aria-labelledby="p-praxis">
-      <h3 id="p-praxis">Praxis</h3>
+      <h3 id="p-praxis"><a class="card-link" href={study("praxis")}>Praxis</a></h3>
       <ProductShot id="praxis" size="card" />
       <p>{fr ? "Pipeline qui transforme une question business en briefing d’analyse sourcé, avec relecture adverse automatique." : "A pipeline that turns a business question into a sourced analysis briefing, with automatic adversarial review."}</p>
       <p class="figure-line"><Figure id="praxis.cost_per_briefing" where="card" /> — {fr ? "par briefing live terminé" : "per completed live briefing"}</p>
       <p class="limit"><span class="k">{t.limit}</span> {fr ? "Les" : "all"} <Figure id="praxis.insufficiently_sourced" where="card" defect text="6" /> {fr ? "briefings live terminés sont signalés insuffisamment sourcés par son propre contrôle." : "completed live briefings are flagged as under-sourced by its own check."}</p>
       <p class="stack">{fr ? "TypeScript, Bun ; sorties Markdown, PDF, DOCX." : "TypeScript, Bun; Markdown, PDF and DOCX output."}</p>
-      <p class="links"><a class="card-link" href={study("praxis")} aria-label={`${t.study} Praxis`}>{t.study}</a> · <a href={repo("praxis")}>Code</a></p>
+      <p class="links"><a class="button" href={study("praxis")}>{t.read}</a> <a href={repo("praxis")}>{t.code}</a></p>
     </article>
   </div>
 </section>
@@ -68,9 +68,25 @@ const t = {
     padding: 1.25rem;
   }
 
+  /* The way in, at the foot of each card and level across the row: a button to the case study,
+     the code beside it. */
   .project .links {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem 1rem;
     margin-top: auto;
-    padding-top: 0.75rem;
+    padding-top: 1rem;
+  }
+
+  .project .links .button {
+    font-size: var(--step-14);
+  }
+
+  /* The title is the card's link; it reads as a title. */
+  h3 .card-link {
+    color: inherit;
+    text-decoration: none;
   }
 
   .project p {

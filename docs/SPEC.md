@@ -26,7 +26,7 @@ Plain text on the left, one strong visual on the right: Verity working on a cont
 2. **First screen:** sober, readable by a recruiter in 30 seconds; no band of figures.
    - Left, in small type: the **portrait** (56 px, round), the name, « Ingénieur logiciel & IA · Lausanne » / "Software & AI Engineer · Lausanne" and the status "Disponible" (green dot). Then the headline, 68 px: « Je conçois des logiciels et des systèmes d’IA, de l’idée à la production. » (EN: "I build software and AI systems, from idea to production.") Under it: « Ma spécialité : mesurer ce qu’ils valent vraiment. Tests, évaluations, limites publiées. », and the buttons « Voir les projets » and « Écrire un e-mail ».
    - Right: the Verity demo (section 2).
-3. **Projects:** 3 cards (Verity, PromptLang, Praxis; no calibre number), each with **a real screenshot or GIF** of the product, one sentence, **one** figure linked to its proof, one line « Limite : … » with its proof (the label in the defect colour, the text in ink), the technologies in small type, and links Case study · Code. The other figures stay on the case studies.
+3. **Projects:** 3 cards (Verity, PromptLang, Praxis; no calibre number), each with **a real screenshot or GIF** of the product and a one-line caption (« Démo enregistrée : … Voir le GIF ↗ »; the detail is in the alt text), one sentence, **one** figure linked to its proof, one line « Limite : … » with its proof (the label in the defect colour, the text in ink), the technologies in small type, and at the foot a secondary button « Lire l’étude de cas → » beside « Code sur GitHub ↗ ». The whole card opens its case study (its title is the link, stretched over the card; the links it holds stay their own, above it); under the pointer it rises 2 px and its border darkens, and keyboard focus rings the whole card. The other figures stay on the case studies.
 4. **Method:** 3 cards side by side with noun titles (« Audit indépendant », « Lecture des sorties réelles », « Évaluation pré-enregistrée »), the real incident behind each in two lines and the link to its PR. Link to the repository.
 5. **Writing:** dated list of published articles. The section is left out while none is published.
 6. **About and contact**, one closing section on two columns. Left, the bio in one block: role and city, how I work with coding agents, initial training, languages, what I am looking for. Right: "Un poste d'ingénieur logiciel et IA en Suisse romande ? Écrivez-moi.", the e-mail in large type, LinkedIn and GitHub as buttons. No form.
@@ -54,7 +54,7 @@ How the site is built: stack, budgets, real measures, accessibility choices, wha
 
 ## 5. Signature details
 1. The Verity demo with the spotlight computed on the citation.
-2. Every figure is a link to its proof (the artefact path shown on hover and focus).
+2. Every figure is a link to its proof: a thin solid underline and ↗ in the proof colour (the artefact path shown on hover and focus). Every link that leaves the site carries ↗; internal links never do. Within a sentence a figure is a word of it: one space after it, no more.
 3. The footer that measures itself, and the Colophon page.
 
 ## 6. Content rules
@@ -75,7 +75,7 @@ French at `/`, English at `/en/`, translated by hand, correct `hreflang` (x-defa
 - **Blocking budgets in CI:** home ≤ 200 KB transferred excluding deferred screenshots, measured with gzip (stricter than the brotli Cloudflare serves, on purpose); fonts ≤ 90 000 bytes on any page; LCP < 1.5 s; CLS < 0.02; Lighthouse ≥ 98 on all 4 categories; 0 axe violation.
 - **CI:** build, typecheck, links, Lighthouse CI, axe, budgets, spotlight position test at 3 widths, generation of `site-measures.json`.
 - Portrait: `src/assets/matteo.jpg` (800 × 800), served as AVIF/WebP at the sizes used.
-- Metadata: Open Graph (the home image: the first screen's headline beside the projects' figures, one per card; each case study its own, its name beside the first figure of its brief), favicon in the ink and paper tokens with `favicon.ico` and `apple-touch-icon.png`, sitemap, robots. No tracker.
+- Metadata: Open Graph (drawn on the dark tokens, every colour at 7:1 or more, so it stands out in a white feed; the home image: the first screen's headline beside the projects' figures, one per card; each case study its own, its name beside the first figure of its brief), favicon in the ink and paper tokens with `favicon.ico` and `apple-touch-icon.png`, sitemap, robots. No tracker.
 - Typography is set by the build, per element language (`scripts/typography.ts`): French spaces before ; ! ? % : $ and inside « », curly apostrophes and quotes; ranges as « 18–46 % ».
 
 ## 9. Accessibility

@@ -284,9 +284,9 @@ for (const lang of LANGS) {
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto(w.home);
     const card = page.locator(".project").first();
-    await expect(card.locator(".card-link")).toHaveText(w.study);
-    // Three links read « Étude de cas »: each names its project in a links list.
-    await expect(card.locator(".card-link")).toHaveAccessibleName(`${w.study} Verity`);
+    // The title is the card's link: its name is the project's.
+    await expect(card.locator(".card-link")).toHaveText("Verity");
+    await expect(card.locator(".card-link")).toHaveAccessibleName("Verity");
     // The recording, the figures and the code link answer at their own place, above the stretched link.
     for (const link of await card.locator("a:not(.card-link)").all()) {
       await link.scrollIntoViewIfNeeded();
