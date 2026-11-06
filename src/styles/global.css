@@ -146,6 +146,50 @@ a:hover {
   }
 }
 
+/* A card that one link opens as a whole (method cards, project cards): the .card-link's box is
+   stretched over the card, and the card draws that link's focus ring. A block in the card that
+   holds links of its own gets z-index 1 in its component, so those links stay clickable above
+   the stretched box. */
+.card {
+  position: relative;
+  border: 1px solid var(--rule);
+  border-radius: 14px;
+  transition:
+    border-color var(--dur-hover) var(--ease-out),
+    transform var(--dur-hover) var(--ease-out);
+}
+
+.card-link::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+}
+
+.card:hover {
+  border-color: var(--edge-hover);
+}
+
+.card:has(.card-link:focus-visible) {
+  outline: 2px solid var(--proof);
+  outline-offset: 3px;
+}
+
+.card-link:focus-visible {
+  outline: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .card:hover {
+    transform: translateY(-2px);
+  }
+
+  .card:active {
+    transform: translateY(0);
+    transition-duration: var(--dur-press);
+  }
+}
+
 /* Two options in a pill, the chosen one on an ink pill that slides between them (demo tabs, bio
    length). The columns are equal, so the pill moves by translateX alone; data-at holds the
    chosen index. */

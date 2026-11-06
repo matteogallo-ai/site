@@ -1,6 +1,8 @@
 import { expect, type Locator, type Page, test } from "@playwright/test";
+import { builtPages } from "../scripts/built-pages.ts";
 
-// Every interactive element answers the pointer and the keyboard (CRAFT spec §2): its hover style
+// Every interactive element of the home page and the case studies answers the pointer and the
+// keyboard (CRAFT spec §2): its hover style
 // differs from its rest style, keyboard focus draws a ring, and what changes is under a declared
 // transition, never "transition: all".
 
@@ -38,29 +40,35 @@ const changes = (from: Look, to: Look) =>
       .map((p) => ({ property: p, transitioned: node.transitioned.includes(p) })),
   );
 
-/** The interactive elements of the home page, by a name used in the test titles. */
-const ELEMENTS: Record<string, (page: Page) => Locator> = {
-  "nav link": (p) => p.locator(".nav a").first(),
-  "primary button": (p) => p.getByRole("link", { name: "Voir les projets" }),
-  "secondary button": (p) => p.getByRole("link", { name: "Écrire un e-mail" }),
-  "demo tab (not selected)": (p) => p.getByRole("tab", { name: "Refuse, faute de preuve" }),
-  "run source link": (p) => p.getByRole("link", { name: "Source du run" }),
-  "figure in the band": (p) => p.locator(".band a.figure").first(),
-  "figure in a card": (p) => p.locator(".project a.figure").first(),
-  "project text link": (p) => p.locator(".project .links a").first(),
-  "method card": (p) => p.locator("#methode .rules .links a").first(),
-  "how-i-build link": (p) => p.getByRole("link", { name: /how-i-build/ }),
-  "bio toggle (not pressed)": (p) => p.getByRole("button", { name: "Détaillé" }),
-  "e-mail address": (p) => p.getByRole("button", { name: "matteogallo.office@gmail.com" }),
-  "write button": (p) => p.getByRole("link", { name: "Écrire", exact: true }),
-  "LinkedIn button": (p) => p.getByRole("link", { name: "LinkedIn" }),
-  "footer link": (p) => p.locator(".footer a").first(),
+/** The interactive elements of the home page and of a case study, by a name used in the test titles. */
+const ELEMENTS: Record<string, { path: string; find: (page: Page) => Locator }> = {
+  "nav link": { path: "/", find: (p) => p.locator(".nav a").first() },
+  "primary button": { path: "/", find: (p) => p.getByRole("link", { name: "Voir les projets" }) },
+  "secondary button": { path: "/", find: (p) => p.getByRole("link", { name: "Écrire un e-mail" }) },
+  "demo tab (not selected)": { path: "/", find: (p) => p.getByRole("tab", { name: "Refuse, faute de preuve" }) },
+  "run source link": { path: "/", find: (p) => p.getByRole("link", { name: "Source du run" }) },
+  "figure in the band": { path: "/", find: (p) => p.locator(".band a.figure").first() },
+  "figure in a card": { path: "/", find: (p) => p.locator(".project a.figure").first() },
+  "project card": { path: "/", find: (p) => p.locator(".project .card-link").first() },
+  "project text link": { path: "/", find: (p) => p.locator(".project .links a:not(.card-link)").first() },
+  "method card": { path: "/", find: (p) => p.locator("#methode .rules .links a").first() },
+  "how-i-build link": { path: "/", find: (p) => p.getByRole("link", { name: /how-i-build/ }) },
+  "bio toggle (not pressed)": { path: "/", find: (p) => p.getByRole("button", { name: "Détaillé" }) },
+  "e-mail address": { path: "/", find: (p) => p.getByRole("button", { name: "matteogallo.office@gmail.com" }) },
+  "write button": { path: "/", find: (p) => p.getByRole("link", { name: "Écrire", exact: true }) },
+  "LinkedIn button": { path: "/", find: (p) => p.getByRole("link", { name: "LinkedIn" }) },
+  "footer link": { path: "/", find: (p) => p.locator(".footer a").first() },
+  "case study: breadcrumb link": { path: "/projets/verity/", find: (p) => p.locator(".crumbs a").first() },
+  "case study: code link": { path: "/projets/verity/", find: (p) => p.locator(".head .code a") },
+  "case study: figure": { path: "/projets/verity/", find: (p) => p.locator(".case-section a.figure").first() },
+  "case study: measures fold": { path: "/projets/verity/", find: (p) => p.locator(".measures-detail summary").first() },
+  "case study: link to another case": { path: "/projets/verity/", find: (p) => p.locator(".others a").first() },
 };
 
-for (const [name, find] of Object.entries(ELEMENTS)) {
+for (const [name, { path, find }] of Object.entries(ELEMENTS)) {
   test(`states: ${name} changes on hover under a declared transition, and shows keyboard focus`, async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
-    await page.goto("/");
+    await page.goto(path);
     await page.evaluate(() => document.fonts.ready);
     const el = find(page);
     await el.scrollIntoViewIfNeeded();
@@ -91,7 +99,7 @@ for (const [name, find] of Object.entries(ELEMENTS)) {
       document.body.append(probe);
       const proof = getComputedStyle(probe).color;
       probe.remove();
-      const card = e.closest("li");
+      const card = e.closest("li, .card");
       return (
         e.matches(":focus-visible") &&
         [e, card].some((n) => {
@@ -106,27 +114,29 @@ for (const [name, find] of Object.entries(ELEMENTS)) {
   });
 }
 
-test("states: no element declares transition: all, and the pointer cursor marks exactly what is clickable", async ({ page }) => {
-  await page.setViewportSize({ width: 1440, height: 900 });
-  await page.goto("/");
-  const report = await page.evaluate(() => {
-    const all = [...document.querySelectorAll("body *")];
-    const transitionAll = all
-      .filter((e) => {
-        const c = getComputedStyle(e);
-        const durations = c.transitionDuration.split(",").map((d) => Number.parseFloat(d));
-        return c.transitionProperty.split(",").some((p, i) => p.trim() === "all" && (durations[i] ?? durations[0]!) > 0);
-      })
-      .map((e) => e.outerHTML.slice(0, 80));
-    const clickable = (e: Element) => e.closest("a[href], button, [role='tab'], summary, label") !== null;
-    const pointerOnInert = all.filter((e) => getComputedStyle(e).cursor === "pointer" && !clickable(e)).map((e) => e.outerHTML.slice(0, 80));
-    const clickableWithout = all
-      .filter((e) => e.matches("a[href], button") && e.getClientRects().length > 0 && getComputedStyle(e).cursor !== "pointer")
-      .map((e) => e.outerHTML.slice(0, 80));
-    return { transitionAll, pointerOnInert, clickableWithout };
+for (const path of builtPages()) {
+  test(`states: ${path}: no element declares transition: all, and the pointer cursor marks exactly what is clickable`, async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto(path);
+    const report = await page.evaluate(() => {
+      const all = [...document.querySelectorAll("body *")];
+      const transitionAll = all
+        .filter((e) => {
+          const c = getComputedStyle(e);
+          const durations = c.transitionDuration.split(",").map((d) => Number.parseFloat(d));
+          return c.transitionProperty.split(",").some((p, i) => p.trim() === "all" && (durations[i] ?? durations[0]!) > 0);
+        })
+        .map((e) => e.outerHTML.slice(0, 80));
+      const clickable = (e: Element) => e.closest("a[href], button, [role='tab'], summary, label") !== null;
+      const pointerOnInert = all.filter((e) => getComputedStyle(e).cursor === "pointer" && !clickable(e)).map((e) => e.outerHTML.slice(0, 80));
+      const clickableWithout = all
+        .filter((e) => e.matches("a[href], button") && e.getClientRects().length > 0 && getComputedStyle(e).cursor !== "pointer")
+        .map((e) => e.outerHTML.slice(0, 80));
+      return { transitionAll, pointerOnInert, clickableWithout };
+    });
+    expect(report).toEqual({ transitionAll: [], pointerOnInert: [], clickableWithout: [] });
   });
-  expect(report).toEqual({ transitionAll: [], pointerOnInert: [], clickableWithout: [] });
-});
+}
 
 test("states: the demo tabs and the bio toggle slide one pill, and the demo card keeps its height", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
@@ -215,4 +225,77 @@ test("states: when the clipboard refuses, the address is selected and the reader
   await address.click();
   await expect(page.getByRole("status")).toHaveText("Copie impossible : l’adresse est sélectionnée");
   expect(await page.evaluate(() => getSelection()?.toString())).toBe("matteogallo.office@gmail.com");
+});
+
+test("states: a project card opens its case study from anywhere on it, and the links it holds stay their own", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/");
+  const card = page.locator(".project").first();
+  await expect(card.locator(".card-link")).toHaveText("Étude de cas");
+  // The recording, the figures and the code link answer at their own place, above the stretched link.
+  for (const link of await card.locator("a:not(.card-link)").all()) {
+    await link.scrollIntoViewIfNeeded();
+    const own = await link.evaluate((a) => {
+      const r = a.getClientRects()[0]!;
+      const hit = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2);
+      return hit !== null && a.contains(hit);
+    });
+    expect(own, await link.evaluate((a) => a.outerHTML.slice(0, 80))).toBe(true);
+  }
+  // The pointer goes to the title's place: the stretched link is what lies there.
+  const title = card.locator("h3");
+  await title.scrollIntoViewIfNeeded();
+  const box = (await title.boundingBox())!;
+  const [x, y] = [box.x + box.width / 2, box.y + box.height / 2];
+  expect(await page.evaluate(([px, py]) => document.elementFromPoint(px!, py!)?.className, [x, y])).toContain("card-link");
+  await page.mouse.move(x, y);
+  await page.waitForTimeout(500);
+  expect(await card.evaluate((e) => new DOMMatrix(getComputedStyle(e).transform).f)).toBe(-2);
+  expect(await card.locator("img").evaluate((e) => new DOMMatrix(getComputedStyle(e).transform).a)).toBeCloseTo(1.02, 5);
+  await page.mouse.click(x, y);
+  await expect(page).toHaveURL(/\/projets\/verity\/$/);
+});
+
+test("states: the measures fold opens with its height travelling, and its + turns into a ×", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/projets/verity/");
+  const detail = page.locator(".measures-detail").first();
+  const summary = detail.locator("summary");
+  await summary.scrollIntoViewIfNeeded();
+  const height = () => detail.evaluate((d) => d.getBoundingClientRect().height);
+  const angle = () => summary.evaluate((s) => {
+    const m = new DOMMatrix(getComputedStyle(s, "::before").transform);
+    return Math.round((Math.atan2(m.b, m.a) * 180) / Math.PI);
+  });
+  const closed = await height();
+  expect(await angle()).toBe(0);
+  await summary.click();
+  // Within --dur-move (280 ms): partly open.
+  await page.waitForTimeout(100);
+  const mid = await height();
+  await page.waitForTimeout(500);
+  const open = await height();
+  expect(mid).toBeGreaterThan(closed);
+  expect(mid).toBeLessThan(open);
+  expect(await angle()).toBe(45);
+});
+
+test("states under reduced motion: project cards neither lift nor zoom, and the measures fold opens at once", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/");
+  const card = page.locator(".project").first();
+  await card.scrollIntoViewIfNeeded();
+  const box = (await card.locator("h3").boundingBox())!;
+  await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+  await page.waitForTimeout(500);
+  expect(await card.evaluate((e) => e.matches(":hover"))).toBe(true);
+  expect(await card.evaluate((e) => getComputedStyle(e).transform)).toBe("none");
+  expect(await card.locator("img").evaluate((e) => getComputedStyle(e).transform)).toBe("none");
+  await page.goto("/projets/verity/");
+  const detail = page.locator(".measures-detail").first();
+  await detail.locator("summary").click();
+  const first = await detail.evaluate((d) => d.getBoundingClientRect().height);
+  await page.waitForTimeout(400);
+  expect(await detail.evaluate((d) => d.getBoundingClientRect().height)).toBe(first);
 });

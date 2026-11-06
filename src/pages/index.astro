@@ -69,20 +69,20 @@ const repo = (name: string) => `https://github.com/matteogallo-ai/${name}`;
     <p class="mono rule-label">+ 02</p>
     <h2 id="methode-title">Méthode</h2>
     <ul class="rules">
-      <li>
+      <li class="card">
         <h3>Revue humaine <span class="word">pré-enregistrée</span>, publiée telle quelle</h3>
         <p>Échantillon tiré avec une graine fixe, commité avant toute annotation : <Figure id="promptlang.linter_precision_reviewed" where="method" defect /> signalements jugés justes, publié avec sa limite.</p>
-        <p class="links"><a href="https://github.com/matteogallo-ai/promptlang/pull/39">PR promptlang#39</a></p>
+        <p class="links"><a class="card-link" href="https://github.com/matteogallo-ai/promptlang/pull/39">PR promptlang#39</a></p>
       </li>
-      <li>
+      <li class="card">
         <h3>Lire les vraies sorties, pas seulement les tests</h3>
         <p>Ma relecture d’un briefing Praxis a trouvé des estimations présentées comme des faits. Validateur corrigé, relecture publiée.</p>
-        <p class="links"><a href="https://github.com/matteogallo-ai/praxis/pull/47">PR praxis#47</a></p>
+        <p class="links"><a class="card-link" href="https://github.com/matteogallo-ai/praxis/pull/47">PR praxis#47</a></p>
       </li>
-      <li>
+      <li class="card">
         <h3>Audit à froid, chaque constat suivi par écrit</h3>
         <p>Un agent sans contexte a audité PromptLang : <Figure id="promptlang.audit_findings" where="method" /> constats, chacun corrigé, réfuté ou laissé ouvert.</p>
-        <p class="links"><a href="https://github.com/matteogallo-ai/promptlang/pull/32">PR promptlang#32</a></p>
+        <p class="links"><a class="card-link" href="https://github.com/matteogallo-ai/promptlang/pull/32">PR promptlang#32</a></p>
       </li>
     </ul>
     <p><a href={repo("how-i-build")}>Toutes les règles et leurs incidents : how-i-build</a></p>
@@ -363,52 +363,15 @@ const repo = (name: string) => `https://github.com/matteogallo-ai/${name}`;
   }
 
   .rules li {
-    position: relative;
     display: flex;
     flex-direction: column;
     padding: 1.25rem;
-    border: 1px solid var(--rule);
-    border-radius: 14px;
-    transition:
-      border-color var(--dur-hover) var(--ease-out),
-      transform var(--dur-hover) var(--ease-out);
   }
 
-  /* The whole card opens its PR: the PR link's box is stretched over the card. A paragraph that
-     holds a figure stays above it, so the figure keeps its own link and proof tooltip. */
-  .rules .links a::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-  }
-
+  /* The paragraph holding a figure sits above the stretched PR link (.card, global.css), so the
+     figure keeps its own link and proof tooltip. */
   .rules li > p:has(> :global(.figure)) {
     z-index: 1;
-  }
-
-  .rules li:hover {
-    border-color: var(--edge-hover);
-  }
-
-  .rules li:has(.links a:focus-visible) {
-    outline: 2px solid var(--proof);
-    outline-offset: 3px;
-  }
-
-  .rules .links a:focus-visible {
-    outline: none;
-  }
-
-  @media (prefers-reduced-motion: no-preference) {
-    .rules li:hover {
-      transform: translateY(-2px);
-    }
-
-    .rules li:active {
-      transform: translateY(0);
-      transition-duration: var(--dur-press);
-    }
   }
 
   .rules h3 {

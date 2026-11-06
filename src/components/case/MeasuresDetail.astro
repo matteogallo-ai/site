@@ -18,29 +18,60 @@
     padding-block: 0.75rem;
   }
 
+  /* The summary reads as a link: its underline takes the full colour under the pointer. */
   summary {
     cursor: pointer;
     font-weight: 600;
     list-style: none;
+    text-decoration: underline;
+    text-decoration-color: transparent;
+    text-underline-offset: 0.2em;
+    transition: text-decoration-color var(--dur-hover) var(--ease-out);
+  }
+
+  summary:hover {
+    text-decoration-color: currentColor;
   }
 
   summary::-webkit-details-marker {
     display: none;
   }
 
+  /* The content's height travels where the engine can interpolate to auto (Chromium); elsewhere
+     it opens at once. content-visibility is held until the fold has closed (allow-discrete). */
+  .measures-detail {
+    interpolate-size: allow-keywords;
+  }
+
+  .measures-detail::details-content {
+    block-size: 0;
+    overflow: hidden;
+    transition:
+      block-size var(--dur-move) var(--ease-in-out),
+      content-visibility var(--dur-move) allow-discrete;
+  }
+
+  .measures-detail[open]::details-content {
+    block-size: auto;
+  }
+
   .ci-note {
     margin-top: 1rem;
   }
 
-  /* The native marker is a triangle the sans subset does not have: replaced by text it has. */
+  /* The native marker is a triangle the sans subset does not have: a "+" it has, turned into a
+     "×" by turning it 45° when the fold is open. */
   summary::before {
-    content: "+ ";
+    content: "+";
+    display: inline-block;
+    margin-right: 0.4em;
     font-family: var(--font-mono);
     /* The mono subset ships one weight: the bold summary would ask for a face that is not there. */
     font-weight: 400;
+    transition: transform var(--dur-move) var(--ease-in-out);
   }
 
   details[open] > summary::before {
-    content: "– ";
+    transform: rotate(45deg);
   }
 </style>

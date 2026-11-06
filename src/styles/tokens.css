@@ -65,6 +65,8 @@
   --dur-hover: 180ms;
   --dur-move: 280ms;
   --dur-reveal: 480ms;
+  /* A project card's image zooms slower than the card lifts: the image settles after the card. */
+  --dur-image: 400ms;
   /* Tooltips: in after a short wait, out faster than in. */
   --delay-tip: 80ms;
   --dur-tip-in: 150ms;
@@ -104,6 +106,7 @@
     --dur-hover: 120ms;
     --dur-move: 0s;
     --dur-reveal: 0s;
+    --dur-image: 0s;
     --delay-tip: 0s;
   }
 }

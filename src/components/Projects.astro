@@ -11,13 +11,14 @@ const verityMedia = shot("verity");
 const promptlangMedia = shot("promptlang");
 const praxisMedia = shot("praxis");
 const repo = (name: string) => `https://github.com/matteogallo-ai/${name}`;
+const study = (slug: string) => `/projets/${slug}/`;
 ---
 
 <section class="container section reveal" id="projets" aria-labelledby="projets-title">
   <p class="mono rule-label">+ 01</p>
   <h2 id="projets-title">Projets</h2>
   <div class="projects">
-    <article class="project" aria-labelledby="p-verity">
+    <article class="project card" aria-labelledby="p-verity">
       <p class="mono no">No. 01</p>
       <h3 id="p-verity">Verity</h3>
       <figure>
@@ -34,10 +35,10 @@ const repo = (name: string) => `https://github.com/matteogallo-ai/${name}`;
         <p><Figure id="verity.unanswerable_answered" where="card" defect /> questions sans réponse ont reçu une réponse au lieu d’un refus.</p>
       </div>
       <p class="stack">Python 3.12, FastAPI, Postgres + pgvector, Next.js, Claude.</p>
-      <p class="links"><a href={repo("verity")}>Code</a></p>
+      <p class="links"><a class="card-link" href={study("verity")}>Étude de cas</a> · <a href={repo("verity")}>Code</a></p>
     </article>
 
-    <article class="project" aria-labelledby="p-promptlang">
+    <article class="project card" aria-labelledby="p-promptlang">
       <p class="mono no">No. 02</p>
       <h3 id="p-promptlang">PromptLang</h3>
       <figure>
@@ -54,10 +55,10 @@ const repo = (name: string) => `https://github.com/matteogallo-ai/${name}`;
         <p><Figure id="promptlang.linter_precision_reviewed" where="card" defect /> signalements du linter IA jugés justes en revue humaine.</p>
       </div>
       <p class="stack">TypeScript strict, Bun, npm.</p>
-      <p class="links"><a href={repo("promptlang")}>Code</a></p>
+      <p class="links"><a class="card-link" href={study("promptlang")}>Étude de cas</a> · <a href={repo("promptlang")}>Code</a></p>
     </article>
 
-    <article class="project" aria-labelledby="p-praxis">
+    <article class="project card" aria-labelledby="p-praxis">
       <p class="mono no">No. 03</p>
       <h3 id="p-praxis">Praxis</h3>
       <figure>
@@ -73,7 +74,7 @@ const repo = (name: string) => `https://github.com/matteogallo-ai/${name}`;
         <p><Figure id="praxis.insufficiently_sourced" where="card" defect /> briefings live signalés insuffisamment sourcés.</p>
       </div>
       <p class="stack">TypeScript, Bun ; sorties Markdown, PDF, DOCX.</p>
-      <p class="links"><a href={repo("praxis")}>Code</a></p>
+      <p class="links"><a class="card-link" href={study("praxis")}>Étude de cas</a> · <a href={repo("praxis")}>Code</a></p>
     </article>
   </div>
 </section>
@@ -90,8 +91,27 @@ const repo = (name: string) => `https://github.com/matteogallo-ai/${name}`;
     }
   }
 
+  .project {
+    padding: 1.25rem;
+  }
+
   .project p {
     margin: 0.75rem 0 0;
+  }
+
+  /* The whole card opens its case study (.card, global.css). Blocks holding links of their own sit
+     above the stretched link; the one under the pointer or the keyboard rises above its
+     neighbours, so its proof tooltip is not drawn under the next line. */
+  figcaption,
+  .measures li,
+  .known-defect p,
+  .links a:not(.card-link) {
+    position: relative;
+    z-index: 1;
+  }
+
+  :is(figcaption, .measures li, .known-defect p):is(:hover, :focus-within) {
+    z-index: 2;
   }
 
   .no {
@@ -111,13 +131,26 @@ const repo = (name: string) => `https://github.com/matteogallo-ai/${name}`;
     object-position: top;
   }
 
+  /* The picture clips its image, so the image can zoom under the pointer within its frame. */
+  figure :global(picture) {
+    display: block;
+    overflow: hidden;
+    border-radius: 6px;
+    box-shadow: 0 0 0 1px var(--rule);
+  }
+
   figure :global(img),
   figure img {
     display: block;
     width: 100%;
     height: auto;
-    border-radius: 6px;
-    box-shadow: 0 0 0 1px var(--rule);
+    transition: transform var(--dur-image) var(--ease-out);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .project:hover figure :global(img) {
+      transform: scale(1.02);
+    }
   }
 
   .measures {
