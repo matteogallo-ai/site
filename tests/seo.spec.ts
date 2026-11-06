@@ -10,6 +10,8 @@ import config from "../astro.config.mjs";
 
 const ORIGIN = new URL(config.site!).origin;
 const pages = builtPages();
+// The sitemap's namespace names are URLs that are not links.
+const XML_NAMESPACES = ["http://www.sitemaps.org", "http://www.w3.org"];
 
 test("the sitemap lists every built page but the 404, each at its canonical URL", async ({ page, request }) => {
   const xml = await (await request.get("/sitemap.xml")).text();
@@ -33,7 +35,7 @@ test("canonical, hreflang, sitemap, robots and Open Graph URLs all name https://
     urls.push(...(await page.locator('meta[property^="og:"][content^="http"]').evaluateAll((els) => els.map((e) => e.getAttribute("content")!))));
   }
   const files = [await (await request.get("/sitemap.xml")).text(), await (await request.get("/robots.txt")).text()];
-  urls.push(...files.flatMap((f) => [...f.matchAll(/https?:\/\/[^\s<"]+/g)].map((m) => m[0]).filter((u) => !u.includes("sitemaps.org") && !u.includes("w3.org"))));
+  urls.push(...files.flatMap((f) => [...f.matchAll(/https?:\/\/[^\s<"]+/g)].map((m) => m[0]).filter((u) => !XML_NAMESPACES.includes(new URL(u).origin))));
   // Each source must contribute: one og:image per page, and the sitemap's own URLs.
   expect(urls.filter((u) => u.endsWith(".png")).length).toBe(pages.length);
   expect(files[0]).toContain("<loc>");
