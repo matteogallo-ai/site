@@ -142,7 +142,7 @@ for (const slug of CASES) {
     for (const row of await rows.all()) await expect(row.locator(".figure").first()).toBeVisible();
     const intervals = await page.locator("[data-measure]").evaluateAll((els) => els.map((e) => [e.getAttribute("data-measure")!, e.textContent!.trim()]));
     expect(intervals.length).toBeGreaterThan(0);
-    for (const [id, text] of intervals) expect(text, id).toBe(interval(measure(id!)));
+    for (const [id, text] of intervals) expect(text, id).toBe(interval(measure(id!), "fr"));
     const labels = await page.locator("[data-label]").evaluateAll((els) => els.map((e) => [e.getAttribute("data-label")!, e.textContent!.trim()]));
     for (const [id, text] of labels) expect(text, id).toBe(measure(id!).label.fr);
     // SPEC §6: defects at the same level as measures, in the same table.

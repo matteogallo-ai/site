@@ -72,14 +72,14 @@ test("an unknown address answers 404 with the 404 page and a way home", async ({
 test("the Colophon shows the budgets lighthouserc.cjs enforces and the measures of the recorded CI run", async ({ page }) => {
   await page.goto("/colophon/");
   const budgets = page.locator("#budgets ~ .rows > div");
-  await expect(budgets.locator("dt")).toHaveText(siteBudgets.map((b) => b.label));
-  await expect(budgets.locator("dd")).toHaveText(siteBudgets.map((b) => b.limit));
+  await expect(budgets.locator("dt")).toHaveText(siteBudgets("fr").map((b) => b.label));
+  await expect(budgets.locator("dd")).toHaveText(siteBudgets("fr").map((b) => b.limit));
   const measured = page.locator(".page");
   await expect(measured).toHaveCount(site.pages.length);
   for (const [i, p] of site.pages.entries()) {
     const values = measured.nth(i).locator("dd");
-    await expect(values.nth(0)).toHaveText(kilo(p.transferBytes));
-    await expect(values.nth(1)).toHaveText(kilo(p.fontBytes));
+    await expect(values.nth(0)).toHaveText(kilo(p.transferBytes, "fr"));
+    await expect(values.nth(1)).toHaveText(kilo(p.fontBytes, "fr"));
     await expect(values.nth(2)).toHaveText([p.scores.performance, p.scores.accessibility, p.scores.bestPractices, p.scores.seo].join(" · "));
     await expect(values.nth(3)).toHaveText(`${decimal(p.lcpMs / 1000, 2, "fr")}\u00A0s`);
     await expect(values.nth(4)).toHaveText(decimal(p.cls, 3, "fr"));

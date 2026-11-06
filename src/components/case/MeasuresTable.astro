@@ -1,5 +1,6 @@
 ---
 import Figure from "../Figure.astro";
+import { langOf } from "../../lib/i18n.ts";
 import { interval, measure } from "../../lib/measures.ts";
 
 /**
@@ -31,18 +32,23 @@ interface Props {
   rows: Row[];
 }
 
-const { where, caption, ours = "Valeur", baseline, rows } = Astro.props;
+const lang = langOf(Astro.url.pathname);
+const t = {
+  fr: { value: "Valeur", measure: "Mesure", ci: "IC 95\u00A0%", reading: "Lecture" },
+  en: { value: "Value", measure: "Measure", ci: "95% CI", reading: "Reading" },
+}[lang];
+const { where, caption, ours = t.value, baseline, rows } = Astro.props;
 
 const ci = (id: string, noInterval?: string) => {
   const m = measure(id);
   if (m.ci95 && noInterval) throw new Error(`${id} has an interval: drop noInterval`);
   if (!m.ci95 && !noInterval) throw new Error(`${id} has no interval: say why in noInterval`);
-  return m.ci95 ? { text: interval(m), measured: true } : { text: noInterval!, measured: false };
+  return m.ci95 ? { text: interval(m, lang), measured: true } : { text: noInterval!, measured: false };
 };
 const cells = rows.map((r) => {
   if (baseline && !r.base) throw new Error(`${r.id}: a comparison row needs its baseline measure`);
   if (r.base && !baseline) throw new Error(`${r.id}: a baseline measure needs the table's baseline column`);
-  return { ...r, ownLabel: !r.label, label: r.label ?? measure(r.id).label.fr, ci: ci(r.id, r.noInterval), baseCi: r.base ? ci(r.base) : undefined };
+  return { ...r, ownLabel: !r.label, label: r.label ?? measure(r.id).label[lang], ci: ci(r.id, r.noInterval), baseCi: r.base ? ci(r.base) : undefined };
 });
 ---
 
@@ -51,12 +57,12 @@ const cells = rows.map((r) => {
 <table role="table" aria-labelledby={`${where}-caption`}>
   <thead role="rowgroup">
     <tr role="row">
-      <th scope="col" role="columnheader">Mesure</th>
+      <th scope="col" role="columnheader">{t.measure}</th>
       <th scope="col" role="columnheader">{ours}</th>
-      <th scope="col" role="columnheader" class="ci-level">IC 95&nbsp;%</th>
+      <th scope="col" role="columnheader" class="ci-level">{t.ci}</th>
       {baseline && <th scope="col" role="columnheader">{baseline}</th>}
-      {baseline && <th scope="col" role="columnheader" class="ci-level">IC 95&nbsp;%</th>}
-      <th scope="col" role="columnheader">Lecture</th>
+      {baseline && <th scope="col" role="columnheader" class="ci-level">{t.ci}</th>}
+      <th scope="col" role="columnheader">{t.reading}</th>
     </tr>
   </thead>
   <tbody role="rowgroup">
@@ -69,7 +75,7 @@ const cells = rows.map((r) => {
           <td role="cell" class="value" data-col={ours}>
             <Figure id={r.id} where={where} defect={r.defect ?? false} />
           </td>
-          <td role="cell" class:list={["ci", { reason: !r.ci.measured }]} data-col="IC 95 %" data-measure={r.ci.measured ? r.id : undefined}>
+          <td role="cell" class:list={["ci", { reason: !r.ci.measured }]} data-col={t.ci} data-measure={r.ci.measured ? r.id : undefined}>
             {r.ci.text}
           </td>
           {r.base && (
@@ -78,11 +84,11 @@ const cells = rows.map((r) => {
             </td>
           )}
           {r.base && (
-            <td role="cell" class="ci" data-col="IC 95 %" data-measure={r.base}>
+            <td role="cell" class="ci" data-col={t.ci} data-measure={r.base}>
               {r.baseCi!.text}
             </td>
           )}
-          <td role="cell" class="reading" data-col="Lecture">
+          <td role="cell" class="reading" data-col={t.reading}>
             {r.reading}
           </td>
         </tr>
@@ -196,6 +202,12 @@ const cells = rows.map((r) => {
       content: attr(data-col) " : " / "";
       color: var(--graphite);
       font-size: var(--step-12);
+    }
+
+    /* English sets no space before the colon. */
+    td[data-col]:lang(en)::before {
+      content: attr(data-col) ": ";
+      content: attr(data-col) ": " / "";
     }
   }
 </style>

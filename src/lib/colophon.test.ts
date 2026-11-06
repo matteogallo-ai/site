@@ -24,33 +24,38 @@ const config = (over: Record<string, [string, object]> = {}) => ({
 
 test("the budgets read as the SPEC states them, from the bounds lhci compares with", () => {
   assert.deepEqual(
-    budgets(config()).map((b) => b.limit),
+    budgets(config(), "fr").map((b) => b.limit),
     ["au plus 200 ko", "au plus 90 ko", "moins de 1,5 s", "moins de 0,02", "au moins 98 sur 100"],
+  );
+  assert.deepEqual(
+    budgets(config(), "en").map((b) => b.limit),
+    ["at most 200\u00A0kB", "at most 90\u00A0kB", "under 1.5\u00A0s", "under 0.02", "at least 98 out of 100"],
   );
 });
 
 test("the page shows the budgets lighthouserc.cjs enforces", () => {
-  assert.deepEqual(siteBudgets, budgets(config()));
+  for (const lang of ["fr", "en"] as const) assert.deepEqual(siteBudgets(lang), budgets(config(), lang));
 });
 
 test("a budget missing from the configuration fails instead of showing a blank", () => {
   const c = config();
   delete (c.ci.assert.assertions as Record<string, unknown>)["resource-summary:font:size"];
-  assert.throws(() => budgets(c), /no maxNumericValue for resource-summary:font:size/);
+  assert.throws(() => budgets(c, "fr"), /no maxNumericValue for resource-summary:font:size/);
 });
 
 test("a bound not one unit under a round limit fails instead of being restated wrongly", () => {
-  assert.throws(() => budgets(config({ "largest-contentful-paint": ["error", { maxNumericValue: 1500 }] })), /LCP bound 1500/);
-  assert.throws(() => budgets(config({ "cumulative-layout-shift": ["error", { maxNumericValue: 0.05 }] })), /CLS bound 0.05/);
+  assert.throws(() => budgets(config({ "largest-contentful-paint": ["error", { maxNumericValue: 1500 }] }), "fr"), /LCP bound 1500/);
+  assert.throws(() => budgets(config({ "cumulative-layout-shift": ["error", { maxNumericValue: 0.05 }] }), "fr"), /CLS bound 0.05/);
 });
 
 test("four categories with different thresholds cannot be stated as one", () => {
-  assert.throws(() => budgets(config({ "categories:seo": ["error", { minScore: 0.9 }] })), /share one threshold/);
+  assert.throws(() => budgets(config({ "categories:seo": ["error", { minScore: 0.9 }] }), "fr"), /share one threshold/);
 });
 
 test("kilo rounds to whole kilobytes of 1 000 bytes", () => {
-  assert.equal(kilo(167_813), "168 ko");
-  assert.equal(kilo(82_112), "82 ko");
+  assert.equal(kilo(167_813, "fr"), "168\u00A0ko");
+  assert.equal(kilo(82_112, "fr"), "82\u00A0ko");
+  assert.equal(kilo(82_112, "en"), "82\u00A0kB");
 });
 
 test("the measures are the CI artifact byte for byte, from a CI run of this repository", () => {
