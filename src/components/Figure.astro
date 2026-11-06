@@ -32,6 +32,9 @@ const proof = lang === "fr" ? "Preuve\u00A0:" : "Proof:";
   /* The artefact path appears on hover and keyboard focus (SPEC §5.2), as a .tip (global.css). */
   .figure {
     display: inline-block;
+    /* A 24 px target (WCAG 2.5.8), also in the small type of the tables. */
+    min-width: 24px;
+    min-height: 24px;
     color: var(--proof-text);
     text-decoration: none;
   }

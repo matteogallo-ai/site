@@ -221,3 +221,28 @@ for (const path of ["/", "/projets/verity/", "/en/colophon/"]) {
     expect(styles).toEqual(["pretty"]);
   });
 }
+
+// E2 (WCAG 2.5.8): at 375 px every control is at least 24×24 px, the home navigation 44 px tall.
+// Links inside a sentence are exempt: the line of text sets their size.
+for (const path of pages) {
+  test(`${path} at 375 px: touch targets of 24×24 px at least, navigation 44 px tall`, async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 800 });
+    await page.goto(path);
+    const small = await page.evaluate(() => {
+      const inSentence = (el: Element) => {
+        const block = el.closest("p, li, dd, td, figcaption, blockquote, footer");
+        if (!block || el.closest(".actions, .links, .tabs, .langs, nav")) return false;
+        return (block.textContent ?? "").trim().length > (el.textContent ?? "").trim().length + 1;
+      };
+      return [...document.querySelectorAll("a[href], button, [role=tab], summary, [tabindex='0']")]
+        .filter((el) => (el as HTMLElement).offsetParent !== null && getComputedStyle(el).visibility !== "hidden")
+        .filter((el) => !inSentence(el) && !el.closest(".skip"))
+        .map((el) => ({ el, r: el.getBoundingClientRect() }))
+        .filter(({ r }) => r.width < 24 || r.height < 24)
+        .map(({ el, r }) => `${el.tagName.toLowerCase()} "${(el.textContent ?? "").trim().slice(0, 30)}" ${Math.round(r.width)}×${Math.round(r.height)}`);
+    });
+    expect(small).toEqual([]);
+    const nav = await page.locator(".nav a, .crumbs a, .langs a").evaluateAll((as) => as.map((a) => `${a.textContent?.trim()} ${Math.round(a.getBoundingClientRect().height)}`));
+    for (const link of nav) expect(Number(link.split(" ").at(-1)), link).toBeGreaterThanOrEqual(path === "/" || path === "/en/" ? 44 : 24);
+  });
+}
