@@ -44,14 +44,14 @@ English at `/en/`, translated by hand.
 
 | Check | What it proves |
 | --- | --- |
-| typecheck + unit tests | `astro check` finds no type error; the `node:test` suites pass (measures, intervals, diagrams, sitemap, budgets, contrast ratios, i18n). |
+| typecheck + unit tests | `astro check` finds no type error; the `node:test` suites pass (measures, intervals, diagrams, sitemap, budgets, contrast ratios, i18n, typography, icons). |
 | measures + demo traces match their sources | every figure in `src/data/measures.json` and every demo trace is found, as stated, in its source repository at the pinned commit. |
 | build + links | the site builds with no placeholder on any page; no internal link or CSS reference of any page, in either language, is broken, and external links answer (LinkedIn and the production origin are skipped, see `linkinator.config.json`). |
 | axe + keyboard + glyphs | no axe violation on any page, light and dark; keyboard paths work; every displayed character is in the font subset that draws it; hover, focus, motion and SEO checks. |
 | lighthouse budgets + site measures | every page meets the Lighthouse, LCP, CLS and weight budgets of `lighthouserc.cjs`, and the measures are written to the `site-measures` artifact. |
 | font subsets reproducible | rebuilding the font subsets from the pinned upstream fonts gives the committed files. |
 | conventional commits | every commit message follows the Conventional Commits format. |
-| osv-scanner | no dependency in `package-lock.json` or in the font tool’s `requirements.txt` has a known vulnerability. |
+| osv-scanner | no dependency in `package-lock.json`, in the font tool’s `requirements.txt` or in the PDF page tool’s (`scripts/media/requirements.txt`) has a known vulnerability. |
 | CodeQL | GitHub's static analysis of the code and the workflows raises no alert at or above the repository's severity threshold. |
 
 What each check covers in detail, claim by claim, is in [`docs/CLAIMS.md`](docs/CLAIMS.md).

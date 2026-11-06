@@ -17,7 +17,7 @@ Plain text on the left, one strong visual on the right: Verity working on a cont
 - **The frame:** the demo is framed and captioned "Exécution réelle rejouée : Verity, mon agent RAG, contrat de test en anglais" (it replays a committed run, it does not call the model). Three numbered marks follow a run: 1 the question, 2 the passage found in the contract (on the spotlight), 3 the checked answer. File names stay off the screen: an "Exécution de référence" link carries them in its tooltip.
 - **Two modes:** "Answers, with a citation" (spotlight on the cited passage) and "Refuses, for lack of evidence" (spotlight on the closest passage retrieved, marked "judged insufficient"). Highlight, spotlight and card change with a transition. Both traces come from **real committed runs** of Verity.
 - **Colour of proof:** green (`#1E8A4C`, text `#17703D`) for everything proven (highlights, ticks). Brick red `#A8382A` for defects and refusals. Night blue `#1C2A44` as the secondary colour, taken from the portrait.
-- Watchmaking stays in the DNA without being drawn: calibre numbers (`No. 01`), monospace figures, precision.
+- Watchmaking stays in the DNA without being drawn: calibre numbers (« N° 01 » in French, “No. 01” in English), monospace figures, precision.
 
 ## 3. Pages
 
@@ -76,7 +76,8 @@ French at `/`, English at `/en/`, translated by hand, correct `hreflang` (x-defa
 - **Blocking budgets in CI:** home ≤ 200 KB transferred excluding deferred screenshots, measured with gzip (stricter than the brotli Cloudflare serves, on purpose); fonts ≤ 90 000 bytes on any page; LCP < 1.5 s; CLS < 0.02; Lighthouse ≥ 98 on all 4 categories; 0 axe violation.
 - **CI:** build, typecheck, links, Lighthouse CI, axe, budgets, spotlight position test at 3 widths, generation of `site-measures.json`.
 - Portrait: `src/assets/matteo.jpg` (800 × 800), served as AVIF/WebP at the sizes used.
-- Metadata: Open Graph (image generated from the first screen), favicon, sitemap, robots. No tracker.
+- Metadata: Open Graph (the home image: the first screen's headline beside the band's figures; each case study its own, its name beside the first figure of its brief), favicon in the ink and paper tokens with `favicon.ico` and `apple-touch-icon.png`, sitemap, robots. No tracker.
+- Typography is set by the build, per element language (`scripts/typography.ts`): French spaces before ; ! ? % : $ and inside « », curly apostrophes and quotes; ranges as « 18–46 % ».
 
 ## 9. Accessibility
 AA everywhere, full keyboard, visible focus, skip link, demo tabs as a real ARIA `tablist`, motion/transparency/colour preferences respected, real alternative text.
