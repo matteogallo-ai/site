@@ -1,6 +1,6 @@
 ---
 import { langOf } from "../lib/i18n.ts";
-import { measure } from "../lib/measures.ts";
+import { measure, shownTextError } from "../lib/measures.ts";
 
 interface Props {
   id: string;
@@ -8,22 +8,31 @@ interface Props {
   where: string;
   /** Defects are shown in the defect colour, at the same level as measures. */
   defect?: boolean;
+  /** Words to show instead of the value, such as "3" in a sentence; each number in them must be the measure's. */
+  text?: string | undefined;
 }
 
-const { id, where, defect = false } = Astro.props;
+const { id, where, defect = false, text } = Astro.props;
 const lang = langOf(Astro.url.pathname);
 const tip = `src-${where}-${id.replaceAll(".", "-")}`;
 const m = measure(id);
 // French puts a no-break space before the colon; the mono subset has U+00A0, not U+202F.
 const proof = lang === "fr" ? "Preuve\u00A0:" : "Proof:";
-// Read aloud: the figure and what it counts, on a card, in a band or a table; within a sentence
-// the sentence already says it, and the value alone keeps the sentence whole. The proof path is
+// Read aloud: the figure and what it counts, on a card or in a table; within a sentence
+// the sentence already says it, and the value alone keeps the sentence whole; so do words shown in
+// place of the value (`text`), which belong to their sentence. The proof path is
 // the link's description only (aria-describedby).
 const name = `${m.display[lang]}, ${m.label[lang]}`;
+// A figure set in words ("12 of 40 findings") reads in the text face; a bare number in mono.
+const shown = text ?? m.display[lang];
+if (text !== undefined) {
+  const error = shownTextError(m, text, lang);
+  if (error) throw new Error(error);
+}
 ---
 
-<a class:list={["figure", "tip-host", { defect }]} href={m.url} data-where={where} aria-label={where === "prose" ? undefined : name} aria-describedby={tip}>
-  <span class="value mono">{m.display[lang]}</span>
+<a class:list={["figure", "tip-host", { defect }]} href={m.url} data-id={id} data-where={where} data-in-sentence={where === "prose" || text !== undefined ? "" : undefined} aria-label={where === "prose" || text !== undefined ? undefined : name} aria-describedby={tip}>
+  <span class:list={["value", { mono: text === undefined || !/\p{L}/u.test(text) }]}>{shown}</span>
   <span class="path tip mono" id={tip} role="tooltip">{proof} {m.repo.split("/")[1]}/{m.path}</span>
 </a>
 

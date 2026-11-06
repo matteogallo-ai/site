@@ -47,8 +47,8 @@ scripts/og.ts            draws public/og.png, og-en.png and og/<case>[-en].png (
                          and typography through Playwright;
                          src/data/og.json pins the hash of its inputs and of each PNG (og.test.ts)
 src/scripts/             client code: the demo's lens.ts (geometry), typing.ts (answer writing), verity-demo.ts (DOM);
-                         reveal.ts (sections and the band in once), spy.ts (nav section in view),
-                         copy.ts (e-mail copy), resize.ts (height follows content), tips.ts (Escape on tooltips)
+                         reveal.ts (sections in once), spy.ts (nav section in view),
+                         copy.ts (e-mail copy), tips.ts (Escape on tooltips)
 src/data/media.json      project images with their source; scripts/media-frame.ts re-derives the recording stills,
                          scripts/media/pdf_page.py (PyMuPDF, hash-pinned; venv .venv-media) the Praxis page
 astro.config.mjs         site origin, self-hosted fonts, the typography pass (scripts/typography.ts: French and English
@@ -60,7 +60,8 @@ scripts/glyphs.ts        which displayed characters a subset cannot draw (used b
 tests/collect-text.ts    in-page collector: text, pseudo-elements, markers, quotes, fields, by font role
 scripts/icons.ts         draws public/apple-touch-icon.png and favicon.ico from public/favicon.svg
 src/data/measures.json   every figure the site shows: value, k/n, interval, repo, commit, path, URL, evidence
-src/data/demo/           the demo document (Verity's SLA) and two traces copied from a committed Verity run
+src/data/demo/           the demo document (Verity's SLA), two traces copied from a committed Verity run, and the French
+                         translations of their questions, answers and passages
 scripts/measures-lib.ts  rules for measures: evidence by JSON pointer or text, bound to the fields it proves
 scripts/traces-lib.ts    rules for demo traces: offsets select the quote, copy equals the committed run
 scripts/check-sources.ts fetches each source at its pinned commit and checks the evidence (network)
@@ -69,7 +70,9 @@ tests/                   Playwright on every built page: axe (light + dark), key
                          magnifier.spec.ts: spotlight ring within 8 px of its words at 375/1024/1440, no other line under
                          the ring or its tag, dimming, tablist keyboard;
                          glass-motion.spec.ts: answer writing, glass refracted / frosted / opaque;
-                         first-screen.spec.ts: tabs, passage, ring and whole card in view at 1440×800 and 1280×720;
+                         first-screen.spec.ts: tabs, whole card and its passage in view at 1440×800 and 1280×720;
+                         home.spec.ts: the home's words verbatim, every figure resolved in measures.json, no visible
+                         English on the French home outside the folded original and contract;
                          case-studies.spec.ts: SPEC §3.2 sections in order, pinned figure and ADR links,
                          no number outside a measure, a link or code; brief, lead sentences, jargon list,
                          folded tables as cards at 375 px;
@@ -120,7 +123,7 @@ npm run fonts          rebuild font subsets (needs .venv: pip install --require-
 npm run lighthouse     Lighthouse CI with blocking budgets (needs a build and Chrome)
 npm run measures       write site-measures.json from the last Lighthouse run
 npm run check:rulesets  at go-live, not in CI: fails until an active GitHub ruleset protects main (Colophon sentence)
-npm run og             redraw the OG images (after changing a headline, a band or brief figure, the tokens or the typography;
+npm run og             redraw the OG images (after changing a headline, a home card or brief figure, the tokens or the typography;
                        needs Playwright chromium)
 npm run icons          redraw apple-touch-icon.png and favicon.ico after changing public/favicon.svg
 ```

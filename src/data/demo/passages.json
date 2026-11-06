@@ -1,0 +1,12 @@
+{
+  "schema": "site.demo-passages/v1",
+  "note": "French translations of the contract passages the demo shows: the passage cited by the answer, and the closest passage behind the refusal. Each keeps the English it translates; VerityDemo.astro fails the build if the contract no longer says it at the trace's offsets.",
+  "answer": {
+    "en": "Priority 1 (critical, service unavailable): within one (1) hour.",
+    "fr": "Priorité 1 (critique, service indisponible) : dans un délai d’une (1) heure."
+  },
+  "refusal": {
+    "en": "Priority 1 (critical, service unavailable): within one (1) hour.\n- Priority 2 (high, major feature impaired): within four (4) business hours.\n- Priority 3 (normal): within one (1) business day.",
+    "fr": "Priorité 1 (critique, service indisponible) : dans un délai d’une (1) heure.\nPriorité 2 (élevée, fonction majeure dégradée) : dans un délai de quatre (4) heures ouvrées.\nPriorité 3 (normale) : dans un délai d’un (1) jour ouvré."
+  }
+}

@@ -2,7 +2,7 @@ import { expect, type Page, test } from "@playwright/test";
 
 type Box = { top: number; bottom: number; left: number; right: number };
 
-/** The boxes that make the demo's first screen, in viewport coordinates. */
+/** The boxes of the demo's contract once unfolded, and its card, in viewport coordinates. */
 async function boxes(page: Page, mode: "answer" | "refusal") {
   return page.evaluate((m) => {
     const box = (e: Element): Box => {
@@ -37,42 +37,54 @@ const settled = async (page: Page, mode: "answer" | "refusal") => {
   const centre = (x: Box) => (x.top + x.bottom) / 2;
   return within(b.target, b.window) && Math.abs(centre(b.lens) - centre(b.target)) < 8;
 };
-const apart = (a: Box, b: Box) => a.bottom <= b.top || b.bottom <= a.top || a.right <= b.left || b.right <= a.left;
 
+const open = async (page: Page) => {
+  await page.locator("details.contract summary").click();
+  await expect(page.locator("[data-sheet]")).toBeVisible();
+};
+
+// The first screen holds the claim and the demo's card: question, cited passage, answer, checks.
 for (const [width, height] of [
   [1440, 800],
   [1280, 720],
 ] as const) {
   for (const mode of ["answer", "refusal"] as const) {
-    test(`first screen at ${width}×${height}: tabs, ${mode} passage, lens and whole card visible without scrolling`, async ({ page }) => {
+    test(`first screen at ${width}×${height}: tabs and the whole ${mode} card, its passage in it, visible without scrolling`, async ({ page }) => {
       await page.setViewportSize({ width, height });
       await page.emulateMedia({ reducedMotion: "reduce" });
       await page.goto("/");
       await page.evaluate(() => document.fonts.ready);
-      if (mode === "refusal") await page.getByRole("tab", { name: "Refuse, faute de preuve" }).click();
-      await expect(page.locator(`#verity-panel-${mode}`)).toBeVisible();
+      if (mode === "refusal") await page.getByRole("tab", { name: "Il refuse, faute de preuve" }).click();
+      const card = page.locator(`#verity-panel-${mode}`);
+      await expect(card).toBeVisible();
       expect(await page.evaluate(() => scrollY)).toBe(0);
-      // The window scrolls to the passage: measure once it has settled.
-      await expect.poll(() => settled(page, mode)).toBe(true);
-      const b = await boxes(page, mode);
-      for (const name of ["tabs", "window", "target", "lens", "card"] as const) {
+      const b = await page.evaluate((m) => {
+        const box = (e: Element): Box => {
+          const r = e.getBoundingClientRect();
+          return { top: r.top, bottom: r.bottom, left: r.left, right: r.right };
+        };
+        return {
+          viewport: { top: 0, left: 0, bottom: innerHeight, right: innerWidth },
+          tabs: box(document.querySelector('[role="tablist"]')!),
+          card: box(document.querySelector(`#verity-panel-${m}`)!),
+          passage: box(document.querySelector(`#verity-panel-${m} .passage`)!),
+        };
+      }, mode);
+      for (const name of ["tabs", "card", "passage"] as const) {
         expect(within(b[name], b.viewport), `${name} ${JSON.stringify(b[name])} in ${JSON.stringify(b.viewport)}`).toBe(true);
       }
-      // The passage and its lens are in the part of the window the card leaves uncovered.
-      expect(within(b.target, b.window)).toBe(true);
-      expect(apart(b.target, b.card), JSON.stringify(b)).toBe(true);
-      expect(apart(b.lens, b.card), JSON.stringify(b)).toBe(true);
     });
   }
 }
 
-test("narrow screens: the card follows the window, the passage is in view inside it", async ({ page }) => {
+test("narrow screens: the folded contract follows the cards, and once open its passage is in view inside it", async ({ page }) => {
   await page.setViewportSize({ width: 375, height: 812 });
   await page.goto("/");
   await page.evaluate(() => document.fonts.ready);
+  await open(page);
   await expect.poll(() => settled(page, "answer")).toBe(true);
   const b = await boxes(page, "answer");
-  expect(b.card.top).toBeGreaterThanOrEqual(b.window.bottom);
+  expect(b.window.top).toBeGreaterThanOrEqual(b.card.bottom);
 });
 
 // The window fades out over --fade at its top: the tag and the lens (its ring included) stay below it.
@@ -88,46 +100,13 @@ for (const [width, height] of [
       await page.emulateMedia({ reducedMotion: "reduce" });
       await page.goto("/");
       await page.evaluate(() => document.fonts.ready);
-      if (mode === "refusal") await page.getByRole("tab", { name: "Refuse, faute de preuve" }).click();
+      if (mode === "refusal") await page.getByRole("tab", { name: "Il refuse, faute de preuve" }).click();
+      await open(page);
       await expect.poll(() => settled(page, mode)).toBe(true);
       const b = await boxes(page, mode);
       expect(b.fade).toBeGreaterThan(0);
       expect(b.tag.top - b.window.top, JSON.stringify(b)).toBeGreaterThanOrEqual(b.fade - 0.5);
       expect(b.lens.top - b.window.top, JSON.stringify(b)).toBeGreaterThanOrEqual(b.fade - 0.5);
-    });
-  }
-}
-
-// Wide screens: the card overlaps the window's lower part, and the window's text fades out where
-// the card begins (--window-height - --card-overlap). The passage and its ring sit above that line,
-// fully opaque, and clear of the card.
-for (const [width, height] of [
-  [1440, 800],
-  [1280, 720],
-  [1024, 768],
-] as const) {
-  for (const mode of ["answer", "refusal"] as const) {
-    test(`at ${width}×${height}, the ${mode} lens is above the card and the window's lower fade`, async ({ page }) => {
-      await page.setViewportSize({ width, height });
-      await page.emulateMedia({ reducedMotion: "reduce" });
-      await page.goto("/");
-      await page.evaluate(() => document.fonts.ready);
-      if (mode === "refusal") await page.getByRole("tab", { name: "Refuse, faute de preuve" }).click();
-      await expect.poll(() => settled(page, mode)).toBe(true);
-      const b = await boxes(page, mode);
-      const opaqueEnd = await page.evaluate(() => {
-        const demo = document.querySelector("[data-verity-demo]")!;
-        const rem = Number.parseFloat(getComputedStyle(document.documentElement).fontSize);
-        const read = (name: string) => Number.parseFloat(getComputedStyle(demo).getPropertyValue(name)) * rem;
-        return read("--window-height") - read("--card-overlap");
-      });
-      if (Number.isNaN(opaqueEnd)) {
-        // The card follows the window at this width: nothing overlaps.
-        expect(b.card.top).toBeGreaterThanOrEqual(b.window.bottom);
-        return;
-      }
-      expect(b.lens.bottom - b.window.top, JSON.stringify(b)).toBeLessThanOrEqual(opaqueEnd + 0.5);
-      expect(apart(b.lens, b.card), JSON.stringify(b)).toBe(true);
     });
   }
 }

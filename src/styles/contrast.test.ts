@@ -32,10 +32,30 @@ for (const [name, theme] of Object.entries(themes)) {
   }
 }
 
+// The home page is read in thirty seconds, on any screen and in any light: body and secondary
+// text reach 7:1 (WCAG 1.4.6, AAA), accents 4.5:1, on the paper and on the sheet that cards and
+// the demo lie on.
+for (const [name, theme] of Object.entries(themes)) {
+  for (const bg of ["paper", "sheet"]) {
+    for (const [fg, min] of [["ink", 7], ["graphite", 7], ["proof-text", 4.5], ["defect", 4.5]] as const) {
+      test(`${name}: --${fg} on --${bg} >= ${min}:1 (text levels)`, () => {
+        const ratio = contrastRatio(theme[fg]!, theme[bg]!);
+        assert.ok(ratio >= min, `${ratio.toFixed(2)}:1 < ${min}:1`);
+      });
+    }
+  }
+}
+
+// Dark mode: cards and the demo stand apart from the paper; the graphite is no darker than #B0AEA6.
+test("dark paper, sheet and graphite are the chosen values", () => {
+  assert.deepEqual([themes.dark.paper, themes.dark.sheet], ["#101110", "#1d1e1b"]);
+  assert.ok(contrastRatio(themes.dark.graphite!, "#000000") >= contrastRatio("#b0aea6", "#000000"), `--graphite ${themes.dark.graphite} is darker than #b0aea6`);
+});
+
 test("SPEC §4 light values are the ones shipped", () => {
   assert.deepEqual(
     [themes.light.paper, themes.light.ink, themes.light.graphite, themes.light.rule, themes.light.proof, themes.light["proof-text"], themes.light.defect, themes.light.night],
-    ["#f5f4f0", "#111111", "#5c5c58", "#dad8d2", "#1e8a4c", "#17703d", "#a8382a", "#1c2a44"],
+    ["#f5f4f0", "#111111", "#52524e", "#dad8d2", "#1e8a4c", "#17703d", "#a8382a", "#1c2a44"],
   );
 });
 
@@ -72,14 +92,6 @@ test("readMix reads a color-mix token and refuses any other form", () => {
   assert.throws(() => readMix(":root {}", "t"), /no --t/);
 });
 
-// « Défaut connu »: a barely tinted box, its label in the defect colour, its text in ink.
-const tint = readMix(css, "defect-tint");
-test("--defect-tint is at most 8 % of --defect over the paper", () => {
-  assert.equal(tint.first, "defect");
-  assert.equal(tint.second, "paper");
-  assert.ok(tint.weight <= 0.08, `${tint.weight * 100} % > 8 %`);
-});
-
 // Spotlight: the contract around the passage is dimmed, and still AA on the sheet.
 const dimmed = readMix(css, "dimmed");
 test("--dimmed is the ink mixed into the sheet", () => {
@@ -107,13 +119,6 @@ for (const [name, theme] of Object.entries(themes)) {
 }
 
 for (const [name, theme] of Object.entries(themes)) {
-  const defectTint = mix(theme.defect!, theme.paper!, tint.weight);
-  for (const fg of ["defect", "ink"]) {
-    test(`${name}: --${fg} on --defect-tint (${defectTint}) >= 4.5:1`, () => {
-      const ratio = contrastRatio(theme[fg]!, defectTint);
-      assert.ok(ratio >= 4.5, `${ratio.toFixed(2)}:1 < 4.5:1`);
-    });
-  }
   const dim = mix(theme.ink!, theme.sheet!, dimmed.weight);
   test(`${name}: --dimmed (${dim}) on --sheet >= 4.5:1, and at most half the contrast of --ink`, () => {
     const ratio = contrastRatio(dim, theme.sheet!);
@@ -122,21 +127,21 @@ for (const [name, theme] of Object.entries(themes)) {
   });
 }
 
-// Halo behind the demo: the caption, the inactive tab and the run's source link sit on it.
-// Worst case, both colours of the halo over the paper at once.
+// Halo behind the demo: the caption, the inactive tab and the note under it sit on it.
+// Worst case, both colours of the halo over the sheet at once; secondary text there keeps 7:1.
 const haloProof = readMix(css, "halo-proof");
 const haloNight = readMix(css, "halo-night");
-test("the halo is the proof green and the night blue, 6 % at most each", () => {
+test("the halo is the proof green and the night blue, 2 % at most each", () => {
   assert.deepEqual([haloProof.first, haloNight.first], ["proof", "night"]);
-  assert.ok(haloProof.weight <= 0.06 && haloNight.weight <= 0.06);
+  assert.ok(haloProof.weight <= 0.02 && haloNight.weight <= 0.02);
 });
 
 for (const [name, theme] of Object.entries(themes)) {
-  const under = mix(theme.night!, mix(theme.proof!, theme.paper!, haloProof.weight), haloNight.weight);
+  const under = mix(theme.night!, mix(theme.proof!, theme.sheet!, haloProof.weight), haloNight.weight);
   for (const fg of ["ink", "graphite"]) {
-    test(`${name}: --${fg} on the demo's halo (${under}) >= 4.5:1`, () => {
+    test(`${name}: --${fg} on the demo's halo (${under}) >= 7:1`, () => {
       const ratio = contrastRatio(theme[fg]!, under);
-      assert.ok(ratio >= 4.5, `${ratio.toFixed(2)}:1 < 4.5:1`);
+      assert.ok(ratio >= 7, `${ratio.toFixed(2)}:1 < 7:1`);
     });
   }
 }

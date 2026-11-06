@@ -1,14 +1,15 @@
 ---
 import Figure from "./Figure.astro";
 import ProductShot from "./ProductShot.astro";
-import { langOf, numbered, twin } from "../lib/i18n.ts";
+import { langOf, twin } from "../lib/i18n.ts";
 
 const repo = (name: string) => `https://github.com/matteogallo-ai/${name}`;
 const lang = langOf(Astro.url.pathname);
+const fr = lang === "fr";
 const study = (slug: string) => (lang === "fr" ? `/projets/${slug}/` : twin(`/projets/${slug}/`));
 const t = {
-  fr: { id: "projets", title: "Projets", defect: "Défaut connu", study: "Étude de cas" },
-  en: { id: "projects", title: "Projects", defect: "Known defect", study: "Case study" },
+  fr: { id: "projets", title: "Projets", limit: "Limite\u00A0:", study: "Étude de cas" },
+  en: { id: "projects", title: "Projects", limit: "Limit:", study: "Case study" },
 }[lang];
 ---
 
@@ -17,52 +18,32 @@ const t = {
   <h2 id={`${t.id}-title`}>{t.title}</h2>
   <div class="projects">
     <article class="project card" aria-labelledby="p-verity">
-      <p class="mono no">{numbered("01", lang)}</p>
       <h3 id="p-verity">Verity</h3>
       <ProductShot id="verity" size="card" />
-      <p>{lang === "fr" ? "Un agent RAG sur des documents d’entreprise : il répond en citant mot pour mot, refuse quand ses preuves sont faibles, et publie à quelle fréquence il refuse à raison." : "A RAG agent over company documents: it answers by quoting word for word, refuses when its evidence is weak, and publishes how often it refuses correctly."}</p>
-      <ul class="measures">
-        <li><Figure id="verity.refusal_precision" where="card" /> {lang === "fr" ? "précision de refus" : "refusal precision"}</li>
-        <li><Figure id="verity.judge_kappa_all" where="card" /> {lang === "fr" ? "accord du juge avec un humain à l’aveugle, toutes affirmations ;" : "judge agreement with a blind human, all claims;"} <Figure id="verity.judge_kappa_real" where="card" /> {lang === "fr" ? "sur les affirmations réelles seules" : "on the real claims alone"}</li>
-      </ul>
-      <div class="known-defect">
-        <p class="k">{t.defect}</p>
-        <p><Figure id="verity.unanswerable_answered" where="card" defect /> {lang === "fr" ? "questions sans réponse ont reçu une réponse au lieu d’un refus." : "unanswerable questions got an answer instead of a refusal."}</p>
-      </div>
+      <p>{fr ? "Assistant de questions-réponses sur des documents d’entreprise : chaque réponse cite le passage source, et l’absence de preuve produit un refus." : "Question answering over company documents: every answer cites its source passage, and missing evidence produces a refusal."}</p>
+      <p class="figure-line"><Figure id="verity.refusal_recall" where="card" /> — {fr ? "questions sans réponse correctement refusées" : "unanswerable questions correctly refused"}</p>
+      <p class="limit"><span class="k">{t.limit}</span> <Figure id="verity.unanswerable_answered" where="card" defect text="3" /> {fr ? "questions sans réponse ont reçu une réponse au lieu d’un refus." : "unanswerable questions got an answer instead of a refusal."}</p>
       <p class="stack">Python 3.12, FastAPI, Postgres + pgvector, Next.js, Claude.</p>
       <p class="links"><a class="card-link" href={study("verity")} aria-label={`${t.study} Verity`}>{t.study}</a> · <a href={repo("verity")}>Code</a></p>
     </article>
 
     <article class="project card" aria-labelledby="p-promptlang">
-      <p class="mono no">{numbered("02", lang)}</p>
       <h3 id="p-promptlang">PromptLang</h3>
       <ProductShot id="promptlang" size="card" />
-      <p>{lang === "fr" ? "Un langage typé pour les prompts LLM, compilé vers TypeScript ou Python, publié sur npm." : "A typed language for LLM prompts, compiled to TypeScript or Python, published on npm."}</p>
-      <ul class="measures">
-        <li><Figure id="promptlang.mutation_score" where="card" /> {lang === "fr" ? "score de mutation (lexer, parser, semver ; exécution locale, hors CI)" : "mutation score (lexer, parser, semver; local run, outside CI)"}</li>
-        <li><Figure id="promptlang.linter_recall" where="card" /> {lang === "fr" ? "défauts conçus trouvés par le linter IA ; un linter qui signale tout les trouve tous" : "designed defects found by the AI linter; a linter that flags everything finds them all"}</li>
-      </ul>
-      <div class="known-defect">
-        <p class="k">{t.defect}</p>
-        <p><Figure id="promptlang.linter_precision_reviewed" where="card" defect /> {lang === "fr" ? "signalements du linter IA jugés justes en revue humaine." : "AI linter flags judged correct in human review."}</p>
-      </div>
-      <p class="stack">{lang === "fr" ? "TypeScript strict, Bun, npm." : "Strict TypeScript, Bun, npm."}</p>
+      <p>{fr ? "Langage typé pour les prompts LLM, compilé vers TypeScript et Python, publié sur npm." : "A typed language for LLM prompts, compiled to TypeScript and Python, published on npm."}</p>
+      <p class="figure-line"><Figure id="promptlang.mutation_score" where="card" /> — {fr ? "score de mutation (lexer, parser, semver ; exécution locale, hors CI)" : "mutation score (lexer, parser, semver; local run, not in CI)"}</p>
+      <p class="limit"><span class="k">{t.limit}</span> {fr ? "Linter IA :" : "AI linter,"} <Figure id="promptlang.linter_precision_reviewed" where="card" defect text={fr ? "12 signalements justes sur 40" : "12 of 40 findings"} /> {fr ? "en revue humaine." : "correct in human review."}</p>
+      <p class="stack">{fr ? "TypeScript strict, Bun, npm." : "Strict TypeScript, Bun, npm."}</p>
       <p class="links"><a class="card-link" href={study("promptlang")} aria-label={`${t.study} PromptLang`}>{t.study}</a> · <a href={repo("promptlang")}>Code</a></p>
     </article>
 
     <article class="project card" aria-labelledby="p-praxis">
-      <p class="mono no">{numbered("03", lang)}</p>
       <h3 id="p-praxis">Praxis</h3>
       <ProductShot id="praxis" size="card" />
-      <p>{lang === "fr" ? "Un pipeline LLM qui transforme une question business en briefing analytique, avec contrôles de sourcing et revue adverse." : "An LLM pipeline that turns a business question into an analytical briefing, with sourcing checks and adversarial review."}</p>
-      <ul class="measures">
-        <li><Figure id="praxis.cost_per_briefing" where="card" /> {lang === "fr" ? "par briefing live terminé" : "per completed live briefing"}</li>
-      </ul>
-      <div class="known-defect">
-        <p class="k">{t.defect}</p>
-        <p><Figure id="praxis.insufficiently_sourced" where="card" defect /> {lang === "fr" ? "briefings live signalés insuffisamment sourcés." : "live briefings flagged as insufficiently sourced."}</p>
-      </div>
-      <p class="stack">{lang === "fr" ? "TypeScript, Bun ; sorties Markdown, PDF, DOCX." : "TypeScript, Bun; Markdown, PDF and DOCX output."}</p>
+      <p>{fr ? "Pipeline qui transforme une question business en briefing d’analyse sourcé, avec relecture adverse automatique." : "A pipeline that turns a business question into a sourced analysis briefing, with automatic adversarial review."}</p>
+      <p class="figure-line"><Figure id="praxis.cost_per_briefing" where="card" /> — {fr ? "par briefing live terminé" : "per completed live briefing"}</p>
+      <p class="limit"><span class="k">{t.limit}</span> {fr ? "Les" : "all"} <Figure id="praxis.insufficiently_sourced" where="card" defect text="6" /> {fr ? "briefings live terminés sont signalés insuffisamment sourcés par son propre contrôle." : "completed live briefings are flagged as under-sourced by its own check."}</p>
+      <p class="stack">{fr ? "TypeScript, Bun ; sorties Markdown, PDF, DOCX." : "TypeScript, Bun; Markdown, PDF and DOCX output."}</p>
       <p class="links"><a class="card-link" href={study("praxis")} aria-label={`${t.study} Praxis`}>{t.study}</a> · <a href={repo("praxis")}>Code</a></p>
     </article>
   </div>
@@ -100,23 +81,17 @@ const t = {
      above the stretched link; the one under the pointer or the keyboard rises above its
      neighbours, so its proof tooltip is not drawn under the next line. */
   .project :global(figcaption),
-  .measures li,
-  .known-defect p,
+  .figure-line,
+  .limit,
   .links a:not(.card-link) {
     position: relative;
     z-index: 1;
   }
 
   .project :global(figcaption):is(:hover, :focus-within),
-  .measures li:is(:hover, :focus-within),
-  .known-defect p:is(:hover, :focus-within) {
+  .figure-line:is(:hover, :focus-within),
+  .limit:is(:hover, :focus-within) {
     z-index: 2;
-  }
-
-  .no {
-    font-size: var(--step-12);
-    color: var(--graphite);
-    margin: 0 0 0.25rem !important;
   }
 
   @media (prefers-reduced-motion: no-preference) {
@@ -125,38 +100,21 @@ const t = {
     }
   }
 
-  .measures {
-    margin: 1rem 0 0;
-    padding: 0;
-    list-style: none;
+  .figure-line {
     font-size: var(--step-14);
   }
 
-  .measures li + li {
-    margin-top: 0.35rem;
-  }
-
-  .known-defect {
-    margin-top: 1rem;
-    padding: 0.75rem 0.9rem;
-    border-left: 2px solid var(--defect);
-    border-radius: 0 4px 4px 0;
-    background: var(--defect-tint);
+  /* The limit is the project's known defect: its label carries the defect colour, the text stays ink. */
+  .limit {
     font-size: var(--step-14);
   }
 
-  .known-defect p {
-    margin: 0;
-  }
-
-  .known-defect .k {
-    font-size: var(--step-12);
+  .limit .k {
     color: var(--defect);
-    margin-bottom: 0.25rem !important;
+    font-weight: 600;
   }
 
-  /* Text in ink at its normal weight: the label alone carries the defect colour. */
-  .known-defect :global(.figure.defect) {
+  .limit :global(.figure.defect) {
     color: var(--ink);
   }
 

@@ -192,6 +192,8 @@ a:where(:not(.button, .skip-link, .figure)) {
    the stretched box. */
 .card {
   position: relative;
+  /* On the sheet: in dark mode the paper alone would not tell a card from the page. */
+  background: var(--sheet);
   border: 1px solid var(--rule);
   border-radius: 14px;
   transition:

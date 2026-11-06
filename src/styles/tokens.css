@@ -9,7 +9,7 @@
   /* Colour, light theme (SPEC §4 values). */
   --paper: #f5f4f0;
   --ink: #111111;
-  --graphite: #5c5c58;
+  --graphite: #52524e;
   /* Decorative rules only: never the sole carrier of meaning, so exempt from the 3:1 non-text rule. */
   --rule: #dad8d2;
   --proof: #1e8a4c;
@@ -21,8 +21,6 @@
   --night: #1c2a44;
   /* Not in the SPEC: the demo contract page, a shade lighter than the paper it lies on. */
   --sheet: #fcfbf8;
-  /* SPEC §3.1: the « Défaut connu » box, a trace of the defect colour on the paper (≤ 8 %). */
-  --defect-tint: color-mix(in srgb, var(--defect) 7%, var(--paper));
   /* SPEC §2: the contract around the passage in play, stepped back but still AA on the sheet. */
   --dimmed: color-mix(in srgb, var(--ink) 62%, var(--sheet));
   /* The answer card's glass, as near-opaque, because it lies over the contract's words. */
@@ -53,9 +51,9 @@
      a little in both schemes. */
   --edge-hover: color-mix(in srgb, var(--graphite) 50%, var(--rule));
 
-  /* Halo behind the demo (SPEC §4): the proof green and the portrait's night blue at 6 %. */
-  --halo-proof: color-mix(in srgb, var(--proof) 6%, transparent);
-  --halo-night: color-mix(in srgb, var(--night) 6%, transparent);
+  /* Halo behind the demo (SPEC §4): the proof green and the portrait’s night blue at 2 %: secondary text on it keeps 7:1. */
+  --halo-proof: color-mix(in srgb, var(--proof) 2%, transparent);
+  --halo-night: color-mix(in srgb, var(--night) 2%, transparent);
 
   /* Motion (SPEC §4): out for entrances and hovers, in-out for things that travel. Only transform
      and opacity move continuously; transitions name their properties, never "all". */
@@ -83,11 +81,11 @@
 }
 
 @media (prefers-color-scheme: dark) {
-  /* Dark values are not in the SPEC; chosen to keep the same hue roles at AA on the dark paper. */
+  /* Dark values keep the same hue roles; the sheet under cards and the demo stands apart from the paper. */
   :root {
-    --paper: #121311;
+    --paper: #101110;
     --ink: #edebe5;
-    --graphite: #a3a19a;
+    --graphite: #b0aea6;
     --rule: #3a3934;
     --proof: #3fb872;
     --proof-text: #5cc98a;
@@ -95,10 +93,10 @@
     --defect: #e58a78;
     --defect-wash: #42201a;
     --night: #a9bbdd;
-    --sheet: #1b1c1a;
+    --sheet: #1d1e1b;
 
-    --glass-fill: rgb(18 19 17 / 0.72);
-    --nav-fill: rgb(18 19 17 / 0.92);
+    --glass-fill: rgb(16 17 16 / 0.72);
+    --nav-fill: rgb(16 17 16 / 0.92);
     --glass-edge: rgb(237 235 229 / 0.1);
   }
 }

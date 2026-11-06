@@ -5,7 +5,7 @@ import { builtPages } from "../scripts/built-pages.ts";
 import { kilo, site, siteBudgets } from "../src/lib/colophon.ts";
 import { alternates, langOf, twin } from "../src/lib/i18n.ts";
 import { decimal } from "../src/lib/measures.ts";
-import { OG, ogImage, ogImages } from "../src/lib/og.ts";
+import { homeFigures, OG, ogImage, ogImages } from "../src/lib/og.ts";
 import { plain } from "../scripts/typography.ts";
 import config from "../astro.config.mjs";
 
@@ -54,7 +54,7 @@ for (const [lang, home] of [["fr", "/"], ["en", "/en/"]] as const) {
     await page.goto(home);
     await expect(page.locator("h1")).toHaveText(OG[lang].headline);
     await expect(page.locator(".hero .name")).toHaveText(OG.name);
-    await expect(page.locator(".hero .role")).toHaveText(OG.role);
+    await expect(page.locator(".hero .role")).toHaveText(OG.role[lang]);
   });
 }
 
@@ -204,7 +204,7 @@ for (const path of ["/", "/en/projects/verity/"]) {
   });
 }
 
-// F2: what each image says beside its title is what the page says: the home band's captions, a
+// F2: what each image says beside its title is what the page says: the home cards' figures, a
 // case study's first brief figure and its caption; every image is a 1200x630 PNG.
 for (const image of ogImages()) {
   const path = image.case ? (image.lang === "fr" ? `/projets/${image.case.slug}/` : `/en/projects/${image.case.slug}/`) : image.lang === "fr" ? "/" : "/en/";
@@ -217,8 +217,8 @@ for (const image of ogImages()) {
       expect(plain(await first.locator(".value").innerText())).toBe(plain(image.case.value));
       expect(plain(await page.locator(".brief").innerText()).replace(/\s+/g, " ")).toContain(plain(image.case.caption));
     } else {
-      const captions = await page.locator(".band .cell > span").allInnerTexts();
-      expect(captions.map(plain)).toEqual(OG.band.map((b) => plain(b.caption[image.lang])));
+      const lines = await page.locator(".project .figure-line").allInnerTexts();
+      expect(lines.map(plain)).toEqual(homeFigures(image.lang).map((f) => plain(`${f.value} — ${f.caption}`)));
     }
   });
 }

@@ -8,33 +8,25 @@ export const OG = {
   width: 1200,
   height: 630,
   name: "Matteo Gallo",
-  role: "Software & AI Engineer · Lausanne",
+  role: { fr: "Ingénieur logiciel & IA · Lausanne", en: "Software & AI Engineer · Lausanne" },
   fr: {
     file: "public/og.png",
-    headline: "Je construis des produits IA qu’on peut vérifier.",
-    alt: "Matteo Gallo, Software & AI Engineer à Lausanne : « Je construis des produits IA qu’on peut vérifier. »",
+    headline: "Je conçois des applications d’IA, de l’idée à la production.",
+    alt: "Matteo Gallo, ingénieur logiciel et IA à Lausanne : « Je conçois des applications d’IA, de l’idée à la production. »",
   },
   en: {
     file: "public/og-en.png",
-    headline: "I build AI products you can verify.",
-    alt: "Matteo Gallo, Software & AI Engineer in Lausanne: “I build AI products you can verify.”",
+    headline: "I build AI applications, from idea to production.",
+    alt: "Matteo Gallo, software and AI engineer in Lausanne: “I build AI applications, from idea to production.”",
   },
-  /** The home page's band, drawn beside the headline: its figures and captions, in its order. */
-  band: [
+  /** The home page's project cards, drawn beside the headline: one figure each, as the card shows it. */
+  figures: [
+    { id: "verity.refusal_recall", caption: { fr: "questions sans réponse correctement refusées", en: "unanswerable questions correctly refused" } },
     {
-      id: "verity.hallucination_rate",
-      caption: {
-        fr: "réponses avec une hallucination, selon un juge LLM, parmi les questions avec réponse auxquelles Verity a répondu",
-        en: "answers with a hallucination, according to an LLM judge, among the answerable questions Verity answered",
-      },
-      defect: false,
+      id: "promptlang.mutation_score",
+      caption: { fr: "score de mutation (lexer, parser, semver ; exécution locale, hors CI)", en: "mutation score (lexer, parser, semver; local run, not in CI)" },
     },
-    { id: "verity.refusal_recall", caption: { fr: "questions sans réponse correctement refusées", en: "unanswerable questions correctly refused" }, defect: false },
-    {
-      id: "verity.unanswerable_answered",
-      caption: { fr: "questions sans réponse auxquelles il a quand même répondu : son défaut principal", en: "unanswerable questions it answered anyway: its main defect" },
-      defect: true,
-    },
+    { id: "praxis.cost_per_briefing", caption: { fr: "par briefing live terminé", en: "per completed live briefing" } },
   ],
   /** Each case study's image leads with the first figure of its brief, captioned as there. */
   cases: {
@@ -71,13 +63,18 @@ function caseImage(slug: CaseSlug, lang: Lang): OgImage {
   return { lang, file: `public/og/${slug}${lang === "en" ? "-en" : ""}.png`, alt, case: { slug, no: study.no, name: study.name, value, caption: caption[lang] } };
 }
 
+/** The figures of the home image in `lang`: the value as its card shows it, and its caption. */
+export function homeFigures(lang: Lang): { id: string; value: string; caption: string }[] {
+  return OG.figures.map((f) => ({ id: f.id, value: measure(f.id).display[lang], caption: f.caption[lang] }));
+}
+
 /** The image a page at `path` points to: its case study's, or its language's home image. */
 export function ogImage(path: string): OgImage {
   const lang = langOf(path);
   const slug = /^\/(?:projets|en\/projects)\/([a-z]+)\/?$/.exec(path)?.[1];
   if (slug && Object.hasOwn(OG.cases, slug)) return caseImage(slug as CaseSlug, lang);
-  const values = OG.band.map((b) => measure(b.id).display[lang]);
-  const figures = lang === "fr" ? `À côté, trois chiffres de Verity : ${values.slice(0, -1).join(", ")} et ${values.at(-1)}.` : `Beside it, three figures of Verity: ${values.slice(0, -1).join(", ")} and ${values.at(-1)}.`;
+  const values = homeFigures(lang).map((f) => f.value);
+  const figures = lang === "fr" ? `À côté, un chiffre par projet : ${values.slice(0, -1).join(", ")} et ${values.at(-1)}.` : `Beside it, one figure per project: ${values.slice(0, -1).join(", ")} and ${values.at(-1)}.`;
   return { lang, file: OG[lang].file, alt: `${OG[lang].alt} ${figures}` };
 }
 

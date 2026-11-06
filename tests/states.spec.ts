@@ -46,9 +46,7 @@ const W = {
     home: "/",
     see: "Voir les projets",
     email: "Écrire un e-mail",
-    refuses: "Refuse, faute de preuve",
-    source: "Exécution de référence",
-    detailed: "Détaillé",
+    refuses: "Il refuse, faute de preuve",
     write: "Écrire",
     method: "methode",
     methodLabel: "Méthode",
@@ -61,9 +59,7 @@ const W = {
     home: "/en/",
     see: "See the projects",
     email: "Get in touch",
-    refuses: "Refuses, for lack of evidence",
-    source: "Reference run",
-    detailed: "Detailed",
+    refuses: "It refuses, for lack of evidence",
     write: "Email me",
     method: "method",
     methodLabel: "Method",
@@ -84,14 +80,14 @@ const ELEMENTS: Record<string, { path: string; find: (page: Page) => Locator }> 
       ["primary button", (p) => p.getByRole("link", { name: w.see })],
       ["secondary button", (p) => p.getByRole("link", { name: w.email })],
       ["demo tab (not selected)", (p) => p.getByRole("tab", { name: w.refuses })],
-      ["run source link", (p) => p.getByRole("link", { name: w.source })],
-      ["figure in the band", (p) => p.locator(".band a.figure").first()],
+      ["original trace link", (p) => p.locator("[data-verity-demo] .note a")],
+      ["contract fold", (p) => p.locator("details.contract summary")],
+      ["figure in a limit", (p) => p.locator(".limit a.figure").first()],
       ["figure in a card", (p) => p.locator(".project a.figure").first()],
       ["project card", (p) => p.locator(".project .card-link").first()],
       ["project text link", (p) => p.locator(".project .links a:not(.card-link)").first()],
       ["method card", (p) => p.locator(`#${w.method} .rules .links a`).first()],
       ["how-i-build link", (p) => p.getByRole("link", { name: /how-i-build/ })],
-      ["bio toggle (not pressed)", (p) => p.getByRole("button", { name: w.detailed })],
       ["e-mail address", (p) => p.getByRole("button", { name: "matteogallo.office@gmail.com" })],
       ["write button", (p) => p.getByRole("link", { name: w.write, exact: true })],
       ["LinkedIn button", (p) => p.getByRole("link", { name: "LinkedIn" })],
@@ -189,7 +185,7 @@ for (const path of builtPages()) {
   });
 }
 
-test("states: the demo tabs and the bio toggle slide one pill, and the demo card keeps its height", async ({ page }) => {
+test("states: the demo tabs slide one pill, and the demo card keeps its height", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/");
   const pill = (sel: string) => page.locator(sel).evaluate((e) => ({ transform: getComputedStyle(e, "::before").transform, transition: getComputedStyle(e, "::before").transitionProperty }));
@@ -197,19 +193,14 @@ test("states: the demo tabs and the bio toggle slide one pill, and the demo card
   expect(tabsAt0.transition).toBe("transform");
   const cards = page.locator(".cards");
   const height = await cards.evaluate((e) => e.getBoundingClientRect().height);
-  const below = await page.locator(".band").evaluate((e) => e.getBoundingClientRect().top);
-  await page.getByRole("tab", { name: "Refuse, faute de preuve" }).click();
+  const below = await page.locator("#projets").evaluate((e) => e.getBoundingClientRect().top);
+  await page.getByRole("tab", { name: "Il refuse, faute de preuve" }).click();
   await expect.poll(async () => (await pill(".tabs.segmented")).transform).not.toBe(tabsAt0.transform);
   // Switching modes moves nothing: the cards' cell and what follows the demo stay put, also once
   // every transition of the switch (ring away and back, cross-fade) has ended.
   await page.waitForTimeout(800);
   expect(await cards.evaluate((e) => e.getBoundingClientRect().height)).toBe(height);
-  expect(await page.locator(".band").evaluate((e) => e.getBoundingClientRect().top)).toBe(below);
-
-  const bioAt0 = await pill(".toggle.segmented");
-  expect(bioAt0.transition).toBe("transform");
-  await page.getByRole("button", { name: "Détaillé" }).click();
-  await expect.poll(async () => (await pill(".toggle.segmented")).transform).not.toBe(bioAt0.transform);
+  expect(await page.locator("#projets").evaluate((e) => e.getBoundingClientRect().top)).toBe(below);
 });
 
 for (const lang of LANGS) {
@@ -240,7 +231,7 @@ test("states under reduced motion: colours still change on hover, briefly, and n
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/");
   const primary = page.getByRole("link", { name: "Voir les projets" });
-  const tab = page.getByRole("tab", { name: "Refuse, faute de preuve" });
+  const tab = page.getByRole("tab", { name: "Il refuse, faute de preuve" });
   for (const el of [primary, tab]) {
     const ms = await el.evaluate((e) => Math.max(...getComputedStyle(e).transitionDuration.split(",").map((d) => Number.parseFloat(d) * 1000)));
     expect(ms).toBeGreaterThan(0);

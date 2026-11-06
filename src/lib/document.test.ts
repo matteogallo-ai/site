@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { test } from "node:test";
-import { type Block, firstListIn, type Span, textOf, toBlocks } from "./document.ts";
+import { type Block, firstListIn, type Span, textOf, toBlocks, passageError } from "./document.ts";
 
 const read = (name: string) => JSON.parse(readFileSync(new URL(`../data/demo/${name}.json`, import.meta.url), "utf8"));
 const sla: string = read("sla").text;
@@ -54,4 +54,12 @@ test("overlapping targets split spans at every boundary and keep both marks", ()
 test("a target outside the document is refused, and a passage without a list too", () => {
   assert.throws(() => toBlocks("abc", [{ name: "x", start: 2, end: 9 }]), RangeError);
   assert.throws(() => firstListIn("## Title\nNo list here.", { char_start: 0, char_end: 21 }), /no list/);
+});
+
+test("passageError: a translated passage is the contract's text at its offsets, with the same numbers", () => {
+  const source = "Priority 1: within one (1) hour.";
+  const at = { char_start: 0, char_end: source.length };
+  assert.equal(passageError(source, { en: source, fr: "Priorité 1 : dans une (1) heure.", at }), undefined);
+  assert.match(passageError(source, { en: "Priority 2", fr: "Priorité 2", at }) ?? "", /not the contract/);
+  assert.match(passageError(source, { en: source, fr: "Priorité 1 : dans cinq (5) heures.", at }) ?? "", /numbers/);
 });

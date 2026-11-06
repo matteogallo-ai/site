@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { decimal, interval, measure } from "./measures.ts";
+import { decimal, interval, measure, shownTextError } from "./measures.ts";
 
 test("a page gets a verified measure by id, and fails the build on an unknown id", () => {
   assert.equal(measure("verity.refusal_recall").display.fr, "17/20");
@@ -24,4 +24,13 @@ test("an interval reads as whole percents rounded outwards, never narrower than 
 
 test("an interval is refused for a measure that has none", () => {
   assert.throws(() => interval(measure("promptlang.mutation_score"), "fr"), /has no interval/);
+});
+
+test("shownTextError: words shown for a figure carry only the measure's own numbers", () => {
+  const m = measure("verity.unanswerable_answered");
+  assert.equal(shownTextError(m, "3", "fr"), undefined);
+  assert.match(shownTextError(m, "4", "fr") ?? "", /shows 4/);
+  // A figure in words must still show a number: "trois" would escape the check.
+  assert.match(shownTextError(m, "trois", "fr") ?? "", /no number/);
+  assert.equal(shownTextError(measure("praxis.cost_per_briefing"), "$3.29–4.75", "en"), undefined);
 });
