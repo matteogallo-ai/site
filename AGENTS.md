@@ -25,7 +25,7 @@ src/pages/               one file per route; French at /, English under en/ (han
                          and 404 are thin wrappers around Home, Colophon and Lost)
 src/components/          VerityDemo (contract, spotlight, tabs, cards), Figure (a measure with its proof; named by value
                          and label), Contact (address, copy, buttons) and Footer on every page, ProductShot (a project
-                         image with its source link, on the cards and at the head of a case study),
+                         image with its source link, on the cards and after a case study's brief),
                          Glass (SVG refraction filters, Chromium only), Projects, Bio, Home, Colophon, Lost (404),
                          LangSwitch (FR | EN, plain links); every component reads its language from the URL;
                          case/: Brief (« En bref »: three plain lines, three figures, the main defect among them),

@@ -19,6 +19,7 @@ const at = (path: string) => pinned("praxis", path);
   description="Étude de cas de Praxis, briefings d’analyse écrits par IA avec sources contrôlées : problème, architecture, mesures, défauts, décisions."
 >
   <Brief
+    slot="brief"
     does="À partir d’une question business, il cherche sur le web, vérifie en code que chaque fait a une source acceptable, puis rédige une note d’analyse qui dit elle-même ce qu’elle n’a pas pu sourcer."
     measured="Combien d’exécutions réelles, payées, aboutissent à une note, ce que coûte une note, et combien de notes passent le contrôle des sources."
     defect="Aucune note réelle ne passe le contrôle des sources. Ce que j’en ai fait : la note est livrée quand même, avec une section écrite par le code qui liste chaque élément non sourcé ; le défaut est publié, pas caché."

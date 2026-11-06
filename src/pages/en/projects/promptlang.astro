@@ -20,6 +20,7 @@ const pr = (n: number) => pull("promptlang", n);
   description="Case study of PromptLang, a language for writing prompts as code: problem, architecture, results against a reference point, defects, decisions."
 >
   <Brief
+    slot="brief"
     does="It turns a prompt into a checked file, compiled to TypeScript or Python code, and flags when a new version breaks the code of those who use it."
     measured="How solid the tests of the language reader and of the version check are, and how often an automatic reviewer, the AI linter, is right when it points at writing defects in prompts."
     defect="Most of the AI linter’s flags are wrong, barely better than flagging everything. What I did about it: I measured it against that reference point, published it, and the linter is presented as an aid to the human reviewer, not as a check."

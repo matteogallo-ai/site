@@ -34,6 +34,7 @@ if (!thresholdSentence || !("contains" in thresholdSentence)) throw new Error("t
   description="Case study of Verity, an agent that answers about contracts by citing its sources: problem, architecture, results with their uncertainty, defects, decisions."
 >
   <Brief
+    slot="brief"
     does="It answers questions about a set of contracts by quoting the exact clause, and says “I don’t know” when the documents do not contain the answer."
     measured="On test questions never seen during tuning: whether it refuses the unanswerable questions, and whether its answers make anything up."
     defect="It answered questions that had no answer in the documents. What I did about it: I published it, with the three questions involved named in the results."

@@ -19,6 +19,7 @@ const at = (path: string) => pinned("praxis", path);
   description="Case study of Praxis, AI-written analysis briefings with checked sources: problem, architecture, results, defects, decisions."
 >
   <Brief
+    slot="brief"
     does="From a business question, it searches the web, checks in code that every fact has an acceptable source, then writes a briefing that itself says what it could not source."
     measured="How many real, paid runs end in a briefing, what a briefing costs, and how many briefings pass the source check."
     defect="No real briefing passes the source check. What I did about it: the briefing is delivered anyway, with a section written by the code that lists every unsourced item; the defect is published, not hidden."

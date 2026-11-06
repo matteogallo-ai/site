@@ -203,11 +203,14 @@ for (const [path, link] of [
   ["/en/projects/promptlang/", "See the recording (GIF)"],
   ["/projets/praxis/", "Voir le PDF"],
 ] as const) {
-  test(`${path}: the product image heads the case study, with its link`, async ({ page }) => {
+  test(`${path}: the product image follows the brief, large, with its link`, async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto(path);
     const shot = page.locator(".case-shot");
     await expect(shot.locator("img")).toBeVisible();
+    await expect(shot.locator("img")).toHaveAttribute("loading", "eager");
+    // Right after the brief: above it, on a phone, it was the largest paint and broke the LCP budget.
+    expect(await shot.evaluate((el) => el.previousElementSibling?.matches(".brief") ?? false)).toBe(true);
     expect((await shot.locator("img").boundingBox())!.width).toBeGreaterThan(600);
     await expect(shot.getByRole("link", { name: link })).toHaveAttribute("href", /^https:\/\//);
   });

@@ -25,12 +25,13 @@ const link = {
 }[lang][item.url.endsWith(".pdf") ? "pdf" : "gif"];
 // Identifiers in a caption are marked `like this` in media.json and set as code.
 const caption = item.caption[lang].split("`").map((part, i) => ({ part, code: i % 2 === 1 }));
-const widths = size === "card" ? [480, 960] : [720, 1440];
+// 412 px at 1.75x asks for 721 px: without 960 a phone would get the 1440 file.
+const widths = size === "card" ? [480, 960] : [480, 720, 960, 1440];
 const sizes = size === "card" ? "(min-width: 64rem) 360px, 100vw" : "(min-width: 64rem) 720px, 100vw";
 ---
 
 <figure class:list={["shot", size]}>
-  <Picture src={images[id]} formats={["avif", "webp"]} alt={item.alt[lang]} widths={widths} sizes={sizes} loading="lazy" decoding="async" />
+  <Picture src={images[id]} formats={["avif", "webp"]} alt={item.alt[lang]} widths={widths} sizes={sizes} loading={size === "lead" ? "eager" : "lazy"} decoding="async" />
   <figcaption>{caption.map((c) => (c.code ? <code>{c.part}</code> : c.part))} <a href={item.url}>{link}</a></figcaption>
 </figure>
 

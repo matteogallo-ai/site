@@ -46,6 +46,7 @@ const translated = (en: string) => {
   description="Étude de cas de Verity, agent qui répond sur des contrats en citant ses sources : problème, architecture, mesures avec leurs incertitudes, défauts, décisions."
 >
   <Brief
+    slot="brief"
     does="Il répond aux questions sur un ensemble de contrats en citant la clause exacte, et dit « je ne sais pas » quand les documents ne contiennent pas la réponse."
     measured="Sur des questions de test jamais vues pendant le réglage : s’il refuse les questions sans réponse, et si ses réponses inventent quelque chose."
     defect="Il a répondu à des questions qui n’avaient pas de réponse dans les documents. Ce que j’en ai fait : je l’ai publié, avec les trois questions en cause nommées dans les résultats."

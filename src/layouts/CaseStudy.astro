@@ -46,6 +46,9 @@ const cases = caseStudies(lang);
       <p class="summary">{summary}</p>
       <p class="code"><a href={repoUrl(repo)}>{t.code} matteogallo-ai/{repo}</a></p>
     </header>
+    {/* After the brief, not above it: on a phone the image above the fold became the page's
+        largest paint and pushed LCP past the 1.5 s budget (SPEC §8); the brief's text paints first. */}
+    <slot name="brief" />
     <div class="case-shot"><ProductShot id={shot} size="lead" /></div>
     <slot />
     <nav class="others" aria-label={t.others}>
