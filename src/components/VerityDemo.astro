@@ -3,6 +3,7 @@ import sla from "../data/demo/sla.json";
 import answerData from "../data/demo/answer.json";
 import refusalData from "../data/demo/refusal.json";
 import translationsData from "../data/demo/translations.json";
+import passagesData from "../data/demo/passages.json";
 import { type DemoTrace, type DemoTranslations, sectionAt, translationErrors } from "../../scripts/traces-lib.ts";
 import { firstListIn, toBlocks, type Span } from "../lib/document.ts";
 import { langOf } from "../lib/i18n.ts";
@@ -32,13 +33,19 @@ const blocks = toBlocks(sla.text, [
 
 const fileOf = (path: string) => path.split("/").at(-1)!;
 const chunkOf = (chunkId: string) => answer.hits_used.find((h) => h.chunk.id === chunkId)?.chunk;
-const runFile = fileOf(answer.source.path);
 if (refusal.source.url !== answer.source.url) throw new Error("the two demo traces come from different runs: one source link cannot name both");
 
 // The French lines translate exactly what each trace says (scripts/traces-lib.ts).
 const translations = translationsData as DemoTranslations;
 const untranslated = [...translationErrors(answer, translations), ...translationErrors(refusal, translations)];
 if (untranslated.length > 0) throw new Error(untranslated.join("\n"));
+// The passages are shown translated on the French page: each must still be what the contract says
+// at the offsets the traces point to, or the build fails.
+const passages = { answer: { ...passagesData.answer, at: cited }, refusal: { ...passagesData.refusal, at: { char_start: refusalTarget.start, char_end: refusalTarget.end } } };
+for (const [mode, p] of Object.entries(passages)) {
+  if (sla.text.slice(p.at.char_start, p.at.char_end) !== p.en) throw new Error(`passages.json ${mode}: the English is not the contract's text at the trace's offsets`);
+}
+const lines = (mode: "answer" | "refusal") => (lang === "fr" ? passages[mode].fr.split("\n") : passages[mode].en.split("\n- "));
 const translation = (trace: DemoTrace) => translations[trace.example_id] as { question: { fr: string }; answer: { fr: string }; rationale?: { en: string; fr: string } };
 
 // The traces are in English: the English page shows them without translation lines, and the
@@ -47,16 +54,19 @@ const translation = (trace: DemoTrace) => translations[trace.example_id] as { qu
 const lang = langOf(Astro.url.pathname);
 const t = {
   fr: {
-    caption: "Exécution réelle rejouée : Verity, mon agent RAG, contrat de test en anglais",
+    caption: "Démo : Verity sur un contrat de test",
     modes: "Mode de Verity",
-    answers: "Répond, en citant",
-    refuses: "Refuse, faute de preuve",
-    answersShort: "Répond",
-    refusesShort: "Refuse",
+    answers: "Il répond, en citant",
+    refuses: "Il refuse, faute de preuve",
+    answersShort: "Il répond",
+    refusesShort: "Il refuse",
+    contract: "Voir le contrat complet (anglais)",
     sheet: "Contrat de démonstration : Service Level Agreement",
     tagAnswer: "Le passage retrouvé dans le contrat",
     tagRefusal: "Le passage le plus proche, jugé insuffisant",
     question: "La question",
+    passage: "Le passage cité, surligné",
+    nearest: "Le passage le plus proche",
     verified: "La réponse, vérifiée",
     cited: "Cité\u00A0:",
     section: "section",
@@ -67,24 +77,25 @@ const t = {
     verdict: "Refus du modèle, confiance",
     closest: "Passage le plus proche\u00A0:",
     insufficient: "jugé insuffisant",
-    source: "Exécution de référence",
-    run: "Exécution",
-    ofVerity: "de Verity (questions",
-    and: "et",
-    contract: "), sur le contrat",
+    original: "Original anglais",
+    note: "Traduit d’un run réel en anglais",
+    trace: "Voir la trace originale",
     names: { "sla.md": "contrat SLA", "order_form_northwind_2025.pdf": "bon de commande Northwind" } as Record<string, string>,
   },
   en: {
-    caption: "Replay of a real run: Verity, my RAG agent, on a test contract",
+    caption: "Demo: Verity on a test contract",
     modes: "Verity's mode",
-    answers: "Answers, citing",
-    refuses: "Refuses, for lack of evidence",
-    answersShort: "Answers",
-    refusesShort: "Refuses",
+    answers: "It answers, citing",
+    refuses: "It refuses, for lack of evidence",
+    answersShort: "It answers",
+    refusesShort: "It refuses",
+    contract: "See the full contract",
     sheet: "Demo contract: Service Level Agreement",
     tagAnswer: "The passage found in the contract",
     tagRefusal: "The closest passage, judged insufficient",
     question: "The question",
+    passage: "The cited passage, highlighted",
+    nearest: "The closest passage",
     verified: "The answer, verified",
     cited: "Cited:",
     section: "section",
@@ -95,11 +106,9 @@ const t = {
     verdict: "Refused by the model, confidence",
     closest: "Closest passage:",
     insufficient: "judged insufficient",
-    source: "Reference run",
-    run: "Run",
-    ofVerity: "of Verity (questions",
-    and: "and",
-    contract: "), on the contract",
+    original: "",
+    note: "Replay of a real run",
+    trace: "See the original trace",
     names: { "sla.md": "SLA contract", "order_form_northwind_2025.pdf": "Northwind order form" } as Record<string, string>,
   },
 }[lang];
@@ -121,6 +130,64 @@ const nameOf = (path: string) => {
   </div>
   </div>
 
+  {/* French page: the question, the passage and the answer in French; the run's own English is
+      folded under them, and the contract, in English, is folded below the cards. */}
+  <div class="cards">
+  <section class="card glass" role="tabpanel" id="verity-panel-answer" aria-labelledby="verity-tab-answer" tabindex="0">
+    <p class="step"><span class="n">1</span> {t.question}</p>
+    {lang === "fr" ? <p class="q">{translation(answer).question.fr}</p> : <p class="q" data-verbatim>{answer.question}</p>}
+    <p class="step"><span class="n">2</span> {t.passage}</p>
+    <blockquote class="passage" data-verbatim={lang === "en" ? "" : undefined}>{lines("answer").map((l) => <p><mark>{l}</mark></p>)}</blockquote>
+    <p class="step"><span class="n">3</span> {t.verified}</p>
+    <p class="a"><span class="a-text" data-verbatim={lang === "en" ? "" : undefined}>{lang === "fr" ? translation(answer).answer.fr : answer.answer_text}</span></p>
+    <p class="ref">
+      {/* Each quote is placed by the section that holds it, not by the section its chunk starts in. */}
+      {t.cited} {[cited, ...elsewhere].map((c) => `${nameOf(answer.documents[c.document_id]!)} (${t.section} ${sectionAt(chunkOf(c.chunk_id)!, c.char_start)})`).join(", ")}
+    </p>
+    <ul class="checks">
+      <li><span class="tick mono" aria-hidden="true">✓</span> {t.found}</li>
+      <li>
+        <span class="tick mono" aria-hidden="true">{supported === claims.length ? "✓" : "✗"}</span>
+        <span class="mono">{supported}/{claims.length}</span> {t.claims}
+      </li>
+      <li><span class="tick mono muted" aria-hidden="true">·</span> {t.confidence} <span class="mono">{decimal(answer.confidence_score, 2, lang)}</span></li>
+    </ul>
+    {lang === "fr" && (
+      <details class="original">
+        <summary>{t.original}</summary>
+        <div lang="en" data-verbatim>
+          <p>{answer.question}</p>
+          <p>{answer.answer_text}</p>
+        </div>
+      </details>
+    )}
+  </section>
+
+  <section class="card glass refused" role="tabpanel" id="verity-panel-refusal" aria-labelledby="verity-tab-refusal" tabindex="0" data-off>
+    <p class="step"><span class="n">1</span> {t.question}</p>
+    {lang === "fr" ? <p class="q">{translation(refusal).question.fr}</p> : <p class="q" data-verbatim>{refusal.question}</p>}
+    <p class="step"><span class="n">2</span> {t.nearest}</p>
+    <blockquote class="passage" data-verbatim={lang === "en" ? "" : undefined}>{lines("refusal").map((l) => <p><mark>{l}</mark></p>)}</blockquote>
+    <p class="step"><span class="n">3</span> {t.refused}</p>
+    <p class="a"><span class="a-text" data-verbatim={lang === "en" ? "" : undefined}>{lang === "fr" ? translation(refusal).answer.fr : refusal.answer_text}</span></p>
+    <p class="verdict">{t.verdict} <span class="mono">{decimal(refusal.confidence_score, 2, lang)}</span></p>
+    <p class="ref">{t.closest} {nameOf(slaPath)} ({t.section} {sectionAt(closest, refusalTarget.start)}), {t.insufficient}</p>
+    {lang === "fr" ? <p class="why">{translation(refusal).rationale!.fr}</p> : <p class="why"><span class="why-k">the model’s words, as recorded; document index 0 is the SLA</span> <span data-verbatim>{translation(refusal).rationale!.en}</span></p>}
+    {lang === "fr" && (
+      <details class="original">
+        <summary>{t.original}</summary>
+        <div lang="en" data-verbatim>
+          <p>{refusal.question}</p>
+          <p>{refusal.answer_text}</p>
+          <p>{translation(refusal).rationale!.en}</p>
+        </div>
+      </details>
+    )}
+  </section>
+  </div>
+
+  <details class="contract">
+    <summary>{t.contract}</summary>
   <div class="window">
     <div class="sheet" data-sheet tabindex="0" role="region" aria-label={t.sheet}>
     <article class="doc serif" lang="en" data-verbatim>
@@ -152,50 +219,9 @@ const nameOf = (path: string) => {
     </p>
     </div>
   </div>
+  </details>
 
-  <div class="cards">
-  <section class="card glass" role="tabpanel" id="verity-panel-answer" aria-labelledby="verity-tab-answer" tabindex="0">
-    <p class="step"><span class="n">1</span> {t.question}</p>
-    <p class="q" lang="en" data-verbatim>{answer.question}</p>
-    {lang === "fr" && <p class="tr"><span class="tr-k">traduction</span> {translation(answer).question.fr}</p>}
-    <p class="step"><span class="n">3</span> {t.verified}</p>
-    <p class="a" lang="en" data-verbatim><span class="a-text">{answer.answer_text}</span></p>
-    {lang === "fr" && <p class="tr tr-a"><span class="tr-k">traduction</span> {translation(answer).answer.fr}</p>}
-    <p class="ref">
-      {/* Each quote is placed by the section that holds it, not by the section its chunk starts in. */}
-      {t.cited} {[cited, ...elsewhere].map((c) => `${nameOf(answer.documents[c.document_id]!)} (${t.section} ${sectionAt(chunkOf(c.chunk_id)!, c.char_start)})`).join(", ")}
-    </p>
-    <ul class="checks">
-      <li><span class="tick mono" aria-hidden="true">✓</span> {t.found}</li>
-      <li>
-        <span class="tick mono" aria-hidden="true">{supported === claims.length ? "✓" : "✗"}</span>
-        <span class="mono">{supported}/{claims.length}</span> {t.claims}
-      </li>
-      <li><span class="tick mono muted" aria-hidden="true">·</span> {t.confidence} <span class="mono">{decimal(answer.confidence_score, 2, lang)}</span></li>
-    </ul>
-  </section>
-
-  <section class="card glass refused" role="tabpanel" id="verity-panel-refusal" aria-labelledby="verity-tab-refusal" tabindex="0" data-off>
-    <p class="step"><span class="n">1</span> {t.question}</p>
-    <p class="q" lang="en" data-verbatim>{refusal.question}</p>
-    {lang === "fr" && <p class="tr"><span class="tr-k">traduction</span> {translation(refusal).question.fr}</p>}
-    <p class="step"><span class="n">3</span> {t.refused}</p>
-    <p class="a" lang="en" data-verbatim><span class="a-text">{refusal.answer_text}</span></p>
-    {lang === "fr" && <p class="tr tr-a"><span class="tr-k">traduction</span> {translation(refusal).answer.fr}</p>}
-    <p class="verdict">{t.verdict} <span class="mono">{decimal(refusal.confidence_score, 2, lang)}</span></p>
-    <p class="ref">{t.closest} {nameOf(slaPath)} ({t.section} {sectionAt(closest, refusalTarget.start)}), {t.insufficient}</p>
-    {lang === "fr" ? <p class="tr why"><span class="tr-k">traduction</span> {translation(refusal).rationale!.fr}</p> : <p class="tr why"><span class="tr-k">the model’s words, as recorded; document index 0 is the SLA</span> <span data-verbatim>{translation(refusal).rationale!.en}</span></p>}
-  </section>
-  </div>
-
-  <p class="source">
-    <a class="tip-host" href={answer.source.url} aria-describedby="verity-run-tip">
-      {t.source}
-      <span class="tip" id="verity-run-tip" role="tooltip">
-        {t.run} <span class="mono">{runFile}</span> {t.ofVerity} {answer.example_id} {t.and} {refusal.example_id}{t.contract} <span class="mono">{fileOf(slaPath)}</span>
-      </span>
-    </a>
-  </p>
+  <p class="note">{t.note} · <a href={answer.source.url}>{t.trace}</a></p>
 </div>
 
 <noscript>
@@ -213,22 +239,17 @@ const nameOf = (path: string) => {
       transform: none;
       margin-top: 1rem;
     }
-    /* Nothing scrolls the window to the passage: the whole contract is shown, the cards below it. */
+    /* Nothing scrolls the window to the passage: the whole contract is shown once unfolded. */
     [data-verity-demo] [data-sheet] {
       height: auto;
       padding-bottom: 1.25rem;
       mask-image: none;
     }
-    [data-verity-demo] .cards {
-      margin: 1rem 0 0;
-    }
   </style>
 </noscript>
 
 <script>
-  import { dismissibleTips } from "../scripts/tips.ts";
   import { mountVerityDemo } from "../scripts/verity-demo.ts";
-  dismissibleTips();
   for (const root of document.querySelectorAll<HTMLElement>("[data-verity-demo]")) mountVerityDemo(root);
 </script>
 
@@ -239,11 +260,12 @@ const nameOf = (path: string) => {
     padding: 1rem;
     border: 1px solid var(--rule);
     border-radius: 20px;
-    /* Depth, barely: the proof green and the night blue of the portrait, 6 % at most, so every
+    /* Depth, barely: the proof green and the night blue of the portrait, 2 % at most, so every
        text on them keeps its contrast (contrast.test.ts). */
     background:
       radial-gradient(60% 50% at 80% 15%, var(--halo-proof), transparent),
-      radial-gradient(60% 60% at 15% 90%, var(--halo-night), transparent);
+      radial-gradient(60% 60% at 15% 90%, var(--halo-night), transparent),
+      var(--sheet);
   }
 
   .caption {
@@ -285,17 +307,92 @@ const nameOf = (path: string) => {
     line-height: 1;
   }
 
-  /* A translation sits indented under the English it translates. */
-  .tr {
-    margin-top: 0.2rem !important;
+  /* The passage the answer rests on, highlighted as in the contract: proof for a citation, defect
+     for the closest passage that was not enough. */
+  .passage {
+    margin: 0.3rem 0 0;
+    padding: 0;
+    font-size: var(--step-14);
+  }
+
+  .passage p + p {
+    margin-top: 0.2rem;
+  }
+
+  .passage mark {
+    color: var(--ink);
+    background: var(--proof-wash);
+    box-shadow: 0 2px 0 var(--proof);
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+  }
+
+  .refused .passage mark {
+    background: var(--defect-wash);
+    box-shadow: 0 2px 0 var(--defect);
+  }
+
+  /* Folded matter (the run's English, the whole contract): a quiet line that says what opens. */
+  /* The browser's triangle (U+25B8) is not in the font subsets: a plus that turns to a dash. */
+  details > summary {
+    list-style: none;
+    width: max-content;
+    max-width: 100%;
+    min-height: 24px;
+    font-size: var(--step-12);
+    color: var(--graphite);
+    cursor: pointer;
+    transition: color var(--dur-hover) var(--ease-out);
+  }
+
+  details > summary::-webkit-details-marker {
+    display: none;
+  }
+
+  details > summary::before {
+    content: "+\00A0";
+  }
+
+  details[open] > summary::before {
+    content: "–\00A0";
+  }
+
+  details > summary:hover {
+    color: var(--ink);
+  }
+
+  .original {
+    margin-top: 0.75rem;
+  }
+
+  .original div {
+    margin-top: 0.4rem;
     padding-left: 0.75rem;
+    border-left: 1px solid var(--rule);
     font-size: var(--step-12);
     color: var(--graphite);
   }
 
-  .tr-k {
-    margin-right: 0.25rem;
-    font-weight: 600;
+  .original div p + p {
+    margin-top: 0.35rem !important;
+  }
+
+  .contract {
+    margin-top: 0.75rem;
+  }
+
+  .contract[open] > summary {
+    margin-bottom: 0.5rem;
+  }
+
+  .note {
+    margin: 0.5rem 0 0;
+    font-size: var(--step-12);
+    color: var(--graphite);
+  }
+
+  .note a {
+    color: inherit;
   }
 
   .tabs {
@@ -319,11 +416,12 @@ const nameOf = (path: string) => {
   }
 
   /* The contract is seen through a window of fixed height, scrolled to the passage in play
-     (verity-demo.ts); it fades out at both ends to say that it goes on. It is told apart from
-     the frame by its tint alone: one drawn frame, the demo's. */
+     (verity-demo.ts); it fades out at both ends to say that it goes on. The frame lies on the
+     same sheet: a rule tells the window apart. */
   .window {
     background: var(--sheet);
     border-radius: 10px;
+    box-shadow: 0 0 0 1px var(--rule);
   }
 
   .sheet {
@@ -486,20 +584,6 @@ const nameOf = (path: string) => {
     display: none;
   }
 
-  /* The tooltip is placed against this line (global .tip), so it is never wider than the demo. */
-  .source {
-    position: relative;
-    margin: 0.75rem 0 0;
-    font-size: var(--step-12);
-    color: var(--graphite);
-  }
-
-  .source a {
-    color: inherit;
-  }
-
-  /* Over the contract, the card's glass is near-opaque: its text then never sits on the words
-     behind it (worst case checked in contrast.test.ts). */
   .card {
     padding: 1.25rem;
     background: var(--card-fill);
@@ -535,7 +619,6 @@ const nameOf = (path: string) => {
       transform: translateY(4px);
     }
 
-    .card[data-written] .tr-a,
     .card[data-written] .checks li {
       animation: card-in var(--dur-hover) var(--ease-out) backwards;
     }
@@ -587,7 +670,6 @@ const nameOf = (path: string) => {
   }
 
   .card[data-writing] .a-text,
-  .card[data-writing] .tr-a,
   .card[data-writing] .checks li {
     opacity: 0;
   }
@@ -619,54 +701,18 @@ const nameOf = (path: string) => {
 
   .why {
     margin-top: 0.5rem !important;
+    font-size: var(--step-14);
   }
 
-  /* Wide screens: the answer card overlaps the bottom right of the window, so the question,
-     its passage in the spotlight and the answer fit on the first screen together. */
+  .why-k {
+    margin-right: 0.25rem;
+    font-size: var(--step-12);
+    font-weight: 600;
+    color: var(--graphite);
+  }
+
+  /* Wide screens: the caption and the tabs share a row. */
   @media (min-width: 64rem) {
-    /* The card covers the lower half of the window: the passage is centred in the upper part,
-       and the padding lets the end of the contract scroll up there too. */
-    /* Below 80rem the passage wraps on more lines: a taller window keeps it above the card. */
-    .demo {
-      --window-height: 25rem;
-      --card-overlap: 11.5rem;
-    }
-
-    @media (min-width: 80rem) {
-      .demo {
-        --window-height: 22.5rem;
-      }
-    }
-
-    /* The contract fades out just above the card's top: the strip of it left of the card would
-       show only cut words (a heading cut in half, in refusal mode). */
-    .sheet {
-      height: var(--window-height);
-      padding-bottom: 12rem;
-      mask-image: linear-gradient(to bottom, transparent, #000 var(--fade), #000 calc(var(--window-height) - var(--card-overlap) - var(--fade) / 2), transparent calc(var(--window-height) - var(--card-overlap)));
-      --target-at: 0.27;
-    }
-
-    .cards {
-      position: relative;
-      z-index: 1;
-      margin: calc(-1 * var(--card-overlap)) 0 0 10%;
-    }
-
-    .card {
-      padding: 1rem 1.25rem;
-    }
-
-    .q,
-    .a {
-      font-size: var(--step-14);
-    }
-
-    .demo {
-      padding: 0.75rem 1.25rem 1.25rem;
-    }
-
-    /* The caption and the tabs share a row: the height goes to the contract and the card. */
     .head {
       display: flex;
       align-items: center;
@@ -682,17 +728,6 @@ const nameOf = (path: string) => {
 
     .head .caption {
       flex: 1;
-    }
-
-    /* The tabs are as wide as twice the longer label: tighter here, the caption keeps to two
-       lines and the card stays on a 1280×720 screen. With 0.6rem the caption's first line had
-       5 px to spare and Linux Chromium broke it onto a third line (CI, PR #10); now about 19. */
-    .tabs.segmented > button {
-      padding-inline: 0.45rem;
-    }
-
-    .step {
-      margin-top: 0.6rem !important;
     }
   }
 </style>
