@@ -97,8 +97,16 @@ const t = {
     }
   }
 
+  /* A column: the links sit at the foot of each card, level across the row. */
   .project {
+    display: flex;
+    flex-direction: column;
     padding: 1.25rem;
+  }
+
+  .project .links {
+    margin-top: auto;
+    padding-top: 0.75rem;
   }
 
   .project p {
@@ -130,11 +138,19 @@ const t = {
     margin: 1rem 0 0;
   }
 
-  /* The briefing's first page is a portrait A4 sheet: the card shows its top, where the title and verdict are. */
-  figure :global(img.page) {
-    aspect-ratio: 4 / 3;
+  /* One frame for the three images, the Verity screenshot's own ratio: the others show their
+     top (the briefing's first page is a portrait A4 sheet, its title and verdict at the top). */
+  figure :global(img) {
+    aspect-ratio: 16 / 10;
     object-fit: cover;
     object-position: top;
+  }
+
+  figcaption {
+    margin-top: 0.6rem;
+    font-size: 0.8125rem;
+    line-height: 1.45;
+    color: var(--graphite);
   }
 
   /* The picture clips its image, so the image can zoom under the pointer within its frame. */

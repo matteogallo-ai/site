@@ -124,3 +124,41 @@ for (const path of ["/", "/en/"]) {
     }
   });
 }
+
+// B4: at 1440 the three project cards line up: same image height, links on one line across.
+for (const path of ["/", "/en/"]) {
+  test(`${path} at 1440 px: the project cards' images share a height and their links a line`, async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto(path);
+    const boxes = await page.locator(".project").evaluateAll((cards) =>
+      cards.map((c) => ({ img: Math.round(c.querySelector("figure img")!.getBoundingClientRect().height), links: Math.round(c.querySelector(".links")!.getBoundingClientRect().top) })),
+    );
+    expect(boxes).toHaveLength(3);
+    expect(new Set(boxes.map((b) => b.img)).size, JSON.stringify(boxes)).toBe(1);
+    expect(new Set(boxes.map((b) => b.links)).size, JSON.stringify(boxes)).toBe(1);
+  });
+}
+
+// B5: a caption is smaller than the text, muted, and close to its image.
+test("project captions: 14 px at most, in graphite, 8 to 12 px under their image", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/");
+  const captions = await page.locator(".project figcaption").evaluateAll((cs) =>
+    cs.map((c) => {
+      const s = getComputedStyle(c);
+      const probe = document.createElement("span");
+      probe.style.color = "var(--graphite)";
+      document.body.append(probe);
+      const graphite = getComputedStyle(probe).color;
+      probe.remove();
+      return { size: Number.parseFloat(s.fontSize), muted: s.color === graphite, gap: Math.round(c.getBoundingClientRect().top - c.parentElement!.querySelector("img")!.getBoundingClientRect().bottom) };
+    }),
+  );
+  for (const c of captions) {
+    expect(c.size).toBeLessThanOrEqual(14);
+    expect(c.size).toBeGreaterThanOrEqual(13);
+    expect(c.muted).toBe(true);
+    expect(c.gap).toBeGreaterThanOrEqual(8);
+    expect(c.gap).toBeLessThanOrEqual(12);
+  }
+});
