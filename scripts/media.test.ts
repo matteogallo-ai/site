@@ -35,3 +35,11 @@ test("every project image is the committed file its record names, with a full so
     }
   }
 });
+
+test("an image's alternative text is short and in its page's language; details go to the caption", () => {
+  for (const m of media) {
+    for (const lang of ["fr", "en"] as const) assert.ok(m.alt[lang].length <= 125, `${m.id} (${lang}): ${m.alt[lang].length} characters of alt text`);
+    // English quoted inside a French alt is read with French pronunciation by a screen reader.
+    assert.doesNotMatch(m.alt.fr, /«[^»]*\b(?:the|what|is|for|our|on)\b/i, `${m.id}: English inside the French alt text`);
+  }
+});

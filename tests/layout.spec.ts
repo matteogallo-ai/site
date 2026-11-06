@@ -196,3 +196,19 @@ for (const path of ["/projets/verity/", "/en/projects/promptlang/"]) {
     expect(detail.layout).toBe("fixed");
   });
 }
+
+// C2: each case study opens on its product, large, with the link to the recording or the PDF.
+for (const [path, link] of [
+  ["/projets/verity/", "Voir l’enregistrement (GIF)"],
+  ["/en/projects/promptlang/", "See the recording (GIF)"],
+  ["/projets/praxis/", "Voir le PDF"],
+] as const) {
+  test(`${path}: the product image heads the case study, with its link`, async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto(path);
+    const shot = page.locator(".case-shot");
+    await expect(shot.locator("img")).toBeVisible();
+    expect((await shot.locator("img").boundingBox())!.width).toBeGreaterThan(600);
+    await expect(shot.getByRole("link", { name: link })).toHaveAttribute("href", /^https:\/\//);
+  });
+}

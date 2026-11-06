@@ -120,7 +120,7 @@ for (const [lang, slug] of (["fr", "en"] as const).flatMap((l) => CASES.map((c) 
     const diagram = page.locator("#construit svg[role='img']");
     await expect(diagram).toHaveCount(1);
     expect(((await diagram.getAttribute("aria-labelledby")) ?? "").split(" ")).toHaveLength(2);
-    await expect(page.getByRole("img", { name: /\S/ })).toHaveCount(1);
+    await expect(page.locator("#construit").getByRole("img", { name: /\S/ })).toHaveCount(1);
     for (const id of ((await diagram.getAttribute("aria-labelledby")) ?? "").split(" ")) await expect(page.locator(`#${id}`)).toHaveText(/\S/);
   });
 

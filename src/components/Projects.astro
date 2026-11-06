@@ -1,22 +1,14 @@
 ---
-import { Picture } from "astro:assets";
 import Figure from "./Figure.astro";
-import verityShot from "../assets/projects/verity-demo-110.png";
-import promptlangStill from "../assets/projects/promptlang-demo-last.png";
-import praxisPage from "../assets/projects/praxis-esg-brief-p1.png";
-import media from "../data/media.json";
+import ProductShot from "./ProductShot.astro";
 import { langOf, twin } from "../lib/i18n.ts";
 
-const shot = (id: string) => media.media.find((m) => m.id === id)!;
-const verityMedia = shot("verity");
-const promptlangMedia = shot("promptlang");
-const praxisMedia = shot("praxis");
 const repo = (name: string) => `https://github.com/matteogallo-ai/${name}`;
 const lang = langOf(Astro.url.pathname);
 const study = (slug: string) => (lang === "fr" ? `/projets/${slug}/` : twin(`/projets/${slug}/`));
 const t = {
-  fr: { id: "projets", title: "Projets", recording: "Voir l’enregistrement (GIF)", pdf: "Voir le PDF", defect: "Défaut connu", study: "Étude de cas" },
-  en: { id: "projects", title: "Projects", recording: "See the recording (GIF)", pdf: "See the PDF", defect: "Known defect", study: "Case study" },
+  fr: { id: "projets", title: "Projets", defect: "Défaut connu", study: "Étude de cas" },
+  en: { id: "projects", title: "Projects", defect: "Known defect", study: "Case study" },
 }[lang];
 ---
 
@@ -27,10 +19,7 @@ const t = {
     <article class="project card" aria-labelledby="p-verity">
       <p class="mono no">No. 01</p>
       <h3 id="p-verity">Verity</h3>
-      <figure>
-        <Picture src={verityShot} formats={["avif", "webp"]} alt={verityMedia.alt[lang]} widths={[480, 960]} sizes="(min-width: 64rem) 360px, 100vw" loading="lazy" decoding="async" />
-        <figcaption>{verityMedia.caption[lang]} <a href={verityMedia.url}>{t.recording}</a></figcaption>
-      </figure>
+      <ProductShot id="verity" size="card" />
       <p>{lang === "fr" ? "Un agent RAG sur des documents d’entreprise : il répond en citant mot pour mot, refuse quand ses preuves sont faibles, et publie à quelle fréquence il refuse à raison." : "A RAG agent over company documents: it answers by quoting word for word, refuses when its evidence is weak, and publishes how often it refuses rightly."}</p>
       <ul class="measures">
         <li><Figure id="verity.refusal_precision" where="card" /> {lang === "fr" ? "précision de refus" : "refusal precision"}</li>
@@ -47,10 +36,7 @@ const t = {
     <article class="project card" aria-labelledby="p-promptlang">
       <p class="mono no">No. 02</p>
       <h3 id="p-promptlang">PromptLang</h3>
-      <figure>
-        <Picture src={promptlangStill} formats={["avif", "webp"]} alt={promptlangMedia.alt[lang]} widths={[480, 960]} sizes="(min-width: 64rem) 360px, 100vw" loading="lazy" decoding="async" />
-        <figcaption>{promptlangMedia.caption[lang]} <a href={promptlangMedia.url}>{t.recording}</a></figcaption>
-      </figure>
+      <ProductShot id="promptlang" size="card" />
       <p>{lang === "fr" ? "Un langage typé pour les prompts LLM, compilé vers TypeScript ou Python, publié sur npm." : "A typed language for LLM prompts, compiled to TypeScript or Python, published on npm."}</p>
       <ul class="measures">
         <li><Figure id="promptlang.mutation_score" where="card" /> {lang === "fr" ? "score de mutation (lexer, parser, semver ; exécution locale, hors CI)" : "mutation score (lexer, parser, semver; local run, outside CI)"}</li>
@@ -67,10 +53,7 @@ const t = {
     <article class="project card" aria-labelledby="p-praxis">
       <p class="mono no">No. 03</p>
       <h3 id="p-praxis">Praxis</h3>
-      <figure>
-        <Picture src={praxisPage} formats={["avif", "webp"]} alt={praxisMedia.alt[lang]} widths={[480, 765]} sizes="(min-width: 64rem) 360px, 100vw" loading="lazy" decoding="async" class="page" />
-        <figcaption>{praxisMedia.caption[lang]} <a href={praxisMedia.url}>{t.pdf}</a></figcaption>
-      </figure>
+      <ProductShot id="praxis" size="card" />
       <p>{lang === "fr" ? "Un pipeline LLM qui transforme une question business en briefing analytique, avec contrôles de sourcing et revue adverse." : "An LLM pipeline that turns a business question into an analytical briefing, with sourcing checks and adversarial review."}</p>
       <ul class="measures">
         <li><Figure id="praxis.cost_per_briefing" where="card" /> {lang === "fr" ? "par briefing live terminé" : "per completed live briefing"}</li>
@@ -116,7 +99,7 @@ const t = {
   /* The whole card opens its case study (.card, global.css). Blocks holding links of their own sit
      above the stretched link; the one under the pointer or the keyboard rises above its
      neighbours, so its proof tooltip is not drawn under the next line. */
-  figcaption,
+  .project :global(figcaption),
   .measures li,
   .known-defect p,
   .links a:not(.card-link) {
@@ -124,7 +107,9 @@ const t = {
     z-index: 1;
   }
 
-  :is(figcaption, .measures li, .known-defect p):is(:hover, :focus-within) {
+  .project :global(figcaption):is(:hover, :focus-within),
+  .measures li:is(:hover, :focus-within),
+  .known-defect p:is(:hover, :focus-within) {
     z-index: 2;
   }
 
@@ -134,43 +119,8 @@ const t = {
     margin: 0 0 0.25rem !important;
   }
 
-  figure {
-    margin: 1rem 0 0;
-  }
-
-  /* One frame for the three images, the Verity screenshot's own ratio: the others show their
-     top (the briefing's first page is a portrait A4 sheet, its title and verdict at the top). */
-  figure :global(img) {
-    aspect-ratio: 16 / 10;
-    object-fit: cover;
-    object-position: top;
-  }
-
-  figcaption {
-    margin-top: 0.6rem;
-    font-size: 0.8125rem;
-    line-height: 1.45;
-    color: var(--graphite);
-  }
-
-  /* The picture clips its image, so the image can zoom under the pointer within its frame. */
-  figure :global(picture) {
-    display: block;
-    overflow: hidden;
-    border-radius: 6px;
-    box-shadow: 0 0 0 1px var(--rule);
-  }
-
-  figure :global(img),
-  figure img {
-    display: block;
-    width: 100%;
-    height: auto;
-    transition: transform var(--dur-image) var(--ease-out);
-  }
-
   @media (prefers-reduced-motion: no-preference) {
-    .project:hover figure :global(img) {
+    .project:hover :global(.shot img) {
       transform: scale(1.02);
     }
   }
