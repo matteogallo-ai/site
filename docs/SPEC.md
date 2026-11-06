@@ -22,7 +22,7 @@ Plain text on the left, one strong visual on the right: Verity working on a cont
 ## 3. Pages
 
 ### 3.1 Home `/`
-1. **Navigation:** floating glass pill. Projects · Method · About; Writing and the FR/EN selector join it once an article and the English version exist.
+1. **Navigation:** floating glass pill. Projects · Method · About, and the FR | EN selector; Writing joins it once an article exists. On the other pages the selector sits in the header.
 2. **First screen:**
    - Left, in small type: the **portrait** (56 px, round), the name, "Software & AI Engineer · Lausanne" and the status "Available" (green dot). Then the headline, 68 px: "I build AI products you can verify." Under it: "Complete products, from the interface to production. Every measure is published, defects included." ("defects included" highlighted in green), and the buttons "See the projects" and "Write an e-mail".
    - Right: the Verity demo (section 2).
@@ -68,7 +68,7 @@ How the site is built: stack, budgets, real measures, accessibility choices, wha
 - Path: self-taught; automation technician training (ETML) interrupted in the second year to focus on software development.
 
 ## 7. Languages
-French at `/`, English at `/en/`, translated by hand, correct `hreflang`.
+French at `/`, English at `/en/`, translated by hand, correct `hreflang` (x-default: the French page). Case-study paths are translated (`/projets/x/` ↔ `/en/projects/x/`); section anchors and figures are the same in both languages.
 
 ## 8. Technique
 - **Astro**, static, zero JS by default. JS islands: the Verity demo, the Short/Detailed toggle, the band's counters.
