@@ -5,7 +5,7 @@ import { builtPages } from "../scripts/built-pages.ts";
 import { kilo, site, siteBudgets } from "../src/lib/colophon.ts";
 import { alternates, langOf, twin } from "../src/lib/i18n.ts";
 import { decimal } from "../src/lib/measures.ts";
-import { OG } from "../src/lib/og.ts";
+import { OG, ogImage, ogImages } from "../src/lib/og.ts";
 import { plain } from "../scripts/typography.ts";
 import config from "../astro.config.mjs";
 
@@ -75,10 +75,11 @@ for (const path of pages) {
     } else {
       expect(await og("url")).toBe(await page.locator('link[rel="canonical"]').getAttribute("href"));
     }
-    const lang = langOf(path);
     const image = (await og("image"))!;
-    expect(image).toBe(`${ORIGIN}/${OG[lang].file.replace(/^public\//, "")}`);
-    expect(plain((await og("image:alt"))!)).toBe(plain(OG[lang].alt));
+    // F2: a case study shares its own image, every other page its language's home image.
+    const expected = ogImage(path);
+    expect(image).toBe(`${ORIGIN}/${expected.file.replace(/^public\//, "")}`);
+    expect(plain((await og("image:alt"))!)).toBe(plain(expected.alt));
     const local = await request.get(new URL(image).pathname);
     expect(local.status()).toBe(200);
     expect(local.headers()["content-type"]).toBe("image/png");
@@ -199,6 +200,25 @@ for (const path of ["/", "/en/projects/verity/"]) {
       const response = await request.get(file);
       expect(response.status(), file).toBe(200);
       expect(response.headers()["content-type"], file).toMatch(type);
+    }
+  });
+}
+
+// F2: what each image says beside its title is what the page says: the home band's captions, a
+// case study's first brief figure and its caption; every image is a 1200x630 PNG.
+for (const image of ogImages()) {
+  const path = image.case ? (image.lang === "fr" ? `/projets/${image.case.slug}/` : `/en/projects/${image.case.slug}/`) : image.lang === "fr" ? "/" : "/en/";
+  test(`${image.file}: drawn at 1200x630 from the words of ${path}`, async ({ page }) => {
+    const meta = await sharp(readFileSync(image.file)).metadata();
+    expect([meta.format, meta.width, meta.height]).toEqual(["png", OG.width, OG.height]);
+    await page.goto(path);
+    if (image.case) {
+      const first = page.locator(".brief .figure").first();
+      expect(plain(await first.locator(".value").innerText())).toBe(plain(image.case.value));
+      expect(plain(await page.locator(".brief").innerText()).replace(/\s+/g, " ")).toContain(plain(image.case.caption));
+    } else {
+      const captions = await page.locator(".band .cell > span").allInnerTexts();
+      expect(captions.map(plain)).toEqual(OG.band.map((b) => plain(b.caption[image.lang])));
     }
   });
 }

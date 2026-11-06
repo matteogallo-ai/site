@@ -3,7 +3,7 @@ import { Font } from "astro:assets";
 import "../styles/global.css";
 import Glass from "../components/Glass.astro";
 import { alternates, langOf } from "../lib/i18n.ts";
-import { OG } from "../lib/og.ts";
+import { OG, ogImage } from "../lib/og.ts";
 
 interface Props {
   title: string;
@@ -22,7 +22,7 @@ const skipLabel = lang === "fr" ? "Aller au contenu" : "Skip to content";
 const canonical = hasCanonical ? new URL(Astro.url.pathname, Astro.site).href : undefined;
 // The page in each language (SPEC §7); a page with no address of its own (the 404) names none.
 const versions = hasCanonical ? alternates(Astro.url.pathname).map((a) => ({ ...a, href: new URL(a.path, Astro.site).href })) : [];
-const image = OG[lang];
+const image = ogImage(Astro.url.pathname);
 ---
 
 <!doctype html>
@@ -34,7 +34,7 @@ const image = OG[lang];
     <meta name="description" content={description} />
     {canonical && <link rel="canonical" href={canonical} />}
     {versions.map((v) => <link rel="alternate" hreflang={v.hreflang} href={v.href} />)}
-    {/* Link previews (Open Graph): one image per language, written by scripts/og.ts. */}
+    {/* Link previews (Open Graph): the home image of the page's language, or its case study's; written by scripts/og.ts. */}
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Matteo Gallo" />
     <meta property="og:locale" content={lang === "fr" ? "fr_CH" : "en_GB"} />

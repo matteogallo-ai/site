@@ -1,7 +1,13 @@
 {
-  "inputs": "4004feace50549578f9acd7b309c8db47bf930cd71dd6bba6ede0f112908c1ba",
+  "inputs": "e5824e33930591b4abeaab06522a8c20b631210867ffb4a36be580931c7ce080",
   "png": {
-    "fr": "596fc0f3564fe147e5e5d61c469955f6dd09019f0dc7c2eebe41c1ffb1090a93",
-    "en": "0bb9e111b0cb59ab34895905ee8049c88ca2cf3ae519a7bd29e011dc86413553"
+    "public/og.png": "196a0a4bbde934c0baa9ae0e23544542189e94bf52c6240c71f676cf330f4b43",
+    "public/og/verity.png": "b5c893b5d0eecb53fcceb8f06b06c33453ae0e029dbb140864d96129fcd87b6f",
+    "public/og/promptlang.png": "8e0f4da2aced1fc5af367ae1e4c378c9c3d1d58a713fbf1cd2d471b516858478",
+    "public/og/praxis.png": "145ac47da5ce0ca12d92aa0c90ee6c4b52caf16fd98371c880369ea2096090db",
+    "public/og-en.png": "ebcadebefafd32166055a0b3ceb7866d1a8d4ddfdb480d866cd22dd87ffc561e",
+    "public/og/verity-en.png": "8c1b62feab13cc3e1daf09810e453e66ff02833a5443bec68877c11b13c8a169",
+    "public/og/promptlang-en.png": "dd7c40be69f6539c254349e6a13a7f1640870e2b723505433128a4f475dba2a1",
+    "public/og/praxis-en.png": "4aee889a3b6bc915ec6bb1d8d9f4d53f7ed37e19c0f5f05eb3f1e42e1a3a61a8"
   }
 }
