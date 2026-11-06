@@ -352,9 +352,10 @@ const nameOf = (path: string) => {
       overflow-y: auto;
     }
 
+    /* The site's focus ring (global.css), so the contract reads as one more focusable thing. */
     .window:has(.sheet:focus-visible) {
-      outline: 2px solid var(--ink);
-      outline-offset: 2px;
+      outline: 2px solid var(--proof);
+      outline-offset: 3px;
     }
   }
 

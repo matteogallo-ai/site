@@ -265,3 +265,39 @@ for (const path of ["/", "/en/projects/verity/"]) {
     }
   });
 }
+
+// E5: the contract's focus ring has the site's focus style, and no ancestor clips it.
+for (const width of [375, 1440]) {
+  test(`demo at ${width} px: the contract's focus ring is the site's, drawn whole`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto("/");
+    await page.locator("[data-sheet]").focus();
+    await page.keyboard.press("ArrowDown");
+    const ring = await page.evaluate(() => {
+      const sheet = document.querySelector("[data-sheet]")!;
+      const host = [sheet, sheet.parentElement!].find((el) => getComputedStyle(el).outlineStyle !== "none")!;
+      const s = getComputedStyle(host);
+      const probe = document.createElement("a");
+      probe.href = "#";
+      document.body.append(probe);
+      probe.focus({ focusVisible: true } as FocusOptions);
+      const site = getComputedStyle(probe);
+      const expected = { color: site.outlineColor, width: site.outlineWidth, offset: site.outlineOffset };
+      probe.remove();
+      sheet instanceof HTMLElement && sheet.focus();
+      const reach = Number.parseFloat(s.outlineWidth) + Number.parseFloat(s.outlineOffset);
+      const r = host.getBoundingClientRect();
+      const box = { top: r.top - reach, left: r.left - reach, right: r.right + reach, bottom: r.bottom + reach };
+      const clipped: string[] = [];
+      for (let el = host.parentElement; el; el = el.parentElement) {
+        const cs = getComputedStyle(el);
+        if (cs.overflowX === "visible" && cs.overflowY === "visible" && cs.clipPath === "none" && cs.maskImage === "none") continue;
+        const c = el.getBoundingClientRect();
+        if (box.left < c.left || box.right > c.right || box.top < c.top || box.bottom > c.bottom) clipped.push(`${el.tagName}.${el.className}`);
+      }
+      return { got: { color: s.outlineColor, width: s.outlineWidth, offset: s.outlineOffset }, expected, clipped };
+    });
+    expect(ring.got).toEqual(ring.expected);
+    expect(ring.clipped).toEqual([]);
+  });
+}
