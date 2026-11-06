@@ -8,7 +8,7 @@ const font = (/** @type {string} */ name) => `./src/assets/fonts/${name}`;
 
 export default defineConfig({
   // Canonical production origin (SPEC §8); hreflang, Open Graph and the sitemap derive from it.
-  site: "https://matteogallo.pages.dev",
+  site: "https://matteogallo.ch",
   trailingSlash: "ignore",
   build: { format: "directory" },
   // nestedNotFound first: the placeholder check then reads every page where it is served from.

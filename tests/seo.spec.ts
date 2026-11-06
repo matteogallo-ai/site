@@ -22,6 +22,22 @@ test("the sitemap lists every built page but the 404, each at its canonical URL"
   expect(locs).toEqual(canonicals.sort());
 });
 
+// The production address is the custom domain (SPEC §8): a *.pages.dev origin left in a canonical,
+// hreflang, sitemap, robots or Open Graph URL would split the site's ranking across two hosts.
+test("canonical, hreflang, sitemap, robots and Open Graph URLs all name https://matteogallo.ch", async ({ page, request }) => {
+  expect(ORIGIN).toBe("https://matteogallo.ch");
+  const urls: string[] = [];
+  for (const path of pages) {
+    await page.goto(path);
+    for (const selector of ['link[rel="canonical"]', 'link[rel="alternate"]']) urls.push(...(await page.locator(selector).evaluateAll((els) => els.map((e) => e.getAttribute("href")!))));
+    urls.push(...(await page.locator('meta[property^="og:"][content^="http"]').evaluateAll((els) => els.map((e) => e.getAttribute("content")!))));
+  }
+  const files = [await (await request.get("/sitemap.xml")).text(), await (await request.get("/robots.txt")).text()];
+  urls.push(...files.flatMap((f) => [...f.matchAll(/https?:\/\/[^\s<"]+/g)].map((m) => m[0]).filter((u) => !u.includes("sitemaps.org") && !u.includes("w3.org"))));
+  expect(urls.length).toBeGreaterThan(pages.length);
+  expect(urls.filter((u) => new URL(u).origin !== ORIGIN)).toEqual([]);
+});
+
 test("robots.txt allows every crawler and names the sitemap", async ({ request }) => {
   expect(await (await request.get("/robots.txt")).text()).toBe(`User-agent: *\nAllow: /\n\nSitemap: ${ORIGIN}/sitemap.xml\n`);
 });
