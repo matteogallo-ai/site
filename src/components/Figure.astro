@@ -16,9 +16,12 @@ const tip = `src-${where}-${id.replaceAll(".", "-")}`;
 const m = measure(id);
 // French puts a no-break space before the colon; the mono subset has U+00A0, not U+202F.
 const proof = lang === "fr" ? "Preuve\u00A0:" : "Proof:";
+// Read aloud: the figure and what it counts, out of the sentence or card that names it; the
+// proof path is the link's description only (aria-describedby).
+const name = `${m.display[lang]}, ${m.label[lang]}`;
 ---
 
-<a class:list={["figure", "tip-host", { defect }]} href={m.url} aria-describedby={tip}>
+<a class:list={["figure", "tip-host", { defect }]} href={m.url} aria-label={name} aria-describedby={tip}>
   <span class="value mono">{m.display[lang]}</span>
   <span class="path tip mono" id={tip} role="tooltip">{proof} {m.repo.split("/")[1]}/{m.path}</span>
 </a>

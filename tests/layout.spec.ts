@@ -246,3 +246,22 @@ for (const path of pages) {
     for (const link of nav) expect(Number(link.split(" ").at(-1)), link).toBeGreaterThanOrEqual(path === "/" || path === "/en/" ? 44 : 24);
   });
 }
+
+// E3: a figure is announced as its value and what it counts; the proof path is its description only.
+for (const path of ["/", "/en/projects/verity/"]) {
+  test(`${path}: each figure's accessible name is its value and its label, the proof its description`, async ({ page }) => {
+    await page.goto(path);
+    const figures = page.locator("a.figure");
+    expect(await figures.count()).toBeGreaterThan(3);
+    for (const figure of await figures.all()) {
+      if (!(await figure.isVisible())) continue;
+      // The value in monospace takes U+00A0, the typeset label U+202F: compared as spaces.
+      const value = (await figure.locator(".value").innerText()).trim().replace(/\s/g, " ");
+      const name = (await figure.evaluate((a) => a.getAttribute("aria-label") ?? "")).replace(/\s/g, " ");
+      expect(name.startsWith(`${value}, `) && name.length > value.length + 6, name).toBe(true);
+      await expect(figure).toHaveAccessibleName(/\S/);
+      await expect(figure).not.toHaveAccessibleName(/Preuve|Proof/);
+      await expect(figure).toHaveAccessibleDescription(/^(Preuve|Proof)\s?: \S+\/\S+$/);
+    }
+  });
+}
