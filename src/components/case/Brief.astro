@@ -1,5 +1,6 @@
 ---
 import Figure from "../Figure.astro";
+import { langOf } from "../../lib/i18n.ts";
 
 /**
  * "En bref": what a recruiter reads in twenty seconds. Three plain sentences and three
@@ -20,21 +21,25 @@ interface Big {
 
 const { does, measured, defect, figures } = Astro.props;
 if (!figures.some((f) => f.defect)) throw new Error("the brief shows the main defect among its figures");
+const t = {
+  fr: { title: "En bref", does: "Ce que ça fait", measured: "Ce qui est mesuré", defect: "Défaut principal" },
+  en: { title: "In brief", does: "What it does", measured: "What is measured", defect: "Main defect" },
+}[langOf(Astro.url.pathname)];
 ---
 
 <section class="brief" aria-labelledby="bref-title">
-  <h2 id="bref-title">En bref</h2>
+  <h2 id="bref-title">{t.title}</h2>
   <dl class="lines">
     <div>
-      <dt>Ce que ça fait</dt>
+      <dt>{t.does}</dt>
       <dd>{does}</dd>
     </div>
     <div>
-      <dt>Ce qui est mesuré</dt>
+      <dt>{t.measured}</dt>
       <dd>{measured}</dd>
     </div>
     <div>
-      <dt>Défaut principal</dt>
+      <dt>{t.defect}</dt>
       <dd>{defect}</dd>
     </div>
   </dl>

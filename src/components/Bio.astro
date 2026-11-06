@@ -1,22 +1,44 @@
 ---
+import { langOf } from "../lib/i18n.ts";
+
+const lang = langOf(Astro.url.pathname);
 ---
 
 <div class="bio" data-bio>
-  <div class="toggle segmented" role="group" aria-label="Longueur de la bio" data-at="0">
-    <button type="button" aria-pressed="true" data-bio-show="short">Court</button>
-    <button type="button" aria-pressed="false" data-bio-show="long">Détaillé</button>
+  <div class="toggle segmented" role="group" aria-label={lang === "fr" ? "Longueur de la bio" : "Length of the bio"} data-at="0">
+    <button type="button" aria-pressed="true" data-bio-show="short">{lang === "fr" ? "Court" : "Short"}</button>
+    <button type="button" aria-pressed="false" data-bio-show="long">{lang === "fr" ? "Détaillé" : "Detailed"}</button>
   </div>
   <div class="versions" data-bio-versions>
-  <div data-bio-version="short">
-    <p>Software &amp; AI Engineer à Lausanne, autodidacte. Je construis des produits IA de bout en bout et je publie ce qu’ils valent, mesures et défauts.</p>
-  </div>
-  <div data-bio-version="long" hidden>
-    <p>
-      Je suis autodidacte. J’ai commencé une formation d’automaticien à l’ETML, interrompue en deuxième année pour me consacrer au développement logiciel. Depuis, je construis des systèmes IA de bout en bout : je décide de ce qui est construit et de la façon dont c’est jugé (spécifications, architecture, définition de « terminé », protocoles d’évaluation, plafonds de coût) ; des agents de code écrivent l’essentiel du code, d’autres le relisent, je lis le résultat et je merge.
-    </p>
-    <p>Langues : français et italien (langues maternelles), anglais (intermédiaire), espagnol (notions).</p>
-    <p>Ce que je cherche : Un poste d’ingénieur logiciel et IA en Suisse romande (Lausanne, Genève, hybride).</p>
-  </div>
+  {
+    lang === "fr" ? (
+      <>
+        <div data-bio-version="short">
+          <p>Software &amp; AI Engineer à Lausanne, autodidacte. Je construis des produits IA de bout en bout et je publie ce qu’ils valent, mesures et défauts.</p>
+        </div>
+        <div data-bio-version="long" hidden>
+          <p>
+            Je suis autodidacte. J’ai commencé une formation d’automaticien à l’ETML, interrompue en deuxième année pour me consacrer au développement logiciel. Depuis, je construis des systèmes IA de bout en bout : je décide de ce qui est construit et de la façon dont c’est jugé (spécifications, architecture, définition de « terminé », protocoles d’évaluation, plafonds de coût) ; des agents de code écrivent l’essentiel du code, d’autres le relisent, je lis le résultat et je merge.
+          </p>
+          <p>Langues : français et italien (langues maternelles), anglais (intermédiaire), espagnol (notions).</p>
+          <p>Ce que je cherche : Un poste d’ingénieur logiciel et IA en Suisse romande (Lausanne, Genève, hybride).</p>
+        </div>
+      </>
+    ) : (
+      <>
+        <div data-bio-version="short">
+          <p>Software &amp; AI Engineer in Lausanne, self-taught. I build AI products end to end and publish what they are worth, measures and defects.</p>
+        </div>
+        <div data-bio-version="long" hidden>
+          <p>
+            I am self-taught. I started an automation technician training at ETML and left it in the second year to devote myself to software development. Since then I have built AI systems end to end: I decide what gets built and how it is judged (specifications, architecture, definition of “done”, evaluation protocols, cost ceilings); coding agents write most of the code, others review it, I read the result and merge.
+          </p>
+          <p>Languages: French and Italian (native), English (intermediate), Spanish (basics).</p>
+          <p>What I am looking for: a software and AI engineering position in French-speaking Switzerland (Lausanne, Geneva, hybrid).</p>
+        </div>
+      </>
+    )
+  }
   </div>
 </div>
 

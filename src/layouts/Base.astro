@@ -2,19 +2,20 @@
 import { Font } from "astro:assets";
 import "../styles/global.css";
 import Glass from "../components/Glass.astro";
+import { langOf } from "../lib/i18n.ts";
 import { OG } from "../lib/og.ts";
 
 interface Props {
   title: string;
   description: string;
-  lang?: "fr" | "en";
   /** Pages that set text in the serif (the Verity contract, quotes) declare it; others never get its @font-face. */
   serif?: boolean;
   /** False for the 404 page: it answers at every unknown address, so no URL is its own. */
   canonical?: boolean;
 }
 
-const { title, description, lang = "fr", serif = false, canonical: hasCanonical = true } = Astro.props;
+const { title, description, serif = false, canonical: hasCanonical = true } = Astro.props;
+const lang = langOf(Astro.url.pathname);
 const skipLabel = lang === "fr" ? "Aller au contenu" : "Skip to content";
 const canonical = hasCanonical ? new URL(Astro.url.pathname, Astro.site).href : undefined;
 ---
