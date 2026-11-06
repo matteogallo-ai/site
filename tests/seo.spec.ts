@@ -34,7 +34,9 @@ test("canonical, hreflang, sitemap, robots and Open Graph URLs all name https://
   }
   const files = [await (await request.get("/sitemap.xml")).text(), await (await request.get("/robots.txt")).text()];
   urls.push(...files.flatMap((f) => [...f.matchAll(/https?:\/\/[^\s<"]+/g)].map((m) => m[0]).filter((u) => !u.includes("sitemaps.org") && !u.includes("w3.org"))));
-  expect(urls.length).toBeGreaterThan(pages.length);
+  // Each source must contribute: one og:image per page, and the sitemap's own URLs.
+  expect(urls.filter((u) => u.endsWith(".png")).length).toBe(pages.length);
+  expect(files[0]).toContain("<loc>");
   expect(urls.filter((u) => new URL(u).origin !== ORIGIN)).toEqual([]);
 });
 
