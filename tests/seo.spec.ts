@@ -14,7 +14,7 @@ test("the sitemap lists every built page but the 404, each at its canonical URL"
   const xml = await (await request.get("/sitemap.xml")).text();
   const locs = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1]);
   const canonicals: string[] = [];
-  for (const path of pages.filter((p) => p !== "/404.html")) {
+  for (const path of pages.filter((p) => !p.endsWith("/404.html"))) {
     await page.goto(path);
     canonicals.push((await page.locator('link[rel="canonical"]').getAttribute("href"))!);
   }
@@ -39,7 +39,7 @@ for (const path of pages) {
     await page.goto(path);
     const og = (p: string) => page.locator(`meta[property="og:${p}"]`).getAttribute("content");
     expect(await og("title")).toBe(await page.title());
-    if (path === "/404.html") {
+    if (path.endsWith("/404.html")) {
       // Served at every unknown address: no URL of its own to name.
       await expect(page.locator('link[rel="canonical"], meta[property="og:url"]')).toHaveCount(0);
     } else {
