@@ -27,7 +27,9 @@ const lang = langOf(Astro.url.pathname);
 </details>
 
 <style>
+  /* Wider than the prose for its tables, but held to a width where a row still reads as one. */
   .measures-detail {
+    max-width: 64rem;
     margin-top: 2rem;
     border-top: 1px solid var(--rule);
     border-bottom: 1px solid var(--rule);
@@ -69,6 +71,12 @@ const lang = langOf(Astro.url.pathname);
 
   .measures-detail[open]::details-content {
     block-size: auto;
+  }
+
+  /* Prose in the fold keeps the reading measure of the sections' text. */
+  .ci-note,
+  .measures-detail > :global(p) {
+    max-width: 34rem;
   }
 
   .ci-note {

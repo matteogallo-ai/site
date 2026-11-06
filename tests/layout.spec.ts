@@ -173,3 +173,26 @@ for (const path of ["/projets/verity/", "/en/projects/verity/"]) {
     expect(h2!.weight).toBeGreaterThanOrEqual(dt!.weight);
   });
 }
+
+// C3: on a wide screen a case study is not the phone layout stretched.
+for (const path of ["/projets/verity/", "/en/projects/promptlang/"]) {
+  test(`${path} at 1440 px: diagram beside its text, prose at a reading measure, measures at a set width`, async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto(path);
+    const diagram = (await page.locator("#construit .diagram").boundingBox())!;
+    const prose = (await page.locator("#construit > p").last().boundingBox())!;
+    expect(diagram.x, "diagram in its own column, right of the text").toBeGreaterThanOrEqual(prose.x + prose.width);
+    // About 70 characters a line at most: text length over the lines it takes.
+    const perLine = await page.locator(".case-section > p:not(.lead):not(.rule-label)").evaluateAll((ps) =>
+      ps.map((p) => {
+        const lines = Math.round(p.getBoundingClientRect().height / Number.parseFloat(getComputedStyle(p).lineHeight));
+        return lines > 1 ? (p as HTMLElement).innerText.replace(/\s+/g, " ").length / lines : 0;
+      }),
+    );
+    expect(Math.max(...perLine)).toBeLessThanOrEqual(75);
+    await page.locator(".measures-detail summary").first().click();
+    const detail = await page.locator(".measures-detail").first().evaluate((d) => ({ width: d.getBoundingClientRect().width, layout: getComputedStyle(d.querySelector("table")!).tableLayout }));
+    expect(detail.width).toBeLessThanOrEqual(1024);
+    expect(detail.layout).toBe("fixed");
+  });
+}

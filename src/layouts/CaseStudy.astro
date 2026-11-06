@@ -118,12 +118,33 @@ const cases = [
     margin: 1rem 0 0;
   }
 
-  /* Prose of the sections: a reading measure, tables and diagrams may run wider. */
+  /* Prose of the sections: a reading measure of about 70 characters; tables run wider. */
   .case :global(.case-section > p),
   .case :global(.case-section > ul),
   .case :global(.case-section > ol),
   .case :global(.case-section > blockquote) {
-    max-width: 40rem;
+    max-width: 34rem;
+  }
+
+  /* Wide screens: the diagram stands in its own column beside the section's text, instead of a
+     narrow column with two thirds of the line empty. */
+  @media (min-width: 64rem) {
+    .case :global(.case-section:has(> .diagram)) {
+      display: grid;
+      grid-template-columns: minmax(0, 34rem) minmax(0, 30rem);
+      column-gap: 4rem;
+      align-items: start;
+    }
+
+    .case :global(.case-section:has(> .diagram) > *) {
+      grid-column: 1;
+    }
+
+    .case :global(.case-section:has(> .diagram) > .diagram) {
+      grid-column: 2;
+      grid-row: 2 / span 8;
+      margin-top: 0;
+    }
   }
 
   /* The section's first sentence: what it gives the reader. */
