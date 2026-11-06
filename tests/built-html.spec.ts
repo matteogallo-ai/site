@@ -31,6 +31,11 @@ for (const [file, label] of [["index.html", "bon de commande Northwind (section 
 
 // The description of a diagram is read aloud in place of the drawing: sentences, not the drawn
 // lines joined end to end ("Versions, does it, break the, caller?").
+test("the built pages hold diagram descriptions and English quotes: the rules below have something to read", () => {
+  expect(files.reduce((n, f) => n + (html(f).match(/<desc[^>]*>/g)?.length ?? 0), 0)).toBeGreaterThanOrEqual(6);
+  expect(files.filter((f) => !f.startsWith("en/")).reduce((n, f) => n + (html(f).match(/<blockquote[^>]*lang="en"/g)?.length ?? 0), 0)).toBeGreaterThanOrEqual(2);
+});
+
 for (const file of files) {
   test(`${file}: every diagram description is written in sentences`, () => {
     for (const [, desc] of html(file).matchAll(/<desc[^>]*>([^<]*)<\/desc>/g)) {
@@ -72,6 +77,7 @@ const CALQUES = [
   /\bFrame of\b/, // « Image de l’enregistrement »: a still
   /told apart from chance|counted apart\b/,
   /programming interface \(API\)/,
+  /point of comparison|test bench/, // « point de comparaison », « banc de test »: baseline, test harness
 ];
 for (const file of files.filter((f) => f.startsWith("en/"))) {
   test(`${file}: no French calque in the English`, () => {

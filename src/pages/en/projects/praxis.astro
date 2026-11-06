@@ -53,7 +53,7 @@ const at = (path: string) => pinned("praxis", path);
         { title: "Flagged", lines: ["delivered;", "a section lists", "every item", "without a source"], tone: "defect" },
       ]}
       desc="Praxis first scopes what the question covers and the expected format. A web search gathers facts, actors, risks and options, each with its source. A check written in code rejects missing sources, unreliable sites, pages too old and duplicates. A model then drafts each section, and another looks for the flaw and may restart the drafting once at most. The file is delivered as Markdown, PDF and Word. It is sourced when every item has a source; otherwise it is flagged: a section lists every item without a source."
-      caption="Every stage calls an Anthropic model, except the source check, which is code. On the command line and in the test bench, a briefing that fails this check is delivered with a section that lists what it could not source; the run stops if no fact from the search has a source."
+      caption="Every stage calls an Anthropic model, except the source check, which is code. On the command line and in the test harness, a briefing that fails this check is delivered with a section that lists what it could not source; the run stops if no fact from the search has a source."
     />
     <p>
       The instructions given to the models are <code>.prompt</code> files read by PromptLang. The section of unsourced items is written by the code from the check’s report: no model can soften it.
@@ -70,7 +70,7 @@ const at = (path: string) => pinned("praxis", path);
       Of the real runs, <Figure id="praxis.live_completed" where="prose" /> reached the end; a completed briefing cost <Figure id="praxis.cost_per_briefing" where="prose" />. Every completed briefing is
       flagged as insufficiently sourced: <Figure id="praxis.insufficiently_sourced" where="prose" defect />. The flag is raised as soon as a single item blocks.
     </p>
-    <h3>No point of comparison</h3>
+    <h3>No reference point</h3>
     <p>
       Nothing in the repository compares Praxis with a simpler approach, a single model call or drafting without search. The only score published earlier rated simulated briefings, written by hand for
       the tests: it measured those examples, not a model, and it was withdrawn (<a href={at("CHANGELOG.md")}>changelog</a>). The quality of the briefings themselves has not been reviewed for any question; only
@@ -108,7 +108,7 @@ const at = (path: string) => pinned("praxis", path);
   <CaseSection n={4} id="echecs" title="What did not work, and what I did" lead="Three real failures, their cause when it is known, and what each one changed.">
     <h3>Declared done before a single real briefing</h3>
     <p>
-      Every stage and every format was built and tested on hand-written examples before the first real run. The tests could only prove that the stages fitted together, the test bench measured those
+      Every stage and every format was built and tested on hand-written examples before the first real run. The tests could only prove that the stages fitted together, the test harness measured those
       examples, and the first real runs all failed. What I did: an independent audit, then fixes without any paid call (general instruction in its proper place, model chosen per stage, tolerant
       reading of the structured response, time limits per stage, resuming where the run had stopped, cost measurement), then real runs published, failures included (<a href={at("ROADMAP.md")}
         >fix plan</a
@@ -149,7 +149,7 @@ const at = (path: string) => pinned("praxis", path);
       <li>
         <h3>Deliver with a flag rather than give up</h3>
         <p>
-          On the command line and in the test bench, a failed source check is recorded, the run continues, the report is flagged and the code adds a section that lists every blocking item. The briefing is
+          On the command line and in the test harness, a failed source check is recorded, the run continues, the report is flagged and the code adds a section that lists every blocking item. The briefing is
           complete, but says in its own text what it could not source. Used as a library, Praxis still gives up by default: changing the errors a public function can raise would break the code of
           those who call it.
         </p>

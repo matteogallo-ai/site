@@ -23,7 +23,7 @@ const root = new URL("../", import.meta.url);
 const asset = (path: string) => new URL(path, root).href;
 const escape = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;");
 const sha256 = (data: string | Uint8Array) => createHash("sha256").update(data).digest("hex");
-const INPUTS = ["scripts/og.ts", "scripts/typography.ts", "src/styles/tokens.css", "src/assets/fonts/inter-wght.woff2", "src/assets/fonts/mono-400.woff2", "src/assets/matteo.jpg"];
+const INPUTS = ["scripts/og.ts", "scripts/typography.ts", "src/lib/i18n.ts", "src/styles/tokens.css", "src/assets/fonts/inter-wght.woff2", "src/assets/fonts/mono-400.woff2", "src/assets/matteo.jpg"];
 export const RECORD = new URL("src/data/og.json", root);
 
 /** One hash over what the image is drawn from: this script, the words, the host, tokens, fonts, portrait. */

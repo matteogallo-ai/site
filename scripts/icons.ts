@@ -43,7 +43,9 @@ async function main(): Promise<void> {
   const png = (size: number) => sharp(svg, { density: (72 * size) / 32 }).resize(size, size).png().toBuffer();
   // iOS rounds the corners itself and draws transparency black: a full square of ink.
   const square = Buffer.from(svg.toString().replace(/ rx="\d+"/, ""));
-  writeFileSync(at("public/apple-touch-icon.png"), await sharp(square, { density: (72 * 180) / 32 }).resize(180, 180).flatten({ background: "#111111" }).png().toBuffer());
+  const ink = /rect\{fill:(#[0-9a-f]{6})\}/i.exec(svg.toString())?.[1];
+  if (!ink) throw new Error("favicon.svg: no rect fill to flatten the touch icon on");
+  writeFileSync(at("public/apple-touch-icon.png"), await sharp(square, { density: (72 * 180) / 32 }).resize(180, 180).flatten({ background: ink }).png().toBuffer());
   writeFileSync(at("public/favicon.ico"), ico([{ size: 16, data: await png(16) }, { size: 32, data: await png(32) }]));
 }
 

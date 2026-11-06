@@ -75,7 +75,7 @@ function caseImage(slug: CaseSlug, lang: Lang): OgImage {
 export function ogImage(path: string): OgImage {
   const lang = langOf(path);
   const slug = /^\/(?:projets|en\/projects)\/([a-z]+)\/?$/.exec(path)?.[1];
-  if (slug && slug in OG.cases) return caseImage(slug as CaseSlug, lang);
+  if (slug && Object.hasOwn(OG.cases, slug)) return caseImage(slug as CaseSlug, lang);
   const values = OG.band.map((b) => measure(b.id).display[lang]);
   const figures = lang === "fr" ? `À côté, trois chiffres de Verity : ${values.slice(0, -1).join(", ")} et ${values.at(-1)}.` : `Beside it, three figures of Verity: ${values.slice(0, -1).join(", ")} and ${values.at(-1)}.`;
   return { lang, file: OG[lang].file, alt: `${OG[lang].alt} ${figures}` };

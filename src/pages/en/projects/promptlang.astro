@@ -17,12 +17,12 @@ const pr = (n: number) => pull("promptlang", n);
   name="PromptLang"
   repo="promptlang"
   summary="A language for writing the instructions given to AI models (prompts) as code: typed, compiled to TypeScript or Python, versioned."
-  description="Case study of PromptLang, a language for writing prompts as code: problem, architecture, results against a point of comparison, defects, decisions."
+  description="Case study of PromptLang, a language for writing prompts as code: problem, architecture, results against a reference point, defects, decisions."
 >
   <Brief
     does="It turns a prompt into a checked file, compiled to TypeScript or Python code, and flags when a new version breaks the code of those who use it."
     measured="How solid the tests of the language reader and of the version check are, and how often an automatic reviewer, the AI linter, is right when it points at writing defects in prompts."
-    defect="Most of the AI linter’s flags are wrong, barely better than flagging everything. What I did about it: I measured it against that point of comparison, published it, and the linter is presented as an aid to the human reviewer, not as a check."
+    defect="Most of the AI linter’s flags are wrong, barely better than flagging everything. What I did about it: I measured it against that reference point, published it, and the linter is presented as an aid to the human reviewer, not as a check."
     figures={[
       { id: "promptlang.mutation_score", caption: "of the errors deliberately introduced into the language reader and the version check, caught by the tests" },
       { id: "promptlang.linter_recall", caption: "designed defects found by the AI linter; a linter that flags everything finds them all" },
@@ -63,7 +63,7 @@ const pr = (n: number) => pull("promptlang", n);
     n={3}
     id="mesures"
     title="Results"
-    lead="What the tests and the AI linter are worth, measured against a very simple point of comparison: flagging everything."
+    lead="What the tests and the AI linter are worth, measured against a very simple reference point: flagging everything."
   >
     <p>
       To measure the tests, small errors are deliberately introduced into the code (a reversed condition, a changed value) and we check whether the tests fail: they catch <Figure
@@ -119,7 +119,7 @@ const pr = (n: number) => pull("promptlang", n);
             id: "promptlang.linter_recall",
             base: "promptlang.baseline_report_all_recall",
             label: "Defects found",
-            reading: "Flagging everything finds everything: this figure alone does not tell the linter apart from the point of comparison.",
+            reading: "Flagging everything finds everything: this figure alone does not tell the linter apart from the reference point.",
           },
         ]}
       />
@@ -135,10 +135,10 @@ const pr = (n: number) => pull("promptlang", n);
       I had the repository audited by an AI agent that knew nothing about the project, tasked with looking for the flaw. Its verdict: the promises of the project’s front page (the README) went beyond
       what the code actually did. What I did about it, finding by finding, is in the <a href={at("docs/audit/2026-11-03-f1-follow-up.md")}>audit follow-up</a>.
     </p>
-    <h3>An AI linter declared shipped, with no point of comparison</h3>
+    <h3>An AI linter declared shipped, with no reference point</h3>
     <p>
       That page presented the linter as shipped although its precision was low and nothing said what it was worth. A linter that flags everything finds every designed defect: finding many proved
-      almost nothing. I published its precision next to that point of comparison (<a href={pr(29)}>#29</a>), then had flags reviewed by hand; the linter is described as an aid to the reviewer, not
+      almost nothing. I published its precision next to that reference point (<a href={pr(29)}>#29</a>), then had flags reviewed by hand; the linter is described as an aid to the reviewer, not
       as a check.
     </p>
     <h3>A typed output never checked</h3>
