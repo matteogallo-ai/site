@@ -31,7 +31,7 @@ const t = {
       <h3 id="p-promptlang">PromptLang</h3>
       <ProductShot id="promptlang" size="card" />
       <p>{fr ? "Langage typé pour les prompts LLM, compilé vers TypeScript et Python, publié sur npm." : "A typed language for LLM prompts, compiled to TypeScript and Python, published on npm."}</p>
-      <p class="figure-line"><Figure id="promptlang.mutation_score" where="card" /> — {fr ? "score de mutation (lexer, parser, semver)" : "mutation score (lexer, parser, semver)"}</p>
+      <p class="figure-line"><Figure id="promptlang.mutation_score" where="card" /> — {fr ? "score de mutation (lexer, parser, semver ; exécution locale, hors CI)" : "mutation score (lexer, parser, semver; local run, not in CI)"}</p>
       <p class="limit"><span class="k">{t.limit}</span> {fr ? "Linter IA :" : "AI linter,"} <Figure id="promptlang.linter_precision_reviewed" where="card" defect text={fr ? "12 signalements justes sur 40" : "12 of 40 findings"} /> {fr ? "en revue humaine." : "correct in human review."}</p>
       <p class="stack">{fr ? "TypeScript strict, Bun, npm." : "Strict TypeScript, Bun, npm."}</p>
       <p class="links"><a class="card-link" href={study("promptlang")} aria-label={`${t.study} PromptLang`}>{t.study}</a> · <a href={repo("promptlang")}>Code</a></p>
@@ -40,9 +40,9 @@ const t = {
     <article class="project card" aria-labelledby="p-praxis">
       <h3 id="p-praxis">Praxis</h3>
       <ProductShot id="praxis" size="card" />
-      <p>{fr ? "Pipeline qui transforme une question business en note d’analyse sourcée, avec relecture adverse automatique." : "A pipeline that turns a business question into a sourced analysis note, with automatic adversarial review."}</p>
-      <p class="figure-line"><Figure id="praxis.cost_per_briefing" where="card" text={fr ? undefined : "$3.29–4.75"} /> — {fr ? "par note produite" : "per note"}</p>
-      <p class="limit"><span class="k">{t.limit}</span> {fr ? "Les" : "all"} <Figure id="praxis.insufficiently_sourced" where="card" defect text="6" /> {fr ? "notes publiées sont signalées insuffisamment sourcées par son propre contrôle." : "published notes are flagged as under-sourced by its own check."}</p>
+      <p>{fr ? "Pipeline qui transforme une question business en briefing d’analyse sourcé, avec relecture adverse automatique." : "A pipeline that turns a business question into a sourced analysis briefing, with automatic adversarial review."}</p>
+      <p class="figure-line"><Figure id="praxis.cost_per_briefing" where="card" /> — {fr ? "par briefing live terminé" : "per completed live briefing"}</p>
+      <p class="limit"><span class="k">{t.limit}</span> {fr ? "Les" : "all"} <Figure id="praxis.insufficiently_sourced" where="card" defect text="6" /> {fr ? "briefings live terminés sont signalés insuffisamment sourcés par son propre contrôle." : "completed live briefings are flagged as under-sourced by its own check."}</p>
       <p class="stack">{fr ? "TypeScript, Bun ; sorties Markdown, PDF, DOCX." : "TypeScript, Bun; Markdown, PDF and DOCX output."}</p>
       <p class="links"><a class="card-link" href={study("praxis")} aria-label={`${t.study} Praxis`}>{t.study}</a> · <a href={repo("praxis")}>Code</a></p>
     </article>

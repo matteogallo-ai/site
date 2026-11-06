@@ -72,12 +72,12 @@ const id = fr ? { projects: "projets", method: "methode", about: "a-propos" } : 
     <ul class="rules">
       <li class="card">
         <h3>{fr ? "Audit indépendant" : "Independent audit"}</h3>
-        <p>{fr ? "Chaque projet est relu par un auditeur sans contexte. Sur PromptLang :" : "Every project is reviewed by an auditor with no context. On PromptLang:"} <Figure id="promptlang.audit_findings" where="method" /> {fr ? "constats, chacun corrigé, réfuté ou documenté." : "findings, each fixed, refuted or documented."}</p>
+        <p>{fr ? "Audit à froid par un agent IA sans contexte. Sur PromptLang :" : "Cold audit by an AI agent with no prior context. On PromptLang:"} <Figure id="promptlang.audit_findings" where="method" /> {fr ? "constats, chacun corrigé, réfuté ou documenté." : "findings, each fixed, refuted or documented."}</p>
         <p class="links"><a class="card-link" href="https://github.com/matteogallo-ai/promptlang/pull/32">PR promptlang#32</a></p>
       </li>
       <li class="card">
         <h3>{fr ? "Lecture des sorties réelles" : "Reading real outputs"}</h3>
-        <p>{fr ? "Les tests ne suffisent pas. La relecture d’une note Praxis a révélé des estimations présentées comme des faits ; le validateur a été corrigé." : "Tests are not enough. Reviewing a Praxis note revealed estimates presented as facts; the validator was fixed."}</p>
+        <p>{fr ? "Les tests ne suffisent pas. La relecture d’un briefing Praxis a révélé des estimations présentées comme des faits ; le validateur a été corrigé." : "Tests are not enough. Reviewing a Praxis briefing revealed estimates presented as facts; the validator was fixed."}</p>
         <p class="links"><a class="card-link" href="https://github.com/matteogallo-ai/praxis/pull/47">PR praxis#47</a></p>
       </li>
       <li class="card">

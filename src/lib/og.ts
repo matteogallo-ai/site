@@ -22,8 +22,11 @@ export const OG = {
   /** The home page's project cards, drawn beside the headline: one figure each, as the card shows it. */
   figures: [
     { id: "verity.refusal_recall", caption: { fr: "questions sans réponse correctement refusées", en: "unanswerable questions correctly refused" } },
-    { id: "promptlang.mutation_score", caption: { fr: "score de mutation (lexer, parser, semver)", en: "mutation score (lexer, parser, semver)" } },
-    { id: "praxis.cost_per_briefing", caption: { fr: "par note produite", en: "per note" }, text: { en: "$3.29–4.75" } },
+    {
+      id: "promptlang.mutation_score",
+      caption: { fr: "score de mutation (lexer, parser, semver ; exécution locale, hors CI)", en: "mutation score (lexer, parser, semver; local run, not in CI)" },
+    },
+    { id: "praxis.cost_per_briefing", caption: { fr: "par briefing live terminé", en: "per completed live briefing" } },
   ],
   /** Each case study's image leads with the first figure of its brief, captioned as there. */
   cases: {
@@ -62,7 +65,7 @@ function caseImage(slug: CaseSlug, lang: Lang): OgImage {
 
 /** The figures of the home image in `lang`: the value as its card shows it, and its caption. */
 export function homeFigures(lang: Lang): { id: string; value: string; caption: string }[] {
-  return OG.figures.map((f) => ({ id: f.id, value: (f as { text?: Partial<Record<Lang, string>> }).text?.[lang] ?? measure(f.id).display[lang], caption: f.caption[lang] }));
+  return OG.figures.map((f) => ({ id: f.id, value: measure(f.id).display[lang], caption: f.caption[lang] }));
 }
 
 /** The image a page at `path` points to: its case study's, or its language's home image. */

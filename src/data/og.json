@@ -1,11 +1,11 @@
 {
-  "inputs": "60bd0e337ae3566f994d257199d0f6beb4efdb0b0f78ee0b4b75b2e107895d04",
+  "inputs": "607beeba85386e5a0f0b7ff75e3a0858fb81173165d5b3892935f60d5eb5115f",
   "png": {
-    "public/og.png": "7fa0076d90b487ad9c207da9936e5071fc550ece353aadde19f2f2cf992ca04f",
+    "public/og.png": "d3d398c0330ba4929aac501fd122924db43d3ce11fcb8696e64c4cf89bf3df51",
     "public/og/verity.png": "9afa22dc78f2c41d3f9320b4aa9f4753de39205008b24155f0a0c49c9af37165",
     "public/og/promptlang.png": "d092099391bc7634d4b84dcb2bb1af1c58fd928c16ad51482394c18751056ced",
     "public/og/praxis.png": "5bb02a93180dba46ac7a7e6655a29a5806069e4f8f63e1f405ab57d6e6817167",
-    "public/og-en.png": "39a198f08d923352280346aa2280321c93f75abb29090e2ca35a6cd408799800",
+    "public/og-en.png": "54f2731b3c6c1b87cae866042554556b22ff12192201279d362142abfdcd4790",
     "public/og/verity-en.png": "dc7b1e579080dec3184ae4c3b50c265eb8da541fe54233165edd7256e1affade",
     "public/og/promptlang-en.png": "e820a40c12a487f00b62d9a51def30f1e91e8fcb06d3d1af3609cb01a48a1f49",
     "public/og/praxis-en.png": "72c9a2c86140c30744ddd568ca82afc8ec855db97f3f860b8436f6378d3fb7a8"

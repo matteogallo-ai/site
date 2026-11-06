@@ -73,14 +73,12 @@ const CALQUES = [
   /refuses? rightly/, // « à raison »: correctly
   /technician training/, // « formation d’automaticien »: apprenticeship
   /\bWrite (to me|an e-mail)\b/,
+  /\banalysis note|\bnotes?\b(?![^<]*<\/code>)/, // Praxis delivers briefings
   /\bFrame of\b/, // « Image de l’enregistrement »: a still
   /told apart from chance|counted apart\b/,
   /programming interface \(API\)/,
   /point of comparison|test bench/, // « point de comparaison », « banc de test »: baseline, test harness
 ];
-// The case studies call what Praxis delivers a briefing; the home page alone keeps its owner's own
-// words, "a sourced analysis note".
-const CASE_CALQUES = [/\banalysis note|\bnotes?\b(?![^<]*<\/code>)/];
 for (const file of files.filter((f) => f.startsWith("en/"))) {
   test(`${file}: no French calque in the English`, () => {
     // What a reader or a link preview shows: the text, and the attributes written for people.
@@ -98,7 +96,7 @@ for (const file of files.filter((f) => f.startsWith("en/"))) {
       } else if (!french) parts.push(token);
     }
     const text = parts.join("");
-    expect([...CALQUES, ...(file === "en/index.html" ? [] : CASE_CALQUES)].flatMap((c) => around(text, c))).toEqual([]);
+    expect(CALQUES.flatMap((c) => around(text, c))).toEqual([]);
   });
 }
 
