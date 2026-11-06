@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 import { expect, type Page, test } from "@playwright/test";
-import { builtFiles } from "../scripts/built-pages.ts";
+import { builtFiles, builtPages } from "../scripts/built-pages.ts";
 
 // What can be clicked says so, and says where it goes: a project card opens its case study, a
 // figure opens its proof, a link that leaves the site carries ↗.
@@ -60,16 +60,41 @@ for (const home of HOMES) {
     }
   });
 
-  test(`${home.path}: every link that leaves the site carries ↗, no link inside it does`, async ({ page }) => {
+  test(`${home.path}: the plain words of a card's caption, figure line and limit open its case study too`, async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: "reduce" });
     await page.goto(home.path);
-    const links = await page.locator("a[href]").evaluateAll(
+    for (const [i, slug] of SLUGS.entries()) {
+      const card = page.locator(".project").nth(i);
+      await card.scrollIntoViewIfNeeded();
+      const hits = await card.evaluate((c) =>
+        ["figcaption", ".figure-line", ".limit"].map((sel) => {
+          const block = c.querySelector(sel)!;
+          // The first run of words of the block that is not itself in a link.
+          const text = [...block.childNodes].find((n) => n.nodeType === Node.TEXT_NODE && /\S{3}/.test(n.textContent ?? ""))!;
+          const range = document.createRange();
+          range.selectNodeContents(text);
+          const r = range.getClientRects()[0]!;
+          return { sel, href: document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2)?.closest("a")?.getAttribute("href") ?? null };
+        }),
+      );
+      for (const h of hits) expect(h, slug).toEqual({ sel: h.sel, href: home.study(slug) });
+    }
+  });
+
+}
+
+// A link that leaves the site says so on every page; an image that opens its own source is the
+// picture, its caption's link next to it carries the ↗.
+for (const path of builtPages()) {
+  test(`${path}: every link that leaves the site carries ↗, no link inside it does`, async ({ page }) => {
+    await page.goto(path);
+    const links = await page.locator("a[href]:not(:has(img))").evaluateAll(
       (as, source) => {
         const sign = new Function(`return ${source}`)() as (a: Element) => string;
         return as.map((a) => ({ href: (a as HTMLAnchorElement).href, out: (a as HTMLAnchorElement).origin !== location.origin && /^https?:/.test((a as HTMLAnchorElement).href), text: sign(a) }));
       },
       shown.toString(),
     );
-    expect(links.filter((l) => l.out).length).toBeGreaterThan(10);
     expect(links.filter((l) => l.out && !l.text.includes("↗")).map((l) => l.href)).toEqual([]);
     expect(links.filter((l) => !l.out && l.text.includes("↗")).map((l) => l.href)).toEqual([]);
   });

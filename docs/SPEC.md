@@ -54,7 +54,7 @@ How the site is built: stack, budgets, real measures, accessibility choices, wha
 
 ## 5. Signature details
 1. The Verity demo with the spotlight computed on the citation.
-2. Every figure is a link to its proof: a thin solid underline and ↗ in the proof colour (the artefact path shown on hover and focus). Every link that leaves the site carries ↗; internal links never do. Within a sentence a figure is a word of it: one space after it, no more.
+2. Every figure is a link to its proof: a thin solid underline and ↗ in the proof colour (the artefact path shown on hover and focus). Every link that leaves the site carries ↗ (an e-mail link opens the mail client and does not; neither does a case study's image, whose caption link carries it); internal links never do. Within a sentence a figure is a word of it: one space after it, no more.
 3. The footer that measures itself, and the Colophon page.
 
 ## 6. Content rules

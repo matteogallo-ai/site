@@ -83,7 +83,7 @@ const t = {
     font-size: var(--step-14);
   }
 
-  /* The title is the card's link; it reads as a title. */
+  /* Underlined, the title would read as one more link among the card's; the card's hover and focus ring say it opens. */
   h3 .card-link {
     color: inherit;
     text-decoration: none;
@@ -93,20 +93,20 @@ const t = {
     margin: 0.75rem 0 0;
   }
 
-  /* The whole card opens its case study (.card, global.css). Blocks holding links of their own sit
-     above the stretched link; the one under the pointer or the keyboard rises above its
-     neighbours, so its proof tooltip is not drawn under the next line. */
-  .project :global(figcaption),
-  .figure-line,
-  .limit,
+  /* The whole card opens its case study (.card, global.css), its plain words included. Only the
+     links it holds sit above the stretched link; the one under the pointer or the keyboard rises
+     above its neighbours, so its proof tooltip is not drawn under the next line. */
+  .project :global(figcaption a),
+  .figure-line :global(a),
+  .limit :global(a),
   .links a:not(.card-link) {
     position: relative;
     z-index: 1;
   }
 
-  .project :global(figcaption):is(:hover, :focus-within),
-  .figure-line:is(:hover, :focus-within),
-  .limit:is(:hover, :focus-within) {
+  .project :global(figcaption a):is(:hover, :focus-visible),
+  .figure-line :global(a):is(:hover, :focus-visible),
+  .limit :global(a):is(:hover, :focus-visible) {
     z-index: 2;
   }
 
