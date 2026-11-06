@@ -11,13 +11,13 @@ export const OG = {
   role: { fr: "Ingénieur logiciel & IA · Lausanne", en: "Software & AI Engineer · Lausanne" },
   fr: {
     file: "public/og.png",
-    headline: "Je conçois des applications d’IA, de l’idée à la production.",
-    alt: "Matteo Gallo, ingénieur logiciel et IA à Lausanne : « Je conçois des applications d’IA, de l’idée à la production. »",
+    headline: "Je conçois des logiciels et des systèmes d’IA, de l’idée à la production.",
+    alt: "Matteo Gallo, ingénieur logiciel et IA à Lausanne : « Je conçois des logiciels et des systèmes d’IA, de l’idée à la production. »",
   },
   en: {
     file: "public/og-en.png",
-    headline: "I build AI applications, from idea to production.",
-    alt: "Matteo Gallo, software and AI engineer in Lausanne: “I build AI applications, from idea to production.”",
+    headline: "I build software and AI systems, from idea to production.",
+    alt: "Matteo Gallo, software and AI engineer in Lausanne: “I build software and AI systems, from idea to production.”",
   },
   /** The home page's project cards, drawn beside the headline: one figure each, as the card shows it. */
   figures: [
