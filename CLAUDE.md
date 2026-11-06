@@ -28,7 +28,15 @@ src/components/          VerityDemo (contract, spotlight, tabs, cards), Figure (
                          interval must say why or the build fails; stacked cards under 48rem)
 src/lib/                 document.ts (Markdown blocks keeping source offsets), measures.ts (figures and intervals by id),
                          diagram.ts (case-study diagram layout; a line too long for its box fails the build),
-                         sources.ts (link to a repo file at the commit its measures are pinned to)
+                         sources.ts (link to a repo file at the commit its measures are pinned to),
+                         colophon.ts (budgets read from lighthouserc.cjs, site measures of one recorded CI run),
+                         sitemap.ts (sitemap.xml and robots.txt from the page files), og.ts (what the OG image says)
+src/data/site-measures.json  copy of the site-measures artifact of one CI run; site-measures.source.json names
+                         the run and the sha256 the copy must keep (colophon.test.ts)
+scripts/check-rulesets.ts  go-live check that an active ruleset requires a pull request on main, from
+                         GitHub's own resolution of the rules on the branch (decision in rulesets-lib.ts)
+scripts/og.ts            draws public/og.png (1200x630) with the site's fonts and tokens through Playwright;
+                         src/data/og.json pins the hash of its inputs and of the PNG (og.test.ts)
 src/scripts/             client code of the demo: lens.ts (geometry), typing.ts (answer writing), verity-demo.ts (DOM)
 src/data/media.json      project images with their source; scripts/media-frame.ts re-derives the recording stills,
                          scripts/media/pdf_page.py (PyMuPDF, hash-pinned; venv .venv-media) the Praxis page
@@ -50,9 +58,11 @@ tests/                   Playwright on every built page: axe (light + dark), key
                          first-screen.spec.ts: tabs, passage, ring and whole card in view at 1440×800 and 1280×720;
                          case-studies.spec.ts: SPEC §3.2 sections in order, pinned figure and ADR links,
                          no number outside a measure, a link or code; brief, lead sentences, jargon list,
-                         folded tables as cards at 375 px
+                         folded tables as cards at 375 px;
+                         seo.spec.ts: sitemap = built pages at their canonical URLs, robots, Open Graph on every
+                         page, OG headline = home headline, the 404, the Colophon's figures = their sources
 scripts/site-measures*   Lighthouse CI output -> site-measures.json (weight, scores, date, commit)
-scripts/built-pages.ts   list of built HTML pages, shared by the axe tests, site-measures and the link check
+scripts/built-pages.ts   list of built HTML pages, shared by the axe tests, seo.spec.ts, site-measures and the link check
 scripts/check-links.ts   runs linkinator with every built page as an entry point: from the home page
                          alone it does not descend into the pages it reaches
 linkinator.config.json   link check; the production origin is skipped because the crawl
@@ -87,6 +97,8 @@ npm run test:a11y      axe, keyboard and glyph coverage on every page of dist/ (
 npm run fonts          rebuild font subsets (needs .venv: pip install --require-hashes -r scripts/fonts/requirements.txt)
 npm run lighthouse     Lighthouse CI with blocking budgets (needs a build and Chrome)
 npm run measures       write site-measures.json from the last Lighthouse run
+npm run check:rulesets  at go-live, not in CI: fails until an active GitHub ruleset protects main (Colophon sentence)
+npm run og             redraw public/og.png (after changing the home headline or the tokens; needs Playwright chromium)
 ```
 
 CI (`.github/workflows/ci.yml`) runs all of the above on every PR, plus a font job that
