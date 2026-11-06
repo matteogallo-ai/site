@@ -9,10 +9,10 @@ const WORDS = {
   fr: {
     path: "/",
     title: "Matteo Gallo — Ingénieur logiciel & IA",
-    description: "Matteo Gallo, ingénieur logiciel et IA à Lausanne. Applications d'IA conçues et mises en production de bout en bout, évaluées et mesurées.",
+    description: "Matteo Gallo, ingénieur logiciel et IA à Lausanne. Logiciels et systèmes d'IA conçus et mis en production de bout en bout, évalués et mesurés.",
     role: "Ingénieur logiciel & IA · Lausanne",
-    h1: "Je conçois des applications d'IA, de l'idée à la production.",
-    message: "Ma spécialité : mesurer ce qu'elles valent vraiment. Tests, évaluations, limites publiées.",
+    h1: "Je conçois des logiciels et des systèmes d'IA, de l'idée à la production.",
+    message: "Ma spécialité : mesurer ce qu'ils valent vraiment. Tests, évaluations, limites publiées.",
     actions: ["Voir les projets", "Écrire un e-mail"],
     projects: [
       [
@@ -49,9 +49,9 @@ const WORDS = {
   en: {
     path: "/en/",
     title: "Matteo Gallo — Software & AI Engineer",
-    description: "Matteo Gallo, software and AI engineer in Lausanne. AI applications designed and taken to production end to end, evaluated and measured.",
+    description: "Matteo Gallo, software and AI engineer in Lausanne. Software and AI systems designed and taken to production end to end, evaluated and measured.",
     role: "Software & AI Engineer · Lausanne",
-    h1: "I build AI applications, from idea to production.",
+    h1: "I build software and AI systems, from idea to production.",
     message: "My focus: measuring what they are actually worth. Tests, evaluations, published limits.",
     actions: ["See the projects", "Get in touch"],
     projects: [
