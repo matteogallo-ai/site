@@ -93,7 +93,7 @@ const unmeasured = Object.keys(import.meta.glob("../pages/**/*.astro"))
       {fr
         ? "Le poids est compté compressé en gzip, un peu plus lourd que ce que Cloudflare envoie réellement : le budget est donc plus strict que ce que reçoit le lecteur. Seuils :"
         : "Weight is counted gzip-compressed, a little heavier than what Cloudflare actually sends: the budget is therefore stricter than what the reader receives. Thresholds:"}{" "}
-      <a href={`${repo}/blob/main/lighthouserc.cjs`}>lighthouserc.cjs</a>.
+      <a href={at("lighthouserc.cjs")}>lighthouserc.cjs</a>.
     </p>
   </section>
 

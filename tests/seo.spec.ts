@@ -118,6 +118,10 @@ for (const path of ["/colophon/", twin("/colophon/")]) {
       await expect(values.nth(4)).toHaveText(decimal(p.cls, 3, lang));
     }
     await expect(page.locator(`section:has(#mesures) a[href$="${site.commit}"]`)).toHaveText(site.commit.slice(0, 7));
+    // F6: every file of this repository is linked at the measured commit, never at a moving branch.
+    const blobs = await page.locator('main a[href*="/matteogallo-ai/site/blob/"]').evaluateAll((as) => as.map((a) => a.getAttribute("href")!));
+    expect(blobs.length).toBeGreaterThan(1);
+    for (const href of blobs) expect(href).toContain(`/blob/${site.commit}/`);
     // Every built page the recorded run did not measure is named, so the figures are not read as the whole site's.
     const unmeasured = pages.filter((p) => !site.pages.some((m) => m.path === p));
     const note = page.locator("section:has(#mesures) .note .mono");
