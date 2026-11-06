@@ -1,6 +1,7 @@
 // Layout rules measured in the browser at given widths.
 import { expect, type Page, test } from "@playwright/test";
 import { builtPages } from "../scripts/built-pages.ts";
+import { plain } from "../scripts/typography.ts";
 
 const pages = builtPages();
 const withContact = pages.filter((p) => !p.endsWith("/404.html"));
@@ -62,10 +63,14 @@ test.describe("on a touch screen", () => {
   }
 });
 
-for (const [path, caption] of [["/", "Exécution réelle rejouée : Verity, mon agent RAG, contrat de test en anglais"], ["/en/", "Replay of a real run: Verity, my RAG agent, on a test contract"]] as const) {
+for (const [path, caption, note] of [
+  ["/", "Démo : Verity sur un contrat de test", "Traduit d’un run réel en anglais · Voir la trace originale"],
+  ["/en/", "Demo: Verity on a test contract", "Replay of a real run · See the original trace"],
+] as const) {
   test(`${path}: the demo says it replays a real run, and a correct refusal is not drawn as a defect`, async ({ page }) => {
     await page.goto(path);
-    await expect(page.locator("[data-verity-demo] .caption")).toHaveText(caption);
+    expect(plain(await page.locator("[data-verity-demo] .caption").innerText())).toBe(plain(caption));
+    expect(plain(await page.locator("[data-verity-demo] .note").innerText())).toBe(plain(note));
     const colours = await page.evaluate(() => {
       const probe = document.createElement("span");
       document.body.append(probe);
@@ -84,6 +89,7 @@ for (const width of [375, 1440]) {
   test(`demo at ${width} px: the wheel over the contract scrolls the page, not the contract`, async ({ page }) => {
     await page.setViewportSize({ width, height: 900 });
     await page.goto("/");
+    await page.locator("details.contract summary").click();
     const sheet = page.locator("[data-sheet]");
     await sheet.scrollIntoViewIfNeeded();
     await page.waitForTimeout(400);
@@ -256,11 +262,11 @@ for (const path of ["/", "/en/projects/verity/"]) {
     await page.goto(path);
     const figures = page.locator("a.figure");
     expect(await figures.count()).toBeGreaterThan(3);
-    if (path !== "/") expect(await page.locator('a.figure[data-where="prose"]').count()).toBeGreaterThan(0);
+    expect(await page.locator("a.figure[data-in-sentence]").count()).toBeGreaterThan(0);
     for (const figure of await figures.all()) {
       if (!(await figure.isVisible())) continue;
-      // Within a sentence the sentence says what the figure counts: its name is the value alone.
-      if ((await figure.getAttribute("data-where")) === "prose") {
+      // Within a sentence the sentence says what the figure counts: its name is the shown text alone.
+      if ((await figure.getAttribute("data-in-sentence")) !== null) {
         await expect(figure).not.toHaveAttribute("aria-label");
         continue;
       }
@@ -280,6 +286,7 @@ for (const width of [375, 1440]) {
   test(`demo at ${width} px: the contract's focus ring is the site's, drawn whole`, async ({ page }) => {
     await page.setViewportSize({ width, height: 900 });
     await page.goto("/");
+    await page.locator("details.contract summary").click();
     await page.locator("[data-sheet]").focus();
     await page.keyboard.press("ArrowDown");
     const ring = await page.evaluate(() => {

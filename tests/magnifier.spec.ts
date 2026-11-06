@@ -1,6 +1,12 @@
 import { readFileSync } from "node:fs";
 import { expect, type Page, test } from "@playwright/test";
 
+/** The home page with the demo's contract unfolded: the spotlight works on the open window. */
+async function openDemo(page: Page): Promise<void> {
+  await page.goto("/");
+  await page.locator("details.contract summary").click();
+}
+
 const read = (name: string) => JSON.parse(readFileSync(new URL(`../src/data/demo/${name}.json`, import.meta.url), "utf8"));
 const answer = read("answer");
 const sla: string = read("sla").text;
@@ -88,9 +94,9 @@ for (const width of [375, 1024, 1440]) {
     test(`magnifier: ${mode} at ${width}px is centred on its words, holds them whole, and neither ring nor tag covers another line`, async ({ page }) => {
       await page.setViewportSize({ width, height: 900 });
       await page.emulateMedia({ reducedMotion: "reduce" });
-      await page.goto("/");
+      await openDemo(page);
       await page.evaluate(() => document.fonts.ready);
-      if (mode === "refusal") await page.getByRole("tab", { name: "Refuse, faute de preuve" }).click();
+      if (mode === "refusal") await page.getByRole("tab", { name: "Il refuse, faute de preuve" }).click();
       await expect(page.locator("[data-lens]")).toBeVisible();
       await expect(page.locator("[data-verity-demo]")).toHaveAttribute("data-mode", mode);
       // The lens glides to its target: measure once it has arrived.
@@ -115,8 +121,8 @@ for (const width of [375, 1024, 1440]) {
 for (const mode of ["answer", "refusal"] as const) {
   test(`magnifier: ${mode} follows its words when the width changes, with motion on`, async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
-    await page.goto("/");
-    if (mode === "refusal") await page.getByRole("tab", { name: "Refuse, faute de preuve" }).click();
+    await openDemo(page);
+    if (mode === "refusal") await page.getByRole("tab", { name: "Il refuse, faute de preuve" }).click();
     await page.setViewportSize({ width: 390, height: 900 });
     await expect.poll(async () => distance(...pair(await centres(page, TARGETS[mode]))), { timeout: 5000 }).toBeLessThan(MAX_DISTANCE);
   });
@@ -125,8 +131,8 @@ for (const mode of ["answer", "refusal"] as const) {
 for (const mode of ["answer", "refusal"] as const) {
   test(`spotlight: ${mode} keeps its passage in ink and dims the rest of the contract`, async ({ page }) => {
     await page.emulateMedia({ reducedMotion: "reduce" });
-    await page.goto("/");
-    if (mode === "refusal") await page.getByRole("tab", { name: "Refuse, faute de preuve" }).click();
+    await openDemo(page);
+    if (mode === "refusal") await page.getByRole("tab", { name: "Il refuse, faute de preuve" }).click();
     await expect(page.locator("[data-lens]")).toBeVisible();
     const read = () =>
       page.evaluate((m) => {
@@ -148,6 +154,7 @@ for (const mode of ["answer", "refusal"] as const) {
 
 test("figures: the proof path shows on focus without widening the page, and Escape dismisses it", async ({ page }) => {
   await page.setViewportSize({ width: 375, height: 800 });
+  // No click first: after a pointer click, focus() does not show :focus-visible.
   await page.goto("/");
   const figures = page.locator("a.figure");
   const count = await figures.count();
@@ -162,28 +169,13 @@ test("figures: the proof path shows on focus without widening the page, and Esca
   await expect(figures.nth(count - 1).locator(".path")).toBeHidden();
 });
 
-test("demo: the run's source shows its files on focus without widening the page, and Escape dismisses it", async ({ page }) => {
-  await page.setViewportSize({ width: 375, height: 800 });
-  await page.goto("/");
-  const link = page.getByRole("link", { name: "Exécution de référence" });
-  const tip = page.locator("#verity-run-tip");
-  await expect(tip).toBeHidden();
-  await link.focus();
-  await expect(tip).toBeVisible();
-  await expect(tip).toContainText("eval_969e1d5_test.json");
-  await expect(tip).toContainText("sla.md");
-  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(375);
-  await page.keyboard.press("Escape");
-  await expect(tip).toBeHidden();
-});
-
 test("demo tabs: an ARIA tablist operated from the keyboard", async ({ page }) => {
-  await page.goto("/");
-  const answerTab = page.getByRole("tab", { name: "Répond, en citant" });
-  const refusalTab = page.getByRole("tab", { name: "Refuse, faute de preuve" });
+  await openDemo(page);
+  const answerTab = page.getByRole("tab", { name: "Il répond, en citant" });
+  const refusalTab = page.getByRole("tab", { name: "Il refuse, faute de preuve" });
   await expect(page.getByRole("tablist", { name: "Mode de Verity" })).toBeVisible();
   await expect(answerTab).toHaveAttribute("aria-selected", "true");
-  await expect(page.getByRole("tabpanel", { name: "Répond, en citant" })).toBeVisible();
+  await expect(page.getByRole("tabpanel", { name: "Il répond, en citant" })).toBeVisible();
   await expect(page.locator("#verity-panel-refusal")).toBeHidden();
 
   await answerTab.focus();
@@ -191,7 +183,7 @@ test("demo tabs: an ARIA tablist operated from the keyboard", async ({ page }) =
   await expect(refusalTab).toBeFocused();
   await expect(refusalTab).toHaveAttribute("aria-selected", "true");
   await expect(answerTab).toHaveAttribute("tabindex", "-1");
-  await expect(page.getByRole("tabpanel", { name: "Refuse, faute de preuve" })).toContainText("Refus du modèle, confiance 0,97");
+  await expect(page.getByRole("tabpanel", { name: "Il refuse, faute de preuve" })).toContainText("Refus du modèle, confiance 0,97");
   await expect(page.locator("#verity-panel-answer")).toBeHidden();
 
   await page.keyboard.press("Home");
@@ -202,20 +194,20 @@ test("demo tabs: an ARIA tablist operated from the keyboard", async ({ page }) =
 });
 
 test("refusal card carries no threshold check", async ({ page }) => {
-  await page.goto("/");
-  await page.getByRole("tab", { name: "Refuse, faute de preuve" }).click();
+  await openDemo(page);
+  await page.getByRole("tab", { name: "Il refuse, faute de preuve" }).click();
   const panel = page.locator("#verity-panel-refusal");
   await expect(panel).not.toContainText(/seuil|✓/);
 });
 
 test.describe("without JavaScript", () => {
   test.use({ javaScriptEnabled: false });
-  test("both demo cards and the detailed bio are readable, with no inert control shown", async ({ page }) => {
+  test("both demo cards and the bio are readable, with no inert control shown", async ({ page }) => {
     await page.goto("/");
     await expect(page.locator("#verity-panel-answer")).toBeVisible();
     await expect(page.locator("#verity-panel-refusal")).toBeVisible();
     await expect(page.getByRole("tablist")).toBeHidden();
-    await expect(page.locator('[data-bio-version="long"]')).toBeVisible();
-    await expect(page.locator("[data-bio] .toggle")).toBeHidden();
+    await expect(page.locator(".bio p")).toHaveCount(5);
+    await expect(page.locator(".bio button")).toHaveCount(0);
   });
 });

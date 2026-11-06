@@ -1,7 +1,7 @@
 import { expect, type Page, test } from "@playwright/test";
 
-const refusalTab = (page: Page) => page.getByRole("tab", { name: "Refuse, faute de preuve" });
-const answerTab = (page: Page) => page.getByRole("tab", { name: "Répond, en citant" });
+const refusalTab = (page: Page) => page.getByRole("tab", { name: "Il refuse, faute de preuve" });
+const answerTab = (page: Page) => page.getByRole("tab", { name: "Il répond, en citant" });
 
 /** Records, frame by frame, the written part of a card's answer and whether its checks show. */
 async function recordWriting(page: Page, panel: string) {
@@ -108,7 +108,7 @@ test("under reduced motion the answer is shown whole at once", async ({ page }) 
     const panel = document.getElementById("verity-panel-refusal")!;
     return { unwritten: panel.querySelectorAll(".unwritten").length, writing: "writing" in panel.dataset, text: panel.querySelector(".a")!.textContent };
   });
-  expect(state).toEqual({ unwritten: 0, writing: false, text: "I don't know based on the provided documents." });
+  expect(state).toEqual({ unwritten: 0, writing: false, text: "Je ne sais pas, d’après les documents fournis." });
 });
 
 const glassOf = (page: Page) =>
@@ -199,30 +199,11 @@ test("an answer below the fold at load writes itself even when the page scrolls 
   await expect(page.locator("#verity-panel-answer")).toHaveAttribute("data-written", "", { timeout: 3000 });
 });
 
-test("the band's figures come into view once, and never show another value than their own", async ({ page }) => {
-  await page.setViewportSize({ width: 1440, height: 800 });
-  await page.goto("/");
-  const finals = await page.locator(".band .value").allTextContents();
-  // Every text the band shows while it comes in: a screenshot at any moment must read a true figure.
-  await page.evaluate(() => {
-    const seen: string[] = [];
-    (window as unknown as { bandTexts: string[] }).bandTexts = seen;
-    const band = document.querySelector(".band")!;
-    new MutationObserver(() => seen.push(...[...band.querySelectorAll(".value")].map((v) => (v as HTMLElement).innerText))).observe(band, { subtree: true, childList: true, characterData: true, attributes: true });
-  });
-  await page.locator(".band").scrollIntoViewIfNeeded();
-  await expect.poll(() => page.locator(".band > *").first().evaluate((c) => getComputedStyle(c).opacity)).toBe("1");
-  await page.waitForTimeout(900);
-  const texts = await page.evaluate(() => (window as unknown as { bandTexts: string[] }).bandTexts);
-  expect(texts.filter((t) => !finals.includes(t))).toEqual([]);
-  await expect(page.locator(".band .count-layer")).toHaveCount(0);
-});
-
 test("under reduced motion the sections do not move", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.setViewportSize({ width: 1440, height: 800 });
   await page.goto("/");
-  await page.locator(".band").scrollIntoViewIfNeeded();
+  await page.locator("#projets").scrollIntoViewIfNeeded();
   await page.waitForTimeout(300);
   // Sections below the screen are not held back: their children are in place before any scroll.
   const held = await page.evaluate(() =>
@@ -234,12 +215,14 @@ test("under reduced motion the sections do not move", async ({ page }) => {
 test("each section comes into place once, its children one after the other, and stays", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 800 });
   await page.goto("/");
-  const ids = ["projets", "methode", "a-propos"];
+  // The sections whose top is below the first screen at load; the projects may already show there.
+  const ids = await page.evaluate(() => ["projets", "methode", "a-propos"].filter((id) => document.getElementById(id)!.getBoundingClientRect().top >= innerHeight));
+  expect(ids.length).toBeGreaterThanOrEqual(2);
   const children = (id: string) =>
     page.locator(`#${id}`).evaluate((s) =>
       [...s.children].filter((c) => c.tagName !== "SCRIPT").map((c) => ({ opacity: getComputedStyle(c).opacity, transform: getComputedStyle(c).transform, delay: getComputedStyle(c).transitionDelay.split(",")[0] })),
     );
-  // At load all three are below the screen: their children wait, transparent and lower, with
+  // At load their children wait, transparent and lower, with
   // delays 60 ms apart (at most 180 ms).
   for (const id of ids) {
     await expect.poll(async () => (await children(id)).every((c) => c.opacity === "0" && c.transform !== "none")).toBe(true);
@@ -258,6 +241,7 @@ test("each section comes into place once, its children one after the other, and 
 test("on a change of mode the ring fades out before it moves: no frame shows it changing shape while visible", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/");
+  await page.locator("details.contract summary").click();
   await expect(page.locator("[data-lens]")).toBeVisible();
   await page.waitForTimeout(500);
   const frames = await page.evaluate(
