@@ -35,7 +35,7 @@ const study = (slug: string) => `/projets/${slug}/`;
         <p><Figure id="verity.unanswerable_answered" where="card" defect /> questions sans réponse ont reçu une réponse au lieu d’un refus.</p>
       </div>
       <p class="stack">Python 3.12, FastAPI, Postgres + pgvector, Next.js, Claude.</p>
-      <p class="links"><a class="card-link" href={study("verity")}>Étude de cas</a> · <a href={repo("verity")}>Code</a></p>
+      <p class="links"><a class="card-link" href={study("verity")} aria-label="Étude de cas Verity">Étude de cas</a> · <a href={repo("verity")}>Code</a></p>
     </article>
 
     <article class="project card" aria-labelledby="p-promptlang">
@@ -55,7 +55,7 @@ const study = (slug: string) => `/projets/${slug}/`;
         <p><Figure id="promptlang.linter_precision_reviewed" where="card" defect /> signalements du linter IA jugés justes en revue humaine.</p>
       </div>
       <p class="stack">TypeScript strict, Bun, npm.</p>
-      <p class="links"><a class="card-link" href={study("promptlang")}>Étude de cas</a> · <a href={repo("promptlang")}>Code</a></p>
+      <p class="links"><a class="card-link" href={study("promptlang")} aria-label="Étude de cas PromptLang">Étude de cas</a> · <a href={repo("promptlang")}>Code</a></p>
     </article>
 
     <article class="project card" aria-labelledby="p-praxis">
@@ -74,7 +74,7 @@ const study = (slug: string) => `/projets/${slug}/`;
         <p><Figure id="praxis.insufficiently_sourced" where="card" defect /> briefings live signalés insuffisamment sourcés.</p>
       </div>
       <p class="stack">TypeScript, Bun ; sorties Markdown, PDF, DOCX.</p>
-      <p class="links"><a class="card-link" href={study("praxis")}>Étude de cas</a> · <a href={repo("praxis")}>Code</a></p>
+      <p class="links"><a class="card-link" href={study("praxis")} aria-label="Étude de cas Praxis">Étude de cas</a> · <a href={repo("praxis")}>Code</a></p>
     </article>
   </div>
 </section>

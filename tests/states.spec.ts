@@ -2,9 +2,8 @@ import { expect, type Locator, type Page, test } from "@playwright/test";
 import { builtPages } from "../scripts/built-pages.ts";
 
 // Every interactive element of the home page and the case studies answers the pointer and the
-// keyboard (CRAFT spec §2): its hover style
-// differs from its rest style, keyboard focus draws a ring, and what changes is under a declared
-// transition, never "transition: all".
+// keyboard (CRAFT spec §2): its hover style differs from its rest style, keyboard focus draws a
+// ring, and what changes is under a declared transition, never "transition: all".
 
 const PROPS = ["color", "background-color", "border-color", "border-bottom-style", "text-decoration-color", "box-shadow", "transform", "opacity", "outline-style"] as const;
 
@@ -58,11 +57,18 @@ const ELEMENTS: Record<string, { path: string; find: (page: Page) => Locator }> 
   "write button": { path: "/", find: (p) => p.getByRole("link", { name: "Écrire", exact: true }) },
   "LinkedIn button": { path: "/", find: (p) => p.getByRole("link", { name: "LinkedIn" }) },
   "footer link": { path: "/", find: (p) => p.locator(".footer a").first() },
-  "case study: breadcrumb link": { path: "/projets/verity/", find: (p) => p.locator(".crumbs a").first() },
-  "case study: code link": { path: "/projets/verity/", find: (p) => p.locator(".head .code a") },
-  "case study: figure": { path: "/projets/verity/", find: (p) => p.locator(".case-section a.figure").first() },
-  "case study: measures fold": { path: "/projets/verity/", find: (p) => p.locator(".measures-detail summary").first() },
-  "case study: link to another case": { path: "/projets/verity/", find: (p) => p.locator(".others a").first() },
+  ...Object.fromEntries(
+    ["verity", "promptlang", "praxis"].flatMap((slug) => {
+      const path = `/projets/${slug}/`;
+      return [
+        [`${slug}: breadcrumb link`, { path, find: (p: Page) => p.locator(".crumbs a").first() }],
+        [`${slug}: code link`, { path, find: (p: Page) => p.locator(".head .code a") }],
+        [`${slug}: figure`, { path, find: (p: Page) => p.locator(".case-section a.figure").first() }],
+        [`${slug}: measures fold`, { path, find: (p: Page) => p.locator(".measures-detail summary").first() }],
+        [`${slug}: link to another case`, { path, find: (p: Page) => p.locator(".others a").first() }],
+      ];
+    }),
+  ),
 };
 
 for (const [name, { path, find }] of Object.entries(ELEMENTS)) {
@@ -232,6 +238,8 @@ test("states: a project card opens its case study from anywhere on it, and the l
   await page.goto("/");
   const card = page.locator(".project").first();
   await expect(card.locator(".card-link")).toHaveText("Étude de cas");
+  // Three links read « Étude de cas »: each names its project in a links list.
+  await expect(card.locator(".card-link")).toHaveAccessibleName("Étude de cas Verity");
   // The recording, the figures and the code link answer at their own place, above the stretched link.
   for (const link of await card.locator("a:not(.card-link)").all()) {
     await link.scrollIntoViewIfNeeded();
@@ -269,14 +277,21 @@ test("states: the measures fold opens with its height travelling, and its + turn
   });
   const closed = await height();
   expect(await angle()).toBe(0);
-  await summary.click();
-  // Within --dur-move (280 ms): partly open.
-  await page.waitForTimeout(100);
-  const mid = await height();
-  await page.waitForTimeout(500);
-  const open = await height();
-  expect(mid).toBeGreaterThan(closed);
-  expect(mid).toBeLessThan(open);
+  // Every frame's height from the click until the fold has settled: one of them lies between
+  // closed and open, however late a loaded machine samples.
+  const frames = await detail.evaluate(async (d) => {
+    const seen: number[] = [];
+    (d.querySelector("summary") as HTMLElement).click();
+    const end = performance.now() + 600;
+    while (performance.now() < end) {
+      seen.push(d.getBoundingClientRect().height);
+      await new Promise(requestAnimationFrame);
+    }
+    return seen;
+  });
+  const open = frames.at(-1)!;
+  expect(open).toBeGreaterThan(closed);
+  expect(frames.some((h) => h > closed && h < open), JSON.stringify(frames)).toBe(true);
   expect(await angle()).toBe(45);
 });
 
@@ -294,8 +309,10 @@ test("states under reduced motion: project cards neither lift nor zoom, and the 
   expect(await card.locator("img").evaluate((e) => getComputedStyle(e).transform)).toBe("none");
   await page.goto("/projets/verity/");
   const detail = page.locator(".measures-detail").first();
+  const closed = await detail.evaluate((d) => d.getBoundingClientRect().height);
   await detail.locator("summary").click();
   const first = await detail.evaluate((d) => d.getBoundingClientRect().height);
+  expect(first).toBeGreaterThan(closed);
   await page.waitForTimeout(400);
   expect(await detail.evaluate((d) => d.getBoundingClientRect().height)).toBe(first);
 });
