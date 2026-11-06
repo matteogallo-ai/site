@@ -199,6 +199,21 @@ const cases = [
     line-height: 1.45;
   }
 
+  /* A French translation under an English quote, as in the demo: small, in the sans, indented. */
+  .case :global(blockquote .tr) {
+    margin-top: 0.4rem;
+    padding-left: 0.75rem;
+    font-family: var(--font-sans);
+    font-size: var(--step-14);
+    line-height: 1.5;
+    color: var(--graphite);
+  }
+
+  .case :global(blockquote .tr-k) {
+    margin-right: 0.25rem;
+    font-weight: 600;
+  }
+
   .case :global(blockquote footer) {
     margin-top: 0.5rem;
     font-size: var(--step-14);

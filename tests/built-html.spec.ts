@@ -51,3 +51,12 @@ for (const [file, scope] of [
     expect(brief).toContain(scope);
   });
 }
+
+// C6: on a French page an English quote carries its translation, as in the demo.
+for (const file of files.filter((f) => !f.startsWith("en/"))) {
+  test(`${file}: every English quote has a French translation`, () => {
+    for (const [quote] of html(file).matchAll(/<blockquote[^>]*lang="en"[^>]*>[\s\S]*?<\/blockquote>/g)) {
+      expect(quote, quote.slice(0, 120)).toMatch(/class="tr"[^>]*lang="fr"|lang="fr"[^>]*class="tr"/);
+    }
+  });
+}

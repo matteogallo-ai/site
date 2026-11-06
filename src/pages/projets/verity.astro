@@ -23,6 +23,18 @@ if (!cited) throw new Error(`no citation of the demo answer contains "${DEFECT}"
 const [before, after] = cited.quote.split(DEFECT) as [string, string];
 const thresholdSentence = measure("verity.threshold_run_of_record").evidence.find((e) => "contains" in e && e.contains.startsWith("The threshold decides"));
 if (!thresholdSentence || !("contains" in thresholdSentence)) throw new Error("the threshold sentence is not in the measure's evidence");
+// The French line under each English quote, keyed by the exact English it translates: a quote
+// that changes at its source no longer finds its translation, and the build fails.
+const TRANSLATED: Record<string, string> = {
+  "The threshold decides nothing on this data.": "Le seuil ne décide rien sur ces données.",
+  "Premium Support shortens the Priority 1 response time to thirty (30) minutes, twentyfour hours a day, seven days a week.":
+    "Le Premium Support ramène le délai de réponse en priorité 1 à trente (30) minutes, vingt-quatre heures sur vingt-quatre, sept jours sur sept.",
+};
+const translated = (en: string) => {
+  const fr = TRANSLATED[en];
+  if (!fr) throw new Error(`no French translation for the quote "${en}"`);
+  return fr;
+};
 ---
 
 <CaseStudy
@@ -172,6 +184,7 @@ if (!thresholdSentence || !("contains" in thresholdSentence)) throw new Error("t
     </p>
     <blockquote lang="en">
       <p>{thresholdSentence.contains}</p>
+      <p class="tr" lang="fr"><span class="tr-k">traduction</span> {translated(thresholdSentence.contains)}</p>
       <footer><a href={at("docs/results.md")}>docs/results.md</a></footer>
     </blockquote>
     <p>
@@ -184,6 +197,7 @@ if (!thresholdSentence || !("contains" in thresholdSentence)) throw new Error("t
       <p>
         {before}{DEFECT} <span class="sic" lang="en">[sic, PDF extraction defect]</span>{after}
       </p>
+      <p class="tr" lang="fr"><span class="tr-k">traduction</span> {translated(cited.quote)}</p>
       <footer>Citation de la réponse à <code>{answer.example_id}</code>, <a href={runOfRecord}>exécution de référence</a></footer>
     </blockquote>
     <p>
