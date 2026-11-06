@@ -188,3 +188,17 @@ for (const [path, cases] of [
     expect(await page.locator("main .cases a").evaluateAll((as) => as.map((a) => a.getAttribute("href")))).toEqual(cases);
   });
 }
+
+// F1: the icons in the site's colours, for browsers (SVG, ICO) and for a phone's home screen.
+for (const path of ["/", "/en/projects/verity/"]) {
+  test(`${path}: names its icons, each served`, async ({ page, request }) => {
+    await page.goto(path);
+    const icons = await page.locator('link[rel="icon"], link[rel="apple-touch-icon"]').evaluateAll((ls) => ls.map((l) => `${l.getAttribute("rel")} ${l.getAttribute("href")}`));
+    expect(icons).toEqual(["icon /favicon.ico", "icon /favicon.svg", "apple-touch-icon /apple-touch-icon.png"]);
+    for (const [file, type] of [["/favicon.ico", /icon/], ["/favicon.svg", /^image\/svg\+xml/], ["/apple-touch-icon.png", /^image\/png/]] as const) {
+      const response = await request.get(file);
+      expect(response.status(), file).toBe(200);
+      expect(response.headers()["content-type"], file).toMatch(type);
+    }
+  });
+}
