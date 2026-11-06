@@ -31,6 +31,14 @@ h3 {
   text-wrap: balance;
 }
 
+/* A paragraph does not end on a lone word. */
+p,
+li,
+figcaption,
+dd {
+  text-wrap: pretty;
+}
+
 /* Form controls default to the system font, which no subset covers. */
 button,
 input,

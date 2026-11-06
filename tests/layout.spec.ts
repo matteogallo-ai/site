@@ -212,3 +212,12 @@ for (const [path, link] of [
     await expect(shot.getByRole("link", { name: link })).toHaveAttribute("href", /^https:\/\//);
   });
 }
+
+// F5: paragraphs avoid a lone word on their last line.
+for (const path of ["/", "/projets/verity/", "/en/colophon/"]) {
+  test(`${path}: paragraphs wrap with text-wrap: pretty`, async ({ page }) => {
+    await page.goto(path);
+    const styles = await page.locator("main p").evaluateAll((ps) => [...new Set(ps.map((p) => getComputedStyle(p).textWrapStyle))]);
+    expect(styles).toEqual(["pretty"]);
+  });
+}
