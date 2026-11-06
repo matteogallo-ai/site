@@ -165,7 +165,7 @@ test("figures: the proof path shows on focus without widening the page, and Esca
 test("demo: the run's source shows its files on focus without widening the page, and Escape dismisses it", async ({ page }) => {
   await page.setViewportSize({ width: 375, height: 800 });
   await page.goto("/");
-  const link = page.getByRole("link", { name: "Source du run" });
+  const link = page.getByRole("link", { name: "Exécution de référence" });
   const tip = page.locator("#verity-run-tip");
   await expect(tip).toBeHidden();
   await link.focus();

@@ -20,3 +20,11 @@ for (const file of files) {
     expect([...around(text, /[\p{L}\p{N},.;:]<code[\s>]/u), ...around(text, /<\/code>[\p{L}\p{N}]/u)]).toEqual([]);
   });
 }
+
+// The demo's second quote ("Premium Support shortens…") sits in section 5 of the order form, in a
+// chunk that starts in section 3: the card names the section that holds the quote.
+for (const [file, label] of [["index.html", "bon de commande Northwind (section 5)"], ["en/index.html", "Northwind order form (section 5)"]] as const) {
+  test(`${file}: the demo places each quote in the section that holds it`, () => {
+    expect(html(file)).toContain(label);
+  });
+}

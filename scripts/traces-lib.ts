@@ -16,6 +16,21 @@ export interface Chunk {
   text: string;
 }
 
+/**
+ * The number of the section holding a quote that starts at `start` (document offsets): the last
+ * numbered heading ("5. Premium Support", "## 3. Support Response Times") of its chunk before the
+ * quote; failing one, the section the chunk starts in, which is how Verity labels a chunk. A
+ * chunk can run across headings, so its own label may name an earlier section than the quote's.
+ */
+export function sectionAt(chunk: Pick<Chunk, "char_start" | "char_end" | "text" | "section">, start: number): string {
+  if (start < chunk.char_start || start > chunk.char_end) throw new Error(`offset ${start} is outside its chunk [${chunk.char_start}:${chunk.char_end}]`);
+  const before = chunk.text.slice(0, start - chunk.char_start);
+  const headings = [...before.matchAll(/^(?:#+[ \t]*)?(\d+)\.[ \t]+\S.*$/gm)];
+  const n = headings.at(-1)?.[1] ?? /^(\d+)\./.exec(chunk.section.split(" > ").at(-1)!)?.[1];
+  if (!n) throw new Error(`no section number for offset ${start} in chunk section "${chunk.section}"`);
+  return n;
+}
+
 export interface Citation {
   chunk_id: string;
   document_id: string;
