@@ -145,6 +145,10 @@ for (const path of pages) {
     await expect(selector).toHaveCount(1);
     await expect(selector).toContainText(lang.toUpperCase());
     await expect(selector.getByRole("link")).toHaveCount(1);
+    // Its own zone, named for what it is, outside any navigation landmark, the current language marked.
+    await expect(selector).toHaveAttribute("aria-label", lang === "fr" ? "Langue" : "Language");
+    expect(await selector.evaluate((el) => el.closest("nav, main") === null)).toBe(true);
+    await expect(selector.locator('[aria-current="true"]')).toHaveText(lang.toUpperCase());
     const link = selector.getByRole("link", { name: other.toUpperCase() });
     await expect(link).toHaveAttribute("hreflang", other);
     await expect(link).toHaveAttribute("lang", other);

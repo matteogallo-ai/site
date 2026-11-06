@@ -30,13 +30,15 @@ const cases = [
 ---
 
 <Base title={`${name} — ${t.title} · Matteo Gallo`} description={description} serif={serif}>
-  <div class="container case">
+  <div class="container topbar" slot="header">
     <nav class="crumbs" aria-label={t.crumbs}>
       <a href={t.home}>Matteo Gallo</a>
       <span aria-hidden="true">/</span>
       <a href={t.projects}>{t.projectsLabel}</a>
-      <LangSwitch />
     </nav>
+    <LangSwitch />
+  </div>
+  <div class="container case">
     <header class="head">
       <p class="no"><span class="mono">No. {no}</span> · {t.kind}</p>
       <h1>{name}</h1>
@@ -75,13 +77,7 @@ const cases = [
   .crumbs {
     display: flex;
     gap: 0.5rem;
-    font-size: var(--step-14);
     color: var(--graphite);
-  }
-
-  /* The language selector sits at the end of the line, apart from the path. */
-  .crumbs :global(.langs) {
-    margin-left: auto;
   }
 
   .head {

@@ -30,10 +30,12 @@ const unmeasured = Object.keys(import.meta.glob("../pages/**/*.astro"))
     ? "Comment ce site est construit : outils, budgets de poids et de vitesse, mesures réelles, accessibilité, ce qui est confié à des agents de code et ce qui est relu."
     : "How this site is built: tools, weight and speed budgets, real measures, accessibility, what is left to coding agents and what is reviewed."}
 >
-  <nav class="container crumbs" aria-label={fr ? "Fil d’Ariane" : "Breadcrumb"}>
-    <a href={fr ? "/" : "/en/"}>Matteo Gallo</a>
+  <div class="container topbar" slot="header">
+    <nav class="crumbs" aria-label={fr ? "Fil d’Ariane" : "Breadcrumb"}>
+      <a href={fr ? "/" : "/en/"}>Matteo Gallo</a>
+    </nav>
     <LangSwitch />
-  </nav>
+  </div>
 
   <header class="container intro">
     <h1>Colophon</h1>
@@ -186,12 +188,6 @@ const unmeasured = Object.keys(import.meta.glob("../pages/**/*.astro"))
 </Base>
 
 <style>
-  .crumbs {
-    display: flex;
-    justify-content: space-between;
-    padding-top: 1.5rem;
-    font-size: var(--step-14);
-  }
 
   .intro {
     padding-top: 3rem;

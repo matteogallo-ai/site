@@ -113,7 +113,7 @@ test("under reduced motion the answer is shown whole at once", async ({ page }) 
 
 const glassOf = (page: Page) =>
   page.evaluate(() => ({
-    nav: getComputedStyle(document.querySelector("nav ul")!).backdropFilter,
+    nav: getComputedStyle(document.querySelector(".pill")!).backdropFilter,
     card: getComputedStyle(document.querySelector("#verity-panel-answer")!).backdropFilter,
     lens: getComputedStyle(document.querySelector("[data-lens] .ring")!).backdropFilter,
     fill: getComputedStyle(document.querySelector("#verity-panel-answer")!).backgroundColor,

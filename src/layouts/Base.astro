@@ -12,9 +12,11 @@ interface Props {
   serif?: boolean;
   /** False for the 404 page: it answers at every unknown address, so no URL is its own. */
   canonical?: boolean;
+  /** The header stays at the top of the screen as the page scrolls (the home page's navigation). */
+  stickyHeader?: boolean;
 }
 
-const { title, description, serif = false, canonical: hasCanonical = true } = Astro.props;
+const { title, description, serif = false, canonical: hasCanonical = true, stickyHeader = false } = Astro.props;
 const lang = langOf(Astro.url.pathname);
 const skipLabel = lang === "fr" ? "Aller au contenu" : "Skip to content";
 const canonical = hasCanonical ? new URL(Astro.url.pathname, Astro.site).href : undefined;
@@ -54,6 +56,8 @@ const image = OG[lang];
   <body>
     <a class="skip-link" href="#main">{skipLabel}</a>
     <Glass />
+    {/* Navigation and language selector come before main, so the skip link passes them. */}
+    {Astro.slots.has("header") && <header class:list={["site-header", { sticky: stickyHeader }]}><slot name="header" /></header>}
     <main id="main">
       <slot />
     </main>

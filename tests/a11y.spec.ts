@@ -31,5 +31,11 @@ for (const path of builtPages()) {
     await expect(skip).toBeInViewport();
     await page.keyboard.press("Enter");
     await expect(page).toHaveURL(/#main$/);
+    // The navigation and the language selector come before main: the skip link passes them.
+    await expect(page.locator("main :is(.nav, .crumbs, .langs)")).toHaveCount(0);
+    await page.keyboard.press("Tab");
+    const after = page.locator(":focus");
+    await expect(after).toHaveCount(1);
+    expect(await after.evaluate((el) => !!el.closest("main") && !el.closest(".site-header, nav"))).toBe(true);
   });
 }

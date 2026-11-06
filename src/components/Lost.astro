@@ -12,7 +12,7 @@ const fr = langOf(Astro.url.pathname) === "fr";
   description={fr ? "Aucune page à cette adresse sur le site de Matteo Gallo." : "No page at this address on Matteo Gallo’s site."}
   canonical={false}
 >
-  <p class="container top"><LangSwitch /></p>
+  <div class="container top" slot="header"><LangSwitch /></div>
   <section class="container lost" aria-labelledby="lost-title">
     <h1 id="lost-title">{fr ? "Aucune preuve à cette adresse." : "No proof at this address."}</h1>
     <p><a class="home" href={fr ? "/" : "/en/"}>{fr ? "Retour à l’accueil" : "Back to the home page"}</a></p>

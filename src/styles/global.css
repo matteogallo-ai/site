@@ -87,6 +87,22 @@ a:hover {
   position: relative;
 }
 
+/* The header above main (Base.astro): the path on the left, the language selector on the right. */
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  padding-top: 1.5rem;
+  font-size: var(--step-14);
+}
+
+.site-header.sticky {
+  position: sticky;
+  top: 0.75rem;
+  z-index: 10;
+}
+
 .skip-link {
   position: absolute;
   left: var(--gutter);
