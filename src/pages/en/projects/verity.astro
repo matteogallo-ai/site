@@ -173,7 +173,7 @@ if (!thresholdSentence || !("contains" in thresholdSentence)) throw new Error("t
       ran at <Figure id="verity.threshold_run_of_record" where="threshold" />: the threshold was chosen on the tuning questions by a rule fixed in advance, and no threshold did better than another.
     </p>
     <blockquote lang="en">
-      <p>{thresholdSentence.contains}</p>
+      <p data-verbatim>{thresholdSentence.contains}</p>
       <footer><a href={at("docs/results.md")}>docs/results.md</a></footer>
     </blockquote>
     <p>
@@ -183,7 +183,7 @@ if (!thresholdSentence || !("contains" in thresholdSentence)) throw new Error("t
 
     <h3>An exact quote of a badly extracted text</h3>
     <blockquote lang="en">
-      <p>
+      <p data-verbatim>
         {before}{DEFECT} <span class="sic" lang="en">[sic, PDF extraction defect]</span>{after}
       </p>
       <footer>Quote from the answer to <code>{answer.example_id}</code>, <a href={runOfRecord}>reference run</a></footer>

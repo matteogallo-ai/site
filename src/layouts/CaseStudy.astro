@@ -1,6 +1,6 @@
 ---
 import Base from "./Base.astro";
-import { langOf, twin } from "../lib/i18n.ts";
+import { langOf, numbered, twin } from "../lib/i18n.ts";
 import { repoUrl } from "../lib/sources.ts";
 import LangSwitch from "../components/LangSwitch.astro";
 import Contact from "../components/Contact.astro";
@@ -45,7 +45,7 @@ const cases = [
   </div>
   <div class="container case">
     <header class="head">
-      <p class="no"><span class="mono">No. {no}</span> · {t.kind}</p>
+      <p class="no"><span class="mono">{numbered(no, lang)}</span> · {t.kind}</p>
       <h1>{name}</h1>
       <p class="summary">{summary}</p>
       <p class="code"><a href={repoUrl(repo)}>{t.code} matteogallo-ai/{repo}</a></p>
@@ -60,11 +60,11 @@ const cases = [
             <li>
               {c.name === name ? (
                 <span aria-current="page">
-                  <span class="mono">No. {c.no}</span> {c.name}
+                  <span class="mono">{numbered(c.no, lang)}</span> {c.name}
                 </span>
               ) : (
                 <a href={c.href}>
-                  <span class="mono">No. {c.no}</span> {c.name}
+                  <span class="mono">{numbered(c.no, lang)}</span> {c.name}
                 </a>
               )}
             </li>

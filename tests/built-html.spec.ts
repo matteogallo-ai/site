@@ -43,7 +43,7 @@ for (const file of files) {
 // C4: the hallucination figure in Verity's brief names its scope, as the home page does: the
 // answerable questions it answered; its answers to unanswerable ones are counted apart.
 for (const [file, scope] of [
-  ["projets/verity/index.html", "parmi les questions avec réponse auxquelles il a répondu ; ses réponses aux questions sans réponse sont comptées à part"],
+  ["projets/verity/index.html", "parmi les questions avec réponse auxquelles il a répondu\u202F; ses réponses aux questions sans réponse sont comptées à part"],
   ["en/projects/verity/index.html", "among the answerable questions it answered; its answers to unanswerable questions are counted separately"],
 ] as const) {
   test(`${file}: the brief gives the hallucination figure its scope`, () => {
@@ -86,5 +86,61 @@ for (const file of files.filter((f) => f.startsWith("en/"))) {
 // D4: the English refusal rationale is the trace's own text, internal reference included; a short
 // label says so and what the reference points to.
 test("en/index.html: the refusal rationale is labelled as quoted from the run", () => {
-  expect(html("en/index.html")).toMatch(/<p class="tr why"[^>]*><span class="tr-k"[^>]*>the model’s words, as recorded; document index 0 is the SLA<\/span> The SLA section \(document index 0\)/);
+  expect(html("en/index.html")).toMatch(/<p class="tr why"[^>]*><span class="tr-k"[^>]*>the model’s words, as recorded; document index 0 is the SLA<\/span> <span data-verbatim[^>]*>The SLA section \(document index 0\)/);
 });
+
+/**
+ * The prose of a built page in one language: code, scripts, monospace, verbatim quotes of a run
+ * and elements in the other language left out.
+ */
+function prose(page: string, lang: "fr" | "en"): string {
+  const out: string[] = [];
+  const stack: { tag: string; keep: boolean }[] = [];
+  for (const [token] of page.matchAll(/<(script|style)\b[^>]*>[\s\S]*?<\/\1\s*>|<!--[\s\S]*?-->|<!DOCTYPE[^>]*>|<\/?[a-zA-Z][^>]*>|[^<]+/gi)) {
+    if (token[0] !== "<") {
+      if (stack.at(-1)?.keep) out.push(token.replace(/&#39;/g, "'").replace(/&quot;/g, '"').replace(/&amp;/g, "&"));
+      continue;
+    }
+    const name = /^<\/?([a-zA-Z][\w-]*)/.exec(token)?.[1]?.toLowerCase();
+    if (!name || /^<(script|style)\b/i.test(token)) continue;
+    if (token[1] === "/") {
+      const at = stack.findLastIndex((c) => c.tag === name);
+      if (at >= 0) stack.length = at;
+      continue;
+    }
+    if (/^(area|base|br|col|embed|hr|img|input|link|meta|source|track|wbr)$/.test(name) || token.endsWith("/>")) continue;
+    const own = /\slang="([a-z]+)/.exec(token)?.[1];
+    const parent = stack.at(-1);
+    const keep = (parent ? parent.keep || (own === lang && name !== "html") : own === lang) && !/^(code|pre|kbd|samp)$/.test(name) && !/\sdata-verbatim/.test(token) && !/class="[^"]*\bmono\b/.test(token) && (own === undefined || own === lang);
+    stack.push({ tag: name, keep });
+  }
+  return out.join("");
+}
+
+// D2: French typography, set by the build on every French page.
+for (const file of files.filter((f) => !f.startsWith("en/"))) {
+  test(`${file}: French typography`, () => {
+    const text = prose(html(file), "fr");
+    expect(text.length).toBeGreaterThan(20);
+    expect(around(text, /[ \u00A0]+[;!?%]|(?<=[\p{L}\d])[;!?](?=\s)/u), "U+202F before ; ! ? %").toEqual([]);
+    expect(around(text, /(?:[ \u202F]|(?<=[\p{L})»])):(?=\s)/u), "U+00A0 before :").toEqual([]);
+    expect(around(text, /«(?!\u00A0)|(?<!\u00A0)»/), "U+00A0 inside « »").toEqual([]);
+    expect(around(text, /'/), "curly apostrophes").toEqual([]);
+    expect(around(text, /\d[ \u202F]?\$/), "U+00A0 before $").toEqual([]);
+    // The number of a project is set in monospace, which prose() leaves out: read on the whole page.
+    expect(around(html(file), /\bNo\.(?:\s|&nbsp;)?\d/u), "N° 01").toEqual([]);
+    expect(around(text, /\d\s?%\s?[–-]\s?\d/), "ranges: 18–46 %").toEqual([]);
+    // After a colon, French goes on in lower case (« Ce que je cherche : un poste »), names aside.
+    expect(around(text, /Ce que je cherche\s?:\s?\p{Lu}/u)).toEqual([]);
+  });
+}
+
+// D3: English typography, set by the build on every English page.
+for (const file of files.filter((f) => f.startsWith("en/"))) {
+  test(`${file}: English typography`, () => {
+    const text = prose(html(file), "en");
+    expect(text.length).toBeGreaterThan(20);
+    expect(around(text, /['"]/), "curly quotes and apostrophes").toEqual([]);
+    expect(around(text, /\d%\s?[–-]\s?\d/), "ranges: 18–46%").toEqual([]);
+  });
+}

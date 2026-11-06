@@ -6,6 +6,7 @@ import { kilo, site, siteBudgets } from "../src/lib/colophon.ts";
 import { alternates, langOf, twin } from "../src/lib/i18n.ts";
 import { decimal } from "../src/lib/measures.ts";
 import { OG } from "../src/lib/og.ts";
+import { plain } from "../scripts/typography.ts";
 import config from "../astro.config.mjs";
 
 const ORIGIN = new URL(config.site!).origin;
@@ -77,7 +78,7 @@ for (const path of pages) {
     const lang = langOf(path);
     const image = (await og("image"))!;
     expect(image).toBe(`${ORIGIN}/${OG[lang].file.replace(/^public\//, "")}`);
-    expect(await og("image:alt")).toBe(OG[lang].alt);
+    expect(plain((await og("image:alt"))!)).toBe(plain(OG[lang].alt));
     const local = await request.get(new URL(image).pathname);
     expect(local.status()).toBe(200);
     expect(local.headers()["content-type"]).toBe("image/png");

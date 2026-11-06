@@ -28,6 +28,8 @@ export function interval(m: VerifiedMeasure, lang: "fr" | "en"): string {
   // 0.23 * 100 is 23.000000000000004: the tolerance keeps exact whole percents where they are.
   const lo = Math.floor(m.ci95[0] * 100 + 1e-9);
   const hi = Math.ceil(m.ci95[1] * 100 - 1e-9);
-  // French sets a no-break space before "%" (U+00A0, which the sans subset has); English none.
-  return lang === "fr" ? `${lo}\u00A0% – ${hi}\u00A0%` : `${lo}% – ${hi}%`;
+  // One convention for every range on the site, as for costs (3,29–4,75 $): the bounds joined by
+  // an en dash, the unit once. French puts a no-break space before "%"; the typography pass of
+  // the build narrows it where the font has U+202F (scripts/typography.ts).
+  return lang === "fr" ? `${lo}–${hi}\u00A0%` : `${lo}–${hi}%`;
 }

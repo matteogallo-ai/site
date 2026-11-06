@@ -27,3 +27,8 @@ export function alternates(path: string): { hreflang: "fr" | "en" | "x-default";
     { hreflang: "x-default", path: fr },
   ];
 }
+
+/** A project's number as each language writes it: « N° 01 », "No. 01"; never split across lines. */
+export function numbered(n: string, lang: Lang): string {
+  return `${lang === "fr" ? "N°" : "No."}\u00A0${n}`;
+}

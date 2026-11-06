@@ -183,9 +183,9 @@ const translated = (en: string) => {
       tourné à <Figure id="verity.threshold_run_of_record" where="threshold" /> : le seuil a été choisi sur les questions de réglage par une règle fixée à l’avance, et aucun seuil ne faisait mieux qu’un autre.
     </p>
     <blockquote lang="en">
-      <p>{thresholdSentence.contains}</p>
+      <p data-verbatim>{thresholdSentence.contains}</p>
       <p class="tr" lang="fr"><span class="tr-k">traduction</span> {translated(thresholdSentence.contains)}</p>
-      <footer><a href={at("docs/results.md")}>docs/results.md</a></footer>
+      <footer lang="fr"><a href={at("docs/results.md")}>docs/results.md</a></footer>
     </blockquote>
     <p>
       Chaque refus vient d’un contrôle écrit en code ou du modèle de notation lui-même ; aucun n’est dû au seuil. La note de confiance est l’auto-évaluation du modèle, et elle ne correspond pas à sa fréquence
@@ -194,11 +194,11 @@ const translated = (en: string) => {
 
     <h3>Une citation exacte d’un texte mal extrait</h3>
     <blockquote lang="en">
-      <p>
+      <p data-verbatim>
         {before}{DEFECT} <span class="sic" lang="en">[sic, PDF extraction defect]</span>{after}
       </p>
       <p class="tr" lang="fr"><span class="tr-k">traduction</span> {translated(cited.quote)}</p>
-      <footer>Citation de la réponse à <code>{answer.example_id}</code>, <a href={runOfRecord}>exécution de référence</a></footer>
+      <footer lang="fr">Citation de la réponse à <code>{answer.example_id}</code>, <a href={runOfRecord}>exécution de référence</a></footer>
     </blockquote>
     <p>
       Dans le <a href={at("datasets/corpus/order_form_northwind_2025.pdf")}>PDF du bon de commande</a>, « twenty- » finit une ligne et « four » commence la suivante ; l’extraction du texte a recollé les deux

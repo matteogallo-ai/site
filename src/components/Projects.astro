@@ -1,7 +1,7 @@
 ---
 import Figure from "./Figure.astro";
 import ProductShot from "./ProductShot.astro";
-import { langOf, twin } from "../lib/i18n.ts";
+import { langOf, numbered, twin } from "../lib/i18n.ts";
 
 const repo = (name: string) => `https://github.com/matteogallo-ai/${name}`;
 const lang = langOf(Astro.url.pathname);
@@ -17,7 +17,7 @@ const t = {
   <h2 id={`${t.id}-title`}>{t.title}</h2>
   <div class="projects">
     <article class="project card" aria-labelledby="p-verity">
-      <p class="mono no">No. 01</p>
+      <p class="mono no">{numbered("01", lang)}</p>
       <h3 id="p-verity">Verity</h3>
       <ProductShot id="verity" size="card" />
       <p>{lang === "fr" ? "Un agent RAG sur des documents d’entreprise : il répond en citant mot pour mot, refuse quand ses preuves sont faibles, et publie à quelle fréquence il refuse à raison." : "A RAG agent over company documents: it answers by quoting word for word, refuses when its evidence is weak, and publishes how often it refuses correctly."}</p>
@@ -34,7 +34,7 @@ const t = {
     </article>
 
     <article class="project card" aria-labelledby="p-promptlang">
-      <p class="mono no">No. 02</p>
+      <p class="mono no">{numbered("02", lang)}</p>
       <h3 id="p-promptlang">PromptLang</h3>
       <ProductShot id="promptlang" size="card" />
       <p>{lang === "fr" ? "Un langage typé pour les prompts LLM, compilé vers TypeScript ou Python, publié sur npm." : "A typed language for LLM prompts, compiled to TypeScript or Python, published on npm."}</p>
@@ -51,7 +51,7 @@ const t = {
     </article>
 
     <article class="project card" aria-labelledby="p-praxis">
-      <p class="mono no">No. 03</p>
+      <p class="mono no">{numbered("03", lang)}</p>
       <h3 id="p-praxis">Praxis</h3>
       <ProductShot id="praxis" size="card" />
       <p>{lang === "fr" ? "Un pipeline LLM qui transforme une question business en briefing analytique, avec contrôles de sourcing et revue adverse." : "An LLM pipeline that turns a business question into an analytical briefing, with sourcing checks and adversarial review."}</p>
