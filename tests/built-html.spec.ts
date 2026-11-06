@@ -82,9 +82,20 @@ const CALQUES = [
 for (const file of files.filter((f) => f.startsWith("en/"))) {
   test(`${file}: no French calque in the English`, () => {
     // What a reader or a link preview shows: the text, and the attributes written for people.
-    const page = html(file).replace(/<(script|style)[\s\S]*?<\/\1>/g, "").replace(/<[^>]*\blang="fr"[^>]*>[^<]*/g, "");
-    const said = [...page.matchAll(/\b(?:alt|content|aria-label|title)="([^"]*)"/g)].map((m) => m[1]);
-    const text = [page.replace(/<(?!\/th>)[^>]*>/g, " "), ...said].join("\n");
+    // Read token by token, scripts and styles skipped whole, rather than by deleting markup: the
+    // text that follows an opening tag marked lang="fr" is left out, a </th> kept as a marker.
+    const parts: string[] = [];
+    let french = false;
+    for (const [token] of html(file).matchAll(/<(script|style)\b[^>]*>[\s\S]*?<\/\1\s*>|<[^>]*>|[^<]+/gi)) {
+      if (token[0] === "<") {
+        if (/^<(script|style)\b/i.test(token)) continue;
+        if (token === "</th>") parts.push(token);
+        else if (token[1] !== "/") parts.push(...[...token.matchAll(/\b(?:alt|content|aria-label|title)="([^"]*)"/g)].map((m) => `\n${m[1]}\n`));
+        french = /\blang="fr"/.test(token);
+        parts.push(" ");
+      } else if (!french) parts.push(token);
+    }
+    const text = parts.join("");
     expect(CALQUES.flatMap((c) => around(text, c))).toEqual([]);
   });
 }
