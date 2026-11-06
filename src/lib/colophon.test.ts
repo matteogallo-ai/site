@@ -13,7 +13,7 @@ const config = (over: Record<string, [string, object]> = {}) => ({
         "categories:best-practices": ["error", { minScore: 0.98 }],
         "categories:seo": ["error", { minScore: 0.98 }],
         "largest-contentful-paint": ["error", { maxNumericValue: 1499 }],
-        "cumulative-layout-shift": ["error", { maxNumericValue: 0.049 }],
+        "cumulative-layout-shift": ["error", { maxNumericValue: 0.019 }],
         "resource-summary:total:size": ["error", { maxNumericValue: 200_000 }],
         "resource-summary:font:size": ["error", { maxNumericValue: 90_000 }],
         ...over,
@@ -25,7 +25,7 @@ const config = (over: Record<string, [string, object]> = {}) => ({
 test("the budgets read as the SPEC states them, from the bounds lhci compares with", () => {
   assert.deepEqual(
     budgets(config()).map((b) => b.limit),
-    ["au plus 200 ko", "au plus 90 ko", "moins de 1,5 s", "moins de 0,05", "au moins 98 sur 100"],
+    ["au plus 200 ko", "au plus 90 ko", "moins de 1,5 s", "moins de 0,02", "au moins 98 sur 100"],
   );
 });
 

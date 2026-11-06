@@ -35,7 +35,7 @@ export function budgets(config: Config): Budget[] {
   const scores = ["performance", "accessibility", "best-practices", "seo"].map((c) => bound(a, `categories:${c}`, "minScore"));
   if (new Set(scores).size !== 1) throw new Error("the four Lighthouse categories no longer share one threshold");
   // lhci passes a value equal to its bound; the SPEC's limits are strict, so lighthouserc.cjs
-  // sets each bound one unit below them (1499 ms, 0.049). The page states the SPEC's limits, and
+  // sets each bound one unit below them (1499 ms, 0.019). The page states the SPEC's limits, and
   // a bound of any other form fails here rather than be restated wrongly.
   const lcpBound = bound(a, "largest-contentful-paint", "maxNumericValue");
   const clsBound = bound(a, "cumulative-layout-shift", "maxNumericValue");
