@@ -1,23 +1,27 @@
 import { expect, test } from "@playwright/test";
+import { type Lang, twin } from "../src/lib/i18n.ts";
 import { interval, measure } from "../src/lib/measures.ts";
 
 // SPEC §3.2, in its order: problem, what I built (one SVG diagram), measures, what did not
 // work, three decisions (ADR), how it is built, what comes next.
-const SECTIONS = [
-  "Le problème",
-  "Ce que j’ai construit",
-  "Mesures",
-  "Ce qui n’a pas marché, et ce que j’ai fait",
-  "Trois décisions",
-  "Comment c’est construit",
-  "La suite",
-];
+const SECTIONS: Record<Lang, string[]> = {
+  fr: ["Le problème", "Ce que j’ai construit", "Mesures", "Ce qui n’a pas marché, et ce que j’ai fait", "Trois décisions", "Comment c’est construit", "La suite"],
+  en: ["The problem", "What I built", "Measures", "What did not work, and what I did", "Three decisions", "How it is built", "What comes next"],
+};
+const BRIEF: Record<Lang, { title: string; terms: string[] }> = {
+  fr: { title: "En bref", terms: ["Ce que ça fait", "Ce qui est mesuré", "Défaut principal"] },
+  en: { title: "In brief", terms: ["What it does", "What is measured", "Main defect"] },
+};
 const CASES = ["verity", "promptlang", "praxis"];
-// Words a recruiter would have to look up; each page says it in plain French instead. Code,
+// Words a recruiter would have to look up; each page says it in plain words instead. Code,
 // links and verbatim quotes keep their own words. A list catches only the words on it: terms
 // the pages keep and explain where they first appear (kappa, RAG, API, JSON, README, ADR)
-// cannot be listed, and whether each is explained is the reviewer's to check.
-const JARGON = /\b(split|runs?|baseline|fixtures?|pipeline|LLM|lexer|parser|runtime|semver)\b/i;
+// cannot be listed, and whether each is explained is the reviewer's to check. "Run" is jargon
+// in French only: in English it is the plain word for an execution.
+const JARGON: Record<Lang, RegExp> = {
+  fr: /\b(split|runs?|baseline|fixtures?|pipeline|LLM|lexer|parser|runtime|semver)\b/i,
+  en: /\b(split|baseline|fixtures?|pipeline|LLM|lexer|parser|runtime|semver)\b/i,
+};
 const PINNED = (repo: string) => new RegExp(`^https://github\\.com/matteogallo-ai/${repo}/blob/[0-9a-f]{40}/`);
 
 // Numbers a reader sees outside a measure must not be figures. Skipped, each for a reason:
@@ -47,19 +51,19 @@ function strayNumbers(skip: string): string[] {
   return found;
 }
 
-for (const slug of CASES) {
-  const path = `/projets/${slug}/`;
+for (const [lang, slug] of (["fr", "en"] as const).flatMap((l) => CASES.map((c) => [l, c] as const))) {
+  const path = lang === "fr" ? `/projets/${slug}/` : twin(`/projets/${slug}/`);
 
   test(`${path}: the seven sections of SPEC §3.2, in order`, async ({ page }) => {
     await page.goto(path);
-    await expect(page.locator(".case-section > h2")).toHaveText(SECTIONS);
+    await expect(page.locator(".case-section > h2")).toHaveText(SECTIONS[lang]);
   });
 
-  test(`${path}: "En bref" first, three plain lines and three figures, the main defect among them`, async ({ page }) => {
+  test(`${path}: the brief first, three plain lines and three figures, the main defect among them`, async ({ page }) => {
     await page.goto(path);
-    await expect(page.locator("main h2").first()).toHaveText("En bref");
+    await expect(page.locator("main h2").first()).toHaveText(BRIEF[lang].title);
     const brief = page.locator(".brief");
-    await expect(brief.locator("dt")).toHaveText(["Ce que ça fait", "Ce qui est mesuré", "Défaut principal"]);
+    await expect(brief.locator("dt")).toHaveText(BRIEF[lang].terms);
     for (const dd of await brief.locator("dd").all()) await expect(dd).toHaveText(/\S/);
     await expect(brief.locator(".big .figure")).toHaveCount(3);
     await expect(brief.locator(".big .figure.defect")).toHaveCount(1);
@@ -69,7 +73,7 @@ for (const slug of CASES) {
   test(`${path}: every section opens with a sentence saying what it gives the reader`, async ({ page }) => {
     await page.goto(path);
     const firsts = await page.locator(".case-section > h2").evaluateAll((hs) => hs.map((h) => [h.nextElementSibling?.className ?? "", h.nextElementSibling?.textContent?.trim() ?? ""]));
-    expect(firsts).toHaveLength(SECTIONS.length);
+    expect(firsts).toHaveLength(SECTIONS[lang].length);
     for (const [cls, text] of firsts) {
       expect(cls).toContain("lead");
       expect(text).toMatch(/\S.*[.:]$/);
@@ -89,7 +93,7 @@ for (const slug of CASES) {
         if (m) found.push(`${m[0]} in: ${node.textContent!.trim().slice(0, 80)}`);
       }
       return found;
-    }, JARGON.source);
+    }, JARGON[lang].source);
     expect(words).toEqual([]);
   });
 
@@ -142,9 +146,9 @@ for (const slug of CASES) {
     for (const row of await rows.all()) await expect(row.locator(".figure").first()).toBeVisible();
     const intervals = await page.locator("[data-measure]").evaluateAll((els) => els.map((e) => [e.getAttribute("data-measure")!, e.textContent!.trim()]));
     expect(intervals.length).toBeGreaterThan(0);
-    for (const [id, text] of intervals) expect(text, id).toBe(interval(measure(id!)));
+    for (const [id, text] of intervals) expect(text, id).toBe(interval(measure(id!), lang));
     const labels = await page.locator("[data-label]").evaluateAll((els) => els.map((e) => [e.getAttribute("data-label")!, e.textContent!.trim()]));
-    for (const [id, text] of labels) expect(text, id).toBe(measure(id!).label.fr);
+    for (const [id, text] of labels) expect(text, id).toBe(measure(id!).label[lang]);
     // SPEC §6: defects at the same level as measures, in the same table.
     await expect(page.locator("#mesures tbody .figure.defect")).not.toHaveCount(0);
   });

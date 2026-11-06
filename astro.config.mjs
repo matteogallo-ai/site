@@ -1,6 +1,7 @@
 // @ts-check
 import { defineConfig, fontProviders } from "astro/config";
 import { noGaps } from "./scripts/gaps.ts";
+import { nestedNotFound } from "./scripts/not-found.ts";
 
 // Subsets built by scripts/fonts/subset.py from pinned upstream releases (see coverage.json for the characters).
 const font = (/** @type {string} */ name) => `./src/assets/fonts/${name}`;
@@ -10,7 +11,8 @@ export default defineConfig({
   site: "https://matteogallo.pages.dev",
   trailingSlash: "ignore",
   build: { format: "directory" },
-  integrations: [noGaps()],
+  // nestedNotFound first: the placeholder check then reads every page where it is served from.
+  integrations: [nestedNotFound(), noGaps()],
   fonts: [
     {
       name: "Inter",

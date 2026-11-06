@@ -1,0 +1,211 @@
+---
+import CaseStudy from "../../../layouts/CaseStudy.astro";
+import Brief from "../../../components/case/Brief.astro";
+import CaseSection from "../../../components/case/CaseSection.astro";
+import Diagram from "../../../components/case/Diagram.astro";
+import MeasuresDetail from "../../../components/case/MeasuresDetail.astro";
+import MeasuresTable from "../../../components/case/MeasuresTable.astro";
+import Figure from "../../../components/Figure.astro";
+import { pinned, pull } from "../../../lib/sources.ts";
+
+const at = (path: string) => pinned("promptlang", path);
+const pr = (n: number) => pull("promptlang", n);
+---
+
+<CaseStudy
+  no="02"
+  name="PromptLang"
+  repo="promptlang"
+  summary="A language for writing the instructions given to AI models (prompts) as code: typed, compiled to TypeScript or Python, versioned."
+  description="Case study of PromptLang, a language for writing prompts as code: problem, architecture, measures against a point of comparison, defects, decisions."
+>
+  <Brief
+    does="It turns a prompt into a checked file, compiled to TypeScript or Python code, and flags when a new version breaks the code of those who use it."
+    measured="How solid the tests of the language reader and of the version check are, and how often an automatic reviewer, the AI linter, is right when it points at writing defects in prompts."
+    defect="Most of the AI linter’s flags are wrong, barely better than flagging everything. What I did about it: I measured it against that point of comparison, published it, and the linter is presented as an aid to the human reviewer, not as a check."
+    figures={[
+      { id: "promptlang.mutation_score", caption: "of the errors deliberately introduced into the language reader and the version check, caught by the tests" },
+      { id: "promptlang.linter_recall", caption: "designed defects found by the AI linter; flagging everything finds them all" },
+      { id: "promptlang.linter_precision_reviewed", caption: "AI linter flags judged correct in human review", defect: true },
+    ]}
+  />
+
+  <CaseSection n={1} id="probleme" title="The problem" lead="In three sentences, why this project exists.">
+    <p>
+      Prompts live as scraps of text scattered through the code: nothing checks their inputs, nothing tests them, nothing versions them. When a prompt breaks in production, a customer is the one who
+      tells you. PromptLang turns them into files that are checked, compiled, tested and versioned like code.
+    </p>
+  </CaseSection>
+
+  <CaseSection n={2} id="construit" title="What I built" lead="What becomes of a prompt file, from reading it to the three uses that come out of it.">
+    <Diagram
+      id="promptlang-pipeline"
+      title="What becomes of a .prompt file"
+      steps={[
+        { title: ".prompt file", lines: ["typed parameters, output, target model"] },
+        { title: "Reading", lines: ["cut into the language’s words,", "then the syntax tree"] },
+      ]}
+      outcomes={[
+        { title: "Generate", lines: ["typed code", "TypeScript", "and Python"] },
+        { title: "Versions", lines: ["does it", "break the", "caller?"] },
+        { title: "Review", lines: ["defects", "in the", "prompt text"] },
+      ]}
+      caption="The file once read serves three independent uses. The generated code checks every model response against the declared output type; the version check compares the prompt with its previous version; the review flags writing defects."
+    />
+    <p>
+      A <code>.prompt</code> file declares what the prompt receives, what it must return and the model it targets. The compiler derives a typed function from it. The version check compares this contract
+      with the previous version in Git and refuses a change that breaks the calling code without a major version number. The AI linter reads the prompt’s text before the human review. The
+      <code>@promptlang/core</code> package is published on npm, the JavaScript package registry, and Praxis uses it to read its own prompts.
+    </p>
+  </CaseSection>
+
+  <CaseSection
+    n={3}
+    id="mesures"
+    title="Measures"
+    lead="What the tests and the AI linter are worth, measured against a very simple point of comparison: flagging everything."
+  >
+    <p>
+      To measure the tests, small errors are deliberately introduced into the code (a reversed condition, a changed value) and we check whether the tests fail: they catch <Figure
+        id="promptlang.mutation_score"
+        where="prose"
+      />, on the language reader and the version check only.
+    </p>
+    <p>
+      On test prompts with known defects, the AI linter finds <Figure id="promptlang.linter_recall" where="prose" /> of them. But a linter that flags everything, on every prompt, finds them all: <Figure
+        id="promptlang.baseline_report_all_recall"
+        where="prose"
+      />. The difference lies in correctness, and the gap is modest: <Figure id="promptlang.linter_precision_test" where="prose" /> of the linter’s flags point at a real defect, against <Figure
+        id="promptlang.baseline_report_all_precision"
+        where="prose"
+      /> for flagging everything, and in human review only <Figure id="promptlang.linter_precision_reviewed" where="prose" defect /> are correct.
+    </p>
+    <MeasuresDetail>
+      <MeasuresTable
+        where="quality"
+        caption="Tests, AI linter, audit"
+        rows={[
+          {
+            id: "promptlang.mutation_score",
+            label: "Errors introduced on purpose, caught by the tests",
+            noInterval: "A count of all the errors introduced into the covered code, not a sample.",
+            reading: "Local run, outside continuous integration, on the language reader and the version check only: neither the compiler nor the execution.",
+          },
+          {
+            id: "promptlang.linter_precision_reviewed",
+            defect: true,
+            reading: "The main defect: in human review, most flags are wrong. Not distinguishable from the bound already published.",
+          },
+          {
+            id: "promptlang.audit_findings",
+            noInterval: "A count, not an estimate.",
+            reading: "Audit of the repository by an AI agent that did not know the project: defects, and one finding about context. Every defect is fixed or refuted in writing.",
+          },
+        ]}
+      />
+      <MeasuresTable
+        where="baseline"
+        caption="AI linter against “flag everything” (test prompts)"
+        ours="AI linter"
+        baseline="Flag everything"
+        rows={[
+          {
+            id: "promptlang.linter_precision_test",
+            base: "promptlang.baseline_report_all_precision",
+            label: "Correctness of the flags",
+            reading: "The gain over a linter that flags every category on every prompt is modest.",
+          },
+          {
+            id: "promptlang.linter_recall",
+            base: "promptlang.baseline_report_all_recall",
+            label: "Defects found",
+            reading: "Flagging everything finds everything: this figure alone does not tell the linter apart from the point of comparison.",
+          },
+        ]}
+      />
+      <p>
+        Correctness on the test prompts counts the flags that land on a designed defect; human review reads flags one by one. Both say the same thing: the AI linter helps the reviewer, it does not
+        replace them (<a href={at("docs/SYSTEM_CARD.md")}>system card</a>).
+      </p>
+    </MeasuresDetail>
+  </CaseSection>
+
+  <CaseSection n={4} id="echecs" title="What did not work, and what I did" lead="What an uncompromising audit found, and what became of each finding.">
+    <p>
+      I had the repository audited by an AI agent that knew nothing about the project, tasked with looking for the flaw. Its verdict: the promises of the project’s front page (the README) went beyond
+      what the code actually did. What I did about it, finding by finding, is in the <a href={at("docs/audit/2026-11-03-f1-follow-up.md")}>audit follow-up</a>.
+    </p>
+    <h3>An AI linter declared shipped, with no point of comparison</h3>
+    <p>
+      That page presented the linter as shipped although its correctness was low and nothing said what it was worth. A linter that flags everything finds every designed defect: finding many proved
+      almost nothing. I published its correctness next to that point of comparison (<a href={pr(29)}>#29</a>), then had flags reviewed by hand; the linter is described as an aid to the reviewer, not
+      as a check.
+    </p>
+    <h3>A typed output never checked</h3>
+    <p>
+      The generated code promised a model response matching a type, without checking it. It now checks it, in TypeScript as in Python, and raises an error otherwise; both languages run on the same
+      responses and must agree (<a href={pr(27)}>#27</a>). The fix started with a failing test.
+    </p>
+    <h3>Tests measured where the risk was not</h3>
+    <p>
+      Measuring the tests with introduced errors covers only the language reader and the version check. The audit found defects outside that scope (compiler, execution, command line, text analysis,
+      spending cap), and one in the version check itself: renaming an exported type was classed as a mere fix (a patch), the smallest version change. That was a choice written in the decision record,
+      and no introduced error reveals a badly chosen rule. The report now lists what it does not cover (<a href={at("docs/mutation/README.md")}>report</a>), and that renaming requires a major version
+      (<a href={pr(25)}>#25</a>).
+    </p>
+  </CaseSection>
+
+  <CaseSection
+    n={5}
+    id="decisions"
+    title="Three decisions"
+    lead="Three architecture choices, each written in a decision record (ADR) with its reasons and consequences: enough to judge the reasoning, not only the result."
+  >
+    <ol class="decisions">
+      <li>
+        <h3>What counts as a prompt’s contract</h3>
+        <p>
+          What the prompt receives (names, types, optional values), what it returns and the model it targets, in a form that ignores the order of parameters and of the values of a closed list. An
+          amendment from the audit adds the names of exported types: renaming a type that the calling code imports requires a major version.
+        </p>
+        <p><a href={at("docs/adr/0002-prompt-interface.md")}>ADR 0002</a></p>
+      </li>
+      <li>
+        <h3>How the version check finds the previous version</h3>
+        <p>
+          The previous version comes from Git: the reference given, otherwise <code>origin/main</code>, otherwise the last version label set in Git (a tag); the current version is the one of the files
+          on disk, so the check runs before a commit as well as in continuous integration. The level required is that of the most serious change, and a file unreadable in the previous version is an
+          error, never a new file.
+        </p>
+        <p><a href={at("docs/adr/0003-semver-check.md")}>ADR 0003</a></p>
+      </li>
+      <li>
+        <h3>The approved cost is a spending cap</h3>
+        <p>
+          Every paid run shows its estimated cost and asks for approval; that estimate becomes a cap. Before every call, the client reserves the call’s maximum cost; a call that would exceed the cap is
+          not sent. The record also writes what the cap does not guarantee: a text more costly to process than expected exceeds the estimate.
+        </p>
+        <p><a href={at("docs/adr/0004-spending-cap.md")}>ADR 0004</a></p>
+      </li>
+    </ol>
+  </CaseSection>
+
+  <CaseSection n={6} id="construction" title="How it is built" lead="For a technical reader: the stack, the tools and the AI linter’s model.">
+    <p>
+      Strict TypeScript on Bun. Tests with <code>bun test</code>, randomly generated tests (fast-check) on the language reader and the version check, errors introduced with Stryker, Biome, knip.
+      Execution with several providers: Anthropic, OpenAI, Ollama or a supplied client. The AI linter calls <code>claude-haiku-5-5</code>. Architecture: <a href={at("docs/architecture.md")}
+        >docs/architecture.md</a
+      >.
+    </p>
+  </CaseSection>
+
+  <CaseSection n={7} id="suite" title="What comes next" lead="What is missing, according to the project’s roadmap; none of it is scheduled.">
+    <ul>
+      <li>Running the tests written in the prompt files: they are read, not run.</li>
+      <li>Measuring the tests of the compiler and of the execution with introduced errors, outside the scope measured today.</li>
+      <li>An AI linter with providers other than Claude, each with its own measurement.</li>
+      <li>Streaming the response as it is written, and editor support (highlighting, completion).</li>
+    </ul>
+    <p><a href={at("docs/roadmap.md")}>Roadmap</a></p>
+  </CaseSection>
+</CaseStudy>

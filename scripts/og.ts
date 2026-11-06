@@ -1,10 +1,10 @@
-// Writes public/og.png, the Open Graph image (1200x630): the home page's headline and the
-// portrait, set with the site's own font subsets and colour tokens. Rendered by Chromium
+// Writes the Open Graph images (1200x630), public/og.png and public/og-en.png: each home page's
+// headline and the portrait, set with the site's own font subsets and colour tokens. Rendered by Chromium
 // through Playwright, so the type is the type of the site. The PNG is committed: browsers render
 // text a little differently across platforms, so CI cannot compare pixels. It compares inputs:
-// src/data/og.json records a hash of everything the image is drawn from and the PNG's own hash,
+// src/data/og.json records a hash of everything the images are drawn from and each PNG's own hash,
 // and og.test.ts fails when either no longer matches, i.e. when `npm run og` was not re-run.
-// tests/seo.spec.ts checks that the words drawn are the home page's.
+// tests/seo.spec.ts checks that the words drawn are those of the home page in the same language.
 import { createHash } from "node:crypto";
 import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
@@ -12,6 +12,7 @@ import { join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { chromium } from "@playwright/test";
 import config from "../astro.config.mjs";
+import type { Lang } from "../src/lib/i18n.ts";
 import { OG } from "../src/lib/og.ts";
 
 const root = new URL("../", import.meta.url);
@@ -27,12 +28,12 @@ export function inputsHash(): string {
   return sha256(parts.join("\n"));
 }
 
-export const pngHash = () => sha256(readFileSync(new URL(OG.file, root)));
+export const pngHash = (lang: Lang) => sha256(readFileSync(new URL(OG[lang].file, root)));
 
-function page(): string {
+function page(lang: Lang): string {
   const portrait = `data:image/jpeg;base64,${readFileSync(new URL("src/assets/matteo.jpg", root)).toString("base64")}`;
   return `<!doctype html>
-<html lang="fr">
+<html lang="${lang}">
 <head>
 <meta charset="utf-8">
 <link rel="stylesheet" href="${asset("src/styles/tokens.css")}">
@@ -59,7 +60,7 @@ function page(): string {
 </head>
 <body>
   <div class="who"><img src="${portrait}" alt=""><div><div class="name">${escape(OG.name)}</div><div class="role">${escape(OG.role)}</div></div></div>
-  <h1>${escape(OG.headline)}</h1>
+  <h1>${escape(OG[lang].headline)}</h1>
   <div class="site">${escape(new URL(config.site!).host)}</div>
 </body>
 </html>`;
@@ -67,19 +68,21 @@ function page(): string {
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const dir = mkdtempSync(join(tmpdir(), "og-"));
-  const html = join(dir, "og.html");
-  writeFileSync(html, page());
   const browser = await chromium.launch();
   try {
-    const tab = await browser.newPage({ viewport: { width: OG.width, height: OG.height }, deviceScaleFactor: 1, colorScheme: "light" });
-    await tab.goto(pathToFileURL(html).href);
-    await tab.evaluate(() => document.fonts.ready);
-    // A face that failed to load would leave a fallback font in the image without an error.
-    const missing = await tab.evaluate(() => [...document.fonts].filter((f) => f.status !== "loaded").map((f) => f.family));
-    if (missing.length) throw new Error(`fonts not loaded: ${missing.join(", ")}`);
-    await tab.screenshot({ path: fileURLToPath(new URL(OG.file, root)), type: "png" });
-    writeFileSync(RECORD, `${JSON.stringify({ inputs: inputsHash(), png: pngHash() }, null, 2)}\n`);
-    console.log(`${OG.file}: ${OG.width}x${OG.height}`);
+    for (const lang of ["fr", "en"] as const) {
+      const html = join(dir, `og-${lang}.html`);
+      writeFileSync(html, page(lang));
+      const tab = await browser.newPage({ viewport: { width: OG.width, height: OG.height }, deviceScaleFactor: 1, colorScheme: "light" });
+      await tab.goto(pathToFileURL(html).href);
+      await tab.evaluate(() => document.fonts.ready);
+      // A face that failed to load would leave a fallback font in the image without an error.
+      const missing = await tab.evaluate(() => [...document.fonts].filter((f) => f.status !== "loaded").map((f) => f.family));
+      if (missing.length) throw new Error(`fonts not loaded: ${missing.join(", ")}`);
+      await tab.screenshot({ path: fileURLToPath(new URL(OG[lang].file, root)), type: "png" });
+      console.log(`${OG[lang].file}: ${OG.width}x${OG.height}`);
+    }
+    writeFileSync(RECORD, `${JSON.stringify({ inputs: inputsHash(), png: { fr: pngHash("fr"), en: pngHash("en") } }, null, 2)}\n`);
   } finally {
     await browser.close();
     rmSync(dir, { recursive: true });

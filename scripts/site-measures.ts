@@ -1,6 +1,7 @@
 import { execFileSync } from "node:child_process";
 import { readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { createRequire } from "node:module";
+import { twin } from "../src/lib/i18n.ts";
 import { builtPages, urlPath } from "./built-pages.ts";
 import { buildMeasures, type Lhr, type ManifestEntry, transferWithUnrequested, unrequested } from "./site-measures-lib.ts";
 
@@ -18,8 +19,10 @@ const manifest = readJson<ManifestEntry[]>(MANIFEST);
 const { budgets } = createRequire(import.meta.url)("../lighthouserc.cjs") as { budgets: { transferBytes: number } };
 const assets = readdirSync("dist/_astro").map((name) => ({ name, bytes: statSync(`dist/_astro/${name}`).size }));
 // Lighthouse asserts the budget on what a run requested; a lazy image below what it scrolled to
-// is added here at its heaviest variant, so the home page stays in budget once fully scrolled.
-for (const run of manifest.filter((r) => urlPath(new URL(r.url).pathname.slice(1)) === "/")) {
+// is added here at its heaviest variant, so each home page (French and English, same cards) stays
+// in budget once fully scrolled.
+const homes = ["/", twin("/")];
+for (const run of manifest.filter((r) => homes.includes(urlPath(new URL(r.url).pathname.slice(1))))) {
   const lhr = readJson<Lhr>(run.jsonPath);
   const missing = unrequested(lhr, stems);
   const bound = transferWithUnrequested(lhr, missing, assets);

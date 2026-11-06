@@ -1,16 +1,17 @@
 ---
+import { langOf } from "../lib/i18n.ts";
 import { measure } from "../lib/measures.ts";
 
 interface Props {
   id: string;
   /** Where the figure sits on the page: keeps element ids unique when a measure appears twice. */
   where: string;
-  lang?: "fr" | "en";
   /** Defects are shown in the defect colour, at the same level as measures. */
   defect?: boolean;
 }
 
-const { id, where, lang = "fr", defect = false } = Astro.props;
+const { id, where, defect = false } = Astro.props;
+const lang = langOf(Astro.url.pathname);
 const tip = `src-${where}-${id.replaceAll(".", "-")}`;
 const m = measure(id);
 // French puts a no-break space before the colon; the mono subset has U+00A0, not U+202F.

@@ -1,0 +1,501 @@
+---
+import { Picture } from "astro:assets";
+import Base from "../layouts/Base.astro";
+import Figure from "./Figure.astro";
+import VerityDemo from "./VerityDemo.astro";
+import Projects from "./Projects.astro";
+import Bio from "./Bio.astro";
+import LangSwitch from "./LangSwitch.astro";
+import { langOf } from "../lib/i18n.ts";
+import portrait from "../assets/matteo.jpg";
+
+const repo = (name: string) => `https://github.com/matteogallo-ai/${name}`;
+// The home page in either language (src/pages/index.astro, src/pages/en/index.astro): one layout,
+// one style sheet, the words of the page's language.
+const fr = langOf(Astro.url.pathname) === "fr";
+const id = fr ? { projects: "projets", method: "methode", about: "a-propos" } : { projects: "projects", method: "method", about: "about" };
+---
+
+<Base
+  title="Matteo Gallo — Software & AI Engineer"
+  description={fr
+    ? "Matteo Gallo, Software & AI Engineer à Lausanne. Je construis des produits IA qu’on peut vérifier : complets, de l’interface à la production, chaque mesure publiée, défauts compris."
+    : "Matteo Gallo, Software & AI Engineer in Lausanne. I build AI products you can verify: complete, from the interface to production, every measure published, defects included."}
+  serif
+>
+  <nav class="nav" aria-label={fr ? "Principale" : "Main"}>
+    <ul class="glass">
+      <li><a href={`#${id.projects}`}>{fr ? "Projets" : "Projects"}</a></li>
+      <li><a href={`#${id.method}`}>{fr ? "Méthode" : "Method"}</a></li>
+      <li><a href={`#${id.about}`}>{fr ? "À propos" : "About"}</a></li>
+      <li class="lang"><LangSwitch /></li>
+      <li class="spy" data-spy-dot hidden aria-hidden="true"></li>
+    </ul>
+  </nav>
+
+  <section class="container hero" aria-labelledby="claim">
+    <div class="intro">
+      <div class="who">
+        <Picture src={portrait} formats={["avif", "webp"]} width={56} height={56} densities={[1, 2]} alt={fr ? "Portrait de Matteo Gallo" : "Portrait of Matteo Gallo"} class="portrait" loading="eager" fetchpriority="high" />
+        <p>
+          <span class="name">Matteo Gallo</span>
+          <span class="role">Software &amp; AI Engineer · Lausanne</span>
+          <span class="status"><span class="dot" aria-hidden="true"></span>{fr ? "Disponible" : "Available"}</span>
+        </p>
+      </div>
+      {
+        fr ? (
+          <>
+            <h1 id="claim">Je construis des produits IA qu’on peut vérifier.</h1>
+            <p class="message">
+              Des produits complets, de l’interface à la production. Chaque mesure est publiée, <mark>défauts compris</mark>.
+            </p>
+          </>
+        ) : (
+          <>
+            <h1 id="claim">I build AI products you can verify.</h1>
+            <p class="message">
+              Complete products, from the interface to production. Every measure is published, <mark>defects included</mark>.
+            </p>
+          </>
+        )
+      }
+      <p class="actions">
+        <a class="button primary" href={`#${id.projects}`}>{fr ? "Voir les projets" : "See the projects"}</a>
+        <a class="button" href="#contact">{fr ? "Écrire un e-mail" : "Write an e-mail"}</a>
+      </p>
+    </div>
+    <div class="stage">
+      <VerityDemo />
+    </div>
+  </section>
+
+  <section class="container band" aria-label={fr ? "Verity en trois chiffres" : "Verity in three figures"}>
+    <p class="cell">
+      <Figure id="verity.hallucination_rate" where="band" />
+      <span>{fr ? "réponses avec une hallucination, selon un juge LLM, parmi les questions avec réponse auxquelles Verity a répondu" : "answers with a hallucination, according to an LLM judge, among the answerable questions Verity answered"}</span>
+    </p>
+    <p class="cell">
+      <Figure id="verity.refusal_recall" where="band" />
+      <span>{fr ? "questions sans réponse correctement refusées" : "unanswerable questions correctly refused"}</span>
+    </p>
+    <p class="cell">
+      <Figure id="verity.unanswerable_answered" where="band" defect />
+      <span class="defect-label">{fr ? "questions sans réponse auxquelles il a quand même répondu : son défaut principal" : "unanswerable questions it answered anyway: its main defect"}</span>
+    </p>
+  </section>
+
+  <Projects />
+
+  <section class="container section reveal" id={id.method} aria-labelledby={`${id.method}-title`}>
+    <p class="mono rule-label">+ 02</p>
+    <h2 id={`${id.method}-title`}>{fr ? "Méthode" : "Method"}</h2>
+    <ul class="rules">
+      <li class="card">
+        <h3>{fr ? <>Revue humaine <span class="word">pré-enregistrée</span>, publiée telle quelle</> : <><span class="word">Pre-registered</span> human review, published as is</>}</h3>
+        <p>{fr ? "Échantillon tiré avec une graine fixe, commité avant toute annotation :" : "Sample drawn with a fixed seed, committed before any annotation:"} <Figure id="promptlang.linter_precision_reviewed" where="method" defect /> {fr ? "signalements jugés justes, publié avec sa limite." : "flags judged correct, published with its limit."}</p>
+        <p class="links"><a class="card-link" href="https://github.com/matteogallo-ai/promptlang/pull/39">PR promptlang#39</a></p>
+      </li>
+      <li class="card">
+        <h3>{fr ? "Lire les vraies sorties, pas seulement les tests" : "Read the real outputs, not only the tests"}</h3>
+        <p>{fr ? "Ma relecture d’un briefing Praxis a trouvé des estimations présentées comme des faits. Validateur corrigé, relecture publiée." : "My review of a Praxis briefing found estimates presented as facts. Validator fixed, review published."}</p>
+        <p class="links"><a class="card-link" href="https://github.com/matteogallo-ai/praxis/pull/47">PR praxis#47</a></p>
+      </li>
+      <li class="card">
+        <h3>{fr ? "Audit à froid, chaque constat suivi par écrit" : "Cold audit, every finding followed up in writing"}</h3>
+        <p>{fr ? "Un agent sans contexte a audité PromptLang :" : "An agent with no context audited PromptLang:"} <Figure id="promptlang.audit_findings" where="method" /> {fr ? "constats, chacun corrigé, réfuté ou laissé ouvert." : "findings, each fixed, refuted or left open."}</p>
+        <p class="links"><a class="card-link" href="https://github.com/matteogallo-ai/promptlang/pull/32">PR promptlang#32</a></p>
+      </li>
+    </ul>
+    <p><a href={repo("how-i-build")}>{fr ? "Toutes les règles et leurs incidents : how-i-build" : "All the rules and their incidents: how-i-build"}</a></p>
+  </section>
+
+  <section class="container section closing reveal" id={id.about} aria-label={fr ? "À propos et contact" : "About and contact"}>
+    <div class="about">
+      <p class="mono rule-label">+ 03</p>
+      <h2>{fr ? "À propos" : "About"}</h2>
+      <Bio />
+    </div>
+    <div class="contact" id="contact">
+      <h2>{fr ? "Un poste d’ingénieur logiciel et IA en Suisse romande ? Écrivez-moi." : "A software and AI engineering role in French-speaking Switzerland? Write to me."}</h2>
+      <p class="email">
+        <a class="address" href="mailto:matteogallo.office@gmail.com" data-copy>matteogallo.office@gmail.com</a>
+        <span class="copied" id="copy-status" role="status" data-copied={fr ? "Copié" : "Copied"} data-failed={fr ? "Copie impossible : l’adresse est sélectionnée" : "Copy failed: the address is selected"}></span>
+      </p>
+      <p class="hint" id="copy-hint" data-copy-hint hidden>{fr ? "Cliquez sur l’adresse pour la copier." : "Click the address to copy it."}</p>
+      <p class="actions">
+        <a class="button primary" href="mailto:matteogallo.office@gmail.com">{fr ? "Écrire" : "Write"}</a>
+        <a class="button" href="https://www.linkedin.com/in/matteogallo-ai">LinkedIn</a>
+        <a class="button" href="https://github.com/matteogallo-ai">GitHub</a>
+      </p>
+    </div>
+  </section>
+
+  <script>
+    import { countOnSight } from "../scripts/count.ts";
+    import { spyOn } from "../scripts/spy.ts";
+    import { copyOnClick } from "../scripts/copy.ts";
+    import { revealOnSight } from "../scripts/reveal.ts";
+    revealOnSight(document.querySelectorAll<HTMLElement>(".reveal"));
+    const nav = document.querySelector<HTMLElement>(".nav");
+    if (nav) spyOn(nav);
+    // The address copies itself on click; without this script it stays a mailto link.
+    const address = document.querySelector<HTMLAnchorElement>("a[data-copy]");
+    const status = document.getElementById("copy-status");
+    if (address && status && navigator.clipboard) {
+      // The page gives the outcomes in its language.
+      copyOnClick(address, status, { copied: status.dataset["copied"] ?? "", failed: status.dataset["failed"] ?? "" });
+      document.querySelector<HTMLElement>("[data-copy-hint]")?.removeAttribute("hidden");
+    }
+    // The band's three figures count up once, as they come into view (SPEC §4).
+    countOnSight(document.querySelectorAll<HTMLElement>(".band .value"));
+  </script>
+
+  <footer class="container footer">
+    <p>{fr ? "Code sous licence MIT, contenu tous droits réservés." : "Code under the MIT licence, content all rights reserved."} <a href={repo("site")}>{fr ? "Code du site" : "Site code"}</a> · <a href={fr ? "/colophon/" : "/en/colophon/"}>Colophon</a></p>
+  </footer>
+</Base>
+
+
+<style>
+  .nav {
+    position: sticky;
+    top: 0.75rem;
+    z-index: 10;
+    display: flex;
+    justify-content: center;
+    margin-top: 0.75rem;
+    pointer-events: none;
+  }
+
+  .nav ul {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.25rem 1rem;
+    margin: 0;
+    padding: 0.5rem 1.1rem;
+    list-style: none;
+    font-size: var(--step-14);
+    border-radius: 999px;
+    box-shadow: 0 0 0 1px var(--glass-edge), 0 8px 24px -16px rgb(17 17 17 / 0.4);
+    pointer-events: auto;
+  }
+
+  .nav ul {
+    position: relative;
+  }
+
+  /* The language selector closes the pill, set off from the section links by a rule. */
+  .nav .lang {
+    padding-left: 1rem;
+    border-left: 1px solid var(--rule);
+  }
+
+  /* The underline draws itself from the left on hover; it stays drawn on the section in view. */
+  .nav a {
+    position: relative;
+    text-decoration: none;
+  }
+
+  .nav a::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -0.1rem;
+    height: 1px;
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform var(--dur-move) var(--ease-out);
+  }
+
+  .nav a:hover::after {
+    transform: scaleX(1);
+  }
+
+  /* The dot under the link of the section in view (src/scripts/spy.ts): it travels by
+     translateX from the list's left edge, so only its transform moves. */
+  .spy {
+    position: absolute;
+    left: -2px;
+    bottom: 0.2rem;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--proof);
+    transition: transform var(--dur-move) var(--ease-in-out);
+  }
+
+  .hero {
+    display: grid;
+    gap: 2.5rem;
+    padding-block: 2.5rem 3rem;
+  }
+
+  @media (min-width: 64rem) {
+    .hero {
+      grid-template-columns: 5fr 7fr;
+      gap: var(--gutter) 3rem;
+      align-items: center;
+      padding-top: 1rem;
+    }
+  }
+
+  /* Who, in small type: the claim below is the headline. */
+  .who {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .who :global(.portrait) {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    flex: none;
+  }
+
+  .who p {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.1rem 0.75rem;
+    margin: 0;
+    font-size: var(--step-14);
+  }
+
+  .name {
+    flex-basis: 100%;
+    font-weight: 600;
+  }
+
+  .role,
+  .status {
+    color: var(--graphite);
+  }
+
+  .status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .dot {
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    background: var(--proof);
+  }
+
+  h1 {
+    margin: 1.75rem 0 0;
+    font-size: var(--step-44);
+    line-height: 1.02;
+    letter-spacing: var(--track-44);
+    text-wrap: balance;
+  }
+
+  @media (min-width: 64rem) {
+    h1 {
+      font-size: var(--step-68);
+      letter-spacing: var(--track-68);
+    }
+  }
+
+  .message {
+    margin: 1.25rem 0 0;
+    font-size: var(--step-21);
+    line-height: 1.45;
+    color: var(--graphite);
+    max-width: 30em;
+  }
+
+  mark {
+    background: var(--proof-wash);
+    color: var(--ink);
+    padding-inline: 0.15em;
+    white-space: nowrap;
+  }
+
+  /* A compound kept on one line: "pré-" alone at a line end reads as a cut word. */
+  .word {
+    white-space: nowrap;
+  }
+
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin: 1.75rem 0 0;
+  }
+
+  .band {
+    display: grid;
+    gap: var(--gutter);
+    padding-block: 2rem;
+    border-block: 1px dotted var(--rule);
+  }
+
+  @media (min-width: 48rem) {
+    .band {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  .cell {
+    margin: 0;
+    font-size: var(--step-14);
+    color: var(--graphite);
+  }
+
+  .cell :global(.figure) {
+    display: block;
+    width: max-content;
+  }
+
+  .cell :global(.value) {
+    display: block;
+    font-size: var(--step-44);
+    letter-spacing: var(--track-44);
+    border-bottom: 0;
+  }
+
+  .defect-label {
+    color: var(--defect);
+  }
+
+  figcaption {
+    margin-top: 0.4rem;
+    font-size: var(--step-12);
+    color: var(--graphite);
+  }
+
+  .links {
+    font-size: var(--step-14);
+  }
+
+  /* Three rules side by side: each a short claim, the incident behind it, its PR. */
+  .rules {
+    display: grid;
+    gap: var(--gutter);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  @media (min-width: 48rem) {
+    .rules {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  .rules li {
+    display: flex;
+    flex-direction: column;
+    padding: 1.25rem;
+  }
+
+  /* The paragraph holding a figure sits above the stretched PR link (.card, global.css), so the
+     figure keeps its own link and proof tooltip. */
+  .rules li > p:has(> :global(.figure)) {
+    z-index: 1;
+  }
+
+  .rules h3 {
+    font-size: var(--step-21);
+    line-height: 1.25;
+    letter-spacing: -0.01em;
+  }
+
+  .rules p {
+    margin: 0.6rem 0 0;
+    font-size: var(--step-14);
+    color: var(--graphite);
+  }
+
+  /* The PR link sits at the foot of each card, level across the row. */
+  .rules .links {
+    margin-top: auto;
+    padding-top: 0.75rem;
+  }
+
+  /* About and contact close the page together: the bio on the left, the ask on the right. */
+  .closing {
+    display: grid;
+    gap: 3rem var(--gutter);
+  }
+
+  @media (min-width: 64rem) {
+    .closing {
+      grid-template-columns: 1fr 1fr;
+      align-items: start;
+    }
+
+    .contact {
+      padding-top: 2.4rem;
+    }
+  }
+
+  .contact h2 {
+    font-size: var(--step-21);
+    line-height: 1.2;
+    text-wrap: balance;
+  }
+
+  .email {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.25rem 0.75rem;
+    margin: 1rem 0 0;
+  }
+
+  /* The address, a link or (with the script) a button that copies it. */
+  .address {
+    padding: 0;
+    border: 0;
+    font-size: var(--step-28);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    text-align: left;
+    color: var(--ink);
+    background: none;
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.2em;
+    text-decoration-color: var(--rule);
+    cursor: pointer;
+    /* The address is one unbroken word, wider than a 375 px screen at this size. */
+    overflow-wrap: anywhere;
+    transition: text-decoration-color var(--dur-hover) var(--ease-out);
+  }
+
+  .address:hover {
+    text-decoration-color: var(--ink);
+  }
+
+  .copied {
+    font-size: var(--step-14);
+    color: var(--proof-text);
+  }
+
+  .hint {
+    margin: 0.25rem 0 0;
+    font-size: var(--step-14);
+    color: var(--graphite);
+  }
+
+  .footer {
+    margin-top: 4rem;
+    padding-block: 2rem 3rem;
+    border-top: 1px dotted var(--rule);
+    font-size: var(--step-14);
+    color: var(--graphite);
+  }
+
+  .footer p {
+    margin: 0.25rem 0;
+  }
+</style>

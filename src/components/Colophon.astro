@@ -1,0 +1,266 @@
+---
+import Base from "../layouts/Base.astro";
+import { kilo, site, siteBudgets, siteSource } from "../lib/colophon.ts";
+import { langOf } from "../lib/i18n.ts";
+import { decimal } from "../lib/measures.ts";
+import { route } from "../lib/sitemap.ts";
+import LangSwitch from "./LangSwitch.astro";
+
+// The Colophon in either language (src/pages/colophon.astro, src/pages/en/colophon.astro).
+const lang = langOf(Astro.url.pathname);
+const fr = lang === "fr";
+
+const repo = "https://github.com/matteogallo-ai/site";
+// Files linked at the commit the measures were taken on: the page describes the site as it was measured.
+const at = (path: string) => `${repo}/blob/${site.commit}/${path}`;
+const measuredOn = new Intl.DateTimeFormat(fr ? "fr-CH" : "en-GB", { day: "numeric", month: "long", year: "numeric", timeZone: "Europe/Zurich" }).format(new Date(site.generatedAt));
+const pageName = (path: string) => (path === "/" ? (fr ? "Accueil" : "Home") : path);
+// Pages built now but absent from the measured commit: said by name, so the measures are not read as the whole site's.
+const measured = new Set(site.pages.map((p) => p.path));
+const unmeasured = Object.keys(import.meta.glob("../pages/**/*.astro"))
+  .map((file) => file.replace(/^\.\.\/pages\//, "./"))
+  .map((file) => (file.endsWith("404.astro") ? `/${file.slice(2, -".astro".length)}.html` : route(file)!))
+  .filter((path) => !measured.has(path))
+  .sort();
+---
+
+<Base
+  title="Colophon — Matteo Gallo"
+  description={fr
+    ? "Comment ce site est construit : outils, budgets de poids et de vitesse, mesures réelles, accessibilité, ce qui est confié à des agents de code et ce qui est relu."
+    : "How this site is built: tools, weight and speed budgets, real measures, accessibility, what is left to coding agents and what is reviewed."}
+>
+  <nav class="container crumbs" aria-label={fr ? "Fil d’Ariane" : "Breadcrumb"}>
+    <a href={fr ? "/" : "/en/"}>Matteo Gallo</a>
+    <LangSwitch />
+  </nav>
+
+  <header class="container intro">
+    <h1>Colophon</h1>
+    <p class="lead">{fr ? "Comment ce site est construit, ce qu’il pèse, et qui fait quoi." : "How this site is built, what it weighs, and who does what."}</p>
+  </header>
+
+  <section class="container section" aria-labelledby="construction">
+    <p class="mono rule-label">+ 01</p>
+    <h2 id="construction">Construction</h2>
+    {
+      fr ? (
+        <>
+        <p>
+          Chaque page est préparée d’avance, en HTML, par Astro, à partir de code TypeScript vérifié strictement. Le JavaScript se limite à la démo de Verity, à quelques interactions de l’accueil et, sur
+          chaque page, à quelques lignes qui vérifient si le navigateur sait dessiner l’effet de verre. Le site est hébergé sur Cloudflare Pages et publié à chaque fusion sur la branche principale.
+        </p>
+        <p>
+          Les polices, Inter, Source Serif et JetBrains Mono, sont hébergées avec le site et réduites aux seuls caractères qu’il affiche. Aucun traceur, aucun formulaire. Chaque chiffre affiché sur un projet
+          vient d’un fichier publié dans son dépôt, à un commit précis, et la CI le compare à sa source à chaque modification.
+        </p>
+        </>
+      ) : (
+        <>
+          <p>
+            Every page is prepared in advance, as HTML, by Astro, from strictly checked TypeScript code. JavaScript is limited to the Verity demo, a few interactions on the home page and, on
+            every page, a few lines that check whether the browser can draw the glass effect. The site is hosted on Cloudflare Pages and published on every merge into the main branch.
+          </p>
+          <p>
+            The fonts, Inter, Source Serif and JetBrains Mono, are hosted with the site and cut down to the characters it displays. No tracker, no form. Every figure shown for a project comes
+            from a file published in its repository, at a precise commit, and CI compares it with its source on every change.
+          </p>
+        </>
+      )
+    }
+    <p><a href={repo}>{fr ? "Code du site" : "Site code"}</a></p>
+  </section>
+
+  <section class="container section" aria-labelledby="budgets">
+    <p class="mono rule-label">+ 02</p>
+    <h2 id="budgets">Budgets</h2>
+    <p>{fr ? "La CI échoue dès qu’une page dépasse un de ces seuils, mesurés par Lighthouse sur un téléphone simulé :" : "CI fails as soon as a page exceeds one of these thresholds, measured by Lighthouse on a simulated phone:"}</p>
+    <dl class="rows">
+      {
+        siteBudgets(lang).map((b) => (
+          <div>
+            <dt>{b.label}</dt>
+            <dd>{b.limit}</dd>
+          </div>
+        ))
+      }
+    </dl>
+    <p class="note">
+      {fr
+        ? "Le poids est compté compressé en gzip, un peu plus lourd que ce que Cloudflare envoie réellement : le budget est donc plus strict que ce que reçoit le lecteur. Seuils :"
+        : "Weight is counted gzip-compressed, a little heavier than what Cloudflare actually sends: the budget is therefore stricter than what the reader receives. Thresholds:"}{" "}
+      <a href={`${repo}/blob/main/lighthouserc.cjs`}>lighthouserc.cjs</a>.
+    </p>
+  </section>
+
+  <section class="container section" aria-labelledby="mesures">
+    <p class="mono rule-label">+ 03</p>
+    <h2 id="mesures">{fr ? "Mesures réelles" : "Real measures"}</h2>
+    <p>
+      {fr ? `Ce que la CI a mesuré le ${measuredOn}, sur le commit` : `What CI measured on ${measuredOn}, on commit`}{" "}
+      <a href={`${repo}/commit/${site.commit}`}><span class="mono">{site.commit.slice(0, 7)}</span></a>{fr ? " : médiane de " : ": median of "}{site.lighthouse.runsPerPage}{fr ? " passages de Lighthouse par page (" : " Lighthouse runs per page ("}<a href={siteSource.run}>{fr ? "exécution CI" : "CI run"}</a>).
+    </p>
+    {
+      site.pages.map((p) => (
+        <section class="page" aria-label={pageName(p.path)}>
+          <h3>{pageName(p.path)}</h3>
+          <dl class="rows">
+            <div>
+              <dt>{fr ? "Poids transféré" : "Weight transferred"}</dt>
+              <dd class="mono">{kilo(p.transferBytes, lang)}</dd>
+            </div>
+            <div>
+              <dt>{fr ? "Polices" : "Fonts"}</dt>
+              <dd class="mono">{kilo(p.fontBytes, lang)}</dd>
+            </div>
+            <div>
+              <dt>{fr ? "Lighthouse : performance, accessibilité, bonnes pratiques, référencement" : "Lighthouse: performance, accessibility, best practices, SEO"}</dt>
+              <dd class="mono">{[p.scores.performance, p.scores.accessibility, p.scores.bestPractices, p.scores.seo].join(" · ")}</dd>
+            </div>
+            <div>
+              <dt>{fr ? "Affichage du plus grand élément (LCP)" : "Largest Contentful Paint (LCP)"}</dt>
+              <dd class="mono">{decimal(p.lcpMs / 1000, 2, lang)}&nbsp;s</dd>
+            </div>
+            <div>
+              <dt>{fr ? "Décalage de la mise en page (CLS)" : "Cumulative Layout Shift (CLS)"}</dt>
+              <dd class="mono">{decimal(p.cls, 3, lang)}</dd>
+            </div>
+          </dl>
+        </section>
+      ))
+    }
+    {
+      unmeasured.length > 0 && (
+        <p class="note">
+          {fr ? "Pages publiées après ce commit, donc absentes de cette mesure :" : "Pages published after this commit, so absent from this measure:"} <span class="mono">{unmeasured.join(", ")}</span>.{" "}
+          {fr
+            ? "La CI les mesure à chaque modification, mais la page ne montre que la mesure enregistrée dans le dépôt."
+            : "CI measures them on every change, but the page shows only the measure recorded in the repository."}
+        </p>
+      )
+    }
+  </section>
+
+  <section class="container section" aria-labelledby="accessibilite">
+    <p class="mono rule-label">+ 04</p>
+    <h2 id="accessibilite">{fr ? "Accessibilité" : "Accessibility"}</h2>
+    <ul>
+      <li>{fr ? "Les couleurs de texte sont vérifiées contre leur fond par un test : contraste AA, en clair comme en sombre." : "Text colours are checked against their background by a test: AA contrast, in light and dark mode."}</li>
+      <li>{fr ? "Le site se parcourt au clavier, avec un focus visible et un lien pour sauter au contenu." : "The site can be browsed with the keyboard, with a visible focus and a link to skip to the content."}</li>
+      <li>{fr ? "Le site suit les réglages du système : mode sombre, mouvement réduit, transparence réduite." : "The site follows the system settings: dark mode, reduced motion, reduced transparency."}</li>
+      <li>{fr ? "À chaque modification, axe contrôle chaque page en clair et en sombre, et un test vérifie que les polices savent dessiner chaque caractère affiché." : "On every change, axe checks every page in light and dark mode, and a test checks that the fonts can draw every character displayed."}</li>
+    </ul>
+  </section>
+
+  <section class="container section" aria-labelledby="agents">
+    <p class="mono rule-label">+ 05</p>
+    <h2 id="agents">{fr ? "Agents et relecture" : "Agents and review"}</h2>
+    {
+      fr ? (
+        <>
+        <p>
+          Le code, les tests et les premières versions des textes sont écrits par des agents de code (Claude Code), sous des règles écrites dans le dépôt : un test qui échoue avant chaque correction, aucun chiffre
+          sans source, aucune réussite annoncée sans la commande qui la prouve (<a href={at("CLAUDE.md")}>règles des agents</a>).
+        </p>
+        <p>
+          Chaque modification passe par une relecture indépendante (un second agent, sans le contexte du premier), puis je relis le rapport et l’aperçu, avec l’aide d’un assistant IA, avant de la fusionner
+          moi-même. Je suis seul à fusionner sur la branche principale, que des règles GitHub protègent. Ce que la machine vérifie mieux que moi, elle le vérifie à chaque fois : budgets,
+          accessibilité, liens, et chaque chiffre comparé à sa source.
+        </p>
+        </>
+      ) : (
+        <>
+          <p>
+            The code, the tests and the first drafts of the texts are written by coding agents (Claude Code), under rules written in the repository: a failing test before every fix, no figure
+            without a source, no success announced without the command that proves it (<a href={at("CLAUDE.md")}>agent rules</a>).
+          </p>
+          <p>
+            Every change goes through an independent review (a second agent, without the first one’s context), then I read the report and the preview, with the help of an AI assistant, before
+            merging it myself. I am the only one who merges into the main branch, which GitHub rules protect. What the machine checks better than I do, it checks every time: budgets,
+            accessibility, links, and every figure compared with its source.
+          </p>
+        </>
+      )
+    }
+  </section>
+</Base>
+
+<style>
+  .crumbs {
+    display: flex;
+    justify-content: space-between;
+    padding-top: 1.5rem;
+    font-size: var(--step-14);
+  }
+
+  .intro {
+    padding-top: 3rem;
+  }
+
+  h1 {
+    font-size: var(--step-44);
+    letter-spacing: var(--track-44);
+  }
+
+  .lead {
+    margin: 1rem 0 0;
+    font-size: var(--step-21);
+    color: var(--graphite);
+    max-width: 34em;
+  }
+
+  .section > p,
+  .section > ul {
+    max-width: 68ch;
+  }
+
+  /* The sans subset has no bullet (U+2022): the marker is a dash it has. */
+  .section ul {
+    padding-left: 0;
+    list-style: none;
+  }
+
+  .section li {
+    padding-left: 1.25rem;
+    text-indent: -1.25rem;
+  }
+
+  .section li::before {
+    content: "–";
+    display: inline-block;
+    width: 1.25rem;
+    text-indent: 0;
+  }
+
+  .page {
+    margin-top: 1.5rem;
+  }
+
+  .rows {
+    margin: 1rem 0 0;
+    max-width: 44rem;
+  }
+
+  .rows > div {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.25rem 1.5rem;
+    padding-block: 0.5rem;
+    border-top: 1px solid var(--rule);
+  }
+
+  .rows > div:last-child {
+    border-bottom: 1px solid var(--rule);
+  }
+
+  dd {
+    margin: 0;
+  }
+
+  .note {
+    margin-top: 1rem;
+    font-size: var(--step-14);
+    color: var(--graphite);
+  }
+</style>

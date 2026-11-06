@@ -1,6 +1,8 @@
 ---
 import Base from "./Base.astro";
+import { langOf, twin } from "../lib/i18n.ts";
 import { repoUrl } from "../lib/sources.ts";
+import LangSwitch from "../components/LangSwitch.astro";
 
 interface Props {
   /** Calibre number of the project, as on the home page cards ("01"). */
@@ -15,29 +17,35 @@ interface Props {
 }
 
 const { no, name, summary, description, repo, serif = false } = Astro.props;
+const lang = langOf(Astro.url.pathname);
+const t = {
+  fr: { title: "étude de cas", crumbs: "Fil d’Ariane", home: "/", projects: "/#projets", projectsLabel: "Projets", kind: "Étude de cas", code: "Code :", others: "Autres études de cas", all: "Études de cas" },
+  en: { title: "case study", crumbs: "Breadcrumb", home: "/en/", projects: "/en/#projects", projectsLabel: "Projects", kind: "Case study", code: "Code:", others: "Other case studies", all: "Case studies" },
+}[lang];
 const cases = [
   { no: "01", name: "Verity", href: "/projets/verity/" },
   { no: "02", name: "PromptLang", href: "/projets/promptlang/" },
   { no: "03", name: "Praxis", href: "/projets/praxis/" },
-];
+].map((c) => ({ ...c, href: lang === "fr" ? c.href : twin(c.href) }));
 ---
 
-<Base title={`${name} — étude de cas · Matteo Gallo`} description={description} serif={serif}>
+<Base title={`${name} — ${t.title} · Matteo Gallo`} description={description} serif={serif}>
   <div class="container case">
-    <nav class="crumbs" aria-label="Fil d’Ariane">
-      <a href="/">Matteo Gallo</a>
+    <nav class="crumbs" aria-label={t.crumbs}>
+      <a href={t.home}>Matteo Gallo</a>
       <span aria-hidden="true">/</span>
-      <a href="/#projets">Projets</a>
+      <a href={t.projects}>{t.projectsLabel}</a>
+      <LangSwitch />
     </nav>
     <header class="head">
-      <p class="no"><span class="mono">No. {no}</span> · Étude de cas</p>
+      <p class="no"><span class="mono">No. {no}</span> · {t.kind}</p>
       <h1>{name}</h1>
       <p class="summary">{summary}</p>
-      <p class="code"><a href={repoUrl(repo)}>Code : matteogallo-ai/{repo}</a></p>
+      <p class="code"><a href={repoUrl(repo)}>{t.code} matteogallo-ai/{repo}</a></p>
     </header>
     <slot />
-    <nav class="others" aria-label="Autres études de cas">
-      <p class="rule-label">Études de cas</p>
+    <nav class="others" aria-label={t.others}>
+      <p class="rule-label">{t.all}</p>
       <ul>
         {
           cases.map((c) => (
@@ -69,6 +77,11 @@ const cases = [
     gap: 0.5rem;
     font-size: var(--step-14);
     color: var(--graphite);
+  }
+
+  /* The language selector sits at the end of the line, apart from the path. */
+  .crumbs :global(.langs) {
+    margin-left: auto;
   }
 
   .head {

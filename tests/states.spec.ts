@@ -1,5 +1,6 @@
 import { expect, type Locator, type Page, test } from "@playwright/test";
 import { builtPages } from "../scripts/built-pages.ts";
+import { twin } from "../src/lib/i18n.ts";
 
 // Every interactive element of the home page and the case studies answers the pointer and the
 // keyboard (CRAFT spec §2): its hover style differs from its rest style, keyboard focus draws a
@@ -39,37 +40,81 @@ const changes = (from: Look, to: Look) =>
       .map((p) => ({ property: p, transitioned: node.transitioned.includes(p) })),
   );
 
-/** The interactive elements of the home page and of a case study, by a name used in the test titles. */
-const ELEMENTS: Record<string, { path: string; find: (page: Page) => Locator }> = {
-  "nav link": { path: "/", find: (p) => p.locator(".nav a").first() },
-  "primary button": { path: "/", find: (p) => p.getByRole("link", { name: "Voir les projets" }) },
-  "secondary button": { path: "/", find: (p) => p.getByRole("link", { name: "Écrire un e-mail" }) },
-  "demo tab (not selected)": { path: "/", find: (p) => p.getByRole("tab", { name: "Refuse, faute de preuve" }) },
-  "run source link": { path: "/", find: (p) => p.getByRole("link", { name: "Source du run" }) },
-  "figure in the band": { path: "/", find: (p) => p.locator(".band a.figure").first() },
-  "figure in a card": { path: "/", find: (p) => p.locator(".project a.figure").first() },
-  "project card": { path: "/", find: (p) => p.locator(".project .card-link").first() },
-  "project text link": { path: "/", find: (p) => p.locator(".project .links a:not(.card-link)").first() },
-  "method card": { path: "/", find: (p) => p.locator("#methode .rules .links a").first() },
-  "how-i-build link": { path: "/", find: (p) => p.getByRole("link", { name: /how-i-build/ }) },
-  "bio toggle (not pressed)": { path: "/", find: (p) => p.getByRole("button", { name: "Détaillé" }) },
-  "e-mail address": { path: "/", find: (p) => p.getByRole("button", { name: "matteogallo.office@gmail.com" }) },
-  "write button": { path: "/", find: (p) => p.getByRole("link", { name: "Écrire", exact: true }) },
-  "LinkedIn button": { path: "/", find: (p) => p.getByRole("link", { name: "LinkedIn" }) },
-  "footer link": { path: "/", find: (p) => p.locator(".footer a").first() },
-  ...Object.fromEntries(
-    ["verity", "promptlang", "praxis"].flatMap((slug) => {
-      const path = `/projets/${slug}/`;
+/** The words the tests find elements by, in each language of the site. */
+const W = {
+  fr: {
+    home: "/",
+    see: "Voir les projets",
+    email: "Écrire un e-mail",
+    refuses: "Refuse, faute de preuve",
+    source: "Source du run",
+    detailed: "Détaillé",
+    write: "Écrire",
+    method: "methode",
+    methodLabel: "Méthode",
+    study: "Étude de cas",
+    copied: "Copié ✓",
+    hint: /Cliquez sur l’adresse pour la copier/,
+    failed: "Copie impossible : l’adresse est sélectionnée",
+  },
+  en: {
+    home: "/en/",
+    see: "See the projects",
+    email: "Write an e-mail",
+    refuses: "Refuses, for lack of evidence",
+    source: "Run source",
+    detailed: "Detailed",
+    write: "Write",
+    method: "method",
+    methodLabel: "Method",
+    study: "Case study",
+    copied: "Copied ✓",
+    hint: /Click the address to copy it/,
+    failed: "Copy failed: the address is selected",
+  },
+} as const;
+const LANGS = ["fr", "en"] as const;
+
+/** The interactive elements of the home page and of the case studies, in both languages, by a name used in the test titles. */
+const ELEMENTS: Record<string, { path: string; find: (page: Page) => Locator }> = Object.fromEntries(
+  LANGS.flatMap((lang) => {
+    const w = W[lang];
+    const home: [string, (p: Page) => Locator][] = [
+      ["nav link", (p) => p.locator(".nav a").first()],
+      ["primary button", (p) => p.getByRole("link", { name: w.see })],
+      ["secondary button", (p) => p.getByRole("link", { name: w.email })],
+      ["demo tab (not selected)", (p) => p.getByRole("tab", { name: w.refuses })],
+      ["run source link", (p) => p.getByRole("link", { name: w.source })],
+      ["figure in the band", (p) => p.locator(".band a.figure").first()],
+      ["figure in a card", (p) => p.locator(".project a.figure").first()],
+      ["project card", (p) => p.locator(".project .card-link").first()],
+      ["project text link", (p) => p.locator(".project .links a:not(.card-link)").first()],
+      ["method card", (p) => p.locator(`#${w.method} .rules .links a`).first()],
+      ["how-i-build link", (p) => p.getByRole("link", { name: /how-i-build/ })],
+      ["bio toggle (not pressed)", (p) => p.getByRole("button", { name: w.detailed })],
+      ["e-mail address", (p) => p.getByRole("button", { name: "matteogallo.office@gmail.com" })],
+      ["write button", (p) => p.getByRole("link", { name: w.write, exact: true })],
+      ["LinkedIn button", (p) => p.getByRole("link", { name: "LinkedIn" })],
+      ["footer link", (p) => p.locator(".footer a").first()],
+      ["language link", (p) => p.locator(".langs a")],
+    ];
+    const cases = ["verity", "promptlang", "praxis"].flatMap((slug): [string, string, (p: Page) => Locator][] => {
+      const path = lang === "fr" ? `/projets/${slug}/` : twin(`/projets/${slug}/`);
       return [
-        [`${slug}: breadcrumb link`, { path, find: (p: Page) => p.locator(".crumbs a").first() }],
-        [`${slug}: code link`, { path, find: (p: Page) => p.locator(".head .code a") }],
-        [`${slug}: figure`, { path, find: (p: Page) => p.locator(".case-section a.figure").first() }],
-        [`${slug}: measures fold`, { path, find: (p: Page) => p.locator(".measures-detail summary").first() }],
-        [`${slug}: link to another case`, { path, find: (p: Page) => p.locator(".others a").first() }],
+        [`${slug}: breadcrumb link`, path, (p) => p.locator(".crumbs a").first()],
+        [`${slug}: code link`, path, (p) => p.locator(".head .code a")],
+        [`${slug}: figure`, path, (p) => p.locator(".case-section a.figure").first()],
+        [`${slug}: measures fold`, path, (p) => p.locator(".measures-detail summary").first()],
+        [`${slug}: link to another case`, path, (p) => p.locator(".others a").first()],
+        [`${slug}: language link`, path, (p) => p.locator(".langs a")],
       ];
-    }),
-  ),
-};
+    });
+    return [
+      ...home.map(([name, find]) => [`[${lang}] ${name}`, { path: w.home, find }] as const),
+      ...cases.map(([name, path, find]) => [`[${lang}] ${name}`, { path, find }] as const),
+    ];
+  }),
+);
 
 for (const [name, { path, find }] of Object.entries(ELEMENTS)) {
   test(`states: ${name} changes on hover under a declared transition, and shows keyboard focus`, async ({ page }) => {
@@ -167,16 +212,19 @@ test("states: the demo tabs and the bio toggle slide one pill, and the demo card
   await expect.poll(async () => (await pill(".toggle.segmented")).transform).not.toBe(bioAt0.transform);
 });
 
-test("states: the e-mail address copies itself and says so to assistive tech, then clears", async ({ page, context }) => {
-  await context.grantPermissions(["clipboard-read", "clipboard-write"]);
-  await page.goto("/");
-  const address = page.getByRole("button", { name: "matteogallo.office@gmail.com" });
-  await address.click();
-  await expect(page.getByRole("status")).toHaveText("Copié ✓");
-  expect(await page.evaluate(() => navigator.clipboard.readText())).toBe("matteogallo.office@gmail.com");
-  await expect(page.getByRole("status")).toHaveText("", { timeout: 2500 });
-  await expect(page.getByRole("link", { name: "Écrire", exact: true })).toHaveAttribute("href", "mailto:matteogallo.office@gmail.com");
-});
+for (const lang of LANGS) {
+  const w = W[lang];
+  test(`states [${lang}]: the e-mail address copies itself and says so to assistive tech, then clears`, async ({ page, context }) => {
+    await context.grantPermissions(["clipboard-read", "clipboard-write"]);
+    await page.goto(w.home);
+    const address = page.getByRole("button", { name: "matteogallo.office@gmail.com" });
+    await address.click();
+    await expect(page.getByRole("status")).toHaveText(w.copied);
+    expect(await page.evaluate(() => navigator.clipboard.readText())).toBe("matteogallo.office@gmail.com");
+    await expect(page.getByRole("status")).toHaveText("", { timeout: 2500 });
+    await expect(page.getByRole("link", { name: w.write, exact: true })).toHaveAttribute("href", "mailto:matteogallo.office@gmail.com");
+  });
+}
 
 test.describe("without JavaScript", () => {
   test.use({ javaScriptEnabled: false });
@@ -207,62 +255,71 @@ test("states under reduced motion: colours still change on hover, briefly, and n
   expect(await nav.evaluate((e) => getComputedStyle(e, "::after").transitionDuration)).toBe("0s");
 });
 
-test("states: the navigation marks the section in view, and none on the first screen", async ({ page }) => {
-  await page.setViewportSize({ width: 1440, height: 900 });
-  await page.goto("/");
-  const current = () => page.locator('.nav a[aria-current="location"]');
-  await expect(current()).toHaveCount(0);
-  await expect(page.locator("[data-spy-dot]")).toBeHidden();
-  await page.locator("#methode").evaluate((s) => s.scrollIntoView({ block: "start" }));
-  await expect(current()).toHaveText("Méthode");
-  await expect(page.locator("[data-spy-dot]")).toBeVisible();
-  await page.evaluate(() => scrollTo(0, 0));
-  await expect(current()).toHaveCount(0);
-});
-
-test("states: when the clipboard refuses, the address is selected and the reader is told", async ({ page }) => {
-  await page.addInitScript(() => {
-    Object.defineProperty(navigator, "clipboard", { value: { writeText: () => Promise.reject(new Error("denied")) } });
+for (const lang of LANGS) {
+  const w = W[lang];
+  test(`states [${lang}]: the navigation marks the section in view, and none on the first screen`, async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto(w.home);
+    const current = () => page.locator('.nav a[aria-current="location"]');
+    await expect(current()).toHaveCount(0);
+    await expect(page.locator("[data-spy-dot]")).toBeHidden();
+    await page.locator(`#${w.method}`).evaluate((s) => s.scrollIntoView({ block: "start" }));
+    await expect(current()).toHaveText(w.methodLabel);
+    await expect(page.locator("[data-spy-dot]")).toBeVisible();
+    await page.evaluate(() => scrollTo(0, 0));
+    await expect(current()).toHaveCount(0);
   });
-  await page.goto("/");
-  const address = page.getByRole("button", { name: "matteogallo.office@gmail.com" });
-  // The hint and the outcome both describe the button.
-  await expect(address).toHaveAccessibleDescription(/Cliquez sur l’adresse pour la copier/);
-  await address.click();
-  await expect(page.getByRole("status")).toHaveText("Copie impossible : l’adresse est sélectionnée");
-  expect(await page.evaluate(() => getSelection()?.toString())).toBe("matteogallo.office@gmail.com");
-});
+}
 
-test("states: a project card opens its case study from anywhere on it, and the links it holds stay their own", async ({ page }) => {
-  await page.setViewportSize({ width: 1440, height: 900 });
-  await page.goto("/");
-  const card = page.locator(".project").first();
-  await expect(card.locator(".card-link")).toHaveText("Étude de cas");
-  // Three links read « Étude de cas »: each names its project in a links list.
-  await expect(card.locator(".card-link")).toHaveAccessibleName("Étude de cas Verity");
-  // The recording, the figures and the code link answer at their own place, above the stretched link.
-  for (const link of await card.locator("a:not(.card-link)").all()) {
-    await link.scrollIntoViewIfNeeded();
-    const own = await link.evaluate((a) => {
-      const r = a.getClientRects()[0]!;
-      const hit = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2);
-      return hit !== null && a.contains(hit);
+for (const lang of LANGS) {
+  const w = W[lang];
+  test(`states [${lang}]: when the clipboard refuses, the address is selected and the reader is told`, async ({ page }) => {
+    await page.addInitScript(() => {
+      Object.defineProperty(navigator, "clipboard", { value: { writeText: () => Promise.reject(new Error("denied")) } });
     });
-    expect(own, await link.evaluate((a) => a.outerHTML.slice(0, 80))).toBe(true);
-  }
-  // The pointer goes to the title's place: the stretched link is what lies there.
-  const title = card.locator("h3");
-  await title.scrollIntoViewIfNeeded();
-  const box = (await title.boundingBox())!;
-  const [x, y] = [box.x + box.width / 2, box.y + box.height / 2];
-  expect(await page.evaluate(([px, py]) => document.elementFromPoint(px!, py!)?.className, [x, y])).toContain("card-link");
-  await page.mouse.move(x, y);
-  await page.waitForTimeout(500);
-  expect(await card.evaluate((e) => new DOMMatrix(getComputedStyle(e).transform).f)).toBe(-2);
-  expect(await card.locator("img").evaluate((e) => new DOMMatrix(getComputedStyle(e).transform).a)).toBeCloseTo(1.02, 5);
-  await page.mouse.click(x, y);
-  await expect(page).toHaveURL(/\/projets\/verity\/$/);
-});
+    await page.goto(w.home);
+    const address = page.getByRole("button", { name: "matteogallo.office@gmail.com" });
+    // The hint and the outcome both describe the button.
+    await expect(address).toHaveAccessibleDescription(w.hint);
+    await address.click();
+    await expect(page.getByRole("status")).toHaveText(w.failed);
+    expect(await page.evaluate(() => getSelection()?.toString())).toBe("matteogallo.office@gmail.com");
+  });
+}
+
+for (const lang of LANGS) {
+  const w = W[lang];
+  test(`states [${lang}]: a project card opens its case study from anywhere on it, and the links it holds stay their own`, async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto(w.home);
+    const card = page.locator(".project").first();
+    await expect(card.locator(".card-link")).toHaveText(w.study);
+    // Three links read « Étude de cas »: each names its project in a links list.
+    await expect(card.locator(".card-link")).toHaveAccessibleName(`${w.study} Verity`);
+    // The recording, the figures and the code link answer at their own place, above the stretched link.
+    for (const link of await card.locator("a:not(.card-link)").all()) {
+      await link.scrollIntoViewIfNeeded();
+      const own = await link.evaluate((a) => {
+        const r = a.getClientRects()[0]!;
+        const hit = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2);
+        return hit !== null && a.contains(hit);
+      });
+      expect(own, await link.evaluate((a) => a.outerHTML.slice(0, 80))).toBe(true);
+    }
+    // The pointer goes to the title's place: the stretched link is what lies there.
+    const title = card.locator("h3");
+    await title.scrollIntoViewIfNeeded();
+    const box = (await title.boundingBox())!;
+    const [x, y] = [box.x + box.width / 2, box.y + box.height / 2];
+    expect(await page.evaluate(([px, py]) => document.elementFromPoint(px!, py!)?.className, [x, y])).toContain("card-link");
+    await page.mouse.move(x, y);
+    await page.waitForTimeout(500);
+    expect(await card.evaluate((e) => new DOMMatrix(getComputedStyle(e).transform).f)).toBe(-2);
+    expect(await card.locator("img").evaluate((e) => new DOMMatrix(getComputedStyle(e).transform).a)).toBeCloseTo(1.02, 5);
+    await page.mouse.click(x, y);
+    await expect(page).toHaveURL(new RegExp(`${lang === "fr" ? "/projets/verity/" : twin("/projets/verity/")}$`));
+  });
+}
 
 test("states: the measures fold opens with its height travelling, and its + turns into a ×", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });

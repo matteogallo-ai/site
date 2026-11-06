@@ -5,6 +5,7 @@ import refusalData from "../data/demo/refusal.json";
 import translationsData from "../data/demo/translations.json";
 import { type DemoTrace, type DemoTranslations, translationErrors } from "../../scripts/traces-lib.ts";
 import { firstListIn, toBlocks, type Span } from "../lib/document.ts";
+import { langOf } from "../lib/i18n.ts";
 import { decimal } from "../lib/measures.ts";
 
 const answer = answerData as DemoTrace;
@@ -45,12 +46,69 @@ if (refusal.source.url !== answer.source.url) throw new Error("the two demo trac
 const translations = translationsData as DemoTranslations;
 const untranslated = [...translationErrors(answer, translations), ...translationErrors(refusal, translations)];
 if (untranslated.length > 0) throw new Error(untranslated.join("\n"));
-const fr = (trace: DemoTrace) => translations[trace.example_id] as { question: { fr: string }; answer: { fr: string }; rationale?: { fr: string } };
+const translation = (trace: DemoTrace) => translations[trace.example_id] as { question: { fr: string }; answer: { fr: string }; rationale?: { en: string; fr: string } };
+
+// The traces are in English: the English page shows them without translation lines, and the
+// refusal's rationale in the trace's own words.
+const lang = langOf(Astro.url.pathname);
+const t = {
+  fr: {
+    caption: "Démo réelle : Verity, mon agent RAG, sur un contrat de test (en anglais)",
+    modes: "Mode de Verity",
+    answers: "Répond, en citant",
+    refuses: "Refuse, faute de preuve",
+    sheet: "Contrat de démonstration : Service Level Agreement",
+    tagAnswer: "Le passage retrouvé dans le contrat",
+    tagRefusal: "Le passage le plus proche, jugé insuffisant",
+    question: "La question",
+    verified: "La réponse, vérifiée",
+    cited: "Cité\u00A0:",
+    section: "section",
+    found: "Citation retrouvée mot pour mot dans le document",
+    claims: "affirmations étayées par leur citation, selon le juge",
+    confidence: "confiance",
+    refused: "La réponse : un refus, vérifié",
+    verdict: "Refus du modèle, confiance",
+    closest: "Passage le plus proche\u00A0:",
+    insufficient: "jugé insuffisant",
+    source: "Source du run",
+    run: "Run",
+    ofVerity: "de Verity (questions",
+    and: "et",
+    contract: "), sur le contrat",
+    names: { "sla.md": "contrat SLA", "order_form_northwind_2025.pdf": "bon de commande Northwind" } as Record<string, string>,
+  },
+  en: {
+    caption: "Live demo: Verity, my RAG agent, on a test contract",
+    modes: "Verity's mode",
+    answers: "Answers, citing",
+    refuses: "Refuses, for lack of evidence",
+    sheet: "Demo contract: Service Level Agreement",
+    tagAnswer: "The passage found in the contract",
+    tagRefusal: "The closest passage, judged insufficient",
+    question: "The question",
+    verified: "The answer, verified",
+    cited: "Cited:",
+    section: "section",
+    found: "Quote found word for word in the document",
+    claims: "claims supported by their quote, according to the judge",
+    confidence: "confidence",
+    refused: "The answer: a refusal, verified",
+    verdict: "Refused by the model, confidence",
+    closest: "Closest passage:",
+    insufficient: "judged insufficient",
+    source: "Run source",
+    run: "Run",
+    ofVerity: "of Verity (questions",
+    and: "and",
+    contract: "), on the contract",
+    names: { "sla.md": "SLA contract", "order_form_northwind_2025.pdf": "Northwind order form" } as Record<string, string>,
+  },
+}[lang];
 
 // Readers get what a cited document is, not its file name; an unnamed document fails the build.
-const NAMES: Record<string, string> = { "sla.md": "contrat SLA", "order_form_northwind_2025.pdf": "bon de commande Northwind" };
 const nameOf = (path: string) => {
-  const name = NAMES[fileOf(path)];
+  const name = t.names[fileOf(path)];
   if (!name) throw new Error(`no reader-facing name for ${path}`);
   return name;
 };
@@ -58,15 +116,15 @@ const nameOf = (path: string) => {
 
 <div class="demo" data-verity-demo data-mode="answer">
   <div class="head">
-  <p class="caption">Démo réelle : Verity, mon agent RAG, sur un contrat de test (en anglais)</p>
-  <div class="tabs segmented" role="tablist" aria-label="Mode de Verity" data-at="0">
-    <button type="button" role="tab" id="verity-tab-answer" aria-controls="verity-panel-answer" aria-selected="true" data-mode="answer">Répond, en citant</button>
-    <button type="button" role="tab" id="verity-tab-refusal" aria-controls="verity-panel-refusal" aria-selected="false" tabindex="-1" data-mode="refusal">Refuse, faute de preuve</button>
+  <p class="caption">{t.caption}</p>
+  <div class="tabs segmented" role="tablist" aria-label={t.modes} data-at="0">
+    <button type="button" role="tab" id="verity-tab-answer" aria-controls="verity-panel-answer" aria-selected="true" data-mode="answer">{t.answers}</button>
+    <button type="button" role="tab" id="verity-tab-refusal" aria-controls="verity-panel-refusal" aria-selected="false" tabindex="-1" data-mode="refusal">{t.refuses}</button>
   </div>
   </div>
 
   <div class="window">
-    <div class="sheet" data-sheet tabindex="0" role="region" aria-label="Contrat de démonstration : Service Level Agreement">
+    <div class="sheet" data-sheet tabindex="0" role="region" aria-label={t.sheet}>
     <article class="doc serif" lang="en">
       {
         blocks.map((b) =>
@@ -92,50 +150,50 @@ const nameOf = (path: string) => {
     </article>
     <div class="lens" data-lens hidden aria-hidden="true"><div class="ring glass"></div></div>
     <p class="lens-tag" data-lens-tag hidden aria-hidden="true">
-      <span class="n">2</span><span data-tag-answer>Le passage retrouvé dans le contrat</span><span data-tag-refusal>Le passage le plus proche, jugé insuffisant</span>
+      <span class="n">2</span><span data-tag-answer>{t.tagAnswer}</span><span data-tag-refusal>{t.tagRefusal}</span>
     </p>
     </div>
   </div>
 
   <div class="cards">
   <section class="card glass" role="tabpanel" id="verity-panel-answer" aria-labelledby="verity-tab-answer" tabindex="0">
-    <p class="step"><span class="n">1</span> La question</p>
+    <p class="step"><span class="n">1</span> {t.question}</p>
     <p class="q" lang="en">{answer.question}</p>
-    <p class="tr"><span class="tr-k">traduction</span> {fr(answer).question.fr}</p>
-    <p class="step"><span class="n">3</span> La réponse, vérifiée</p>
+    {lang === "fr" && <p class="tr"><span class="tr-k">traduction</span> {translation(answer).question.fr}</p>}
+    <p class="step"><span class="n">3</span> {t.verified}</p>
     <p class="a" lang="en"><span class="a-text">{answer.answer_text}</span></p>
-    <p class="tr tr-a"><span class="tr-k">traduction</span> {fr(answer).answer.fr}</p>
+    {lang === "fr" && <p class="tr tr-a"><span class="tr-k">traduction</span> {translation(answer).answer.fr}</p>}
     <p class="ref">
-      Cité{"\u00A0"}: {[{ path: slaPath, chunk: cited.chunk_id }, ...elsewhere.map((c) => ({ path: answer.documents[c.document_id]!, chunk: c.chunk_id }))].map((d) => `${nameOf(d.path)} (section ${numberOf(sectionOf(chunkOf(d.chunk)!.section))})`).join(", ")}
+      {t.cited} {[{ path: slaPath, chunk: cited.chunk_id }, ...elsewhere.map((c) => ({ path: answer.documents[c.document_id]!, chunk: c.chunk_id }))].map((d) => `${nameOf(d.path)} (${t.section} ${numberOf(sectionOf(chunkOf(d.chunk)!.section))})`).join(", ")}
     </p>
     <ul class="checks">
-      <li><span class="tick mono" aria-hidden="true">✓</span> Citation retrouvée mot pour mot dans le document</li>
+      <li><span class="tick mono" aria-hidden="true">✓</span> {t.found}</li>
       <li>
         <span class="tick mono" aria-hidden="true">{supported === claims.length ? "✓" : "✗"}</span>
-        <span class="mono">{supported}/{claims.length}</span> affirmations étayées par leur citation, selon le juge
+        <span class="mono">{supported}/{claims.length}</span> {t.claims}
       </li>
-      <li><span class="tick mono muted" aria-hidden="true">·</span> confiance <span class="mono">{decimal(answer.confidence_score, 2, "fr")}</span></li>
+      <li><span class="tick mono muted" aria-hidden="true">·</span> {t.confidence} <span class="mono">{decimal(answer.confidence_score, 2, lang)}</span></li>
     </ul>
   </section>
 
   <section class="card glass refused" role="tabpanel" id="verity-panel-refusal" aria-labelledby="verity-tab-refusal" tabindex="0" data-off>
-    <p class="step"><span class="n">1</span> La question</p>
+    <p class="step"><span class="n">1</span> {t.question}</p>
     <p class="q" lang="en">{refusal.question}</p>
-    <p class="tr"><span class="tr-k">traduction</span> {fr(refusal).question.fr}</p>
-    <p class="step"><span class="n">3</span> La réponse : un refus, vérifié</p>
+    {lang === "fr" && <p class="tr"><span class="tr-k">traduction</span> {translation(refusal).question.fr}</p>}
+    <p class="step"><span class="n">3</span> {t.refused}</p>
     <p class="a" lang="en"><span class="a-text">{refusal.answer_text}</span></p>
-    <p class="tr tr-a"><span class="tr-k">traduction</span> {fr(refusal).answer.fr}</p>
-    <p class="verdict">Refus du modèle, confiance <span class="mono">{decimal(refusal.confidence_score, 2, "fr")}</span></p>
-    <p class="ref">Passage le plus proche{"\u00A0"}: {nameOf(slaPath)} (section {numberOf(sectionOf(closest.section))}), jugé insuffisant</p>
-    <p class="tr why"><span class="tr-k">traduction</span> {fr(refusal).rationale!.fr}</p>
+    {lang === "fr" && <p class="tr tr-a"><span class="tr-k">traduction</span> {translation(refusal).answer.fr}</p>}
+    <p class="verdict">{t.verdict} <span class="mono">{decimal(refusal.confidence_score, 2, lang)}</span></p>
+    <p class="ref">{t.closest} {nameOf(slaPath)} ({t.section} {numberOf(sectionOf(closest.section))}), {t.insufficient}</p>
+    {lang === "fr" ? <p class="tr why"><span class="tr-k">traduction</span> {translation(refusal).rationale!.fr}</p> : <p class="tr why">{translation(refusal).rationale!.en}</p>}
   </section>
   </div>
 
   <p class="source">
     <a class="tip-host" href={answer.source.url} aria-describedby="verity-run-tip">
-      Source du run
+      {t.source}
       <span class="tip" id="verity-run-tip" role="tooltip">
-        Run <span class="mono">{runFile}</span> de Verity (questions {answer.example_id} et {refusal.example_id}), sur le contrat <span class="mono">{fileOf(slaPath)}</span>
+        {t.run} <span class="mono">{runFile}</span> {t.ofVerity} {answer.example_id} {t.and} {refusal.example_id}{t.contract} <span class="mono">{fileOf(slaPath)}</span>
       </span>
     </a>
   </p>
