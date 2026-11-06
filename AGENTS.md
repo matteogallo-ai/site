@@ -63,7 +63,8 @@ tests/                   Playwright on every built page: axe (light + dark), key
                          folded tables as cards at 375 px;
                          seo.spec.ts: sitemap = built pages at their canonical URLs, robots, Open Graph on every
                          page, OG headline = home headline, the 404, the Colophon's figures = their sources;
-                         states.spec.ts: hover, focus, transitions and cursor of every interactive element
+                         states.spec.ts: hover, focus, transitions and cursor of every interactive element (home,
+                         case studies), project cards opening their case study, the measures fold
 scripts/site-measures*   Lighthouse CI output -> site-measures.json (weight, scores, date, commit)
 scripts/built-pages.ts   list of built HTML pages, shared by the axe tests, seo.spec.ts, site-measures and the link check
 scripts/check-links.ts   runs linkinator with every built page as an entry point: from the home page
