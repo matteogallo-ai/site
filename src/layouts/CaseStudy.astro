@@ -1,6 +1,6 @@
 ---
 import Base from "./Base.astro";
-import { langOf, numbered, twin } from "../lib/i18n.ts";
+import { caseStudies, langOf, numbered } from "../lib/i18n.ts";
 import { repoUrl } from "../lib/sources.ts";
 import LangSwitch from "../components/LangSwitch.astro";
 import Contact from "../components/Contact.astro";
@@ -27,11 +27,7 @@ const t = {
   fr: { title: "étude de cas", crumbs: "Fil d’Ariane", home: "/", projects: "/#projets", projectsLabel: "Projets", kind: "Étude de cas", code: "Code :", others: "Autres études de cas", all: "Études de cas" },
   en: { title: "case study", crumbs: "Breadcrumb", home: "/en/", projects: "/en/#projects", projectsLabel: "Projects", kind: "Case study", code: "Code:", others: "Other case studies", all: "Case studies" },
 }[lang];
-const cases = [
-  { no: "01", name: "Verity", href: "/projets/verity/" },
-  { no: "02", name: "PromptLang", href: "/projets/promptlang/" },
-  { no: "03", name: "Praxis", href: "/projets/praxis/" },
-].map((c) => ({ ...c, href: lang === "fr" ? c.href : twin(c.href) }));
+const cases = caseStudies(lang);
 ---
 
 <Base title={`${name} — ${t.title} · Matteo Gallo`} description={description} serif={serif}>

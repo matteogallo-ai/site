@@ -168,3 +168,19 @@ test.describe("without JavaScript", () => {
     await expect(page).toHaveURL(/\/projets\/verity\/$/);
   });
 });
+
+// F4: a lost visitor still learns whose site this is and reaches the three case studies.
+for (const [path, cases] of [
+  ["/aucune-page-ici/", ["/projets/verity/", "/projets/promptlang/", "/projets/praxis/"]],
+  // The preview server answers every unknown address with the root 404; Cloudflare Pages serves
+  // en/404.html under /en/, so the English page is read at its file.
+  ["/en/404.html", ["/en/projects/verity/", "/en/projects/promptlang/", "/en/projects/praxis/"]],
+] as const) {
+  test(`${path}: the 404 names the site's author and links to the three case studies`, async ({ page }) => {
+    const response = await page.goto(path);
+    if (path !== "/en/404.html") expect(response?.status()).toBe(404);
+    await expect(page.locator("main")).toContainText("Matteo Gallo");
+    await expect(page.locator("main .cases a")).toHaveCount(3);
+    expect(await page.locator("main .cases a").evaluateAll((as) => as.map((a) => a.getAttribute("href")))).toEqual(cases);
+  });
+}

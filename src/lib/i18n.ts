@@ -32,3 +32,12 @@ export function alternates(path: string): { hreflang: "fr" | "en" | "x-default";
 export function numbered(n: string, lang: Lang): string {
   return `${lang === "fr" ? "N°" : "No."}\u00A0${n}`;
 }
+
+/** The three case studies, in their order, at their address in `lang`. */
+export function caseStudies(lang: Lang): { no: string; name: string; href: string }[] {
+  return [
+    { no: "01", name: "Verity", href: "/projets/verity/" },
+    { no: "02", name: "PromptLang", href: "/projets/promptlang/" },
+    { no: "03", name: "Praxis", href: "/projets/praxis/" },
+  ].map((c) => ({ ...c, href: lang === "fr" ? c.href : twin(c.href) }));
+}
