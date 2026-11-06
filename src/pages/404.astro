@@ -1,0 +1,30 @@
+---
+import Base from "../layouts/Base.astro";
+---
+
+<Base title="Page introuvable — Matteo Gallo" description="Aucune page à cette adresse sur le site de Matteo Gallo." canonical={false}>
+  <section class="container lost" aria-labelledby="lost-title">
+    <h1 id="lost-title">Aucune preuve à cette adresse.</h1>
+    <p><a class="home" href="/">Retour à l’accueil</a></p>
+  </section>
+</Base>
+
+<style>
+  .lost {
+    min-height: 70vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 1.5rem;
+  }
+
+  h1 {
+    font-size: var(--step-44);
+    letter-spacing: var(--track-44);
+    max-width: 16em;
+  }
+
+  .home {
+    font-size: var(--step-21);
+  }
+</style>

@@ -1,0 +1,212 @@
+---
+import CaseStudy from "../../layouts/CaseStudy.astro";
+import Brief from "../../components/case/Brief.astro";
+import CaseSection from "../../components/case/CaseSection.astro";
+import Diagram from "../../components/case/Diagram.astro";
+import MeasuresDetail from "../../components/case/MeasuresDetail.astro";
+import MeasuresTable from "../../components/case/MeasuresTable.astro";
+import Figure from "../../components/Figure.astro";
+import { pinned, pull } from "../../lib/sources.ts";
+
+const at = (path: string) => pinned("promptlang", path);
+const pr = (n: number) => pull("promptlang", n);
+---
+
+<CaseStudy
+  no="02"
+  name="PromptLang"
+  repo="promptlang"
+  summary="Un langage pour écrire les consignes données aux modèles d’IA (les prompts) comme du code : typées, compilées vers TypeScript ou Python, versionnées."
+  description="Étude de cas de PromptLang, langage pour écrire les prompts comme du code : problème, architecture, mesures contre un point de comparaison, défauts, décisions."
+>
+  <Brief
+    does="Il transforme un prompt en fichier vérifié, compilé en code TypeScript ou Python, et signale quand une nouvelle version casse le code de ceux qui l’utilisent."
+    measured="La solidité des tests de la lecture du langage et du contrôle de version, et la justesse d’un relecteur automatique, le linter IA, qui pointe les défauts d’écriture des prompts."
+    defect="La plupart des signalements du linter IA sont faux, à peine mieux que tout signaler. Ce que j’en ai fait : je l’ai mesuré contre ce point de comparaison, publié, et le linter est présenté comme une aide au relecteur humain, pas comme un contrôle."
+    figures={[
+      { id: "promptlang.mutation_score", caption: "des erreurs introduites exprès dans la lecture du langage et le contrôle de version, repérées par les tests" },
+      { id: "promptlang.linter_recall", caption: "défauts conçus trouvés par le linter IA ; tout signaler les trouve tous" },
+      { id: "promptlang.linter_precision_reviewed", caption: "signalements du linter IA jugés justes à la relecture humaine", defect: true },
+    ]}
+  />
+
+  <CaseSection n={1} id="probleme" title="Le problème" lead="En trois phrases, pourquoi ce projet existe.">
+    <p>
+      Les prompts vivent comme des bouts de texte éparpillés dans le code : rien ne vérifie leurs entrées, rien ne les teste, rien ne les versionne. Quand un prompt casse en production, on l’apprend par un
+      client. PromptLang en fait des fichiers vérifiés, compilés, testés et versionnés comme du code.
+    </p>
+  </CaseSection>
+
+  <CaseSection n={2} id="construit" title="Ce que j’ai construit" lead="Ce que devient un fichier de prompt, de sa lecture aux trois usages qui en sortent.">
+    <Diagram
+      id="promptlang-pipeline"
+      title="Ce que devient un fichier .prompt"
+      steps={[
+        { title: "Fichier .prompt", lines: ["paramètres typés, sortie, modèle cible"] },
+        { title: "Lecture", lines: ["découpage en mots du langage,", "puis arbre de la syntaxe"] },
+      ]}
+      outcomes={[
+        { title: "Générer", lines: ["code typé", "TypeScript", "et Python"] },
+        { title: "Versions", lines: ["casse-t-il", "le code", "appelant ?"] },
+        { title: "Relire", lines: ["défauts", "du texte", "du prompt"] },
+      ]}
+      caption="Le fichier lu sert trois usages indépendants. Le code généré vérifie chaque réponse du modèle contre le type de sortie déclaré ; le contrôle de version compare le prompt à sa version précédente ; la relecture signale les défauts d’écriture."
+    />
+    <p>
+      Un fichier <code>.prompt</code> déclare ce que le prompt reçoit, ce qu’il doit rendre et le modèle visé. Le compilateur en tire une fonction typée. Le contrôle de version compare ce contrat avec la version
+      précédente dans Git et refuse un changement qui casse le code appelant sans un numéro de version majeur. Le linter IA relit le texte du prompt avant la relecture humaine. Le paquet
+      <code>@promptlang/core</code> est publié sur npm, le registre des paquets JavaScript, et Praxis l’utilise pour lire ses propres prompts.
+    </p>
+  </CaseSection>
+
+  <CaseSection
+    n={3}
+    id="mesures"
+    title="Mesures"
+    lead="Ce que valent les tests et le linter IA, mesurés contre un point de comparaison très simple : tout signaler."
+  >
+    <p>
+      Pour mesurer les tests, on introduit exprès de petites erreurs dans le code (une condition inversée, une valeur changée) et on regarde si les tests échouent : ils en repèrent <Figure
+        id="promptlang.mutation_score"
+        where="prose"
+      />, sur la lecture du langage et le contrôle de version seulement.
+    </p>
+    <p>
+      Sur des prompts de test aux défauts connus, le linter IA en trouve <Figure id="promptlang.linter_recall" where="prose" />. Mais un linter qui signale tout, sur chaque prompt, les trouve tous : <Figure
+        id="promptlang.baseline_report_all_recall"
+        where="prose"
+      />. La différence est dans la justesse, et l’écart est modeste : <Figure id="promptlang.linter_precision_test" where="prose" /> des signalements du linter visent un vrai défaut, contre <Figure
+        id="promptlang.baseline_report_all_precision"
+        where="prose"
+      /> pour tout signaler, et à la relecture humaine <Figure id="promptlang.linter_precision_reviewed" where="prose" defect /> seulement sont justes.
+    </p>
+    <MeasuresDetail>
+      <MeasuresTable
+        where="quality"
+        caption="Tests, linter IA, audit"
+        rows={[
+          {
+            id: "promptlang.mutation_score",
+            label: "Erreurs introduites exprès, repérées par les tests",
+            noInterval: "Un décompte de toutes les erreurs introduites dans le code couvert, pas un échantillon.",
+            reading: "Exécution locale, hors intégration continue, sur la lecture du langage et le contrôle de version seulement : ni le compilateur ni l’exécution.",
+          },
+          {
+            id: "promptlang.linter_precision_reviewed",
+            defect: true,
+            reading: "Le défaut principal : à la relecture humaine, la plupart des signalements sont faux. Ne se distingue pas de la borne déjà publiée.",
+          },
+          {
+            id: "promptlang.audit_findings",
+            noInterval: "Un décompte, pas une estimation.",
+            reading: "Audit du dépôt par un agent IA qui ne connaissait pas le projet : des défauts, et un constat de contexte. Chaque défaut est corrigé ou réfuté par écrit.",
+          },
+        ]}
+      />
+      <MeasuresTable
+        where="baseline"
+        caption="Linter IA contre « tout signaler » (prompts de test)"
+        ours="Linter IA"
+        baseline="Tout signaler"
+        rows={[
+          {
+            id: "promptlang.linter_precision_test",
+            base: "promptlang.baseline_report_all_precision",
+            label: "Justesse des signalements",
+            reading: "Le gain sur un linter qui signale chaque catégorie sur chaque prompt est modeste.",
+          },
+          {
+            id: "promptlang.linter_recall",
+            base: "promptlang.baseline_report_all_recall",
+            label: "Défauts trouvés",
+            reading: "Tout signaler trouve tout : ce chiffre seul ne distingue pas le linter du point de comparaison.",
+          },
+        ]}
+      />
+      <p>
+        La justesse sur les prompts de test compte les signalements qui tombent sur un défaut conçu ; la relecture humaine relit des signalements un par un. Les deux disent la même chose : le linter IA aide le
+        relecteur, il ne le remplace pas (<a href={at("docs/SYSTEM_CARD.md")}>fiche du système</a>).
+      </p>
+    </MeasuresDetail>
+  </CaseSection>
+
+  <CaseSection n={4} id="echecs" title="Ce qui n’a pas marché, et ce que j’ai fait" lead="Ce qu’un audit sans complaisance a trouvé, et ce que chaque constat est devenu.">
+    <p>
+      J’ai fait auditer le dépôt par un agent IA qui ne connaissait rien du projet, chargé de chercher la faille. Son verdict : les promesses de la page de présentation du projet (le README) dépassaient ce que le code faisait vraiment. Ce que j’en ai
+      fait, constat par constat, est dans le <a href={at("docs/audit/2026-11-03-f1-follow-up.md")}>suivi de l’audit</a>.
+    </p>
+    <h3>Un linter IA déclaré livré, sans point de comparaison</h3>
+    <p>
+      Cette page présentait le linter comme livré alors que sa justesse était faible et que rien ne disait ce qu’elle valait. Un linter qui signale tout trouve tous les défauts conçus : en trouver beaucoup ne
+      prouvait presque rien. J’ai publié sa justesse à côté de ce point de comparaison (<a href={pr(29)}>#29</a>), puis fait relire des signalements à la main ; le linter est décrit comme une aide au
+      relecteur, pas comme un contrôle.
+    </p>
+    <h3>Une sortie typée jamais vérifiée</h3>
+    <p>
+      Le code généré promettait une réponse du modèle conforme à un type, sans le vérifier. Il la vérifie maintenant, en TypeScript comme en Python, et signale une erreur sinon ; les deux langages tournent sur les
+      mêmes réponses et doivent s’accorder (<a href={pr(27)}>#27</a>). La correction a commencé par un test qui échouait.
+    </p>
+    <h3>Des tests mesurés là où le risque n’était pas</h3>
+    <p>
+      La mesure des tests par erreurs introduites ne porte que sur la lecture du langage et le contrôle de version. L’audit a trouvé des défauts hors de ce périmètre (compilateur, exécution, ligne de commande,
+      analyse du texte, plafond de dépense), et un dans le contrôle de version même : renommer un type exporté était classé comme un simple correctif (patch), le plus petit changement de version. C’était un choix écrit dans la note de décision, et aucune erreur
+      introduite ne révèle une règle mal choisie. Le rapport liste désormais ce qu’il ne couvre pas (<a href={at("docs/mutation/README.md")}>rapport</a>), et ce renommage exige une version majeure (<a
+        href={pr(25)}>#25</a
+      >).
+    </p>
+  </CaseSection>
+
+  <CaseSection
+    n={5}
+    id="decisions"
+    title="Trois décisions"
+    lead="Trois choix d’architecture, chacun écrit dans une note de décision (ADR) avec ses raisons et ses conséquences : de quoi juger le raisonnement, pas seulement le résultat."
+  >
+    <ol class="decisions">
+      <li>
+        <h3>Ce qui compte comme contrat d’un prompt</h3>
+        <p>
+          Ce que le prompt reçoit (noms, types, valeurs facultatives), ce qu’il rend et le modèle visé, sous une forme qui ignore l’ordre des paramètres et des valeurs d’une liste fermée. Un amendement issu de
+          l’audit y ajoute les noms des types exportés : renommer un type que le code appelant importe exige une version majeure.
+        </p>
+        <p><a href={at("docs/adr/0002-prompt-interface.md")}>ADR 0002</a></p>
+      </li>
+      <li>
+        <h3>Comment le contrôle de version trouve la version précédente</h3>
+        <p>
+          La version précédente vient de Git : la référence donnée, sinon <code>origin/main</code>, sinon la dernière étiquette de version posée dans Git (un tag) ; la version courante est celle des fichiers sur le disque, donc le contrôle
+          tourne avant l’enregistrement comme en intégration continue. Le niveau exigé est celui du changement le plus grave, et un fichier illisible dans la version précédente est une erreur, jamais un fichier
+          nouveau.
+        </p>
+        <p><a href={at("docs/adr/0003-semver-check.md")}>ADR 0003</a></p>
+      </li>
+      <li>
+        <h3>Le coût approuvé est un plafond de dépense</h3>
+        <p>
+          Chaque exécution payante affiche son coût estimé et demande une approbation ; cette estimation devient un plafond. Avant chaque appel, le client réserve le coût maximal de l’appel ; un appel qui
+          dépasserait le plafond n’est pas envoyé. La note écrit aussi ce que le plafond ne garantit pas : un texte plus coûteux à traiter que prévu dépasse l’estimation.
+        </p>
+        <p><a href={at("docs/adr/0004-spending-cap.md")}>ADR 0004</a></p>
+      </li>
+    </ol>
+  </CaseSection>
+
+  <CaseSection n={6} id="construction" title="Comment c’est construit" lead="Pour un lecteur technique : la pile, les outils et le modèle du linter IA.">
+    <p>
+      TypeScript strict sur Bun. Tests <code>bun test</code>, tests générés au hasard (fast-check) sur la lecture du langage et le contrôle de version, erreurs introduites avec Stryker, Biome, knip. Exécution
+      chez plusieurs fournisseurs : Anthropic, OpenAI, Ollama ou un client fourni. Le linter IA appelle <code>claude-haiku-5-5</code>. Architecture : <a href={at("docs/architecture.md")}
+        >docs/architecture.md</a
+      >.
+    </p>
+  </CaseSection>
+
+  <CaseSection n={7} id="suite" title="La suite" lead="Ce qui manque, d’après la feuille de route du projet ; rien n’y est planifié.">
+    <ul>
+      <li>Exécuter les tests écrits dans les fichiers de prompt : ils sont lus, pas exécutés.</li>
+      <li>Mesurer les tests du compilateur et de l’exécution par erreurs introduites, hors du périmètre mesuré aujourd’hui.</li>
+      <li>Un linter IA chez d’autres fournisseurs que Claude, chacun avec sa propre mesure.</li>
+      <li>La réponse affichée au fil de l’eau, et un support d’éditeur (coloration, complétion).</li>
+    </ul>
+    <p><a href={at("docs/roadmap.md")}>Feuille de route</a></p>
+  </CaseSection>
+</CaseStudy>

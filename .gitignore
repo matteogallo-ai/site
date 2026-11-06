@@ -4,7 +4,7 @@ dist/
 .lighthouseci/
 test-results/
 playwright-report/
-site-measures.json
+/site-measures.json
 .DS_Store
 .env
 .env.*

@@ -1,0 +1,123 @@
+---
+import Figure from "../Figure.astro";
+
+/**
+ * "En bref": what a recruiter reads in twenty seconds. Three plain sentences and three
+ * figures, each a Figure linked to its proof; the main defect is one of the three.
+ */
+interface Props {
+  does: string;
+  measured: string;
+  defect: string;
+  figures: [Big, Big, Big];
+}
+
+interface Big {
+  id: string;
+  caption: string;
+  defect?: boolean;
+}
+
+const { does, measured, defect, figures } = Astro.props;
+if (!figures.some((f) => f.defect)) throw new Error("the brief shows the main defect among its figures");
+---
+
+<section class="brief" aria-labelledby="bref-title">
+  <h2 id="bref-title">En bref</h2>
+  <dl class="lines">
+    <div>
+      <dt>Ce que ça fait</dt>
+      <dd>{does}</dd>
+    </div>
+    <div>
+      <dt>Ce qui est mesuré</dt>
+      <dd>{measured}</dd>
+    </div>
+    <div>
+      <dt>Défaut principal</dt>
+      <dd>{defect}</dd>
+    </div>
+  </dl>
+  <ul class="figures">
+    {
+      figures.map((f) => (
+        <li class:list={{ defect: f.defect }}>
+          <p class="big">
+            <Figure id={f.id} where="brief" defect={f.defect ?? false} />
+          </p>
+          <p class="caption">{f.caption}</p>
+        </li>
+      ))
+    }
+  </ul>
+</section>
+
+<style>
+  .brief {
+    display: grid;
+    gap: 1.5rem var(--gutter);
+    margin-top: 1rem;
+    padding: 1.5rem;
+    border: 1px solid var(--rule);
+    border-radius: 8px;
+  }
+
+  @media (min-width: 64rem) {
+    .brief {
+      grid-template-columns: 7fr 5fr;
+    }
+
+    h2 {
+      grid-column: 1 / -1;
+    }
+  }
+
+  h2 {
+    font-size: var(--step-16);
+    color: var(--graphite);
+  }
+
+  .lines {
+    margin: 0;
+  }
+
+  .lines div + div {
+    margin-top: 1rem;
+  }
+
+  dt {
+    font-size: var(--step-14);
+    font-weight: 600;
+  }
+
+  dd {
+    margin: 0.2rem 0 0;
+    max-width: 38rem;
+  }
+
+  .figures {
+    display: grid;
+    gap: 1.25rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .figures p {
+    margin: 0;
+  }
+
+  /* The paragraph anchors the proof tooltip of its Figure (src/components/Figure.astro). */
+  .big {
+    position: relative;
+    font-size: var(--step-44);
+    line-height: 1.1;
+  }
+
+  .figures .caption {
+    margin-top: 0.25rem;
+    font-size: var(--step-14);
+    color: var(--graphite);
+    max-width: 22rem;
+  }
+</style>

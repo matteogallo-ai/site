@@ -12,12 +12,14 @@
     "preview": "astro preview",
     "typecheck": "astro check",
     "test": "node --experimental-strip-types --test \"scripts/**/*.test.ts\" \"src/**/*.test.ts\"",
-    "check:links": "linkinator dist --config linkinator.config.json",
+    "check:links": "node --experimental-strip-types scripts/check-links.ts",
     "test:a11y": "playwright test",
     "lighthouse": "lhci autorun",
     "measures": "node --experimental-strip-types scripts/site-measures.ts",
     "fonts": ".venv/bin/python scripts/fonts/subset.py",
-    "check:sources": "node --experimental-strip-types scripts/check-sources.ts"
+    "check:sources": "node --experimental-strip-types scripts/check-sources.ts",
+    "og": "node --experimental-strip-types scripts/og.ts",
+    "check:rulesets": "node --experimental-strip-types scripts/check-rulesets.ts"
   },
   "dependencies": {
     "astro": "7.4.5"
