@@ -43,7 +43,7 @@ scripts/check-rulesets.ts  go-live check that an active ruleset requires a pull 
 scripts/og.ts            draws public/og.png and og-en.png (1200x630) with the site's fonts and tokens through Playwright;
                          src/data/og.json pins the hash of its inputs and of each PNG (og.test.ts)
 src/scripts/             client code: the demo's lens.ts (geometry), typing.ts (answer writing), verity-demo.ts (DOM);
-                         count.ts (band counters), reveal.ts (sections in once), spy.ts (nav section in view),
+                         reveal.ts (sections and the band in once), spy.ts (nav section in view),
                          copy.ts (e-mail copy), resize.ts (height follows content), tips.ts (Escape on tooltips)
 src/data/media.json      project images with their source; scripts/media-frame.ts re-derives the recording stills,
                          scripts/media/pdf_page.py (PyMuPDF, hash-pinned; venv .venv-media) the Praxis page

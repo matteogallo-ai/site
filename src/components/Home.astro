@@ -77,7 +77,7 @@ const id = fr ? { projects: "projets", method: "methode", about: "a-propos" } : 
     </div>
   </section>
 
-  <section class="container band" aria-label={fr ? "Verity en trois chiffres" : "Verity in three figures"}>
+  <section class="container band reveal" aria-label={fr ? "Verity en trois chiffres" : "Verity in three figures"}>
     <p class="cell">
       <Figure id="verity.hallucination_rate" where="band" />
       <span>{fr ? "réponses avec une hallucination, selon un juge LLM, parmi les questions avec réponse auxquelles Verity a répondu" : "answers with a hallucination, according to an LLM judge, among the answerable questions Verity answered"}</span>
@@ -127,14 +127,11 @@ const id = fr ? { projects: "projets", method: "methode", about: "a-propos" } : 
   </section>
 
   <script>
-    import { countOnSight } from "../scripts/count.ts";
     import { spyOn } from "../scripts/spy.ts";
     import { revealOnSight } from "../scripts/reveal.ts";
     revealOnSight(document.querySelectorAll<HTMLElement>(".reveal"));
     const nav = document.querySelector<HTMLElement>(".nav");
     if (nav) spyOn(nav);
-    // The band's three figures count up once, as they come into view (SPEC §4).
-    countOnSight(document.querySelectorAll<HTMLElement>(".band .value"));
   </script>
 
   <Footer />
