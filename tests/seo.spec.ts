@@ -79,26 +79,29 @@ test("an unknown address answers 404 with the 404 page and a way home", async ({
   await expect(page).toHaveURL(/\/$/);
 });
 
-test("the Colophon shows the budgets lighthouserc.cjs enforces and the measures of the recorded CI run", async ({ page }) => {
-  await page.goto("/colophon/");
-  const budgets = page.locator("#budgets ~ .rows > div");
-  await expect(budgets.locator("dt")).toHaveText(siteBudgets("fr").map((b) => b.label));
-  await expect(budgets.locator("dd")).toHaveText(siteBudgets("fr").map((b) => b.limit));
-  const measured = page.locator(".page");
-  await expect(measured).toHaveCount(site.pages.length);
-  for (const [i, p] of site.pages.entries()) {
-    const values = measured.nth(i).locator("dd");
-    await expect(values.nth(0)).toHaveText(kilo(p.transferBytes, "fr"));
-    await expect(values.nth(1)).toHaveText(kilo(p.fontBytes, "fr"));
-    await expect(values.nth(2)).toHaveText([p.scores.performance, p.scores.accessibility, p.scores.bestPractices, p.scores.seo].join(" · "));
-    await expect(values.nth(3)).toHaveText(`${decimal(p.lcpMs / 1000, 2, "fr")}\u00A0s`);
-    await expect(values.nth(4)).toHaveText(decimal(p.cls, 3, "fr"));
-  }
-  await expect(page.locator(`section:has(#mesures) a[href$="${site.commit}"]`)).toHaveText(site.commit.slice(0, 7));
-  // Every built page the recorded run did not measure is named, so the figures are not read as the whole site's.
-  const unmeasured = pages.filter((p) => !site.pages.some((m) => m.path === p));
-  await expect(page.locator("section:has(#mesures) .note .mono")).toHaveText(unmeasured.join(", "));
-});
+for (const path of ["/colophon/", twin("/colophon/")]) {
+  const lang = langOf(path);
+  test(`${path}: the Colophon shows the budgets lighthouserc.cjs enforces and the measures of the recorded CI run`, async ({ page }) => {
+    await page.goto(path);
+    const budgets = page.locator("#budgets ~ .rows > div");
+    await expect(budgets.locator("dt")).toHaveText(siteBudgets(lang).map((b) => b.label));
+    await expect(budgets.locator("dd")).toHaveText(siteBudgets(lang).map((b) => b.limit));
+    const measured = page.locator(".page");
+    await expect(measured).toHaveCount(site.pages.length);
+    for (const [i, p] of site.pages.entries()) {
+      const values = measured.nth(i).locator("dd");
+      await expect(values.nth(0)).toHaveText(kilo(p.transferBytes, lang));
+      await expect(values.nth(1)).toHaveText(kilo(p.fontBytes, lang));
+      await expect(values.nth(2)).toHaveText([p.scores.performance, p.scores.accessibility, p.scores.bestPractices, p.scores.seo].join(" · "));
+      await expect(values.nth(3)).toHaveText(`${decimal(p.lcpMs / 1000, 2, lang)}\u00A0s`);
+      await expect(values.nth(4)).toHaveText(decimal(p.cls, 3, lang));
+    }
+    await expect(page.locator(`section:has(#mesures) a[href$="${site.commit}"]`)).toHaveText(site.commit.slice(0, 7));
+    // Every built page the recorded run did not measure is named, so the figures are not read as the whole site's.
+    const unmeasured = pages.filter((p) => !site.pages.some((m) => m.path === p));
+    await expect(page.locator("section:has(#mesures) .note .mono")).toHaveText(unmeasured.join(", "));
+  });
+}
 
 for (const path of pages) {
   test(`${path}: the page names its language, its versions in hreflang links, and offers the other language`, async ({ page, request }) => {

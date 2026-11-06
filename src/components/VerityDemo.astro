@@ -46,7 +46,7 @@ if (refusal.source.url !== answer.source.url) throw new Error("the two demo trac
 const translations = translationsData as DemoTranslations;
 const untranslated = [...translationErrors(answer, translations), ...translationErrors(refusal, translations)];
 if (untranslated.length > 0) throw new Error(untranslated.join("\n"));
-const fr = (trace: DemoTrace) => translations[trace.example_id] as { question: { fr: string }; answer: { fr: string }; rationale?: { en: string; fr: string } };
+const translation = (trace: DemoTrace) => translations[trace.example_id] as { question: { fr: string }; answer: { fr: string }; rationale?: { en: string; fr: string } };
 
 // The traces are in English: the English page shows them without translation lines, and the
 // refusal's rationale in the trace's own words.
@@ -159,10 +159,10 @@ const nameOf = (path: string) => {
   <section class="card glass" role="tabpanel" id="verity-panel-answer" aria-labelledby="verity-tab-answer" tabindex="0">
     <p class="step"><span class="n">1</span> {t.question}</p>
     <p class="q" lang="en">{answer.question}</p>
-    {lang === "fr" && <p class="tr"><span class="tr-k">traduction</span> {fr(answer).question.fr}</p>}
+    {lang === "fr" && <p class="tr"><span class="tr-k">traduction</span> {translation(answer).question.fr}</p>}
     <p class="step"><span class="n">3</span> {t.verified}</p>
     <p class="a" lang="en"><span class="a-text">{answer.answer_text}</span></p>
-    {lang === "fr" && <p class="tr tr-a"><span class="tr-k">traduction</span> {fr(answer).answer.fr}</p>}
+    {lang === "fr" && <p class="tr tr-a"><span class="tr-k">traduction</span> {translation(answer).answer.fr}</p>}
     <p class="ref">
       {t.cited} {[{ path: slaPath, chunk: cited.chunk_id }, ...elsewhere.map((c) => ({ path: answer.documents[c.document_id]!, chunk: c.chunk_id }))].map((d) => `${nameOf(d.path)} (${t.section} ${numberOf(sectionOf(chunkOf(d.chunk)!.section))})`).join(", ")}
     </p>
@@ -179,13 +179,13 @@ const nameOf = (path: string) => {
   <section class="card glass refused" role="tabpanel" id="verity-panel-refusal" aria-labelledby="verity-tab-refusal" tabindex="0" data-off>
     <p class="step"><span class="n">1</span> {t.question}</p>
     <p class="q" lang="en">{refusal.question}</p>
-    {lang === "fr" && <p class="tr"><span class="tr-k">traduction</span> {fr(refusal).question.fr}</p>}
+    {lang === "fr" && <p class="tr"><span class="tr-k">traduction</span> {translation(refusal).question.fr}</p>}
     <p class="step"><span class="n">3</span> {t.refused}</p>
     <p class="a" lang="en"><span class="a-text">{refusal.answer_text}</span></p>
-    {lang === "fr" && <p class="tr tr-a"><span class="tr-k">traduction</span> {fr(refusal).answer.fr}</p>}
+    {lang === "fr" && <p class="tr tr-a"><span class="tr-k">traduction</span> {translation(refusal).answer.fr}</p>}
     <p class="verdict">{t.verdict} <span class="mono">{decimal(refusal.confidence_score, 2, lang)}</span></p>
     <p class="ref">{t.closest} {nameOf(slaPath)} ({t.section} {numberOf(sectionOf(closest.section))}), {t.insufficient}</p>
-    {lang === "fr" ? <p class="tr why"><span class="tr-k">traduction</span> {fr(refusal).rationale!.fr}</p> : <p class="tr why">{fr(refusal).rationale!.en}</p>}
+    {lang === "fr" ? <p class="tr why"><span class="tr-k">traduction</span> {translation(refusal).rationale!.fr}</p> : <p class="tr why">{translation(refusal).rationale!.en}</p>}
   </section>
   </div>
 
