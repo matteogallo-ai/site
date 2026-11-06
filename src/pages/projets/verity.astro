@@ -39,7 +39,7 @@ if (!thresholdSentence || !("contains" in thresholdSentence)) throw new Error("t
     defect="Il a répondu à des questions qui n’avaient pas de réponse dans les documents. Ce que j’en ai fait : je l’ai publié, avec les trois questions en cause nommées dans les résultats."
     figures={[
       { id: "verity.refusal_recall", caption: "questions sans réponse correctement refusées" },
-      { id: "verity.hallucination_rate", caption: "réponses contenant une invention, selon un juge vérifié contre mes propres notes" },
+      { id: "verity.hallucination_rate", caption: "réponses contenant une invention, selon un juge vérifié contre mes propres notes, parmi les questions avec réponse auxquelles il a répondu ; ses réponses aux questions sans réponse sont comptées à part" },
       { id: "verity.unanswerable_answered", caption: "questions sans réponse auxquelles il a quand même répondu", defect: true },
     ]}
   />
@@ -71,6 +71,7 @@ if (!thresholdSentence || !("contains" in thresholdSentence)) throw new Error("t
         { title: "Réponse citée", lines: ["clause et position"], tone: "proof" },
         { title: "Refus motivé", lines: ["cause enregistrée"], tone: "defect" },
       ]}
+      desc="Une question porte sur un corpus de contrats et de politiques. Verity cherche les passages par le sens et par les mots, puis trie les plus utiles. Il rédige une réponse où chaque citation doit être un extrait exact du document ; sans citation, il refuse. Des contrôles écrits en code, sans modèle, vérifient que les citations couvrent la réponse, qu’elles sont pertinentes et que rien ne les manipule ; un seul échec suffit à refuser. Enfin un modèle note la réponse et peut refuser sous un seuil, sans pouvoir annuler un contrôle. Deux issues : une réponse qui cite sa clause et sa position, ou un refus dont la cause est enregistrée."
       caption="Le refus se décide dans l’ordre : pas de citation, puis les contrôles écrits en code, puis la note de confiance et son seuil. Le juge, un second modèle qui note les réponses, n’est pas sur ce chemin : il évalue les exécutions après coup."
     />
     <p>

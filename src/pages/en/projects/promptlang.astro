@@ -50,6 +50,7 @@ const pr = (n: number) => pull("promptlang", n);
         { title: "Versions", lines: ["does it", "break the", "caller?"] },
         { title: "Review", lines: ["defects", "in the", "prompt text"] },
       ]}
+      desc="A .prompt file declares typed parameters, an output and a target model. It is read: cut into the language’s words, then into a syntax tree. Three independent uses follow: generating typed code in TypeScript and Python, checking whether a new version breaks the calling code, and reviewing the prompt’s text for defects."
       caption="The file once read serves three independent uses. The generated code checks every model response against the declared output type; the version check compares the prompt with its previous version; the review flags writing defects."
     />
     <p>

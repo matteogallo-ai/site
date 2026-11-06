@@ -28,3 +28,26 @@ for (const [file, label] of [["index.html", "bon de commande Northwind (section 
     expect(html(file)).toContain(label);
   });
 }
+
+// The description of a diagram is read aloud in place of the drawing: sentences, not the drawn
+// lines joined end to end ("Versions, does it, break the, caller?").
+for (const file of files) {
+  test(`${file}: every diagram description is written in sentences`, () => {
+    for (const [, desc] of html(file).matchAll(/<desc[^>]*>([^<]*)<\/desc>/g)) {
+      expect(desc, desc).not.toMatch(/,\s*,|,\s*$|[,;:]\s*[.?!]/);
+      expect(desc, desc).toMatch(/[.?!]$/);
+    }
+  });
+}
+
+// C4: the hallucination figure in Verity's brief names its scope, as the home page does: the
+// answerable questions it answered; its answers to unanswerable ones are counted apart.
+for (const [file, scope] of [
+  ["projets/verity/index.html", "parmi les questions avec réponse auxquelles il a répondu ; ses réponses aux questions sans réponse sont comptées à part"],
+  ["en/projects/verity/index.html", "among the answerable questions it answered; its answers to unanswerable questions are counted apart"],
+] as const) {
+  test(`${file}: the brief gives the hallucination figure its scope`, () => {
+    const brief = /<section class="brief"[\s\S]*?<\/section>/.exec(html(file))![0];
+    expect(brief).toContain(scope);
+  });
+}

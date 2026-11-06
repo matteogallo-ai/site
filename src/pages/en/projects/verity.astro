@@ -39,7 +39,7 @@ if (!thresholdSentence || !("contains" in thresholdSentence)) throw new Error("t
     defect="It answered questions that had no answer in the documents. What I did about it: I published it, with the three questions involved named in the results."
     figures={[
       { id: "verity.refusal_recall", caption: "unanswerable questions correctly refused" },
-      { id: "verity.hallucination_rate", caption: "answers containing a fabrication, according to a judge checked against my own ratings" },
+      { id: "verity.hallucination_rate", caption: "answers containing a fabrication, according to a judge checked against my own ratings, among the answerable questions it answered; its answers to unanswerable questions are counted apart" },
       { id: "verity.unanswerable_answered", caption: "unanswerable questions it answered anyway", defect: true },
     ]}
   />
@@ -71,6 +71,7 @@ if (!thresholdSentence || !("contains" in thresholdSentence)) throw new Error("t
         { title: "Cited answer", lines: ["clause and position"], tone: "proof" },
         { title: "Refusal", lines: ["with its cause", "recorded"], tone: "defect" },
       ]}
+      desc="A question is asked over a corpus of contracts and policies. Verity searches for passages by meaning and by words, then ranks the most useful ones. It drafts an answer in which each quote must be an exact excerpt of the document; with no quote, it refuses. Checks written in code, with no model, verify that the quotes cover the answer, that they are relevant and that nothing manipulates them; a single failure refuses. Last, a model rates the answer and may refuse below a threshold, but cannot overrule a check. Two outcomes: an answer citing its clause and position, or a refusal with its cause recorded."
       caption="The refusal is decided in order: no quote, then the checks written in code, then the confidence rating and its threshold. The judge, a second model that rates the answers, is not on this path: it evaluates the runs afterwards."
     />
     <p>

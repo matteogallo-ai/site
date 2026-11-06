@@ -1,6 +1,5 @@
 ---
 import { layout, type Node, TEXT, WIDTH } from "../../lib/diagram.ts";
-import { langOf } from "../../lib/i18n.ts";
 
 interface Props {
   /** Unique on the page: names the title and description the SVG is labelled by. */
@@ -9,14 +8,13 @@ interface Props {
   steps: Node[];
   outcomes?: Node[];
   caption: string;
+  /** The diagram told in sentences, read aloud in place of the drawing: the drawn lines are cut
+      to fit their boxes and do not read as text when joined. */
+  desc: string;
 }
 
-const { id, title, steps, outcomes = [], caption } = Astro.props;
+const { id, title, steps, outcomes = [], caption, desc } = Astro.props;
 const d = layout({ steps, outcomes });
-// The SVG is one image to assistive technology: its description is the diagram read in order.
-const read = (n: Node) => [n.title, ...(n.lines ?? [])].join(", ");
-const w = langOf(Astro.url.pathname) === "fr" ? { then: ". Puis : ", outcomes: " Issues : ", or: " ; " } : { then: ". Then: ", outcomes: " Outcomes: ", or: "; " };
-const desc = `${steps.map(read).join(w.then)}.${outcomes.length ? `${w.outcomes}${outcomes.map(read).join(w.or)}.` : ""}`;
 const points = (p: [number, number][]) => p.map(([x, y]) => `${x},${y}`).join(" ");
 ---
 

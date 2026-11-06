@@ -50,6 +50,7 @@ const pr = (n: number) => pull("promptlang", n);
         { title: "Versions", lines: ["casse-t-il", "le code", "appelant ?"] },
         { title: "Relire", lines: ["défauts", "du texte", "du prompt"] },
       ]}
+      desc="Un fichier .prompt déclare des paramètres typés, une sortie et un modèle cible. Il est lu : découpé en mots du langage, puis en arbre de syntaxe. Trois usages indépendants en partent : générer du code typé en TypeScript et en Python, vérifier si une nouvelle version casse le code appelant, et relire le texte du prompt pour y trouver des défauts."
       caption="Le fichier lu sert trois usages indépendants. Le code généré vérifie chaque réponse du modèle contre le type de sortie déclaré ; le contrôle de version compare le prompt à sa version précédente ; la relecture signale les défauts d’écriture."
     />
     <p>

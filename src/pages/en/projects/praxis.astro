@@ -52,6 +52,7 @@ const at = (path: string) => pinned("praxis", path);
         { title: "Sourced", lines: ["delivered;", "every item", "has a source"], tone: "proof" },
         { title: "Flagged", lines: ["delivered;", "a section lists", "every item", "without a source"], tone: "defect" },
       ]}
+      desc="Praxis first scopes what the question covers and the expected format. A web search gathers facts, actors, risks and options, each with its source. A check written in code rejects missing sources, unreliable sites, pages too old and duplicates. A model then drafts each section, and another looks for the flaw and may restart the drafting once at most. The file is delivered as Markdown, PDF and Word. It is sourced when every item has a source; otherwise it is flagged: a section lists every item without a source."
       caption="Every stage calls an Anthropic model, except the source check, which is code. On the command line and in the test bench, a note that fails this check is delivered with a section that lists what it could not source; the run stops if no fact from the search has a source."
     />
     <p>

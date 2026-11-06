@@ -162,3 +162,14 @@ test("project captions: 14 px at most, in graphite, 8 to 12 px under their image
     expect(c.gap).toBeLessThanOrEqual(12);
   }
 });
+
+// C7: the brief's heading is larger than the labels it heads, and in ink like them.
+for (const path of ["/projets/verity/", "/en/projects/verity/"]) {
+  test(`${path}: the brief's heading outranks its labels`, async ({ page }) => {
+    await page.goto(path);
+    const [h2, dt] = await Promise.all([".brief h2", ".brief dt"].map((s) => page.locator(s).first().evaluate((e) => ({ size: Number.parseFloat(getComputedStyle(e).fontSize), color: getComputedStyle(e).color, weight: Number(getComputedStyle(e).fontWeight) }))));
+    expect(h2!.size).toBeGreaterThan(dt!.size * 1.2);
+    expect(h2!.color).toBe(dt!.color);
+    expect(h2!.weight).toBeGreaterThanOrEqual(dt!.weight);
+  });
+}

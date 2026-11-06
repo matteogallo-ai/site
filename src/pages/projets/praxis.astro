@@ -52,6 +52,7 @@ const at = (path: string) => pinned("praxis", path);
         { title: "Livré, sourcé", lines: ["tous les éléments", "ont une source"], tone: "proof" },
         { title: "Livré, signalé", lines: ["une section liste", "chaque élément", "sans source"], tone: "defect" },
       ]}
+      desc="Praxis cadre d’abord ce que couvre la question et le format attendu. Une recherche web rassemble faits, acteurs, risques et options, chacun avec sa source. Un contrôle écrit en code écarte une source absente, un site peu fiable, une page trop ancienne ou un doublon. Un modèle rédige ensuite chaque section, puis un autre cherche la faille et peut relancer la rédaction une fois au plus. Le fichier est livré en Markdown, PDF et Word. Il est sourcé quand tous les éléments ont une source ; sinon il est signalé : une section liste chaque élément sans source."
       caption="Chaque étape appelle un modèle d’Anthropic, sauf le contrôle des sources, qui est du code. En ligne de commande et dans le banc d’essai, une note qui ne passe pas ce contrôle est livrée avec une section qui liste ce qu’elle n’a pas pu sourcer ; l’exécution s’arrête si aucun fait de la recherche n’a de source."
     />
     <p>
