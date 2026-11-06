@@ -32,10 +32,30 @@ for (const [name, theme] of Object.entries(themes)) {
   }
 }
 
+// The home page is read in thirty seconds, on any screen and in any light: body and secondary
+// text reach 7:1 (WCAG 1.4.6, AAA), accents 4.5:1, on the paper and on the sheet that cards and
+// the demo lie on.
+for (const [name, theme] of Object.entries(themes)) {
+  for (const bg of ["paper", "sheet"]) {
+    for (const [fg, min] of [["ink", 7], ["graphite", 7], ["proof-text", 4.5], ["defect", 4.5]] as const) {
+      test(`${name}: --${fg} on --${bg} >= ${min}:1 (text levels)`, () => {
+        const ratio = contrastRatio(theme[fg]!, theme[bg]!);
+        assert.ok(ratio >= min, `${ratio.toFixed(2)}:1 < ${min}:1`);
+      });
+    }
+  }
+}
+
+// Dark mode: cards and the demo stand apart from the paper; the graphite is no darker than #B0AEA6.
+test("dark paper, sheet and graphite are the chosen values", () => {
+  assert.deepEqual([themes.dark.paper, themes.dark.sheet], ["#101110", "#1d1e1b"]);
+  assert.ok(contrastRatio(themes.dark.graphite!, "#000000") >= contrastRatio("#b0aea6", "#000000"), `--graphite ${themes.dark.graphite} is darker than #b0aea6`);
+});
+
 test("SPEC §4 light values are the ones shipped", () => {
   assert.deepEqual(
     [themes.light.paper, themes.light.ink, themes.light.graphite, themes.light.rule, themes.light.proof, themes.light["proof-text"], themes.light.defect, themes.light.night],
-    ["#f5f4f0", "#111111", "#5c5c58", "#dad8d2", "#1e8a4c", "#17703d", "#a8382a", "#1c2a44"],
+    ["#f5f4f0", "#111111", "#52524e", "#dad8d2", "#1e8a4c", "#17703d", "#a8382a", "#1c2a44"],
   );
 });
 
