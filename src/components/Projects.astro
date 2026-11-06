@@ -20,7 +20,7 @@ const t = {
       <p class="mono no">No. 01</p>
       <h3 id="p-verity">Verity</h3>
       <ProductShot id="verity" size="card" />
-      <p>{lang === "fr" ? "Un agent RAG sur des documents d’entreprise : il répond en citant mot pour mot, refuse quand ses preuves sont faibles, et publie à quelle fréquence il refuse à raison." : "A RAG agent over company documents: it answers by quoting word for word, refuses when its evidence is weak, and publishes how often it refuses rightly."}</p>
+      <p>{lang === "fr" ? "Un agent RAG sur des documents d’entreprise : il répond en citant mot pour mot, refuse quand ses preuves sont faibles, et publie à quelle fréquence il refuse à raison." : "A RAG agent over company documents: it answers by quoting word for word, refuses when its evidence is weak, and publishes how often it refuses correctly."}</p>
       <ul class="measures">
         <li><Figure id="verity.refusal_precision" where="card" /> {lang === "fr" ? "précision de refus" : "refusal precision"}</li>
         <li><Figure id="verity.judge_kappa_all" where="card" /> {lang === "fr" ? "accord du juge avec un humain à l’aveugle, toutes affirmations ;" : "judge agreement with a blind human, all claims;"} <Figure id="verity.judge_kappa_real" where="card" /> {lang === "fr" ? "sur les affirmations réelles seules" : "on the real claims alone"}</li>
@@ -40,7 +40,7 @@ const t = {
       <p>{lang === "fr" ? "Un langage typé pour les prompts LLM, compilé vers TypeScript ou Python, publié sur npm." : "A typed language for LLM prompts, compiled to TypeScript or Python, published on npm."}</p>
       <ul class="measures">
         <li><Figure id="promptlang.mutation_score" where="card" /> {lang === "fr" ? "score de mutation (lexer, parser, semver ; exécution locale, hors CI)" : "mutation score (lexer, parser, semver; local run, outside CI)"}</li>
-        <li><Figure id="promptlang.linter_recall" where="card" /> {lang === "fr" ? "rappel du linter IA ; un linter qui signale tout fait aussi bien" : "AI linter recall; a linter that flags everything does as well"}</li>
+        <li><Figure id="promptlang.linter_recall" where="card" /> {lang === "fr" ? "défauts conçus trouvés par le linter IA ; un linter qui signale tout les trouve tous" : "designed defects found by the AI linter; a linter that flags everything finds them all"}</li>
       </ul>
       <div class="known-defect">
         <p class="k">{t.defect}</p>

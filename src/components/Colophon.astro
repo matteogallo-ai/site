@@ -30,7 +30,7 @@ const unmeasured = Object.keys(import.meta.glob("../pages/**/*.astro"))
   title="Colophon — Matteo Gallo"
   description={fr
     ? "Comment ce site est construit : outils, budgets de poids et de vitesse, mesures réelles, accessibilité, ce qui est confié à des agents de code et ce qui est relu."
-    : "How this site is built: tools, weight and speed budgets, real measures, accessibility, what is left to coding agents and what is reviewed."}
+    : "How this site is built: tools, weight and speed budgets, real measurements, accessibility, what is left to coding agents and what is reviewed."}
 >
   <div class="container topbar" slot="header">
     <nav class="crumbs" aria-label={fr ? "Fil d’Ariane" : "Breadcrumb"}>
@@ -99,7 +99,7 @@ const unmeasured = Object.keys(import.meta.glob("../pages/**/*.astro"))
 
   <section class="container section" aria-labelledby="mesures">
     <p class="mono rule-label">+ 03</p>
-    <h2 id="mesures">{fr ? "Mesures réelles" : "Real measures"}</h2>
+    <h2 id="mesures">{fr ? "Mesures réelles" : "Real measurements"}</h2>
     <p>
       {fr ? `Ce que la CI a mesuré le ${measuredOn}, sur le commit` : `What CI measured on ${measuredOn}, on commit`}{" "}
       <a href={`${repo}/commit/${site.commit}`}><span class="mono">{site.commit.slice(0, 7)}</span></a>{fr ? " : médiane de " : ": median of "}{site.lighthouse.runsPerPage}{fr ? " passages de Lighthouse par page (" : " Lighthouse runs per page ("}<a href={siteSource.run}>{fr ? "exécution CI" : "CI run"}</a>).

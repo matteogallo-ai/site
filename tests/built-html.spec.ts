@@ -44,7 +44,7 @@ for (const file of files) {
 // answerable questions it answered; its answers to unanswerable ones are counted apart.
 for (const [file, scope] of [
   ["projets/verity/index.html", "parmi les questions avec réponse auxquelles il a répondu ; ses réponses aux questions sans réponse sont comptées à part"],
-  ["en/projects/verity/index.html", "among the answerable questions it answered; its answers to unanswerable questions are counted apart"],
+  ["en/projects/verity/index.html", "among the answerable questions it answered; its answers to unanswerable questions are counted separately"],
 ] as const) {
   test(`${file}: the brief gives the hallucination figure its scope`, () => {
     const brief = /<section class="brief"[\s\S]*?<\/section>/.exec(html(file))![0];
@@ -58,5 +58,27 @@ for (const file of files.filter((f) => !f.startsWith("en/"))) {
     for (const [quote] of html(file).matchAll(/<blockquote[^>]*lang="en"[^>]*>[\s\S]*?<\/blockquote>/g)) {
       expect(quote, quote.slice(0, 120)).toMatch(/class="tr"[^>]*lang="fr"|lang="fr"[^>]*class="tr"/);
     }
+  });
+}
+
+// D1: English that reads as a word-for-word French calque, on any English page (text, alt, meta).
+const CALQUES = [
+  /\bmeasures\b(?! whether)/i, // the noun « mesures »: results, measurements or metrics; the verb stays
+  /\bMeasure\s*<\/th>/, // a table column headed « Mesure »
+  /refuses? rightly/, // « à raison »: correctly
+  /technician training/, // « formation d’automaticien »: apprenticeship
+  /\bWrite (to me|an e-mail)\b/,
+  /\banalysis note|\bnotes?\b(?![^<]*<\/code>)/, // Praxis delivers briefings
+  /\bFrame of\b/, // « Image de l’enregistrement »: a still
+  /told apart from chance|counted apart\b/,
+  /programming interface \(API\)/,
+];
+for (const file of files.filter((f) => f.startsWith("en/"))) {
+  test(`${file}: no French calque in the English`, () => {
+    // What a reader or a link preview shows: the text, and the attributes written for people.
+    const page = html(file).replace(/<(script|style)[\s\S]*?<\/\1>/g, "").replace(/<[^>]*\blang="fr"[^>]*>[^<]*/g, "");
+    const said = [...page.matchAll(/\b(?:alt|content|aria-label|title)="([^"]*)"/g)].map((m) => m[1]);
+    const text = [page.replace(/<(?!\/th>)[^>]*>/g, " "), ...said].join("\n");
+    expect(CALQUES.flatMap((c) => around(text, c))).toEqual([]);
   });
 }

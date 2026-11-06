@@ -35,7 +35,7 @@ interface Props {
 const lang = langOf(Astro.url.pathname);
 const t = {
   fr: { value: "Valeur", measure: "Mesure", ci: "IC 95\u00A0%", reading: "Lecture" },
-  en: { value: "Value", measure: "Measure", ci: "95% CI", reading: "Reading" },
+  en: { value: "Value", measure: "Metric", ci: "95% CI", reading: "Reading" },
 }[lang];
 const { where, caption, ours = t.value, baseline, rows } = Astro.props;
 

@@ -6,7 +6,7 @@ import { interval, measure } from "../src/lib/measures.ts";
 // work, three decisions (ADR), how it is built, what comes next.
 const SECTIONS: Record<Lang, string[]> = {
   fr: ["Le problème", "Ce que j’ai construit", "Mesures", "Ce qui n’a pas marché, et ce que j’ai fait", "Trois décisions", "Comment c’est construit", "La suite"],
-  en: ["The problem", "What I built", "Measures", "What did not work, and what I did", "Three decisions", "How it is built", "What comes next"],
+  en: ["The problem", "What I built", "Results", "What did not work, and what I did", "Three decisions", "How it is built", "What comes next"],
 };
 const BRIEF: Record<Lang, { title: string; terms: string[] }> = {
   fr: { title: "En bref", terms: ["Ce que ça fait", "Ce qui est mesuré", "Défaut principal"] },

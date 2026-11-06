@@ -17,7 +17,7 @@ const pr = (n: number) => pull("promptlang", n);
   name="PromptLang"
   repo="promptlang"
   summary="A language for writing the instructions given to AI models (prompts) as code: typed, compiled to TypeScript or Python, versioned."
-  description="Case study of PromptLang, a language for writing prompts as code: problem, architecture, measures against a point of comparison, defects, decisions."
+  description="Case study of PromptLang, a language for writing prompts as code: problem, architecture, results against a point of comparison, defects, decisions."
 >
   <Brief
     does="It turns a prompt into a checked file, compiled to TypeScript or Python code, and flags when a new version breaks the code of those who use it."
@@ -25,7 +25,7 @@ const pr = (n: number) => pull("promptlang", n);
     defect="Most of the AI linter’s flags are wrong, barely better than flagging everything. What I did about it: I measured it against that point of comparison, published it, and the linter is presented as an aid to the human reviewer, not as a check."
     figures={[
       { id: "promptlang.mutation_score", caption: "of the errors deliberately introduced into the language reader and the version check, caught by the tests" },
-      { id: "promptlang.linter_recall", caption: "designed defects found by the AI linter; flagging everything finds them all" },
+      { id: "promptlang.linter_recall", caption: "designed defects found by the AI linter; a linter that flags everything finds them all" },
       { id: "promptlang.linter_precision_reviewed", caption: "AI linter flags judged correct in human review", defect: true },
     ]}
   />
@@ -62,7 +62,7 @@ const pr = (n: number) => pull("promptlang", n);
   <CaseSection
     n={3}
     id="mesures"
-    title="Measures"
+    title="Results"
     lead="What the tests and the AI linter are worth, measured against a very simple point of comparison: flagging everything."
   >
     <p>
@@ -75,7 +75,7 @@ const pr = (n: number) => pull("promptlang", n);
       On test prompts with known defects, the AI linter finds <Figure id="promptlang.linter_recall" where="prose" /> of them. But a linter that flags everything, on every prompt, finds them all: <Figure
         id="promptlang.baseline_report_all_recall"
         where="prose"
-      />. The difference lies in correctness, and the gap is modest: <Figure id="promptlang.linter_precision_test" where="prose" /> of the linter’s flags point at a real defect, against <Figure
+      />. The difference is in precision, and the gap is modest: <Figure id="promptlang.linter_precision_test" where="prose" /> of the linter’s flags point at a real defect, against <Figure
         id="promptlang.baseline_report_all_precision"
         where="prose"
       /> for flagging everything, and in human review only <Figure id="promptlang.linter_precision_reviewed" where="prose" defect /> are correct.
@@ -112,7 +112,7 @@ const pr = (n: number) => pull("promptlang", n);
           {
             id: "promptlang.linter_precision_test",
             base: "promptlang.baseline_report_all_precision",
-            label: "Correctness of the flags",
+            label: "Precision of the flags",
             reading: "The gain over a linter that flags every category on every prompt is modest.",
           },
           {
@@ -124,7 +124,7 @@ const pr = (n: number) => pull("promptlang", n);
         ]}
       />
       <p>
-        Correctness on the test prompts counts the flags that land on a designed defect; human review reads flags one by one. Both say the same thing: the AI linter helps the reviewer, it does not
+        Precision on the test prompts counts the flags that land on a designed defect; human review reads flags one by one. Both say the same thing: the AI linter helps the reviewer, it does not
         replace them (<a href={at("docs/SYSTEM_CARD.md")}>system card</a>).
       </p>
     </MeasuresDetail>
@@ -137,8 +137,8 @@ const pr = (n: number) => pull("promptlang", n);
     </p>
     <h3>An AI linter declared shipped, with no point of comparison</h3>
     <p>
-      That page presented the linter as shipped although its correctness was low and nothing said what it was worth. A linter that flags everything finds every designed defect: finding many proved
-      almost nothing. I published its correctness next to that point of comparison (<a href={pr(29)}>#29</a>), then had flags reviewed by hand; the linter is described as an aid to the reviewer, not
+      That page presented the linter as shipped although its precision was low and nothing said what it was worth. A linter that flags everything finds every designed defect: finding many proved
+      almost nothing. I published its precision next to that point of comparison (<a href={pr(29)}>#29</a>), then had flags reviewed by hand; the linter is described as an aid to the reviewer, not
       as a check.
     </p>
     <h3>A typed output never checked</h3>

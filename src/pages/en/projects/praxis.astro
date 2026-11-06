@@ -15,31 +15,31 @@ const at = (path: string) => pinned("praxis", path);
   no="03"
   name="Praxis"
   repo="praxis"
-  summary="A tool that turns a business question into an analysis note (a briefing) written by AI models, whose sources are checked by code and whose drafting is reviewed by a model tasked with finding the flaw."
-  description="Case study of Praxis, AI-written analysis briefings with checked sources: problem, architecture, measures, defects, decisions."
+  summary="A tool that turns a business question into a briefing written by AI models, whose sources are checked by code and whose drafting is reviewed by a model tasked with finding the flaw."
+  description="Case study of Praxis, AI-written analysis briefings with checked sources: problem, architecture, results, defects, decisions."
 >
   <Brief
-    does="From a business question, it searches the web, checks in code that every fact has an acceptable source, then writes an analysis note that itself says what it could not source."
-    measured="How many real, paid runs end in a note, what a note costs, and how many notes pass the source check."
-    defect="No real note passes the source check. What I did about it: the note is delivered anyway, with a section written by the code that lists every unsourced item; the defect is published, not hidden."
+    does="From a business question, it searches the web, checks in code that every fact has an acceptable source, then writes a briefing that itself says what it could not source."
+    measured="How many real, paid runs end in a briefing, what a briefing costs, and how many briefings pass the source check."
+    defect="No real briefing passes the source check. What I did about it: the briefing is delivered anyway, with a section written by the code that lists every unsourced item; the defect is published, not hidden."
     figures={[
       { id: "praxis.live_completed", caption: "real runs that reached the end, out of the attempts" },
-      { id: "praxis.cost_per_briefing", caption: "cost of a completed note, from the cheapest to the most expensive" },
-      { id: "praxis.insufficiently_sourced", caption: "completed notes flagged as insufficiently sourced", defect: true },
+      { id: "praxis.cost_per_briefing", caption: "cost of a completed briefing, from the cheapest to the most expensive" },
+      { id: "praxis.insufficiently_sourced", caption: "completed briefings flagged as insufficiently sourced", defect: true },
     ]}
   />
 
   <CaseSection n={1} id="probleme" title="The problem" lead="In two sentences, why this project exists.">
     <p>
-      An analysis note written by an AI model looks sourced even when it is not. Praxis writes a note in a chosen format (preparation note, memo, position paper) and tells the reader, in the text
+      A briefing written by an AI model looks sourced even when it is not. Praxis writes a briefing in a chosen format (briefing paper, memo, position paper) and tells the reader, in the text
       itself, what rests on a verifiable source and what does not.
     </p>
   </CaseSection>
 
-  <CaseSection n={2} id="construit" title="What I built" lead="The stages of a note, from the question to the delivered file, and the two possible outcomes.">
+  <CaseSection n={2} id="construit" title="What I built" lead="The stages of a briefing, from the question to the delivered file, and the two possible outcomes.">
     <Diagram
       id="praxis-pipeline"
-      title="The stages of a Praxis note"
+      title="The stages of a Praxis briefing"
       steps={[
         { title: "Scoping", lines: ["what the question covers, which format"] },
         { title: "Web search", lines: ["facts, actors, risks, options:", "every item carries its source"] },
@@ -53,7 +53,7 @@ const at = (path: string) => pinned("praxis", path);
         { title: "Flagged", lines: ["delivered;", "a section lists", "every item", "without a source"], tone: "defect" },
       ]}
       desc="Praxis first scopes what the question covers and the expected format. A web search gathers facts, actors, risks and options, each with its source. A check written in code rejects missing sources, unreliable sites, pages too old and duplicates. A model then drafts each section, and another looks for the flaw and may restart the drafting once at most. The file is delivered as Markdown, PDF and Word. It is sourced when every item has a source; otherwise it is flagged: a section lists every item without a source."
-      caption="Every stage calls an Anthropic model, except the source check, which is code. On the command line and in the test bench, a note that fails this check is delivered with a section that lists what it could not source; the run stops if no fact from the search has a source."
+      caption="Every stage calls an Anthropic model, except the source check, which is code. On the command line and in the test bench, a briefing that fails this check is delivered with a section that lists what it could not source; the run stops if no fact from the search has a source."
     />
     <p>
       The instructions given to the models are <code>.prompt</code> files read by PromptLang. The section of unsourced items is written by the code from the check’s report: no model can soften it.
@@ -63,17 +63,17 @@ const at = (path: string) => pinned("praxis", path);
   <CaseSection
     n={3}
     id="mesures"
-    title="Measures"
+    title="Results"
     lead="What the real, paid runs give, and what is not measured at all."
   >
     <p>
-      Of the real runs, <Figure id="praxis.live_completed" where="prose" /> reached the end; a completed note cost <Figure id="praxis.cost_per_briefing" where="prose" />. Every completed note is
+      Of the real runs, <Figure id="praxis.live_completed" where="prose" /> reached the end; a completed briefing cost <Figure id="praxis.cost_per_briefing" where="prose" />. Every completed briefing is
       flagged as insufficiently sourced: <Figure id="praxis.insufficiently_sourced" where="prose" defect />. The flag is raised as soon as a single item blocks.
     </p>
     <h3>No point of comparison</h3>
     <p>
-      Nothing in the repository compares Praxis with a simpler approach, a single model call or drafting without search. The only score published before rated simulated notes, written by hand for
-      the tests: it measured those examples, not a model, and it was withdrawn (<a href={at("CHANGELOG.md")}>changelog</a>). The quality of the notes themselves is reviewed for no question; only
+      Nothing in the repository compares Praxis with a simpler approach, a single model call or drafting without search. The only score published earlier rated simulated briefings, written by hand for
+      the tests: it measured those examples, not a model, and it was withdrawn (<a href={at("CHANGELOG.md")}>changelog</a>). The quality of the briefings themselves has not been reviewed for any question; only
       the first-hand sources of one question were reviewed by a human (<a href={at("benchmarks/outputs/live/README.md")}>real runs</a>).
     </p>
     <MeasuresDetail>
@@ -83,20 +83,20 @@ const at = (path: string) => pinned("praxis", path);
         rows={[
           {
             id: "praxis.live_completed",
-            label: "Completed notes, out of the attempts",
+            label: "Completed briefings, out of the attempts",
             reading:
               "The other attempts failed: source check too strict, text before the structured response, time limit exceeded, truncated response, section refused.",
           },
           {
             id: "praxis.insufficiently_sourced",
-            label: "Notes flagged as insufficiently sourced",
+            label: "Briefings flagged as insufficiently sourced",
             defect: true,
             noInterval: "The repository publishes no interval for this count.",
-            reading: "The main defect: every completed note is flagged. The flag is raised as soon as a single item blocks.",
+            reading: "The main defect: every completed briefing is flagged. The flag is raised as soon as a single item blocks.",
           },
           {
             id: "praxis.cost_per_briefing",
-            label: "Cost of a completed note",
+            label: "Cost of a completed briefing",
             noInterval: "The range of the completed runs, from the cheapest to the most expensive: not an estimate.",
             reading: "Cost recorded with every completed run.",
           },
@@ -106,7 +106,7 @@ const at = (path: string) => pinned("praxis", path);
   </CaseSection>
 
   <CaseSection n={4} id="echecs" title="What did not work, and what I did" lead="Three real failures, their cause when it is known, and what each one changed.">
-    <h3>Declared done without a single real note</h3>
+    <h3>Declared done before a single real briefing</h3>
     <p>
       Every stage and every format was built and tested on hand-written examples before the first real run. The tests could only prove that the stages fitted together, the test bench measured those
       examples, and the first real runs all failed. What I did: an independent audit, then fixes without any paid call (general instruction in its proper place, model chosen per stage, tolerant
@@ -118,7 +118,7 @@ const at = (path: string) => pinned("praxis", path);
     <p>
       In strict mode, a single item without a source cancelled every stage already done. No trace of those runs was kept: the cause is read in the instruction and the code, not observed. The search
       instruction required a consultation date that the model cannot know, which left only one compliant answer: “missing source”. Praxis now dates its consultations itself, which removes the
-      probable cause without guaranteeing a source for every item, and the note is delivered with its gaps written into it (<a href={at("docs/adr/0002-degrade-on-insufficient-sourcing.md")}
+      probable cause without guaranteeing a source for every item, and the briefing is delivered with its gaps written into it (<a href={at("docs/adr/0002-degrade-on-insufficient-sourcing.md")}
         >ADR 0002</a
       >).
     </p>
@@ -149,7 +149,7 @@ const at = (path: string) => pinned("praxis", path);
       <li>
         <h3>Deliver with a flag rather than give up</h3>
         <p>
-          On the command line and in the test bench, a failed source check is recorded, the run continues, the report is flagged and the code adds a section that lists every blocking item. The note is
+          On the command line and in the test bench, a failed source check is recorded, the run continues, the report is flagged and the code adds a section that lists every blocking item. The briefing is
           complete, but says in its own text what it could not source. Used as a library, Praxis still gives up by default: changing the errors a public function can raise would break the code of
           those who call it.
         </p>
@@ -168,15 +168,15 @@ const at = (path: string) => pinned("praxis", path);
 
   <CaseSection n={6} id="construction" title="How it is built" lead="For a technical reader: the stack, the models used and the test tools.">
     <p>
-      TypeScript on Bun. Anthropic’s Messages programming interface (API), with its web search tool: <code>claude-opus-5-5</code> for scoping, options and the adversarial review, <code>claude-sonnet-5-5</code> for search, actors, risks and drafting. <code>@promptlang/core</code> from npm, pinned by its hash; pdfkit for the PDF, the Word file written by hand. Tests <code>bun test</code>, fast-check, Stryker. Architecture: <a href={at("docs/architecture.md")}>docs/architecture.md</a>.
+      TypeScript on Bun. Anthropic’s Messages API, with its web search tool: <code>claude-opus-5-5</code> for scoping, options and the adversarial review, <code>claude-sonnet-5-5</code> for search, actors, risks and drafting. <code>@promptlang/core</code> from npm, pinned by its hash; pdfkit for the PDF, the Word file written by hand. Tests: <code>bun test</code>, fast-check, Stryker. Architecture: <a href={at("docs/architecture.md")}>docs/architecture.md</a>.
     </p>
   </CaseSection>
 
   <CaseSection n={7} id="suite" title="What comes next" lead="What is missing, according to the project’s roadmap.">
     <ul>
-      <li>A real run that ends reliably, and measured: cost, volume of text processed, duration, rated sample.</li>
-      <li>The quality of real notes rated by a judge model, validated against human ratings, with its margin of error.</li>
-      <li>The age of a source measured on the date of the page itself.</li>
+      <li>A real run that completes reliably, with its measurements: cost, volume of text processed, duration, rated sample.</li>
+      <li>The quality of real briefings rated by a judge model, validated against human ratings, with its margin of error.</li>
+      <li>A source’s age measured from the date of the page itself.</li>
       <li>A web search that filters its results along the way, evaluated against the base tool.</li>
     </ul>
     <p><a href={at("README.md#roadmap")}>Roadmap</a></p>

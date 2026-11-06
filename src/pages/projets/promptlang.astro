@@ -25,7 +25,7 @@ const pr = (n: number) => pull("promptlang", n);
     defect="La plupart des signalements du linter IA sont faux, à peine mieux que tout signaler. Ce que j’en ai fait : je l’ai mesuré contre ce point de comparaison, publié, et le linter est présenté comme une aide au relecteur humain, pas comme un contrôle."
     figures={[
       { id: "promptlang.mutation_score", caption: "des erreurs introduites exprès dans la lecture du langage et le contrôle de version, repérées par les tests" },
-      { id: "promptlang.linter_recall", caption: "défauts conçus trouvés par le linter IA ; tout signaler les trouve tous" },
+      { id: "promptlang.linter_recall", caption: "défauts conçus trouvés par le linter IA ; un linter qui signale tout les trouve tous" },
       { id: "promptlang.linter_precision_reviewed", caption: "signalements du linter IA jugés justes à la relecture humaine", defect: true },
     ]}
   />
