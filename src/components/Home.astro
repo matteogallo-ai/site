@@ -5,6 +5,7 @@ import Figure from "./Figure.astro";
 import VerityDemo from "./VerityDemo.astro";
 import Projects from "./Projects.astro";
 import Bio from "./Bio.astro";
+import LangSwitch from "./LangSwitch.astro";
 import { langOf } from "../lib/i18n.ts";
 import portrait from "../assets/matteo.jpg";
 
@@ -27,6 +28,7 @@ const id = fr ? { projects: "projets", method: "methode", about: "a-propos" } : 
       <li><a href={`#${id.projects}`}>{fr ? "Projets" : "Projects"}</a></li>
       <li><a href={`#${id.method}`}>{fr ? "Méthode" : "Method"}</a></li>
       <li><a href={`#${id.about}`}>{fr ? "À propos" : "About"}</a></li>
+      <li class="lang"><LangSwitch /></li>
       <li class="spy" data-spy-dot hidden aria-hidden="true"></li>
     </ul>
   </nav>
@@ -182,6 +184,12 @@ const id = fr ? { projects: "projets", method: "methode", about: "a-propos" } : 
 
   .nav ul {
     position: relative;
+  }
+
+  /* The language selector closes the pill, set off from the section links by a rule. */
+  .nav .lang {
+    padding-left: 1rem;
+    border-left: 1px solid var(--rule);
   }
 
   /* The underline draws itself from the left on hover; it stays drawn on the section in view. */

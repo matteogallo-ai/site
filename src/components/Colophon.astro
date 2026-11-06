@@ -4,6 +4,7 @@ import { kilo, site, siteBudgets, siteSource } from "../lib/colophon.ts";
 import { langOf } from "../lib/i18n.ts";
 import { decimal } from "../lib/measures.ts";
 import { route } from "../lib/sitemap.ts";
+import LangSwitch from "./LangSwitch.astro";
 
 // The Colophon in either language (src/pages/colophon.astro, src/pages/en/colophon.astro).
 const lang = langOf(Astro.url.pathname);
@@ -31,6 +32,7 @@ const unmeasured = Object.keys(import.meta.glob("../pages/**/*.astro"))
 >
   <nav class="container crumbs" aria-label={fr ? "Fil d’Ariane" : "Breadcrumb"}>
     <a href={fr ? "/" : "/en/"}>Matteo Gallo</a>
+    <LangSwitch />
   </nav>
 
   <header class="container intro">
@@ -185,6 +187,8 @@ const unmeasured = Object.keys(import.meta.glob("../pages/**/*.astro"))
 
 <style>
   .crumbs {
+    display: flex;
+    justify-content: space-between;
     padding-top: 1.5rem;
     font-size: var(--step-14);
   }

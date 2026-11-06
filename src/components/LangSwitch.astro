@@ -1,0 +1,33 @@
+---
+import { langOf, twin } from "../lib/i18n.ts";
+
+// FR | EN, without script: the page's own language as plain text, the other one as a link to
+// the same page in that language. A 404 has no address of its own: it links to the other home page.
+const path = Astro.url.pathname;
+const lang = langOf(path);
+const other = lang === "fr" ? "en" : "fr";
+const notFound = /\/404(\.html)?\/?$/.test(path);
+const href = notFound ? (other === "en" ? "/en/" : "/") : twin(path);
+const codes = { fr: "FR", en: "EN" } as const;
+---
+
+<span class="langs" role="group" aria-label={lang === "fr" ? "Langue" : "Language"}>
+  {lang === "fr" && <span class="current">{codes.fr}</span>}
+  {lang === "en" && <a href={href} hreflang="fr" lang="fr">{codes.fr}</a>}
+  <span aria-hidden="true">|</span>
+  {lang === "en" && <span class="current">{codes.en}</span>}
+  {lang === "fr" && <a href={href} hreflang="en" lang="en">{codes.en}</a>}
+</span>
+
+<style>
+  .langs {
+    display: inline-flex;
+    gap: 0.4em;
+    font-size: var(--step-14);
+    color: var(--graphite);
+  }
+
+  .current {
+    color: var(--ink);
+  }
+</style>

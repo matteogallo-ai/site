@@ -2,7 +2,7 @@
 import { Font } from "astro:assets";
 import "../styles/global.css";
 import Glass from "../components/Glass.astro";
-import { langOf } from "../lib/i18n.ts";
+import { alternates, langOf } from "../lib/i18n.ts";
 import { OG } from "../lib/og.ts";
 
 interface Props {
@@ -18,6 +18,9 @@ const { title, description, serif = false, canonical: hasCanonical = true } = As
 const lang = langOf(Astro.url.pathname);
 const skipLabel = lang === "fr" ? "Aller au contenu" : "Skip to content";
 const canonical = hasCanonical ? new URL(Astro.url.pathname, Astro.site).href : undefined;
+// The page in each language (SPEC §7); a page with no address of its own (the 404) names none.
+const versions = hasCanonical ? alternates(Astro.url.pathname).map((a) => ({ ...a, href: new URL(a.path, Astro.site).href })) : [];
+const image = OG[lang];
 ---
 
 <!doctype html>
@@ -28,17 +31,18 @@ const canonical = hasCanonical ? new URL(Astro.url.pathname, Astro.site).href : 
     <title>{title}</title>
     <meta name="description" content={description} />
     {canonical && <link rel="canonical" href={canonical} />}
-    {/* Link previews (Open Graph): one image for every page, written by scripts/og.ts. */}
+    {versions.map((v) => <link rel="alternate" hreflang={v.hreflang} href={v.href} />)}
+    {/* Link previews (Open Graph): one image per language, written by scripts/og.ts. */}
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Matteo Gallo" />
     <meta property="og:locale" content={lang === "fr" ? "fr_CH" : "en_GB"} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     {canonical && <meta property="og:url" content={canonical} />}
-    <meta property="og:image" content={new URL(OG.file.replace(/^public/, ""), Astro.site)} />
+    <meta property="og:image" content={new URL(image.file.replace(/^public/, ""), Astro.site)} />
     <meta property="og:image:width" content={String(OG.width)} />
     <meta property="og:image:height" content={String(OG.height)} />
-    <meta property="og:image:alt" content={OG.alt} />
+    <meta property="og:image:alt" content={image.alt} />
     <meta name="twitter:card" content="summary_large_image" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <Font cssVariable="--font-sans" preload />

@@ -2,6 +2,7 @@
 import Base from "./Base.astro";
 import { langOf, twin } from "../lib/i18n.ts";
 import { repoUrl } from "../lib/sources.ts";
+import LangSwitch from "../components/LangSwitch.astro";
 
 interface Props {
   /** Calibre number of the project, as on the home page cards ("01"). */
@@ -34,6 +35,7 @@ const cases = [
       <a href={t.home}>Matteo Gallo</a>
       <span aria-hidden="true">/</span>
       <a href={t.projects}>{t.projectsLabel}</a>
+      <LangSwitch />
     </nav>
     <header class="head">
       <p class="no"><span class="mono">No. {no}</span> · {t.kind}</p>
@@ -75,6 +77,11 @@ const cases = [
     gap: 0.5rem;
     font-size: var(--step-14);
     color: var(--graphite);
+  }
+
+  /* The language selector sits at the end of the line, apart from the path. */
+  .crumbs :global(.langs) {
+    margin-left: auto;
   }
 
   .head {
