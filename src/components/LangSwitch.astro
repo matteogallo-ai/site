@@ -22,6 +22,8 @@ const codes = { fr: "FR", en: "EN" } as const;
 <style>
   .langs {
     display: inline-flex;
+    /* The link is a taller box (a touch target) than the current code and the bar: one line. */
+    align-items: center;
     gap: 0.4em;
     font-size: var(--step-14);
     color: var(--graphite);

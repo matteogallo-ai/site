@@ -301,3 +301,20 @@ for (const width of [375, 1440]) {
     expect(ring.clipped).toEqual([]);
   });
 }
+
+// The language selector's codes and bar share one line, whatever the height of the link's box.
+for (const path of ["/", "/en/projects/verity/"]) {
+  test(`${path}: FR, the bar and EN are vertically aligned`, async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 800 });
+    await page.goto(path);
+    const middles = await page.locator(".langs > *").evaluateAll((els) =>
+      els.map((e) => {
+        const range = document.createRange();
+        range.selectNodeContents(e);
+        const r = range.getBoundingClientRect();
+        return Math.round(r.top + r.height / 2);
+      }),
+    );
+    expect(Math.max(...middles) - Math.min(...middles), JSON.stringify(middles)).toBeLessThanOrEqual(1);
+  });
+}
