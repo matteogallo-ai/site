@@ -142,21 +142,21 @@ for (const [name, theme] of Object.entries(themes)) {
   });
 }
 
-// Halo behind the demo: the caption, the inactive tab and the run's source link sit on it.
-// Worst case, both colours of the halo over the paper at once.
+// Halo behind the demo: the caption, the inactive tab and the note under it sit on it.
+// Worst case, both colours of the halo over the sheet at once; secondary text there keeps 7:1.
 const haloProof = readMix(css, "halo-proof");
 const haloNight = readMix(css, "halo-night");
-test("the halo is the proof green and the night blue, 6 % at most each", () => {
+test("the halo is the proof green and the night blue, 2 % at most each", () => {
   assert.deepEqual([haloProof.first, haloNight.first], ["proof", "night"]);
-  assert.ok(haloProof.weight <= 0.06 && haloNight.weight <= 0.06);
+  assert.ok(haloProof.weight <= 0.02 && haloNight.weight <= 0.02);
 });
 
 for (const [name, theme] of Object.entries(themes)) {
-  const under = mix(theme.night!, mix(theme.proof!, theme.paper!, haloProof.weight), haloNight.weight);
+  const under = mix(theme.night!, mix(theme.proof!, theme.sheet!, haloProof.weight), haloNight.weight);
   for (const fg of ["ink", "graphite"]) {
-    test(`${name}: --${fg} on the demo's halo (${under}) >= 4.5:1`, () => {
+    test(`${name}: --${fg} on the demo's halo (${under}) >= 7:1`, () => {
       const ratio = contrastRatio(theme[fg]!, under);
-      assert.ok(ratio >= 4.5, `${ratio.toFixed(2)}:1 < 4.5:1`);
+      assert.ok(ratio >= 7, `${ratio.toFixed(2)}:1 < 7:1`);
     });
   }
 }

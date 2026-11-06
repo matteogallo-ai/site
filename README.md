@@ -36,7 +36,7 @@ blocking CI checks rather than promises.
 ## How this was built
 
 **Stack.** [Astro](https://astro.build), static output, TypeScript in its strictest mode, no
-client JavaScript except the Verity demo, the bio toggle and the small scripts in `src/scripts/`.
+client JavaScript except the Verity demo and the small scripts in `src/scripts/`.
 Self-hosted font subsets. Hosted on Cloudflare Pages through its Git integration. French at `/`,
 English at `/en/`, translated by hand.
 
