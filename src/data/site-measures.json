@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-11-05T18:04:24.438Z",
-  "commit": "6e28ca009f93e8b7bd6ad7ee630185aee5148900",
+  "generatedAt": "2026-11-06T10:56:19.691Z",
+  "commit": "b328dbfffc435a2ac2dec588ad0782606abfe145",
   "lighthouse": {
     "version": "13.6.0",
     "formFactor": "mobile",
@@ -11,7 +11,7 @@
   "pages": [
     {
       "path": "/",
-      "transferBytes": 167813,
+      "transferBytes": 171565,
       "fontBytes": 82112,
       "scores": {
         "performance": 100,
@@ -19,8 +19,151 @@
         "bestPractices": 100,
         "seo": 100
       },
-      "lcpMs": 951,
-      "cls": 0.009
+      "lcpMs": 907,
+      "cls": 0
+    },
+    {
+      "path": "/404.html",
+      "transferBytes": 33405,
+      "fontBytes": 28321,
+      "scores": {
+        "performance": 100,
+        "accessibility": 100,
+        "bestPractices": 100,
+        "seo": 100
+      },
+      "lcpMs": 753,
+      "cls": 0
+    },
+    {
+      "path": "/colophon/",
+      "transferBytes": 51684,
+      "fontBytes": 44330,
+      "scores": {
+        "performance": 100,
+        "accessibility": 100,
+        "bestPractices": 100,
+        "seo": 100
+      },
+      "lcpMs": 753,
+      "cls": 0
+    },
+    {
+      "path": "/en/",
+      "transferBytes": 170810,
+      "fontBytes": 82112,
+      "scores": {
+        "performance": 100,
+        "accessibility": 100,
+        "bestPractices": 100,
+        "seo": 100
+      },
+      "lcpMs": 906,
+      "cls": 0
+    },
+    {
+      "path": "/en/404.html",
+      "transferBytes": 33380,
+      "fontBytes": 28321,
+      "scores": {
+        "performance": 100,
+        "accessibility": 100,
+        "bestPractices": 100,
+        "seo": 100
+      },
+      "lcpMs": 753,
+      "cls": 0
+    },
+    {
+      "path": "/en/colophon/",
+      "transferBytes": 51484,
+      "fontBytes": 44330,
+      "scores": {
+        "performance": 100,
+        "accessibility": 100,
+        "bestPractices": 100,
+        "seo": 100
+      },
+      "lcpMs": 753,
+      "cls": 0
+    },
+    {
+      "path": "/en/projects/praxis/",
+      "transferBytes": 58064,
+      "fontBytes": 44330,
+      "scores": {
+        "performance": 100,
+        "accessibility": 100,
+        "bestPractices": 100,
+        "seo": 100
+      },
+      "lcpMs": 904,
+      "cls": 0
+    },
+    {
+      "path": "/en/projects/promptlang/",
+      "transferBytes": 58487,
+      "fontBytes": 44330,
+      "scores": {
+        "performance": 100,
+        "accessibility": 100,
+        "bestPractices": 100,
+        "seo": 100
+      },
+      "lcpMs": 903,
+      "cls": 0
+    },
+    {
+      "path": "/en/projects/verity/",
+      "transferBytes": 97463,
+      "fontBytes": 82112,
+      "scores": {
+        "performance": 100,
+        "accessibility": 100,
+        "bestPractices": 100,
+        "seo": 100
+      },
+      "lcpMs": 905,
+      "cls": 0
+    },
+    {
+      "path": "/projets/praxis/",
+      "transferBytes": 58615,
+      "fontBytes": 44330,
+      "scores": {
+        "performance": 100,
+        "accessibility": 100,
+        "bestPractices": 100,
+        "seo": 100
+      },
+      "lcpMs": 904,
+      "cls": 0
+    },
+    {
+      "path": "/projets/promptlang/",
+      "transferBytes": 58954,
+      "fontBytes": 44330,
+      "scores": {
+        "performance": 100,
+        "accessibility": 100,
+        "bestPractices": 100,
+        "seo": 100
+      },
+      "lcpMs": 903,
+      "cls": 0
+    },
+    {
+      "path": "/projets/verity/",
+      "transferBytes": 98096,
+      "fontBytes": 82112,
+      "scores": {
+        "performance": 100,
+        "accessibility": 100,
+        "bestPractices": 100,
+        "seo": 100
+      },
+      "lcpMs": 903,
+      "cls": 0
     }
   ]
 }

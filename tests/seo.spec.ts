@@ -115,7 +115,9 @@ for (const path of ["/colophon/", twin("/colophon/")]) {
     await expect(page.locator(`section:has(#mesures) a[href$="${site.commit}"]`)).toHaveText(site.commit.slice(0, 7));
     // Every built page the recorded run did not measure is named, so the figures are not read as the whole site's.
     const unmeasured = pages.filter((p) => !site.pages.some((m) => m.path === p));
-    await expect(page.locator("section:has(#mesures) .note .mono")).toHaveText(unmeasured.join(", "));
+    const note = page.locator("section:has(#mesures) .note .mono");
+    if (unmeasured.length > 0) await expect(note).toHaveText(unmeasured.join(", "));
+    else await expect(note).toHaveCount(0);
   });
 }
 
