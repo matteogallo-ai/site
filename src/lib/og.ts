@@ -7,6 +7,8 @@ import { measure } from "./measures.ts";
 export const OG = {
   width: 1200,
   height: 630,
+  /** The site's dark tokens: a light card disappears in a white feed (LinkedIn). */
+  scheme: "dark",
   name: "Matteo Gallo",
   role: { fr: "Ingénieur logiciel & IA · Lausanne", en: "Software & AI Engineer · Lausanne" },
   fr: {

@@ -99,7 +99,7 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
     for (const image of ogImages()) {
       const html = join(dir, `${image.case?.slug ?? "home"}-${image.lang}.html`);
       writeFileSync(html, page(image));
-      const tab = await browser.newPage({ viewport: { width: OG.width, height: OG.height }, deviceScaleFactor: 1, colorScheme: "light" });
+      const tab = await browser.newPage({ viewport: { width: OG.width, height: OG.height }, deviceScaleFactor: 1, colorScheme: OG.scheme });
       await tab.goto(pathToFileURL(html).href);
       await tab.evaluate(() => document.fonts.ready);
       // A face that failed to load would leave a fallback font in the image without an error.

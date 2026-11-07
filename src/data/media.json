@@ -22,8 +22,8 @@
         "en": "Verity demo: an answer with its citations, and the cited passage highlighted in the contract."
       },
       "caption": {
-        "fr": "Image de l’enregistrement de la démo en direct (`claude-sonnet-4-6`) : la réponse sur le délai d’une demande critique, raccourci par le Premium Support du bon de commande, ses deux citations, et à droite le passage cité du contrat, surligné parmi les sources retrouvées.",
-        "en": "Still from the live demo recording (`claude-sonnet-4-6`): the answer on the response time for a critical request, shortened by the order form’s Premium Support, its two citations, and on the right the cited contract passage, highlighted among the retrieved sources."
+        "fr": "Démo enregistrée : une réponse et ses citations.",
+        "en": "Recorded demo: an answer and its citations."
       }
     },
     {
@@ -47,8 +47,8 @@
         "en": "Terminal: PromptLang’s version check rejects an incompatible change."
       },
       "caption": {
-        "fr": "Dernière image de l’enregistrement de `bun run demo` : `semver-check` refuse un changement incompatible publié en `1.1.0` et l’accepte en `2.0.0` ; un consommateur épinglé sur `^1.0.0` échoue proprement, puis les tests de prompts passent sur des réponses simulées.",
-        "en": "Last frame of the `bun run demo` recording: `semver-check` rejects an incompatible change released as `1.1.0` and passes it as `2.0.0`; a consumer pinned to `^1.0.0` fails cleanly, then the prompt tests pass on mock responses."
+        "fr": "Démo enregistrée : un changement incompatible refusé.",
+        "en": "Recorded demo: an incompatible change rejected."
       }
     },
     {
@@ -73,8 +73,8 @@
         "en": "First page of a Praxis briefing: title, recommended option, risk and robustness."
       },
       "caption": {
-        "fr": "Première page du briefing live `q10`, publié, au format `position-paper-corporate` : l’option recommandée, un risque agrégé « high », une robustesse « low » et une révision demandée par la relecture contradictoire.",
-        "en": "First page of the published live briefing `q10`, in the `position-paper-corporate` format: the recommended option, an aggregated risk “high”, a robustness “low” and a revision requested by the adversarial review."
+        "fr": "Première page d’un briefing live publié.",
+        "en": "First page of a published live briefing."
       }
     }
   ]

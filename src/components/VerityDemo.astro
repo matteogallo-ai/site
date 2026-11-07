@@ -331,17 +331,24 @@ const nameOf = (path: string) => {
     box-shadow: 0 2px 0 var(--defect);
   }
 
-  /* Folded matter (the run's English, the whole contract): a quiet line that says what opens. */
-  /* The browser's triangle (U+25B8) is not in the font subsets: a plus that turns to a dash. */
+  /* Folded matter (the run's English, the whole contract): a small secondary button that says
+     what opens. The browser's triangle (U+25B8) is not in the font subsets: a plus that turns to
+     a dash. */
   details > summary {
     list-style: none;
-    width: max-content;
+    display: inline-flex;
+    align-items: center;
     max-width: 100%;
-    min-height: 24px;
+    min-height: 28px;
+    padding: 0 0.75rem;
+    border: 1px solid var(--rule);
+    border-radius: 999px;
     font-size: var(--step-12);
-    color: var(--graphite);
+    color: var(--ink);
     cursor: pointer;
-    transition: color var(--dur-hover) var(--ease-out);
+    transition:
+      border-color var(--dur-hover) var(--ease-out),
+      background-color var(--dur-hover) var(--ease-out);
   }
 
   details > summary::-webkit-details-marker {
@@ -357,7 +364,8 @@ const nameOf = (path: string) => {
   }
 
   details > summary:hover {
-    color: var(--ink);
+    border-color: var(--ink);
+    background-color: var(--ink-wash);
   }
 
   .original {

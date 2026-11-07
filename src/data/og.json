@@ -1,13 +1,13 @@
 {
-  "inputs": "63947f70eec5a432e0af0c9096ca210a420bca7eac502272bc03e4bacf2b796e",
+  "inputs": "b3fc45107d32c9dcaebfc425a47d8154b748915ee228c2ed1101c6d6f1c7a503",
   "png": {
-    "public/og.png": "905c9ed267bfd12848950c3efe0f183ea848af66cac2068f0f2492f8ab72f056",
-    "public/og/verity.png": "9afa22dc78f2c41d3f9320b4aa9f4753de39205008b24155f0a0c49c9af37165",
-    "public/og/promptlang.png": "d092099391bc7634d4b84dcb2bb1af1c58fd928c16ad51482394c18751056ced",
-    "public/og/praxis.png": "5bb02a93180dba46ac7a7e6655a29a5806069e4f8f63e1f405ab57d6e6817167",
-    "public/og-en.png": "7e1f00c0c180f614fc47bf9db1eadcf0aee100d183f56147a3e8350765fe4a33",
-    "public/og/verity-en.png": "dc7b1e579080dec3184ae4c3b50c265eb8da541fe54233165edd7256e1affade",
-    "public/og/promptlang-en.png": "e820a40c12a487f00b62d9a51def30f1e91e8fcb06d3d1af3609cb01a48a1f49",
-    "public/og/praxis-en.png": "72c9a2c86140c30744ddd568ca82afc8ec855db97f3f860b8436f6378d3fb7a8"
+    "public/og.png": "dd918141078849af480bac8d8b6222a492d9e9fc793bc3c2a9284ba5036943f4",
+    "public/og/verity.png": "7880d177afac89588dc46d37f6c47d90e26416f040421ca4a0aa40693f5f9fe3",
+    "public/og/promptlang.png": "ff6c73cb0699e15cefeaab5761fdefc58d9baa29c10a6dd2e15fa62be5946fe2",
+    "public/og/praxis.png": "9385df36a23ba40aa22be58879c726a6d79d30b598dbb3554854973169db7bf0",
+    "public/og-en.png": "5710362bb40095d8d88ef316df8badc4d36bd69162d266328d731f0c6d500bcb",
+    "public/og/verity-en.png": "eca5901e6c1728d1e685c854292c6368b45110a6cd18623e9c4b440d05654dbe",
+    "public/og/promptlang-en.png": "ab5b7cddcff8a397a5cbeed9778aaae1fe02c945e5f42af77ceabb61aed02a38",
+    "public/og/praxis-en.png": "45fd011c22502438bb2c625add553f5fe9607ec6b1c68f00de7b6f853098836f"
   }
 }

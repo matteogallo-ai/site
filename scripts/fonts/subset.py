@@ -47,6 +47,9 @@ TEXT = cps(
     (0x2009, 0x2009), (0x2010, 0x2010), (0x2013, 0x2014), (0x2018, 0x2019),
     (0x201C, 0x201D), (0x2026, 0x2026), (0x202F, 0x202F), (0x2039, 0x203A), (0x20AC, 0x20AC),
 )
+# Link signs, in the text face only: → on a button that opens a case study, ↗ on a link that
+# leaves the site.
+ARROWS = cps((0x2192, 0x2192), (0x2197, 0x2197))
 # Measures and traces: ASCII, no-break space, ≥ ≤ ✓ ✗ · ‹ › €, κ (Cohen's kappa), the
 # en dash of ranges and the ° of « N° 01 ». JetBrains Mono has no U+202F,
 # so French-formatted numbers in mono must use U+00A0 (the glyph test enforces it).
@@ -115,7 +118,7 @@ def main() -> None:
 
     # wght only, limited to the 400-700 the site uses; opsz pinned to text optics (14):
     # headings get their display look from the SPEC's negative tracking instead.
-    coverage["sans"] = write(load(INTER), TEXT, ["tnum", "case"], {"opsz": 14, "wght": (400, 700)}, "inter-wght.woff2")
+    coverage["sans"] = write(load(INTER), sorted({*TEXT, *ARROWS}), ["tnum", "case"], {"opsz": 14, "wght": (400, 700)}, "inter-wght.woff2")
 
     serif_cps: list[list[int]] = []
     for weight, style in ((400, "Regular"), (600, "Semibold")):

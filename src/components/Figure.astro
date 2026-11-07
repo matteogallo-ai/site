@@ -56,14 +56,21 @@ if (text !== undefined) {
     color: var(--defect);
   }
 
-  .value {
-    font-variant-numeric: tabular-nums;
-    border-bottom: 1px dotted currentColor;
+  /* In a sentence the line of text sets the target (WCAG 2.5.8 exempts it): a minimum width
+     would open a hole after a short figure such as "3". */
+  .figure[data-in-sentence] {
+    min-width: 0;
   }
 
-  /* Under the pointer or the keyboard the dotted rule turns solid: this figure is a link. */
+  .value {
+    font-variant-numeric: tabular-nums;
+    /* A thin solid rule and the ↗ after it (global.css): this figure opens its proof. */
+    border-bottom: 1px solid currentColor;
+  }
+
+  /* Under the pointer or the keyboard the rule thickens, drawn below it: no line moves. */
   .figure:is(:hover, :focus-visible) .value {
-    border-bottom-style: solid;
+    box-shadow: 0 1px 0 currentColor;
   }
 
 </style>
