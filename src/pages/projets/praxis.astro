@@ -22,12 +22,12 @@ const at = (path: string) => pinned("praxis", path);
   <Brief
     slot="brief"
     does="À partir d’une question métier, il cherche sur le web, vérifie en code que chaque fait a une source acceptable, puis rédige un briefing qui dit lui-même ce qu’il n’a pas pu sourcer."
-    measured="Combien d’exécutions réelles, payées, aboutissent à un briefing, ce que coûte un briefing, et combien de briefings passent le contrôle des sources."
-    defect="Aucun briefing réel ne passe le contrôle des sources ; le briefing est livré quand même, avec une section écrite par le code qui liste chaque élément non sourcé."
+    measured="Une comparaison à l’aveugle avec un appel unique au modèle, sur une question ; ce que coûte un briefing réel, et combien de briefings passent le contrôle des sources."
+    defect="Sur la seule question comparée, le relecteur a préféré à l’aveugle un appel unique au modèle, bien moins cher : la valeur de Praxis face à un appel unique n’est pas démontrée. Et aucun briefing réel ne passe le contrôle des sources."
     figures={[
-      { id: "praxis.live_completed", caption: "exécutions réelles arrivées au bout, sur les tentatives" },
-      { id: "praxis.cost_per_briefing", caption: "coût d’un briefing terminé, du moins cher au plus cher" },
-      { id: "praxis.insufficiently_sourced", caption: "briefings terminés signalés comme insuffisamment sourcés", defect: true },
+      { id: "praxis.q12_cost_ratio", caption: "moins cher : l’appel unique au modèle, préféré à Praxis à l’aveugle (une question, un relecteur)", defect: true },
+      { id: "praxis.cost_per_briefing", caption: "coût d’un briefing Praxis terminé, du moins cher au plus cher" },
+      { id: "praxis.insufficiently_sourced", caption: "briefings terminés signalés comme insuffisamment sourcés" },
     ]}
   />
 
@@ -75,7 +75,7 @@ const at = (path: string) => pinned("praxis", path);
     </p>
     <h3>Un seul point de comparaison</h3>
     <p>
-      Sur une seule question, Praxis a été comparé à l’aveugle à un appel unique au modèle, avec le même format et le même outil de recherche, <Figure id="praxis.q12_cost_ratio" where="prose" text="10× moins cher" /> :
+      Sur une seule question, Praxis a été comparé à l’aveugle à un appel unique au modèle, avec le même format et le même outil de recherche, <Figure id="praxis.q12_cost_ratio" where="prose" text="9,8× moins cher" /> :
       le relecteur a préféré l’appel unique (détail dans les limites ci-dessous). Le seul score publié auparavant évaluait des briefings simulés, écrits à la main pour les tests : il mesurait ces exemples, pas un
       modèle, et il a été retiré (<a href={at("CHANGELOG.md")}>journal des modifications</a>). Hors de cette comparaison, la qualité des briefings n’est relue pour aucune question ; seules les sources de première
       main d’une autre question ont été relues par un humain (<a href={at("benchmarks/outputs/live/README.md")}>exécutions réelles</a>).
@@ -114,12 +114,12 @@ const at = (path: string) => pinned("praxis", path);
     <Limit title="Pas mieux qu’un appel unique, comparé à l’aveugle">
       <Fragment slot="scope">Une question réelle, une usine de batteries sodium-ion au Maroc ; un briefing par approche ; un relecteur, l’auteur de Praxis, sans savoir quel briefing venait de Praxis. L’appel unique a fait moins de recherches web, et plus tard : le web avait pu changer entre les deux.</Fragment>
       <Fragment slot="limit">
-        Un appel unique au modèle, avec le même format et le même outil de recherche, coûtait <Figure id="praxis.q12_cost_ratio" where="limits" text="10× moins cher" /> que Praxis. Le relecteur l’a préféré, plus
+        Un appel unique au modèle, avec le même format et le même outil de recherche, coûtait <Figure id="praxis.q12_cost_ratio" where="limits" text="9,8× moins cher" /> que Praxis. Le relecteur l’a préféré, plus
         clair et plus utile pour décider ; parmi les phrases sourcées qu’il a vérifiées, davantage étaient soutenues par leur source dans l’appel unique. Selon le relecteur, ses notes ont été enregistrées avant qu’il ouvre
         la correspondance entre briefings et approches (<a href={at("benchmarks/review/q12/grades.md")}>notes du relecteur</a>). Selon la règle écrite avant l’essai, la valeur de Praxis par rapport à un appel unique n’est pas démontrée. Le résultat
         vaut pour cette question seulement, et la mise en aveugle ne peut pas cacher à son auteur le style de Praxis.
       </Fragment>
-      <Fragment slot="next">Aucune autre comparaison à un appel unique n’est fixée : la <a href={at("docs/preregistration/single-call-baseline.md")}>règle écrite avant l’essai</a> demande de publier ce résultat avec le coût des deux briefings.</Fragment>
+      <Fragment slot="next">Plus de questions, et une ablation des étapes du pipeline, comme l’écrit le <a href={at("README.md#status")}>dépôt</a> ; la <a href={at("docs/preregistration/single-call-baseline.md")}>règle écrite avant l’essai</a> fait publier ce résultat avec le coût des deux briefings.</Fragment>
     </Limit>
     <Limit title="Des briefings réels encore insuffisamment sourcés">
       <Fragment slot="scope">Les exécutions réelles, sur un vrai modèle, après un développement mené sur des exemples écrits à la main.</Fragment>
