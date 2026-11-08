@@ -1,6 +1,7 @@
 // The Open Graph images and what they say: the home page's, one per language, and each case
 // study's. Shared by scripts/og.ts, which draws them, by Base.astro, which points every page at
 // its image (ogImage), and by tests/seo.spec.ts, which checks every word drawn against the page.
+import { createHash } from "node:crypto";
 import { caseStudies, type Lang, langOf } from "./i18n.ts";
 import { measure } from "./measures.ts";
 
@@ -112,4 +113,14 @@ export function ogImage(path: string): OgImage {
 /** Every image scripts/og.ts draws. */
 export function ogImages(): OgImage[] {
   return (["fr", "en"] as const).flatMap((lang) => [ogImage(lang === "fr" ? "/" : "/en/"), ...(Object.keys(OG.cases) as CaseSlug[]).map((slug) => caseImage(slug, lang))]);
+}
+
+/**
+ * The address a page shares for the image `file`, whose bytes are `png`: its path with the first 8
+ * hex digits of their sha256. LinkedIn caches a preview by image URL, so a fixed /og.png kept the
+ * old picture after a redraw; a new drawing gets a new address.
+ */
+export function ogImageUrl(file: string, png: Uint8Array, site: string | URL): string {
+  const version = createHash("sha256").update(png).digest("hex").slice(0, 8);
+  return `${new URL(file.replace(/^public/, ""), site).href}?v=${version}`;
 }

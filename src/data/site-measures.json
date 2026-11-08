@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-11-06T10:56:19.691Z",
-  "commit": "b328dbfffc435a2ac2dec588ad0782606abfe145",
+  "generatedAt": "2026-11-08T19:57:50.885Z",
+  "commit": "8ceaf19b2ee216a43d51343c28261d66e03d310f",
   "lighthouse": {
     "version": "13.6.0",
     "formFactor": "mobile",
@@ -11,60 +11,60 @@
   "pages": [
     {
       "path": "/",
-      "transferBytes": 171565,
-      "fontBytes": 82112,
+      "transferBytes": 169950,
+      "fontBytes": 82244,
       "scores": {
         "performance": 100,
         "accessibility": 100,
         "bestPractices": 100,
         "seo": 100
       },
-      "lcpMs": 907,
+      "lcpMs": 908,
       "cls": 0
     },
     {
       "path": "/404.html",
-      "transferBytes": 33405,
-      "fontBytes": 28321,
+      "transferBytes": 50211,
+      "fontBytes": 44462,
       "scores": {
         "performance": 100,
         "accessibility": 100,
         "bestPractices": 100,
         "seo": 100
       },
-      "lcpMs": 753,
+      "lcpMs": 754,
       "cls": 0
     },
     {
       "path": "/colophon/",
-      "transferBytes": 51684,
-      "fontBytes": 44330,
+      "transferBytes": 53918,
+      "fontBytes": 44462,
       "scores": {
         "performance": 100,
         "accessibility": 100,
         "bestPractices": 100,
         "seo": 100
       },
-      "lcpMs": 753,
+      "lcpMs": 754,
       "cls": 0
     },
     {
       "path": "/en/",
-      "transferBytes": 170810,
-      "fontBytes": 82112,
+      "transferBytes": 169113,
+      "fontBytes": 82244,
       "scores": {
         "performance": 100,
         "accessibility": 100,
         "bestPractices": 100,
         "seo": 100
       },
-      "lcpMs": 906,
+      "lcpMs": 912,
       "cls": 0
     },
     {
       "path": "/en/404.html",
-      "transferBytes": 33380,
-      "fontBytes": 28321,
+      "transferBytes": 50145,
+      "fontBytes": 44462,
       "scores": {
         "performance": 100,
         "accessibility": 100,
@@ -76,60 +76,60 @@
     },
     {
       "path": "/en/colophon/",
-      "transferBytes": 51484,
-      "fontBytes": 44330,
+      "transferBytes": 53569,
+      "fontBytes": 44462,
       "scores": {
         "performance": 100,
         "accessibility": 100,
         "bestPractices": 100,
         "seo": 100
       },
-      "lcpMs": 753,
+      "lcpMs": 754,
       "cls": 0
     },
     {
       "path": "/en/projects/praxis/",
-      "transferBytes": 58064,
-      "fontBytes": 44330,
+      "transferBytes": 74007,
+      "fontBytes": 44462,
       "scores": {
         "performance": 100,
         "accessibility": 100,
         "bestPractices": 100,
         "seo": 100
       },
-      "lcpMs": 904,
+      "lcpMs": 906,
       "cls": 0
     },
     {
       "path": "/en/projects/promptlang/",
-      "transferBytes": 58487,
-      "fontBytes": 44330,
+      "transferBytes": 94666,
+      "fontBytes": 44462,
       "scores": {
         "performance": 100,
         "accessibility": 100,
         "bestPractices": 100,
         "seo": 100
       },
-      "lcpMs": 903,
+      "lcpMs": 906,
       "cls": 0
     },
     {
       "path": "/en/projects/verity/",
-      "transferBytes": 97463,
-      "fontBytes": 82112,
+      "transferBytes": 132922,
+      "fontBytes": 82244,
       "scores": {
         "performance": 100,
         "accessibility": 100,
         "bestPractices": 100,
         "seo": 100
       },
-      "lcpMs": 905,
+      "lcpMs": 906,
       "cls": 0
     },
     {
       "path": "/projets/praxis/",
-      "transferBytes": 58615,
-      "fontBytes": 44330,
+      "transferBytes": 74686,
+      "fontBytes": 44462,
       "scores": {
         "performance": 100,
         "accessibility": 100,
@@ -141,28 +141,28 @@
     },
     {
       "path": "/projets/promptlang/",
-      "transferBytes": 58954,
-      "fontBytes": 44330,
+      "transferBytes": 95162,
+      "fontBytes": 44462,
       "scores": {
         "performance": 100,
         "accessibility": 100,
         "bestPractices": 100,
         "seo": 100
       },
-      "lcpMs": 903,
+      "lcpMs": 905,
       "cls": 0
     },
     {
       "path": "/projets/verity/",
-      "transferBytes": 98096,
-      "fontBytes": 82112,
+      "transferBytes": 133856,
+      "fontBytes": 82244,
       "scores": {
         "performance": 100,
         "accessibility": 100,
         "bestPractices": 100,
         "seo": 100
       },
-      "lcpMs": 903,
+      "lcpMs": 906,
       "cls": 0
     }
   ]

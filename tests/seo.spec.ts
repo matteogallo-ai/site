@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import { expect, test } from "@playwright/test";
 import sharp from "sharp";
@@ -38,7 +39,7 @@ test("canonical, hreflang, sitemap, robots and Open Graph URLs all name https://
   const files = [await (await request.get("/sitemap.xml")).text(), await (await request.get("/robots.txt")).text()];
   urls.push(...files.flatMap((f) => [...f.matchAll(/https?:\/\/[^\s<"]+/g)].map((m) => m[0]).filter((u) => !XML_NAMESPACES.includes(new URL(u).origin))));
   // Each source must contribute: one og:image per page, and the sitemap's own URLs.
-  expect(urls.filter((u) => u.endsWith(".png")).length).toBe(pages.length);
+  expect(urls.filter((u) => new URL(u).pathname.endsWith(".png")).length).toBe(pages.length);
   expect(files[0]).toContain("<loc>");
   expect(urls.filter((u) => new URL(u).origin !== ORIGIN)).toEqual([]);
 });
@@ -78,7 +79,11 @@ for (const path of pages) {
     const image = (await og("image"))!;
     // F2: a case study shares its own image, every other page its language's home image.
     const expected = ogImage(path);
-    expect(image).toBe(`${ORIGIN}/${expected.file.replace(/^public\//, "")}`);
+    // Versioned by the served PNG's own bytes: a redrawn image gets a new address, so a feed that
+    // cached the old one (LinkedIn) fetches it again.
+    const served = expected.file.replace(/^public\//, "");
+    const version = createHash("sha256").update(readFileSync(`dist/${served}`)).digest("hex").slice(0, 8);
+    expect(image).toBe(`${ORIGIN}/${served}?v=${version}`);
     expect(plain((await og("image:alt"))!)).toBe(plain(expected.alt));
     const local = await request.get(new URL(image).pathname);
     expect(local.status()).toBe(200);
