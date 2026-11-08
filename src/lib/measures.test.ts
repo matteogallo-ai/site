@@ -3,7 +3,7 @@ import { test } from "node:test";
 import { decimal, interval, measure, shownTextError } from "./measures.ts";
 
 test("a page gets a verified measure by id, and fails the build on an unknown id", () => {
-  assert.equal(measure("verity.refusal_recall").display.fr, "17/20");
+  assert.equal(measure("verity.refusal_recall").display.fr, "13/18");
   assert.throws(() => measure("verity.no_such_measure"), /has no verity.no_such_measure/);
 });
 
@@ -13,8 +13,8 @@ test("decimals use the comma in French and the point in English", () => {
 });
 
 test("an interval reads as whole percents rounded outwards, never narrower than its source", () => {
-  // [0.639581, 0.947631]: the lower bound goes down, the upper bound up.
-  assert.equal(interval(measure("verity.refusal_recall"), "fr"), "63–95\u00A0%");
+  // [0.491273, 0.875002]: the lower bound goes down, the upper bound up.
+  assert.equal(interval(measure("verity.refusal_recall"), "fr"), "49–88\u00A0%");
   // Printed by its source as [9.5%, 16.3%]: rounding to nearest would show 10–16, inside it.
   assert.equal(interval(measure("promptlang.baseline_report_all_precision"), "fr"), "9–17\u00A0%");
   // Whole percents already ([0.23, 0.71]): floating-point error must not move them.
@@ -28,7 +28,7 @@ test("an interval is refused for a measure that has none", () => {
 
 test("shownTextError: words shown for a figure carry only the measure's own numbers", () => {
   const m = measure("verity.unanswerable_answered");
-  assert.equal(shownTextError(m, "3", "fr"), undefined);
+  assert.equal(shownTextError(m, "5", "fr"), undefined);
   assert.match(shownTextError(m, "4", "fr") ?? "", /shows 4/);
   // A figure in words must still show a number: "trois" would escape the check.
   assert.match(shownTextError(m, "trois", "fr") ?? "", /no number/);

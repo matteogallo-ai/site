@@ -218,7 +218,7 @@ for (const image of ogImages()) {
       expect(plain(await page.locator(".brief").innerText()).replace(/\s+/g, " ")).toContain(plain(image.case.caption));
     } else {
       const lines = await page.locator(".project .figure-line").allInnerTexts();
-      expect(lines.map(plain)).toEqual(homeFigures(image.lang).map((f) => plain(`${f.value} — ${f.caption}`)));
+      expect(lines.map(plain)).toEqual(homeFigures(image.lang).map((f) => plain(f.line)));
     }
   });
 }

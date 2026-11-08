@@ -32,7 +32,8 @@ for (const home of HOMES) {
       await expect(page).toHaveURL(new RegExp(`${home.study(slug)}$`));
 
       await page.goto(home.path);
-      const figure = page.locator(".project").nth(i).locator(".figure-line a.figure");
+      // Verity's line is a comparison of three figures; its own count comes first.
+      const figure = page.locator(".project").nth(i).locator(".figure-line a.figure").first();
       const proof = await figure.getAttribute("href");
       expect(proof).toMatch(/^https:\/\/github\.com\//);
       await figure.click();
