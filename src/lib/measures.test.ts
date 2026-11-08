@@ -48,6 +48,24 @@ test("Praxis is pinned on the merge of praxis#65, where README and the system ca
 test("PromptLang's mutant count is the artefact's total, the denominator of its score", () => {
   const n = measure("promptlang.mutants_total");
   assert.equal(n.value, 1914);
-  assert.deepEqual(n.display, { fr: "1914", en: "1914" });
+  assert.deepEqual(n.display, { fr: "1\u00A0914", en: "1,914" });
   assert.equal(n.commit, measure("promptlang.mutation_score").commit);
+});
+
+test("the derived figures follow from their own evidence", () => {
+  const stated = (id: string, pointer: string, path?: string): number => {
+    for (const e of measure(id).evidence) {
+      if ("equals" in e && e.pointer === pointer && (path === undefined || e.path === path)) return e.equals as number;
+    }
+    throw new Error(`${id}: no evidence at ${pointer}`);
+  };
+  const total = measure("promptlang.mutants_total").value as number;
+  const n = ["/total/killed", "/total/timeout", "/total/survived", "/total/noCoverage"].map((p) => stated("promptlang.mutants_total", p));
+  assert.equal(n.reduce((a, b) => a + b, 0), total);
+  // Stryker's score: mutants detected (killed or timed out) over all mutants, to two decimals.
+  assert.equal(Math.round(((n[0]! + n[1]!) / total) * 10_000) / 100, measure("promptlang.mutation_score").value);
+  const cost = (path: string) => stated("praxis.q12_cost_ratio", "/usage/total/cost_usd", path);
+  const ratio = cost("benchmarks/outputs/live/12-sodium-ion-plant-morocco/run-2026-11-04T13-20-16-572Z/metadata.json") / cost("benchmarks/outputs/baseline/12-sodium-ion-plant-morocco/run-2026-11-07T11-28-59-229Z/metadata.json");
+  assert.equal(ratio.toFixed(1), "9.8");
+  assert.equal(measure("praxis.q12_cost_ratio").value, Number(ratio.toFixed(4)));
 });

@@ -22,7 +22,7 @@ const WORDS = {
       ],
       [
         "Langage typé pour écrire les consignes (prompts) des modèles de langage, compilé vers TypeScript et Python, publié sur npm.",
-        "96,13 % des 1914 mutants détectés par ses tests (erreurs introduites exprès dans la lecture du langage)",
+        "96,13 % des 1 914 mutants détectés par ses tests (erreurs introduites exprès dans la lecture du langage et le contrôle de version)",
       ],
     ],
     experiments: ["Expériences", "Praxis — pipeline d'analyse en 7 étapes ; comparé à l'aveugle à un appel unique 9,8× moins cher, il n'a pas fait mieux. Résultat publié.", "/projets/praxis/"],
@@ -58,7 +58,7 @@ const WORDS = {
       ],
       [
         "A typed language for writing the instructions (prompts) given to language models, compiled to TypeScript and Python, published on npm.",
-        "96.13% of 1914 mutants detected by its tests (errors deliberately introduced into the language reader)",
+        "96.13% of 1,914 mutants detected by its tests (errors deliberately introduced into the language reader and the version check)",
       ],
     ],
     experiments: ["Experiments", "Praxis — a 7-stage analysis pipeline; compared blind with a single call 9.8× cheaper, it did no better. Result published.", "/en/projects/praxis/"],
@@ -114,7 +114,7 @@ for (const [lang, w] of Object.entries(WORDS)) {
     expect(await texts(page, ".experiments h3")).toEqual([heading]);
     expect(await texts(page, ".experiments li")).toEqual([line]);
     await expect(page.locator(".experiments li a").first()).toHaveAttribute("href", study);
-    await expect(page.locator(".experiments li a").last()).toHaveAttribute("href", /^https:\/\/github\.com\/matteogallo-ai\/praxis\/blob\/[0-9a-f]{40}\/benchmarks\/review\/q12\/grades\.md$/);
+    await expect(page.locator(".experiments li a").last()).toHaveAttribute("href", /^https:\/\/github\.com\/matteogallo-ai\/praxis\/blob\/[0-9a-f]{40}\/README\.md#status$/);
     await expect(page.locator(".rules > li")).toHaveCount(3);
     for (const [i, [title, body, pr]] of w.method.entries()) {
       const card = page.locator(".rules > li").nth(i);
