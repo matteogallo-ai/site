@@ -1,7 +1,7 @@
 {
-  "run": "https://github.com/matteogallo-ai/site/actions/runs/42205133433",
+  "run": "https://github.com/matteogallo-ai/site/actions/runs/42516689300",
   "artifact": "site-measures",
-  "artifactDigest": "sha256:09c5e95f9df7b39207db495129a2ae08d37596ab93e69411d73aedb1f3e257f3",
-  "artifactExpires": "2026-12-06",
-  "sha256": "689532bab33660df8a27b9b08a0964272c807829f9fe5a4b1b88722fefb86241"
+  "artifactDigest": "sha256:fc918f1ed4019a3da78aed0df74f636062dcd5e3b76e905a0a3b6f94e27709be",
+  "artifactExpires": "2026-12-08",
+  "sha256": "f0ac36fcd171aca04f788205941e732929b96cc6394e41d85c331cf5933739c5"
 }
