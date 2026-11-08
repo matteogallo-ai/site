@@ -60,10 +60,10 @@ What each check covers in detail, claim by claim, is in [`docs/CLAIMS.md`](docs/
 merged by squash, with every check above passing on a branch up to date with `main`; `main`
 cannot be deleted or force-pushed. A second ruleset protects release tags.
 
-**Review.** The code is written with coding agents. Before a pull request is handed back, a
-second agent with no context from the first reviews the diff against the rules in
-[`CLAUDE.md`](CLAUDE.md); its findings are fixed or rejected with evidence in the report. Then
-I review and merge it myself.
+**Review.** Built with coding agents: I write the specs, review the pull requests and their tests, and answer for what gets merged.
+Before a pull request is handed back, a second agent with no context from the first reviews the
+diff against the rules in [`CLAUDE.md`](CLAUDE.md); its findings are fixed or rejected with
+evidence in the report.
 
 **Measures.** The budgets and the measured figures of the site itself (weight, scores, LCP,
 CLS per page, from a recorded CI run) are on the

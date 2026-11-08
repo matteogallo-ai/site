@@ -316,8 +316,8 @@
     {
       "id": "verity.judge_kappa_all",
       "label": {
-        "fr": "Accord juge–humain à l'aveugle, kappa de Cohen, ancienne consigne du juge (60 affirmations, dont 1 hallucination réelle ; IC bootstrap 0,49–0,89)",
-        "en": "Judge–blind human agreement, Cohen's kappa, earlier judge prompt (60 claims, of which 1 real hallucination; bootstrap CI 0.49–0.89)"
+        "fr": "Accord juge–humain à l'aveugle, kappa de Cohen, ancienne consigne du juge (60 affirmations, dont 1 hallucination réelle ; IC bootstrap 0,4872–0,8934)",
+        "en": "Judge–blind human agreement, Cohen's kappa, earlier judge prompt (60 claims, of which 1 real hallucination; bootstrap CI 0.4872–0.8934)"
       },
       "display": {
         "fr": "κ 0,71",
@@ -1044,20 +1044,21 @@
       "k": 6,
       "n": 6,
       "repo": "matteogallo-ai/praxis",
-      "commit": "8fe756a414625f03dad5f98791b0df7834047e1c",
+      "commit": "596280a840463e56d9ce39de210082078bf5c073",
       "path": "README.md",
-      "url": "https://github.com/matteogallo-ai/praxis/blob/8fe756a414625f03dad5f98791b0df7834047e1c/README.md",
+      "url": "https://github.com/matteogallo-ai/praxis/blob/596280a840463e56d9ce39de210082078bf5c073/README.md",
       "evidence": [
         {
           "path": "README.md",
-          "contains": "## Status: six live briefings completed, their quality not reviewed"
+          "contains": "Praxis has completed **six briefings against a real model**"
         },
         {
           "path": "README.md",
-          "contains": "Every one is flagged insufficiently sourced"
+          "contains": "each flagged\ninsufficiently sourced"
         },
         {
-          "contains": "13 live attempts: 7 failed"
+          "path": "README.md",
+          "contains": "Live attempts by commit (3 Nov 2026 and 4 Nov 2026), completed of attempted: fe09710 0 of 1, 7c75a06 1 of 1, 3a7ca6a 1 of 1, 8df678f 4 of 5; 5 earlier attempts, in 1.2.1, failed and left no record."
         },
         {
           "listing": "benchmarks/outputs/live",
@@ -1096,9 +1097,9 @@
         4.752918
       ],
       "repo": "matteogallo-ai/praxis",
-      "commit": "8fe756a414625f03dad5f98791b0df7834047e1c",
+      "commit": "596280a840463e56d9ce39de210082078bf5c073",
       "path": "README.md",
-      "url": "https://github.com/matteogallo-ai/praxis/blob/8fe756a414625f03dad5f98791b0df7834047e1c/README.md",
+      "url": "https://github.com/matteogallo-ai/praxis/blob/596280a840463e56d9ce39de210082078bf5c073/README.md",
       "evidence": [
         {
           "path": "README.md",
@@ -1288,22 +1289,109 @@
       "value": 0.461538,
       "k": 6,
       "n": 13,
-      "ci95": [
-        0.23,
-        0.71
-      ],
       "repo": "matteogallo-ai/praxis",
-      "commit": "8fe756a414625f03dad5f98791b0df7834047e1c",
+      "commit": "596280a840463e56d9ce39de210082078bf5c073",
       "path": "docs/SYSTEM_CARD.md",
-      "url": "https://github.com/matteogallo-ai/praxis/blob/8fe756a414625f03dad5f98791b0df7834047e1c/docs/SYSTEM_CARD.md",
+      "url": "https://github.com/matteogallo-ai/praxis/blob/596280a840463e56d9ce39de210082078bf5c073/docs/SYSTEM_CARD.md",
       "evidence": [
         {
-          "contains": "| Live briefings completed | 13 attempts | 6 of 13 | 23%–71% (Wilson) |"
+          "contains": "| Live briefings completed at `fe09710` | 1 | 0 of 1 | — |"
+        },
+        {
+          "contains": "| Live briefings completed at `7c75a06` | 1 | 1 of 1 | — |"
+        },
+        {
+          "contains": "| Live briefings completed at `3a7ca6a` | 1 | 1 of 1 | — |"
+        },
+        {
+          "contains": "| Live briefings completed at `8df678f` | 5 | 4 of 5 | — |"
+        },
+        {
+          "contains": "| Live attempts in 1.2.1, no record committed | 5 | failed, as stated in CHANGELOG 1.2.1 | — |"
         }
       ],
-      "derived": "k, n and the Wilson interval as docs/SYSTEM_CARD.md prints them, the interval at its whole-percent precision. Only 8 of the 13 attempts have committed records; the 5 others are described in CHANGELOG.md 1.2.1.",
+      "derived": "k = 0 + 1 + 1 + 4 and n = 1 + 1 + 1 + 5 + 5, summed over the per-commit rows of docs/SYSTEM_CARD.md. No interval: Praxis gives none, because the attempts span four versions of the code and five left no record (commit f605538).",
       "status": "verified",
       "note": "7 attempts failed: sourcing policy, prose before the JSON, timeouts, truncated output, a refused section."
+    },
+    {
+      "id": "praxis.stages",
+      "label": {
+        "fr": "Étapes d’un briefing Praxis",
+        "en": "Stages of a Praxis briefing"
+      },
+      "display": {
+        "fr": "7",
+        "en": "7"
+      },
+      "value": 7,
+      "repo": "matteogallo-ai/praxis",
+      "commit": "596280a840463e56d9ce39de210082078bf5c073",
+      "path": "README.md",
+      "url": "https://github.com/matteogallo-ai/praxis/blob/596280a840463e56d9ce39de210082078bf5c073/README.md",
+      "evidence": [
+        {
+          "path": "README.md",
+          "contains": "A 7-stage LLM pipeline"
+        },
+        {
+          "path": "docs/CLAIMS.md",
+          "contains": "The seven stages (scoping → research → stakeholders → risks → options → synthesis → adversarial review)"
+        }
+      ],
+      "status": "verified",
+      "derived": "The number in « A 7-stage LLM pipeline »; docs/CLAIMS.md (C03) names the seven stages."
+    },
+    {
+      "id": "praxis.q12_cost_ratio",
+      "label": {
+        "fr": "Coût de Praxis rapporté à celui d’un appel unique au modèle, sur la question de la comparaison à l’aveugle",
+        "en": "Cost of Praxis over that of a single model call, on the question of the blind comparison"
+      },
+      "display": {
+        "fr": "10×",
+        "en": "10×"
+      },
+      "value": 9.8429,
+      "repo": "matteogallo-ai/praxis",
+      "commit": "596280a840463e56d9ce39de210082078bf5c073",
+      "path": "benchmarks/review/q12/key.json",
+      "url": "https://github.com/matteogallo-ai/praxis/blob/596280a840463e56d9ce39de210082078bf5c073/benchmarks/review/q12/key.json",
+      "evidence": [
+        {
+          "pointer": "/A",
+          "equals": "praxis"
+        },
+        {
+          "pointer": "/B",
+          "equals": "baseline"
+        },
+        {
+          "pointer": "/inputs/praxis",
+          "equals": "benchmarks/outputs/live/12-sodium-ion-plant-morocco/run-2026-11-04T13-20-16-572Z/brief.md"
+        },
+        {
+          "pointer": "/inputs/baseline",
+          "equals": "benchmarks/outputs/baseline/12-sodium-ion-plant-morocco/run-2026-11-07T11-28-59-229Z/brief.md"
+        },
+        {
+          "path": "benchmarks/outputs/live/12-sodium-ion-plant-morocco/run-2026-11-04T13-20-16-572Z/metadata.json",
+          "pointer": "/usage/total/cost_usd",
+          "equals": 4.752918
+        },
+        {
+          "path": "benchmarks/outputs/baseline/12-sodium-ion-plant-morocco/run-2026-11-07T11-28-59-229Z/metadata.json",
+          "pointer": "/usage/total/cost_usd",
+          "equals": 0.48287599999999997
+        },
+        {
+          "path": "benchmarks/review/q12/grades.md",
+          "contains": "## Preference\n\nB"
+        }
+      ],
+      "status": "verified",
+      "derived": "4.752918 / 0.482876, the two /usage/total/cost_usd, shown to the unit.",
+      "note": "One question, one reviewer. The grades and the preference for B, the single call, were committed before key.json was opened (praxis PR #64)."
     }
   ]
 }

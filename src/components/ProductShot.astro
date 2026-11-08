@@ -12,7 +12,7 @@ import { langOf } from "../lib/i18n.ts";
 // the image shows in detail is its alt text.
 interface Props {
   id: "verity" | "promptlang" | "praxis";
-  /** "card": a third of the page at most; "lead": the head of a case study. */
+  /** "card": half the page at most; "lead": the head of a case study. */
   size: "card" | "lead";
 }
 
@@ -26,8 +26,9 @@ const link = {
   en: { gif: "See the GIF", pdf: "See the PDF" },
 }[lang][item.url.endsWith(".pdf") ? "pdf" : "gif"];
 // 412 px at 1.75x asks for 721 px: without 960 a phone would get the 1440 file.
-const widths = size === "card" ? [480, 960] : [480, 720, 960, 1440];
-const sizes = size === "card" ? "(min-width: 64rem) 360px, 100vw" : "(min-width: 64rem) 720px, 100vw";
+// A card is half of the 1200 px container less a gutter and its padding: 548 px.
+const widths = size === "card" ? [480, 640, 960] : [480, 720, 960, 1440];
+const sizes = size === "card" ? "(min-width: 64rem) 548px, 100vw" : "(min-width: 64rem) 720px, 100vw";
 ---
 
 <figure class:list={["shot", size]}>

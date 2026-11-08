@@ -147,7 +147,12 @@ for (const [lang, slug] of (["fr", "en"] as const).flatMap((l) => CASES.map((c) 
     }
     for (const row of await rows.all()) await expect(row.locator(".figure").first()).toBeVisible();
     const intervals = await page.locator("[data-measure]").evaluateAll((els) => els.map((e) => [e.getAttribute("data-measure")!, e.textContent!.trim()]));
-    expect(intervals.length).toBeGreaterThan(0);
+    // Every interval cell is its measure's interval or a written reason for having none. Praxis
+    // publishes no interval, so its tables hold reasons only; the other case studies show some.
+    const cells = await page.locator("#mesures td.ci").count();
+    expect(cells).toBeGreaterThan(0);
+    expect(intervals.length + (await page.locator("#mesures td.ci.reason").count())).toBe(cells);
+    if (slug !== "praxis") expect(intervals.length).toBeGreaterThan(0);
     for (const [id, text] of intervals) expect(plain(text!), id).toBe(plain(interval(measure(id!), lang)));
     const labels = await page.locator("[data-label]").evaluateAll((els) => els.map((e) => [e.getAttribute("data-label")!, e.textContent!.trim()]));
     for (const [id, text] of labels) expect(plain(text!), id).toBe(plain(measure(id!).label[lang]));
@@ -165,6 +170,19 @@ for (const [lang, slug] of (["fr", "en"] as const).flatMap((l) => CASES.map((c) 
     for (const limit of await limits.all()) await expect(limit.locator("dt")).toHaveText(labels);
     expect(await page.locator("main").innerText()).not.toMatch(lang === "fr" ? /Ce que j.(en )?ai fait/ : /What I did/);
   });
+
+  // The blind comparison with a single model call is Praxis's main result: it is a known limit,
+  // with its cost ratio as a measure and the reviewer's grades at the pinned commit.
+  if (path.endsWith("/praxis/")) {
+    test(`${path}: the blind comparison with a single call is a known limit, with its grades`, async ({ page }) => {
+      await page.goto(path);
+      const limit = page.locator("#echecs h3", { hasText: lang === "fr" ? "appel unique" : "single call" });
+      await expect(limit).toHaveCount(1);
+      const steps = limit.locator("xpath=following-sibling::dl[1]");
+      await expect(steps.locator('.figure[data-id="praxis.q12_cost_ratio"]')).toHaveCount(1);
+      await expect(steps.locator('a[href$="/benchmarks/review/q12/grades.md"]')).toHaveAttribute("href", PINNED("praxis"));
+    });
+  }
 
   test(`${path}: three decisions, each linking to its ADR at a pinned commit`, async ({ page }) => {
     await page.goto(path);

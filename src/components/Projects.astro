@@ -2,14 +2,15 @@
 import Figure from "./Figure.astro";
 import ProductShot from "./ProductShot.astro";
 import { langOf, twin } from "../lib/i18n.ts";
+import { pinned } from "../lib/sources.ts";
 
 const repo = (name: string) => `https://github.com/matteogallo-ai/${name}`;
 const lang = langOf(Astro.url.pathname);
 const fr = lang === "fr";
 const study = (slug: string) => (lang === "fr" ? `/projets/${slug}/` : twin(`/projets/${slug}/`));
 const t = {
-  fr: { id: "projets", title: "Projets", wip: "en cours", read: "Lire l’étude de cas →", code: "Code sur GitHub" },
-  en: { id: "projects", title: "Projects", wip: "in progress", read: "Read the case study →", code: "Code on GitHub" },
+  fr: { id: "projets", title: "Projets", read: "Lire l’étude de cas →", code: "Code sur GitHub", experiments: "Expériences" },
+  en: { id: "projects", title: "Projects", read: "Read the case study →", code: "Code on GitHub", experiments: "Experiments" },
 }[lang];
 ---
 
@@ -32,14 +33,16 @@ const t = {
       <p class="figure-line"><Figure id="promptlang.mutation_score" where="card" sentence /> {fr ? "des erreurs introduites exprès dans la lecture du langage sont repérées par ses tests" : "of the errors deliberately introduced into the language reader are caught by its tests"}</p>
       <p class="links"><a class="button" href={study("promptlang")}>{t.read}</a> <a href={repo("promptlang")}>{t.code}</a></p>
     </article>
+  </div>
 
-    <article class="project card" aria-labelledby="p-praxis">
-      <h3 id="p-praxis"><a class="card-link" href={study("praxis")}>Praxis</a> <span class="wip">{t.wip}</span></h3>
-      <ProductShot id="praxis" size="card" />
-      <p>{fr ? "Prépare, à partir d’une question métier, un briefing d’analyse qui cite ses sources, relu par un second modèle chargé d’en trouver les failles." : "Prepares, from a business question, an analysis briefing that cites its sources, reviewed by a second model tasked with finding its flaws."}</p>
-      <p class="figure-line"><Figure id="praxis.cost_per_briefing" where="card" sentence /> {fr ? "d’appels au modèle par briefing réel terminé, sur" : "in model calls per completed real briefing, over"} <Figure id="praxis.live_completed" where="card" text="6" /> {fr ? "briefings" : "briefings"}</p>
-      <p class="links"><a class="button" href={study("praxis")}>{t.read}</a> <a href={repo("praxis")}>{t.code}</a></p>
-    </article>
+  {/* A project whose result did not hold stays on the page as an experiment, with that result, not as a project card. */}
+  <div class="experiments">
+    <h3>{t.experiments}</h3>
+    <ul>
+      <li>
+        <a href={study("praxis")}>Praxis</a> — {fr ? "pipeline d’analyse en" : "a"} {fr ? <span class="keep"><Figure id="praxis.stages" where="experiments" text="7 étapes" /> ;</span> : <Figure id="praxis.stages" where="experiments" text="7-stage" />}{fr ? " comparé à l’aveugle à un appel unique" : " analysis pipeline; compared blind with a single call"} <Figure id="praxis.q12_cost_ratio" where="experiments" text={fr ? "10× moins cher" : "10× cheaper"} />, {fr ? "il n’a pas fait mieux." : "it did no better."} <a href={pinned("praxis", "benchmarks/review/q12/grades.md")}>{fr ? "Résultat publié" : "Result published"}</a>.
+      </li>
+    </ul>
   </div>
 </section>
 
@@ -51,7 +54,7 @@ const t = {
 
   @media (min-width: 64rem) {
     .projects {
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(2, 1fr);
     }
   }
 
@@ -112,17 +115,25 @@ const t = {
     font-size: var(--step-14);
   }
 
-  /* The project still being proven says so beside its name, in small type, not as a defect. */
-  .wip {
-    margin-left: 0.4rem;
-    padding: 0.1rem 0.5rem;
-    font-size: var(--step-12);
-    font-weight: 400;
-    letter-spacing: 0;
-    color: var(--graphite);
-    border: 1px solid var(--rule);
-    border-radius: 999px;
-    vertical-align: middle;
+  .experiments {
+    margin-top: 2.5rem;
+    font-size: var(--step-14);
+  }
+
+  .experiments h3 {
+    margin: 0;
+  }
+
+  /* A line may break after an inline-block figure even before a no-break space: the French « ; »
+     stays with its figure. */
+  .keep {
+    white-space: nowrap;
+  }
+
+  .experiments ul {
+    margin: 0.5rem 0 0;
+    padding: 0;
+    list-style: none;
   }
 
   .links {
