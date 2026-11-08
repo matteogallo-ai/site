@@ -2,42 +2,96 @@
   "schema": "site.measures/v1",
   "measures": [
     {
+      "id": "verity.invented_answer_rate",
+      "label": {
+        "fr": "Réponses inventées, sur toutes les réponses données",
+        "en": "Invented answers, over every answer given"
+      },
+      "display": {
+        "fr": "1/40",
+        "en": "1/40"
+      },
+      "value": 0.025,
+      "k": 1,
+      "n": 40,
+      "ci95": [
+        0.004427,
+        0.128814
+      ],
+      "repo": "matteogallo-ai/verity",
+      "commit": "59c465511555fca642e50dfbf0af5f1a8e87f0c1",
+      "path": "scorecards/live-v1.1.0.json",
+      "url": "https://github.com/matteogallo-ai/verity/blob/59c465511555fca642e50dfbf0af5f1a8e87f0c1/scorecards/live-v1.1.0.json",
+      "evidence": [
+        {
+          "pointer": "/answer_quality/invented_answer_rate/k",
+          "equals": 1,
+          "binds": "k"
+        },
+        {
+          "pointer": "/answer_quality/invented_answer_rate/n_questions",
+          "equals": 40,
+          "binds": "n"
+        },
+        {
+          "pointer": "/answer_quality/invented_answer_rate/ci95_wilson",
+          "equals": [
+            0.004427,
+            0.128814
+          ],
+          "binds": "ci95"
+        },
+        {
+          "pointer": "/answer_quality/invented_answer_rate/scope",
+          "equals": "answered"
+        },
+        {
+          "pointer": "/answer_quality/invented_answer_rate/example_ids",
+          "equals": [
+            "q-089"
+          ]
+        }
+      ],
+      "status": "verified",
+      "note": "Test split, run of record 513b839 (v1.1.0), 54 of 56 questions run before the spending cap; threshold 0.0. Every judged answer counts, answerable or not; the one invention is q-089. Judge prompt v0.2.0."
+    },
+    {
       "id": "verity.refusal_recall",
       "label": {
         "fr": "Rappel de refus",
         "en": "Refusal recall"
       },
       "display": {
-        "fr": "17/20",
-        "en": "17/20"
+        "fr": "13/18",
+        "en": "13/18"
       },
-      "value": 0.85,
-      "k": 17,
-      "n": 20,
+      "value": 0.722222,
+      "k": 13,
+      "n": 18,
       "ci95": [
-        0.639581,
-        0.947631
+        0.491273,
+        0.875002
       ],
       "repo": "matteogallo-ai/verity",
-      "commit": "162a055dee9ec26297b204c669a6a9b6e667b52a",
+      "commit": "59c465511555fca642e50dfbf0af5f1a8e87f0c1",
       "path": "scorecards/live-v1.1.0.json",
-      "url": "https://github.com/matteogallo-ai/verity/blob/162a055dee9ec26297b204c669a6a9b6e667b52a/scorecards/live-v1.1.0.json",
+      "url": "https://github.com/matteogallo-ai/verity/blob/59c465511555fca642e50dfbf0af5f1a8e87f0c1/scorecards/live-v1.1.0.json",
       "evidence": [
         {
           "pointer": "/refusal/refusal_recall/k",
-          "equals": 17,
+          "equals": 13,
           "binds": "k"
         },
         {
           "pointer": "/refusal/refusal_recall/n",
-          "equals": 20,
+          "equals": 18,
           "binds": "n"
         },
         {
           "pointer": "/refusal/refusal_recall/ci95_wilson",
           "equals": [
-            0.639581,
-            0.947631
+            0.491273,
+            0.875002
           ],
           "binds": "ci95"
         },
@@ -47,7 +101,7 @@
         }
       ],
       "status": "verified",
-      "note": "Test split, run of record 969e1d5, n = 56 questions, threshold 0.0."
+      "note": "Test split, run of record 513b839 (v1.1.0), 54 of 56 questions run before the spending cap; threshold 0.0."
     },
     {
       "id": "verity.refusal_precision",
@@ -56,42 +110,42 @@
         "en": "Refusal precision"
       },
       "display": {
-        "fr": "17/22",
-        "en": "17/22"
+        "fr": "13/14",
+        "en": "13/14"
       },
-      "value": 0.772727,
-      "k": 17,
-      "n": 22,
+      "value": 0.928571,
+      "k": 13,
+      "n": 14,
       "ci95": [
-        0.5656,
-        0.89877
+        0.685313,
+        0.987278
       ],
       "repo": "matteogallo-ai/verity",
-      "commit": "162a055dee9ec26297b204c669a6a9b6e667b52a",
+      "commit": "59c465511555fca642e50dfbf0af5f1a8e87f0c1",
       "path": "scorecards/live-v1.1.0.json",
-      "url": "https://github.com/matteogallo-ai/verity/blob/162a055dee9ec26297b204c669a6a9b6e667b52a/scorecards/live-v1.1.0.json",
+      "url": "https://github.com/matteogallo-ai/verity/blob/59c465511555fca642e50dfbf0af5f1a8e87f0c1/scorecards/live-v1.1.0.json",
       "evidence": [
         {
           "pointer": "/refusal/refusal_precision/k",
-          "equals": 17,
+          "equals": 13,
           "binds": "k"
         },
         {
           "pointer": "/refusal/refusal_precision/n",
-          "equals": 22,
+          "equals": 14,
           "binds": "n"
         },
         {
           "pointer": "/refusal/refusal_precision/ci95_wilson",
           "equals": [
-            0.5656,
-            0.89877
+            0.685313,
+            0.987278
           ],
           "binds": "ci95"
         }
       ],
       "status": "verified",
-      "note": "Same run: 5 of 22 refusals were answerable questions."
+      "note": "Test split, run of record 513b839 (v1.1.0), 54 of 56 questions run before the spending cap; threshold 0.0. 1 of 14 refusals was an answerable question."
     },
     {
       "id": "verity.unanswerable_answered",
@@ -100,64 +154,64 @@
         "en": "Unanswerable questions answered"
       },
       "display": {
-        "fr": "3/20",
-        "en": "3/20"
+        "fr": "5/18",
+        "en": "5/18"
       },
-      "value": 0.15,
-      "k": 3,
-      "n": 20,
+      "value": 0.277778,
+      "k": 5,
+      "n": 18,
       "ci95": [
-        0.052369,
-        0.360419
+        0.124998,
+        0.508727
       ],
       "repo": "matteogallo-ai/verity",
-      "commit": "162a055dee9ec26297b204c669a6a9b6e667b52a",
+      "commit": "59c465511555fca642e50dfbf0af5f1a8e87f0c1",
       "path": "scorecards/live-v1.1.0.json",
-      "url": "https://github.com/matteogallo-ai/verity/blob/162a055dee9ec26297b204c669a6a9b6e667b52a/scorecards/live-v1.1.0.json",
+      "url": "https://github.com/matteogallo-ai/verity/blob/59c465511555fca642e50dfbf0af5f1a8e87f0c1/scorecards/live-v1.1.0.json",
       "evidence": [
         {
           "pointer": "/refusal/out_of_scope_answered/count",
-          "equals": 3,
+          "equals": 5,
           "binds": "k"
         },
         {
           "pointer": "/refusal/out_of_scope_answered/total",
-          "equals": 20,
+          "equals": 18,
           "binds": "n"
         },
         {
           "pointer": "/refusal/out_of_scope_answered/ci95_wilson",
           "equals": [
-            0.052369,
-            0.360419
+            0.124998,
+            0.508727
           ],
           "binds": "ci95"
         }
       ],
       "status": "verified",
-      "note": "The main Verity defect: 3 unanswerable questions got an answer instead of a refusal."
+      "note": "Test split, run of record 513b839 (v1.1.0), 54 of 56 questions run before the spending cap; threshold 0.0. The main Verity defect: an answer shipped where the documents hold none."
     },
     {
       "id": "verity.hallucination_rate",
       "label": {
-        "fr": "Taux d'hallucination (juge), questions avec réponse auxquelles il a répondu",
-        "en": "Hallucination rate (judge), answerable questions answered"
+        "fr": "Taux d'invention, questions avec réponse auxquelles il a répondu (ancienne définition)",
+        "en": "Invention rate, answerable questions answered (earlier definition)"
       },
       "display": {
-        "fr": "0/31",
-        "en": "0/31"
+        "fr": "0/35",
+        "en": "0/35"
       },
       "value": 0.0,
       "k": 0,
-      "n": 31,
+      "n": 35,
       "ci95": [
         0.0,
-        0.110255
+        0.098901
       ],
       "repo": "matteogallo-ai/verity",
-      "commit": "162a055dee9ec26297b204c669a6a9b6e667b52a",
+      "commit": "59c465511555fca642e50dfbf0af5f1a8e87f0c1",
       "path": "scorecards/live-v1.1.0.json",
-      "url": "https://github.com/matteogallo-ai/verity/blob/162a055dee9ec26297b204c669a6a9b6e667b52a/scorecards/live-v1.1.0.json",
+      "url": "https://github.com/matteogallo-ai/verity/blob/59c465511555fca642e50dfbf0af5f1a8e87f0c1/scorecards/live-v1.1.0.json",
       "evidence": [
         {
           "pointer": "/answer_quality/hallucination_rate/k",
@@ -166,14 +220,14 @@
         },
         {
           "pointer": "/answer_quality/hallucination_rate/n_questions",
-          "equals": 31,
+          "equals": 35,
           "binds": "n"
         },
         {
           "pointer": "/answer_quality/hallucination_rate/ci95_wilson",
           "equals": [
             0.0,
-            0.110255
+            0.098901
           ],
           "binds": "ci95"
         },
@@ -183,12 +237,12 @@
         }
       ],
       "status": "verified",
-      "note": "Scored by an LLM judge (judge prompt v0.1.0) whose agreement with blind human labels is κ 0.71 on 60 claims, 0.48 on the 40 real ones."
+      "note": "Test split, run of record 513b839 (v1.1.0), 54 of 56 questions run before the spending cap; threshold 0.0. The earlier headline: an answer to an unanswerable question is outside it, which left out q-074 on the previous test run."
     },
     {
       "id": "verity.threshold_run_of_record",
       "label": {
-        "fr": "Seuil de refus (run de référence)",
+        "fr": "Seuil de refus (exécution de référence)",
         "en": "Refusal threshold (run of record)"
       },
       "display": {
@@ -197,9 +251,9 @@
       },
       "value": 0.0,
       "repo": "matteogallo-ai/verity",
-      "commit": "162a055dee9ec26297b204c669a6a9b6e667b52a",
+      "commit": "59c465511555fca642e50dfbf0af5f1a8e87f0c1",
       "path": "scorecards/live-v1.1.0.json",
-      "url": "https://github.com/matteogallo-ai/verity/blob/162a055dee9ec26297b204c669a6a9b6e667b52a/scorecards/live-v1.1.0.json",
+      "url": "https://github.com/matteogallo-ai/verity/blob/59c465511555fca642e50dfbf0af5f1a8e87f0c1/scorecards/live-v1.1.0.json",
       "evidence": [
         {
           "pointer": "/refusal/confidence_threshold",
@@ -208,50 +262,62 @@
         },
         {
           "path": "docs/results.md",
-          "contains": "The threshold decides nothing on this data."
+          "contains": "The threshold decides nothing on this data, and refuses nothing by default."
         },
         {
           "path": "docs/results.md",
-          "contains": "The threshold was chosen on the dev split by a rule fixed before the run"
+          "contains": "The shipped default is 0.0, the value the dev rule chose"
         }
       ],
       "status": "verified",
-      "note": "Chosen on the dev split by a rule fixed before the run, which gave 0.00; docs/results.md: the threshold decides nothing on this data."
+      "note": "Also the shipped default: chosen on the dev split by a rule fixed before the run; no score in [0, 1] is below it."
     },
     {
-      "id": "verity.threshold_code_default",
+      "id": "verity.judge_kappa_v020",
       "label": {
-        "fr": "Seuil de refus (défaut du code)",
-        "en": "Refusal threshold (code default)"
+        "fr": "Accord juge–humain à l'aveugle, kappa de Cohen, consigne actuelle du juge (52 des 60 affirmations)",
+        "en": "Judge–blind human agreement, Cohen's kappa, current judge prompt (52 of 60 claims)"
       },
       "display": {
-        "fr": "0,55",
-        "en": "0.55"
+        "fr": "κ 0,60",
+        "en": "κ 0.60"
       },
-      "value": 0.55,
+      "value": 0.5968992248062016,
       "repo": "matteogallo-ai/verity",
-      "commit": "162a055dee9ec26297b204c669a6a9b6e667b52a",
-      "path": "src/verity/config.py",
-      "url": "https://github.com/matteogallo-ai/verity/blob/162a055dee9ec26297b204c669a6a9b6e667b52a/src/verity/config.py",
+      "commit": "59c465511555fca642e50dfbf0af5f1a8e87f0c1",
+      "path": "datasets/eval/judge_validation/judge-v0.2.0/agreement.json",
+      "url": "https://github.com/matteogallo-ai/verity/blob/59c465511555fca642e50dfbf0af5f1a8e87f0c1/datasets/eval/judge_validation/judge-v0.2.0/agreement.json",
       "evidence": [
         {
-          "path": "src/verity/config.py",
-          "contains": "confidence_threshold: float = Field(\n        default=0.55,"
+          "pointer": "/agreement_mixed/cohen_kappa",
+          "equals": 0.5968992248062016,
+          "binds": "value"
         },
         {
-          "path": ".env.example",
-          "contains": "VERITY_CONFIDENCE_THRESHOLD=0.55"
+          "pointer": "/agreement_mixed/n_claims",
+          "equals": 52
+        },
+        {
+          "pointer": "/n_items",
+          "equals": 60
+        },
+        {
+          "pointer": "/complete",
+          "equals": false
+        },
+        {
+          "path": "docs/results.md",
+          "contains": "on **52 of 60 claims only: the budget stopped the rejudge before 8**"
         }
       ],
       "status": "verified",
-      "derived": "The default of the confidence_threshold field in the code.",
-      "note": "Default of `verity ask`; the run of record used 0.0."
+      "note": "The judge of the run of record. Its rejudge stopped at its spending cap after 52 of the 60 claims; the artefact gives no bootstrap interval."
     },
     {
       "id": "verity.judge_kappa_all",
       "label": {
-        "fr": "Accord juge–humain à l'aveugle, kappa de Cohen (60 affirmations)",
-        "en": "Judge–blind human agreement, Cohen's kappa (60 claims)"
+        "fr": "Accord juge–humain à l'aveugle, kappa de Cohen, ancienne consigne du juge (60 affirmations, dont 1 hallucination réelle ; IC bootstrap 0,49–0,89)",
+        "en": "Judge–blind human agreement, Cohen's kappa, earlier judge prompt (60 claims, of which 1 real hallucination; bootstrap CI 0.49–0.89)"
       },
       "display": {
         "fr": "κ 0,71",
@@ -259,9 +325,9 @@
       },
       "value": 0.7099447513812154,
       "repo": "matteogallo-ai/verity",
-      "commit": "162a055dee9ec26297b204c669a6a9b6e667b52a",
+      "commit": "59c465511555fca642e50dfbf0af5f1a8e87f0c1",
       "path": "datasets/eval/judge_validation/agreement.json",
-      "url": "https://github.com/matteogallo-ai/verity/blob/162a055dee9ec26297b204c669a6a9b6e667b52a/datasets/eval/judge_validation/agreement.json",
+      "url": "https://github.com/matteogallo-ai/verity/blob/59c465511555fca642e50dfbf0af5f1a8e87f0c1/datasets/eval/judge_validation/agreement.json",
       "evidence": [
         {
           "pointer": "/agreement_mixed/cohen_kappa",
@@ -279,16 +345,34 @@
         {
           "path": "docs/results.md",
           "contains": "The κ below belongs to this prompt version"
+        },
+        {
+          "path": "datasets/eval/judge_validation/kappa_ci.json",
+          "pointer": "/all_claims/ci95_percentile",
+          "equals": [
+            0.4872,
+            0.8934
+          ]
+        },
+        {
+          "path": "datasets/eval/judge_validation/kappa_ci.json",
+          "pointer": "/n_real_unsupported_by_human",
+          "equals": 1
+        },
+        {
+          "path": "datasets/eval/judge_validation/kappa_ci.json",
+          "pointer": "/n_claims",
+          "equals": 60
         }
       ],
       "status": "verified",
-      "note": "Judge prompt v0.1.0, the one the runs of record used; 40 real and 20 perturbed claims. A changed judge prompt needs its own κ."
+      "note": "Judge prompt v0.1.0, which judged the earlier runs; 40 real and 20 perturbed claims, 1 real claim unsupported by the human. Bootstrap interval from kappa_ci.json."
     },
     {
       "id": "verity.judge_kappa_real",
       "label": {
-        "fr": "Accord juge–humain à l'aveugle, kappa de Cohen (40 affirmations réelles)",
-        "en": "Judge–blind human agreement, Cohen's kappa (40 real claims)"
+        "fr": "Accord juge–humain à l'aveugle, kappa de Cohen, ancienne consigne du juge (40 affirmations réelles)",
+        "en": "Judge–blind human agreement, Cohen's kappa, earlier judge prompt (40 real claims)"
       },
       "display": {
         "fr": "κ 0,48",
@@ -296,9 +380,9 @@
       },
       "value": 0.48051948051948035,
       "repo": "matteogallo-ai/verity",
-      "commit": "162a055dee9ec26297b204c669a6a9b6e667b52a",
+      "commit": "59c465511555fca642e50dfbf0af5f1a8e87f0c1",
       "path": "datasets/eval/judge_validation/agreement.json",
-      "url": "https://github.com/matteogallo-ai/verity/blob/162a055dee9ec26297b204c669a6a9b6e667b52a/datasets/eval/judge_validation/agreement.json",
+      "url": "https://github.com/matteogallo-ai/verity/blob/59c465511555fca642e50dfbf0af5f1a8e87f0c1/datasets/eval/judge_validation/agreement.json",
       "evidence": [
         {
           "pointer": "/agreement_real_only/cohen_kappa",
@@ -312,10 +396,6 @@
         {
           "path": "docs/results.md",
           "contains": "Judge `claude-opus-5-5` with judge prompt v0.1.0"
-        },
-        {
-          "path": "docs/results.md",
-          "contains": "The κ below belongs to this prompt version"
         },
         {
           "path": "docs/results.md",
@@ -343,9 +423,9 @@
         0.9193
       ],
       "repo": "matteogallo-ai/verity",
-      "commit": "162a055dee9ec26297b204c669a6a9b6e667b52a",
+      "commit": "59c465511555fca642e50dfbf0af5f1a8e87f0c1",
       "path": "datasets/eval/judge_validation/agreement.json",
-      "url": "https://github.com/matteogallo-ai/verity/blob/162a055dee9ec26297b204c669a6a9b6e667b52a/datasets/eval/judge_validation/agreement.json",
+      "url": "https://github.com/matteogallo-ai/verity/blob/59c465511555fca642e50dfbf0af5f1a8e87f0c1/datasets/eval/judge_validation/agreement.json",
       "evidence": [
         {
           "pointer": "/sensitivity/judge_detected/k",
@@ -379,367 +459,418 @@
         }
       ],
       "status": "verified",
-      "note": "Upper bound: a perturbed claim counts as detected if any sub-claim the judge made of it is unsupported, even outside the changed span. The blind human found 13 of the 20 unsupported."
+      "note": "Judge prompt v0.1.0. Upper bound: a perturbed claim counts as detected if any sub-claim the judge made of it is unsupported, even outside the changed span. The blind human found 13 of the 20 unsupported."
     },
     {
-      "id": "verity.baseline_verity_answerable_answered",
+      "id": "verity.twoarm_unanswerable_answered_verity",
+      "label": {
+        "fr": "Questions sans réponse traitées comme si elles en avaient une — Verity",
+        "en": "Unanswerable questions answered as if they had an answer — Verity"
+      },
+      "display": {
+        "fr": "4/31",
+        "en": "4/31"
+      },
+      "value": 0.129032,
+      "k": 4,
+      "n": 31,
+      "ci95": [
+        0.0513,
+        0.2885
+      ],
+      "repo": "matteogallo-ai/verity",
+      "commit": "59c465511555fca642e50dfbf0af5f1a8e87f0c1",
+      "path": "scorecards/two-arm-comparison.json",
+      "url": "https://github.com/matteogallo-ai/verity/blob/59c465511555fca642e50dfbf0af5f1a8e87f0c1/scorecards/two-arm-comparison.json",
+      "evidence": [
+        {
+          "pointer": "/primary/unanswerable_answered/verity/k",
+          "equals": 4,
+          "binds": "k"
+        },
+        {
+          "pointer": "/primary/unanswerable_answered/verity/n",
+          "equals": 31,
+          "binds": "n"
+        },
+        {
+          "pointer": "/primary/unanswerable_answered/verity/ci95_wilson",
+          "equals": [
+            0.0513,
+            0.2885
+          ],
+          "binds": "ci95"
+        },
+        {
+          "pointer": "/primary/unanswerable_answered/reading",
+          "equals": "Verity's checks refuse unanswerable questions that the naive draft answers."
+        },
+        {
+          "pointer": "/n_compared",
+          "equals": 93
+        }
+      ],
+      "status": "verified",
+      "note": "Pre-registered two-arm comparison (docs/preregistration/two-arm-comparison.md): 93 questions completed by both arms, paired, exact McNemar test, Holm-adjusted over three primary outcomes."
+    },
+    {
+      "id": "verity.twoarm_unanswerable_answered_naive",
+      "label": {
+        "fr": "Questions sans réponse traitées comme si elles en avaient une — RAG naïf",
+        "en": "Unanswerable questions answered as if they had an answer — naive RAG"
+      },
+      "display": {
+        "fr": "12/31",
+        "en": "12/31"
+      },
+      "value": 0.387097,
+      "k": 12,
+      "n": 31,
+      "ci95": [
+        0.2373,
+        0.5618
+      ],
+      "repo": "matteogallo-ai/verity",
+      "commit": "59c465511555fca642e50dfbf0af5f1a8e87f0c1",
+      "path": "scorecards/two-arm-comparison.json",
+      "url": "https://github.com/matteogallo-ai/verity/blob/59c465511555fca642e50dfbf0af5f1a8e87f0c1/scorecards/two-arm-comparison.json",
+      "evidence": [
+        {
+          "pointer": "/primary/unanswerable_answered/naive/k",
+          "equals": 12,
+          "binds": "k"
+        },
+        {
+          "pointer": "/primary/unanswerable_answered/naive/n",
+          "equals": 31,
+          "binds": "n"
+        },
+        {
+          "pointer": "/primary/unanswerable_answered/naive/ci95_wilson",
+          "equals": [
+            0.2373,
+            0.5618
+          ],
+          "binds": "ci95"
+        },
+        {
+          "pointer": "/primary/unanswerable_answered/reading",
+          "equals": "Verity's checks refuse unanswerable questions that the naive draft answers."
+        },
+        {
+          "pointer": "/n_compared",
+          "equals": 93
+        }
+      ],
+      "status": "verified",
+      "note": "Pre-registered two-arm comparison (docs/preregistration/two-arm-comparison.md): 93 questions completed by both arms, paired, exact McNemar test, Holm-adjusted over three primary outcomes."
+    },
+    {
+      "id": "verity.twoarm_unanswerable_answered_p",
+      "label": {
+        "fr": "Questions sans réponse traitées comme si elles en avaient une : p du test apparié, corrigé (Holm)",
+        "en": "Unanswerable questions answered as if they had an answer: paired test p, Holm-adjusted"
+      },
+      "display": {
+        "fr": "0,023",
+        "en": "0.023"
+      },
+      "value": 0.0234375,
+      "repo": "matteogallo-ai/verity",
+      "commit": "59c465511555fca642e50dfbf0af5f1a8e87f0c1",
+      "path": "scorecards/two-arm-comparison.json",
+      "url": "https://github.com/matteogallo-ai/verity/blob/59c465511555fca642e50dfbf0af5f1a8e87f0c1/scorecards/two-arm-comparison.json",
+      "evidence": [
+        {
+          "pointer": "/primary/unanswerable_answered/p_holm",
+          "equals": 0.0234375,
+          "binds": "value"
+        },
+        {
+          "pointer": "/primary/unanswerable_answered/p_mcnemar",
+          "equals": 0.0078125
+        },
+        {
+          "pointer": "/primary/unanswerable_answered/reading",
+          "equals": "Verity's checks refuse unanswerable questions that the naive draft answers."
+        }
+      ],
+      "status": "verified",
+      "note": "Pre-registered two-arm comparison (docs/preregistration/two-arm-comparison.md): 93 questions completed by both arms, paired, exact McNemar test, Holm-adjusted over three primary outcomes."
+    },
+    {
+      "id": "verity.twoarm_answerable_answered_verity",
       "label": {
         "fr": "Questions avec réponse traitées — Verity",
         "en": "Answerable questions answered — Verity"
       },
       "display": {
-        "fr": "16/21",
-        "en": "16/21"
+        "fr": "58/62",
+        "en": "58/62"
       },
-      "value": 0.761905,
-      "k": 16,
-      "n": 21,
+      "value": 0.935484,
+      "k": 58,
+      "n": 62,
       "ci95": [
-        0.549088,
-        0.89372
+        0.8455,
+        0.9746
       ],
       "repo": "matteogallo-ai/verity",
-      "commit": "162a055dee9ec26297b204c669a6a9b6e667b52a",
-      "path": "scorecards/naive-baseline-comparison.json",
-      "url": "https://github.com/matteogallo-ai/verity/blob/162a055dee9ec26297b204c669a6a9b6e667b52a/scorecards/naive-baseline-comparison.json",
+      "commit": "59c465511555fca642e50dfbf0af5f1a8e87f0c1",
+      "path": "scorecards/two-arm-comparison.json",
+      "url": "https://github.com/matteogallo-ai/verity/blob/59c465511555fca642e50dfbf0af5f1a8e87f0c1/scorecards/two-arm-comparison.json",
       "evidence": [
         {
-          "pointer": "/arms/verity/metrics/answerable_answered/k",
-          "equals": 16,
+          "pointer": "/primary/answerable_answered/verity/k",
+          "equals": 58,
           "binds": "k"
         },
         {
-          "pointer": "/arms/verity/metrics/answerable_answered/n",
-          "equals": 21,
+          "pointer": "/primary/answerable_answered/verity/n",
+          "equals": 62,
           "binds": "n"
         },
         {
-          "pointer": "/arms/verity/metrics/answerable_answered/ci95_wilson",
+          "pointer": "/primary/answerable_answered/verity/ci95_wilson",
           "equals": [
-            0.549088,
-            0.89372
+            0.8455,
+            0.9746
           ],
           "binds": "ci95"
         },
         {
-          "pointer": "/readings/answerable_answered",
-          "equals": "not distinguishable"
+          "pointer": "/primary/answerable_answered/reading",
+          "equals": "No cost measurable at this n."
         },
         {
-          "pointer": "/arms/verity/n_completed",
-          "equals": 23
-        },
-        {
-          "pointer": "/arms/naive/n_completed",
-          "equals": 28
-        },
-        {
-          "pointer": "/n_dataset",
-          "equals": 39
+          "pointer": "/n_compared",
+          "equals": 93
         }
       ],
       "status": "verified",
-      "note": "Dev split, incomplete runs (Verity 23/39, naive 28/39), compared on the 23 questions both completed; the artefact reads the difference as not distinguishable."
+      "note": "Pre-registered two-arm comparison (docs/preregistration/two-arm-comparison.md): 93 questions completed by both arms, paired, exact McNemar test, Holm-adjusted over three primary outcomes."
     },
     {
-      "id": "verity.baseline_naive_answerable_answered",
+      "id": "verity.twoarm_answerable_answered_naive",
       "label": {
         "fr": "Questions avec réponse traitées — RAG naïf",
         "en": "Answerable questions answered — naive RAG"
       },
       "display": {
-        "fr": "21/21",
-        "en": "21/21"
+        "fr": "62/62",
+        "en": "62/62"
       },
       "value": 1.0,
-      "k": 21,
-      "n": 21,
+      "k": 62,
+      "n": 62,
       "ci95": [
-        0.845361,
+        0.9417,
         1.0
       ],
       "repo": "matteogallo-ai/verity",
-      "commit": "162a055dee9ec26297b204c669a6a9b6e667b52a",
-      "path": "scorecards/naive-baseline-comparison.json",
-      "url": "https://github.com/matteogallo-ai/verity/blob/162a055dee9ec26297b204c669a6a9b6e667b52a/scorecards/naive-baseline-comparison.json",
+      "commit": "59c465511555fca642e50dfbf0af5f1a8e87f0c1",
+      "path": "scorecards/two-arm-comparison.json",
+      "url": "https://github.com/matteogallo-ai/verity/blob/59c465511555fca642e50dfbf0af5f1a8e87f0c1/scorecards/two-arm-comparison.json",
       "evidence": [
         {
-          "pointer": "/arms/naive/metrics/answerable_answered/k",
-          "equals": 21,
+          "pointer": "/primary/answerable_answered/naive/k",
+          "equals": 62,
           "binds": "k"
         },
         {
-          "pointer": "/arms/naive/metrics/answerable_answered/n",
-          "equals": 21,
+          "pointer": "/primary/answerable_answered/naive/n",
+          "equals": 62,
           "binds": "n"
         },
         {
-          "pointer": "/arms/naive/metrics/answerable_answered/ci95_wilson",
+          "pointer": "/primary/answerable_answered/naive/ci95_wilson",
           "equals": [
-            0.845361,
+            0.9417,
             1.0
           ],
           "binds": "ci95"
         },
         {
-          "pointer": "/readings/answerable_answered",
-          "equals": "not distinguishable"
+          "pointer": "/primary/answerable_answered/reading",
+          "equals": "No cost measurable at this n."
         },
         {
-          "pointer": "/arms/verity/n_completed",
-          "equals": 23
-        },
-        {
-          "pointer": "/arms/naive/n_completed",
-          "equals": 28
-        },
-        {
-          "pointer": "/n_dataset",
-          "equals": 39
+          "pointer": "/n_compared",
+          "equals": 93
         }
       ],
       "status": "verified",
-      "note": "Dev split, incomplete runs (Verity 23/39, naive 28/39), compared on the 23 questions both completed; the artefact reads the difference as not distinguishable."
+      "note": "Pre-registered two-arm comparison (docs/preregistration/two-arm-comparison.md): 93 questions completed by both arms, paired, exact McNemar test, Holm-adjusted over three primary outcomes."
     },
     {
-      "id": "verity.baseline_verity_unanswerable_answered",
+      "id": "verity.twoarm_answerable_answered_p",
       "label": {
-        "fr": "Questions sans réponse auxquelles il a répondu — Verity (comparaison)",
-        "en": "Unanswerable questions answered — Verity (comparison)"
+        "fr": "Questions avec réponse traitées : p du test apparié, corrigé (Holm)",
+        "en": "Answerable questions answered: paired test p, Holm-adjusted"
       },
       "display": {
-        "fr": "0/2",
-        "en": "0/2"
+        "fr": "0,25",
+        "en": "0.25"
+      },
+      "value": 0.25,
+      "repo": "matteogallo-ai/verity",
+      "commit": "59c465511555fca642e50dfbf0af5f1a8e87f0c1",
+      "path": "scorecards/two-arm-comparison.json",
+      "url": "https://github.com/matteogallo-ai/verity/blob/59c465511555fca642e50dfbf0af5f1a8e87f0c1/scorecards/two-arm-comparison.json",
+      "evidence": [
+        {
+          "pointer": "/primary/answerable_answered/p_holm",
+          "equals": 0.25,
+          "binds": "value"
+        },
+        {
+          "pointer": "/primary/answerable_answered/p_mcnemar",
+          "equals": 0.125
+        },
+        {
+          "pointer": "/primary/answerable_answered/reading",
+          "equals": "No cost measurable at this n."
+        }
+      ],
+      "status": "verified",
+      "note": "Pre-registered two-arm comparison (docs/preregistration/two-arm-comparison.md): 93 questions completed by both arms, paired, exact McNemar test, Holm-adjusted over three primary outcomes."
+    },
+    {
+      "id": "verity.twoarm_invented_answer_verity",
+      "label": {
+        "fr": "Réponses inventées — Verity",
+        "en": "Invented answers — Verity"
+      },
+      "display": {
+        "fr": "0/93",
+        "en": "0/93"
       },
       "value": 0.0,
       "k": 0,
-      "n": 2,
+      "n": 93,
       "ci95": [
         0.0,
-        0.65762
+        0.0397
       ],
       "repo": "matteogallo-ai/verity",
-      "commit": "162a055dee9ec26297b204c669a6a9b6e667b52a",
-      "path": "scorecards/naive-baseline-comparison.json",
-      "url": "https://github.com/matteogallo-ai/verity/blob/162a055dee9ec26297b204c669a6a9b6e667b52a/scorecards/naive-baseline-comparison.json",
+      "commit": "59c465511555fca642e50dfbf0af5f1a8e87f0c1",
+      "path": "scorecards/two-arm-comparison.json",
+      "url": "https://github.com/matteogallo-ai/verity/blob/59c465511555fca642e50dfbf0af5f1a8e87f0c1/scorecards/two-arm-comparison.json",
       "evidence": [
         {
-          "pointer": "/arms/verity/metrics/unanswerable_answered/k",
+          "pointer": "/primary/invented_answer/verity/k",
           "equals": 0,
           "binds": "k"
         },
         {
-          "pointer": "/arms/verity/metrics/unanswerable_answered/n",
-          "equals": 2,
+          "pointer": "/primary/invented_answer/verity/n",
+          "equals": 93,
           "binds": "n"
         },
         {
-          "pointer": "/arms/verity/metrics/unanswerable_answered/ci95_wilson",
+          "pointer": "/primary/invented_answer/verity/ci95_wilson",
           "equals": [
             0.0,
-            0.65762
+            0.0397
           ],
           "binds": "ci95"
         },
         {
-          "pointer": "/readings/unanswerable_answered",
-          "equals": "not distinguishable"
+          "pointer": "/primary/invented_answer/reading",
+          "equals": "No difference in invented answers measurable at this n."
         },
         {
-          "pointer": "/arms/verity/n_completed",
-          "equals": 23
-        },
-        {
-          "pointer": "/arms/naive/n_completed",
-          "equals": 28
-        },
-        {
-          "pointer": "/n_dataset",
-          "equals": 39
+          "pointer": "/n_compared",
+          "equals": 93
         }
       ],
       "status": "verified",
-      "note": "Dev split, incomplete runs (Verity 23/39, naive 28/39), compared on the 23 questions both completed; the artefact reads the difference as not distinguishable."
+      "note": "Pre-registered two-arm comparison (docs/preregistration/two-arm-comparison.md): 93 questions completed by both arms, paired, exact McNemar test, Holm-adjusted over three primary outcomes."
     },
     {
-      "id": "verity.baseline_naive_unanswerable_answered",
+      "id": "verity.twoarm_invented_answer_naive",
       "label": {
-        "fr": "Questions sans réponse auxquelles il a répondu — RAG naïf",
-        "en": "Unanswerable questions answered — naive RAG"
+        "fr": "Réponses inventées — RAG naïf",
+        "en": "Invented answers — naive RAG"
       },
       "display": {
-        "fr": "2/2",
-        "en": "2/2"
+        "fr": "3/93",
+        "en": "3/93"
       },
-      "value": 1.0,
-      "k": 2,
-      "n": 2,
+      "value": 0.032258,
+      "k": 3,
+      "n": 93,
       "ci95": [
-        0.34238,
-        1.0
+        0.011,
+        0.0906
       ],
       "repo": "matteogallo-ai/verity",
-      "commit": "162a055dee9ec26297b204c669a6a9b6e667b52a",
-      "path": "scorecards/naive-baseline-comparison.json",
-      "url": "https://github.com/matteogallo-ai/verity/blob/162a055dee9ec26297b204c669a6a9b6e667b52a/scorecards/naive-baseline-comparison.json",
+      "commit": "59c465511555fca642e50dfbf0af5f1a8e87f0c1",
+      "path": "scorecards/two-arm-comparison.json",
+      "url": "https://github.com/matteogallo-ai/verity/blob/59c465511555fca642e50dfbf0af5f1a8e87f0c1/scorecards/two-arm-comparison.json",
       "evidence": [
         {
-          "pointer": "/arms/naive/metrics/unanswerable_answered/k",
-          "equals": 2,
+          "pointer": "/primary/invented_answer/naive/k",
+          "equals": 3,
           "binds": "k"
         },
         {
-          "pointer": "/arms/naive/metrics/unanswerable_answered/n",
-          "equals": 2,
+          "pointer": "/primary/invented_answer/naive/n",
+          "equals": 93,
           "binds": "n"
         },
         {
-          "pointer": "/arms/naive/metrics/unanswerable_answered/ci95_wilson",
+          "pointer": "/primary/invented_answer/naive/ci95_wilson",
           "equals": [
-            0.34238,
-            1.0
+            0.011,
+            0.0906
           ],
           "binds": "ci95"
         },
         {
-          "pointer": "/readings/unanswerable_answered",
-          "equals": "not distinguishable"
+          "pointer": "/primary/invented_answer/reading",
+          "equals": "No difference in invented answers measurable at this n."
         },
         {
-          "pointer": "/arms/verity/n_completed",
-          "equals": 23
-        },
-        {
-          "pointer": "/arms/naive/n_completed",
-          "equals": 28
-        },
-        {
-          "pointer": "/n_dataset",
-          "equals": 39
+          "pointer": "/n_compared",
+          "equals": 93
         }
       ],
       "status": "verified",
-      "note": "Dev split, incomplete runs (Verity 23/39, naive 28/39), compared on the 23 questions both completed; the artefact reads the difference as not distinguishable."
+      "note": "Pre-registered two-arm comparison (docs/preregistration/two-arm-comparison.md): 93 questions completed by both arms, paired, exact McNemar test, Holm-adjusted over three primary outcomes."
     },
     {
-      "id": "verity.baseline_verity_hallucination_rate",
+      "id": "verity.twoarm_invented_answer_p",
       "label": {
-        "fr": "Taux d'hallucination — Verity (comparaison)",
-        "en": "Hallucination rate — Verity (comparison)"
+        "fr": "Réponses inventées : p du test apparié, corrigé (Holm)",
+        "en": "Invented answers: paired test p, Holm-adjusted"
       },
       "display": {
-        "fr": "0/16",
-        "en": "0/16"
+        "fr": "0,25",
+        "en": "0.25"
       },
-      "value": 0.0,
-      "k": 0,
-      "n": 16,
-      "ci95": [
-        0.0,
-        0.193608
-      ],
+      "value": 0.25,
       "repo": "matteogallo-ai/verity",
-      "commit": "162a055dee9ec26297b204c669a6a9b6e667b52a",
-      "path": "scorecards/naive-baseline-comparison.json",
-      "url": "https://github.com/matteogallo-ai/verity/blob/162a055dee9ec26297b204c669a6a9b6e667b52a/scorecards/naive-baseline-comparison.json",
+      "commit": "59c465511555fca642e50dfbf0af5f1a8e87f0c1",
+      "path": "scorecards/two-arm-comparison.json",
+      "url": "https://github.com/matteogallo-ai/verity/blob/59c465511555fca642e50dfbf0af5f1a8e87f0c1/scorecards/two-arm-comparison.json",
       "evidence": [
         {
-          "pointer": "/arms/verity/metrics/hallucination_rate/k",
-          "equals": 0,
-          "binds": "k"
+          "pointer": "/primary/invented_answer/p_holm",
+          "equals": 0.25,
+          "binds": "value"
         },
         {
-          "pointer": "/arms/verity/metrics/hallucination_rate/n",
-          "equals": 16,
-          "binds": "n"
+          "pointer": "/primary/invented_answer/p_mcnemar",
+          "equals": 0.25
         },
         {
-          "pointer": "/arms/verity/metrics/hallucination_rate/ci95_wilson",
-          "equals": [
-            0.0,
-            0.193608
-          ],
-          "binds": "ci95"
-        },
-        {
-          "pointer": "/readings/hallucination_rate",
-          "equals": "not distinguishable"
-        },
-        {
-          "pointer": "/arms/verity/n_completed",
-          "equals": 23
-        },
-        {
-          "pointer": "/arms/naive/n_completed",
-          "equals": 28
-        },
-        {
-          "pointer": "/n_dataset",
-          "equals": 39
+          "pointer": "/primary/invented_answer/reading",
+          "equals": "No difference in invented answers measurable at this n."
         }
       ],
       "status": "verified",
-      "note": "Dev split, incomplete runs (Verity 23/39, naive 28/39), compared on the 23 questions both completed; the artefact reads the difference as not distinguishable."
-    },
-    {
-      "id": "verity.baseline_naive_hallucination_rate",
-      "label": {
-        "fr": "Taux d'hallucination — RAG naïf",
-        "en": "Hallucination rate — naive RAG"
-      },
-      "display": {
-        "fr": "0/21",
-        "en": "0/21"
-      },
-      "value": 0.0,
-      "k": 0,
-      "n": 21,
-      "ci95": [
-        0.0,
-        0.154639
-      ],
-      "repo": "matteogallo-ai/verity",
-      "commit": "162a055dee9ec26297b204c669a6a9b6e667b52a",
-      "path": "scorecards/naive-baseline-comparison.json",
-      "url": "https://github.com/matteogallo-ai/verity/blob/162a055dee9ec26297b204c669a6a9b6e667b52a/scorecards/naive-baseline-comparison.json",
-      "evidence": [
-        {
-          "pointer": "/arms/naive/metrics/hallucination_rate/k",
-          "equals": 0,
-          "binds": "k"
-        },
-        {
-          "pointer": "/arms/naive/metrics/hallucination_rate/n",
-          "equals": 21,
-          "binds": "n"
-        },
-        {
-          "pointer": "/arms/naive/metrics/hallucination_rate/ci95_wilson",
-          "equals": [
-            0.0,
-            0.154639
-          ],
-          "binds": "ci95"
-        },
-        {
-          "pointer": "/readings/hallucination_rate",
-          "equals": "not distinguishable"
-        },
-        {
-          "pointer": "/arms/verity/n_completed",
-          "equals": 23
-        },
-        {
-          "pointer": "/arms/naive/n_completed",
-          "equals": 28
-        },
-        {
-          "pointer": "/n_dataset",
-          "equals": 39
-        }
-      ],
-      "status": "verified",
-      "note": "Dev split, incomplete runs (Verity 23/39, naive 28/39), compared on the 23 questions both completed; the artefact reads the difference as not distinguishable."
+      "note": "Pre-registered two-arm comparison (docs/preregistration/two-arm-comparison.md): 93 questions completed by both arms, paired, exact McNemar test, Holm-adjusted over three primary outcomes."
     },
     {
       "id": "promptlang.mutation_score",

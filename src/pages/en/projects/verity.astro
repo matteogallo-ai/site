@@ -11,8 +11,10 @@ import { pinned } from "../../../lib/sources.ts";
 import answer from "../../../data/demo/answer.json";
 
 const at = (path: string) => pinned("verity", path);
-// The run of record: its hash stays in the link, out of the prose.
-const runOfRecord = answer.source.url;
+// The run of record of the release the figures come from; the demo replays an earlier test run.
+// Hashes stay in the links, out of the prose.
+const runOfRecord = at("datasets/eval/runs/live/eval_513b839_test.incomplete-20261107T122042441670Z.json");
+const demoRun = answer.source.url;
 
 // Both quotes come from data that npm run check:sources compares with GitHub: the cited
 // passage from the committed run (demo/answer.json), the threshold sentence from the
@@ -36,11 +38,11 @@ if (!thresholdSentence || !("contains" in thresholdSentence)) throw new Error("t
   <Brief
     slot="brief"
     does="It answers questions about a set of contracts by quoting the exact clause, and says “I don’t know” when the documents do not contain the answer."
-    measured="On test questions never seen during tuning: whether it refuses the unanswerable questions, and whether its answers make anything up."
-    defect="It answered questions that had no answer in the documents. What I did about it: I published it, with the three questions involved named in the results."
+    measured="On test questions never seen during tuning: whether it refuses the unanswerable questions, whether its answers make anything up, and whether it does better than the same chain with no checks."
+    defect="It answered questions that had no answer in the documents. What I did about it: I published it, with the questions involved named in the results."
     figures={[
+      { id: "verity.invented_answer_rate", caption: "answers containing a fabrication, over every answer given, whether the question has an answer or not (according to the judge)" },
       { id: "verity.refusal_recall", caption: "unanswerable questions correctly refused" },
-      { id: "verity.hallucination_rate", caption: "answers containing a fabrication, according to a judge checked against my own ratings, among the answerable questions it answered; its answers to unanswerable questions are counted separately" },
       { id: "verity.unanswerable_answered", caption: "unanswerable questions it answered anyway", defect: true },
     ]}
   />
@@ -65,14 +67,14 @@ if (!thresholdSentence || !("contains" in thresholdSentence)) throw new Error("t
         { title: "Question", lines: ["over a corpus of contracts and policies"] },
         { title: "Passage search", lines: ["by meaning and by words,", "then ranking of the most useful passages"] },
         { title: "Drafting with quotes", lines: ["each quote must be an exact excerpt", "of the document; no quote, refusal"] },
-        { title: "Checks in code, no model", lines: ["quotes: do they cover the answer,", "are they relevant? manipulation?", "a single failure refuses"] },
+        { title: "Checks in code, no model", lines: ["quotes: do they cover the answer?", "manipulation?", "a single failure refuses"] },
         { title: "Confidence rating and threshold", lines: ["a model rates the answer and may refuse;", "it cannot overrule a check"] },
       ]}
       outcomes={[
         { title: "Cited answer", lines: ["clause and position"], tone: "proof" },
         { title: "Refusal", lines: ["with its cause", "recorded"], tone: "defect" },
       ]}
-      desc="A question is asked over a corpus of contracts and policies. Verity searches for passages by meaning and by words, then ranks the most useful ones. It drafts an answer in which each quote must be an exact excerpt of the document; with no quote, it refuses. Checks written in code, with no model, verify that the quotes cover the answer, that they are relevant and that nothing manipulates them; a single failure refuses. Finally, a model rates the answer and may refuse below a threshold, but cannot overrule a check. Two outcomes: an answer citing its clause and position, or a refusal with its cause recorded."
+      desc="A question is asked over a corpus of contracts and policies. Verity searches for passages by meaning and by words, then ranks the most useful ones. It drafts an answer in which each quote must be an exact excerpt of the document; with no quote, it refuses. Checks written in code, with no model, verify that the quotes cover the answer and that nothing manipulates them; a single failure refuses. Finally, a model rates the answer and may refuse below a threshold, but cannot overrule a check. Two outcomes: an answer citing its clause and position, or a refusal with its cause recorded."
       caption="The refusal is decided in order: no quote, then the checks written in code, then the confidence rating and its threshold. The judge, a second model that rates the answers, is not on this path: it evaluates the runs afterwards."
     />
     <p>
@@ -88,28 +90,39 @@ if (!thresholdSentence || !("contains" in thresholdSentence)) throw new Error("t
     lead="What its answers and refusals are worth, in figures, with their uncertainty and a comparison with a simpler system."
   >
     <p>
-      The figures come from the <a href={runOfRecord}>reference run</a>, on test questions never seen during tuning. On the questions whose documents do not contain the answer, Verity refuses <Figure
-        id="verity.refusal_recall"
+      The figures come from the <a href={runOfRecord}>reference run</a> of the published release, on test questions never seen during tuning; the spending cap stopped it before the last two
+      questions, which count nowhere. On the questions whose documents do not contain the answer, Verity refuses <Figure id="verity.refusal_recall" where="prose" /> of them, but still answers <Figure
+        id="verity.unanswerable_answered"
         where="prose"
-      /> of them, but still answers <Figure id="verity.unanswerable_answered" where="prose" defect />. The judge, a second model in charge of rating the answers, finds a fabrication in <Figure
+        defect
+      />. The judge, a second model in charge of rating the answers, finds a fabrication in <Figure id="verity.invented_answer_rate" where="prose" /> answers given (<code>q-089</code>), every question
+      counted. The earlier definition counted only the questions that have an answer: by construction it left out the one real fabrication of the previous run (<code>q-074</code>). It gives <Figure
         id="verity.hallucination_rate"
         where="prose"
-      /> answers. This judge agrees with my own ratings, made without seeing its own, at <Figure id="verity.judge_kappa_all" where="prose" />: that is a Cohen’s kappa, a measure of agreement
-      that removes the share due to chance, from zero for chance to one for perfect agreement. This figure mixes real claims and deliberately planted ones; on the real ones alone, it drops to <Figure
-        id="verity.judge_kappa_real"
-        where="prose"
-      />, a fragile figure.
+      /> here and stays published in the detail, with its definition.
     </p>
     <p>
-      Compared with a naive RAG, the same principle without any check, on tuning questions and on runs the budget stopped before the end, Verity does not do measurably better: it handles <Figure
-        id="verity.baseline_verity_answerable_answered"
+      This judge agrees with my own ratings, made blind to the judge’s, at <Figure id="verity.judge_kappa_v020" where="prose" />, on part of the validation claims only: its budget stopped the check before
+      the end. That is a Cohen’s kappa, a measure of agreement that removes the share due to chance, from zero for chance to one for perfect agreement. The earlier judge prompt, the one of the previous
+      runs, reached <Figure id="verity.judge_kappa_all" where="prose" /> on claims of which only one is a real hallucination; its interval is in the detail.
+    </p>
+    <p>
+      Against a naive RAG, the same search and the same drafting with no check at all, the comparison was pre-registered and covers the tuning and test questions both finished. Verity handles <Figure
+        id="verity.twoarm_unanswerable_answered_verity"
         where="prose"
-      /> questions that have an answer, against <Figure id="verity.baseline_naive_answerable_answered" where="prose" />, and on so few questions the gap cannot be distinguished from chance. This is the
-      published result, not the favourable one.
+      /> unanswerable questions as if they had an answer, against <Figure id="verity.twoarm_unanswerable_answered_naive" where="prose" /> for the naive RAG: a clear gap (paired test, adjusted for three
+      comparisons: p = <Figure id="verity.twoarm_unanswerable_answered_p" where="prose" />). It answers <Figure id="verity.twoarm_answerable_answered_verity" where="prose" /> questions that have an answer,
+      against <Figure id="verity.twoarm_answerable_answered_naive" where="prose" />, and gives <Figure id="verity.twoarm_invented_answer_verity" where="prose" /> fabricated answers, against <Figure
+        id="verity.twoarm_invented_answer_naive"
+        where="prose"
+      />: at this size, neither that cost nor that gain can be told from chance (p = <Figure id="verity.twoarm_answerable_answered_p" where="prose" /> and <Figure
+        id="verity.twoarm_invented_answer_p"
+        where="prose"
+      />). The measured gain is the refusal; the rest cannot be measured on this data.
     </p>
     <MeasuresDetail>
       <p>
-        Refusal threshold of the run: <Figure
+        Refusal threshold of the run, which is also the code’s: <Figure
           id="verity.threshold_run_of_record"
           where="detail"
         />.
@@ -118,18 +131,24 @@ if (!thresholdSentence || !("contains" in thresholdSentence)) throw new Error("t
         where="run"
         caption="Reference run, test questions"
         rows={[
+          { id: "verity.invented_answer_rate", reading: "Every answer given, whether the question has an answer or not. One fabrication, named in the results." },
           { id: "verity.refusal_recall", reading: "Questions with no answer in the documents, refused." },
-          { id: "verity.refusal_precision", reading: "Refusals that concerned a truly unanswerable question; the others come from the quote checks." },
+          { id: "verity.refusal_precision", reading: "Refusals that concerned a truly unanswerable question; the other comes from a quote check." },
           { id: "verity.unanswerable_answered", defect: true, reading: "The main defect: an answer given where the documents contain none." },
-          { id: "verity.hallucination_rate", reading: "According to the judge checked below. Zero observed is not zero guaranteed: hence the interval." },
+          { id: "verity.hallucination_rate", reading: "The earlier definition: an answer to an unanswerable question is left out of it. Zero observed is not zero guaranteed: hence the interval." },
+          {
+            id: "verity.judge_kappa_v020",
+            noInterval: "Kappa is not a proportion, and the source file gives no interval for this incomplete check.",
+            reading: "The judge of this run, against my blind ratings; its budget stopped it before the end.",
+          },
           {
             id: "verity.judge_kappa_all",
-            noInterval: "Kappa is not a proportion: the source file gives it no interval.",
-            reading: "Agreement of the judge with my blind ratings, real and planted claims.",
+            noInterval: "Kappa is not a proportion: its bootstrap interval is in the label.",
+            reading: "The judge of the previous runs, real and planted claims.",
           },
           {
             id: "verity.judge_kappa_real",
-            noInterval: "Kappa is not a proportion: the source file gives it no interval.",
+            noInterval: "Kappa is not a proportion: the source file gives it no useful interval.",
             reading: "Fragile: the human judges almost no real claim unsupported, so a single disagreement moves it a lot.",
           },
           { id: "verity.judge_traps_detected", reading: "Upper bound: a planted claim counts as detected as soon as one of its parts is rejected." },
@@ -137,32 +156,35 @@ if (!thresholdSentence || !("contains" in thresholdSentence)) throw new Error("t
       />
       <MeasuresTable
         where="naive"
-        caption="Against a naive RAG (tuning questions, incomplete runs)"
+        caption="Against a naive RAG, pre-registered comparison (tuning and test questions)"
         ours="Verity"
         baseline="Naive RAG"
         rows={[
           {
-            id: "verity.baseline_verity_answerable_answered",
-            base: "verity.baseline_naive_answerable_answered",
+            id: "verity.twoarm_unanswerable_answered_verity",
+            base: "verity.twoarm_unanswerable_answered_naive",
+            label: "Unanswerable questions handled as if they had an answer",
+            reading: "Verity’s checks refuse unanswerable questions that the naive version answers: a significant gap after adjustment.",
+          },
+          {
+            id: "verity.twoarm_answerable_answered_verity",
+            base: "verity.twoarm_answerable_answered_naive",
             label: "Answerable questions handled",
-            reading: "Not distinguishable according to the comparison file. Verity refuses more, with no measured gain in return.",
+            reading: "No cost measurable at this sample size.",
           },
           {
-            id: "verity.baseline_verity_hallucination_rate",
-            base: "verity.baseline_naive_hallucination_rate",
-            label: "Fabrication rate (judge)",
-            reading: "No fabrication measured on either side: nothing to separate them.",
-          },
-          {
-            id: "verity.baseline_verity_unanswerable_answered",
-            base: "verity.baseline_naive_unanswerable_answered",
-            label: "Unanswerable questions it answered",
-            reading: "The advantage expected of Verity, but on so few questions that it cannot be distinguished from chance.",
+            id: "verity.twoarm_invented_answer_verity",
+            base: "verity.twoarm_invented_answer_naive",
+            label: "Fabricated answers",
+            reading: "No difference measurable at this sample size.",
           },
         ]}
       />
       <p>
-        The budget stopped both runs before the end; the comparison covers the questions both of them finished (<a href={at("scorecards/naive-baseline-comparison.json")}>comparison file</a>).
+        An answer that declines by itself counts as a refusal, in both arms: the naive version never refuses, and the comparison would otherwise be won in advance. The spending cap stopped Verity’s test
+        run before the end; the comparison covers the questions both finished (<a href={at("scorecards/two-arm-comparison.json")}>comparison file</a>, <a
+          href={at("docs/preregistration/two-arm-comparison.md")}>pre-registration</a
+        >).
       </p>
     </MeasuresDetail>
   </CaseSection>
@@ -170,8 +192,8 @@ if (!thresholdSentence || !("contains" in thresholdSentence)) throw new Error("t
   <CaseSection n={4} id="echecs" title="What did not work, and what I did" lead="Two defects the figures alone do not show, and what I did about them.">
     <h3>The confidence threshold decides nothing</h3>
     <p>
-      Verity gives each answer a confidence rating and refuses below a threshold. By default the code refuses below <Figure id="verity.threshold_code_default" where="threshold" />. The reference run
-      ran at <Figure id="verity.threshold_run_of_record" where="threshold" />: the threshold was chosen on the tuning questions by a rule fixed in advance, and no threshold did better than another.
+      Verity gives each answer a confidence rating and may refuse below a threshold. The shipped threshold, the one of the reference run, is <Figure id="verity.threshold_run_of_record" where="threshold" />:
+      it was chosen on the tuning questions by a rule fixed in advance, no threshold did better than another, and at this value it refuses nothing.
     </p>
     <blockquote lang="en">
       <p data-verbatim>{thresholdSentence.contains}</p>
@@ -179,7 +201,7 @@ if (!thresholdSentence || !("contains" in thresholdSentence)) throw new Error("t
     </blockquote>
     <p>
       Every refusal comes from a check written in code or from the rating model itself; none is due to the threshold. The confidence rating is the model’s self-assessment, and it does not match its
-      actual error rate. What I did: publish it. The actual threshold stands next to the code’s, and a refusal based on reliable confidence is on the roadmap instead of being claimed.
+      actual error rate. What I did: publish it, ship the threshold at the value the rule chose, and put a refusal based on reliable confidence on the roadmap instead of claiming it.
     </p>
 
     <h3>An exact quote of a badly extracted text</h3>
@@ -187,7 +209,7 @@ if (!thresholdSentence || !("contains" in thresholdSentence)) throw new Error("t
       <p data-verbatim>
         {before}{DEFECT} <span class="sic" lang="en">[sic, PDF extraction defect]</span>{after}
       </p>
-      <footer>Quote from the answer to <code>{answer.example_id}</code>, <a href={runOfRecord}>reference run</a></footer>
+      <footer>Quote from the answer to <code>{answer.example_id}</code>, <a href={demoRun}>previous test run</a></footer>
     </blockquote>
     <p>
       In the <a href={at("datasets/corpus/order_form_northwind_2025.pdf")}>order form PDF</a>, “twenty-” ends a line and “four” starts the next one; text extraction glued the two together without the
@@ -250,7 +272,7 @@ if (!thresholdSentence || !("contains" in thresholdSentence)) throw new Error("t
 
   <CaseSection n={7} id="suite" title="What comes next" lead="What is still missing, according to the project itself.">
     <ul>
-      <li>A published run of the current version: the reference runs predate the model’s current instructions.</li>
+      <li>The comparison with the whole corpus placed in the model’s instructions: specified in the pre-registration, not run.</li>
       <li>A refusal based on reliable confidence: the confidence error measured on the test set does not allow it.</li>
       <li>A judge from another model family, and a second human annotator.</li>
       <li>Reading web pages: the code exists, no test exercises it.</li>
