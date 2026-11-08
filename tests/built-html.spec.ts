@@ -118,7 +118,7 @@ for (const file of files.filter((f) => f.startsWith("en/"))) {
 // The French pages say in French what a French reader would otherwise have to translate: Git and
 // English jargon (« mergé », « commité », « run », « business », « live ») and calques of English
 // (« support d’éditeur », « l’exerce »). Code and text marked lang="en" keep their own words.
-const ANGLICISMS = [/\b(?:mergée?s?|commitée?s?|business|runs?)\b/i, /\bbriefings? live\b/i, /support d.éditeur/i, /\bl.exerce\b/i];
+const ANGLICISMS = [/\b(?:mergée?s?|commitée?s?|business|runs?|baseline)\b/i, /\bbriefings? live\b/i, /support d.éditeur/i, /\bl.exerce\b/i];
 for (const file of files.filter((f) => !f.startsWith("en/"))) {
   test(`${file}: no English jargon in the French`, () => {
     const text = readerText(file, /\blang="en"|^<code\b|\bclass="[^"]*\bmono\b/);

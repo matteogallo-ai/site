@@ -64,7 +64,7 @@ test.describe("on a touch screen", () => {
 });
 
 for (const [path, caption, note] of [
-  ["/", "Démo : Verity sur un contrat de test", "Traduit d’un run réel en anglais · Voir la trace originale"],
+  ["/", "Démo : Verity sur un contrat de test", "Traduit d’une exécution réelle en anglais · Voir la trace originale"],
   ["/en/", "Demo: Verity on a test contract", "Replay of a real run · See the original trace"],
 ] as const) {
   test(`${path}: the demo says it replays a real run, and a correct refusal is not drawn as a defect`, async ({ page }) => {

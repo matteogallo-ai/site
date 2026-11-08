@@ -47,7 +47,7 @@ const id = fr ? { projects: "projets", method: "methode", about: "a-propos" } : 
         <p>
           <span class="name">Matteo Gallo</span>
           <span class="role">{fr ? "Ingénieur logiciel & IA · Lausanne" : "Software & AI Engineer · Lausanne"}</span>
-          <span class="status"><span class="dot" aria-hidden="true"></span>{fr ? "Disponible" : "Available"}</span>
+          <span class="status"><span class="dot" aria-hidden="true"></span>{fr ? "Disponible pour un poste" : "Available for a role"}</span>
         </p>
       </div>
       <h1 id="claim">{fr ? "Je construis des systèmes à base de LLM, et je mesure s’ils tiennent leurs promesses." : "I build LLM systems and measure whether they deliver."}</h1>
@@ -72,7 +72,7 @@ const id = fr ? { projects: "projets", method: "methode", about: "a-propos" } : 
     <ul class="rules">
       <li class="card">
         <h3>{fr ? "Audit indépendant" : "Independent audit"}</h3>
-        <p>{fr ? "Audit à froid par un agent IA sans contexte. Sur PromptLang :" : "Cold audit by an AI agent with no prior context. On PromptLang:"} <Figure id="promptlang.audit_findings" where="method" /> {fr ? "constats, chacun corrigé, réfuté ou documenté." : "findings, each fixed, refuted or documented."}</p>
+        <p>{fr ? "Audit à froid par un agent IA sans contexte. Sur PromptLang :" : "Cold audit by an AI agent with no prior context. On PromptLang:"} <Figure id="promptlang.audit_findings" where="method" /> {fr ? "constats, chacun corrigé, réfuté ou laissé ouvert." : "findings, each fixed, refuted or left open."}</p>
         <p class="links"><a href="https://github.com/matteogallo-ai/promptlang/pull/32">PR promptlang#32</a></p>
       </li>
       <li class="card">
@@ -82,7 +82,7 @@ const id = fr ? { projects: "projets", method: "methode", about: "a-propos" } : 
       </li>
       <li class="card">
         <h3>{fr ? "Évaluation pré-enregistrée" : "Pre-registered evaluation"}</h3>
-        <p>{fr ? "Échantillon tiré avec une graine fixe et commité avant l’annotation. Le résultat est publié tel quel, même défavorable :" : "Sample drawn with a fixed seed and committed before annotation. The result is published as is, even when unfavourable:"} <Figure id="promptlang.linter_precision_reviewed" where="method" defect />.</p>
+        <p>{fr ? "Échantillon tiré avec une graine fixe et enregistré dans le dépôt avant l’annotation. Le résultat est publié tel quel, même défavorable :" : "Sample drawn with a fixed seed and committed before annotation. The result is published as is, even when unfavourable:"} <Figure id="promptlang.linter_precision_reviewed" where="method" defect />.</p>
         <p class="links"><a href="https://github.com/matteogallo-ai/promptlang/pull/39">PR promptlang#39</a></p>
       </li>
     </ul>
