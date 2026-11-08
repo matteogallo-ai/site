@@ -169,8 +169,8 @@ const unmeasured = Object.keys(import.meta.glob("../pages/**/*.astro"))
           sans source, aucune réussite annoncée sans la commande qui la prouve (<a href={at("CLAUDE.md")}>règles des agents</a>).
         </p>
         <p>
-          Chaque modification passe par une relecture indépendante (un second agent, sans le contexte du premier), puis je relis le rapport et l’aperçu, avec l’aide d’un assistant IA, avant de la fusionner
-          moi-même. Je suis seul à fusionner sur la branche principale, que des règles GitHub protègent. Ce que la machine vérifie mieux que moi, elle le vérifie à chaque fois : budgets,
+          Chaque modification passe par une relecture indépendante (un second agent, sans le contexte du premier). Développement assisté par agents de code : je spécifie, je relis les PR et leurs tests, et je
+          réponds de ce qui est fusionné. Je suis seul à fusionner sur la branche principale, que des règles GitHub protègent. Ce que la machine vérifie mieux que moi, elle le vérifie à chaque fois : budgets,
           accessibilité, liens, et chaque chiffre comparé à sa source.
         </p>
         </>
@@ -181,8 +181,8 @@ const unmeasured = Object.keys(import.meta.glob("../pages/**/*.astro"))
             without a source, no success announced without the command that proves it (<a href={at("CLAUDE.md")}>agent rules</a>).
           </p>
           <p>
-            Every change goes through an independent review (a second agent, without the first one’s context), then I read the report and the preview, with the help of an AI assistant, before
-            merging it myself. I am the only one who merges into the main branch, which GitHub rules protect. What the machine checks better than I do, it checks every time: budgets,
+            Every change goes through an independent review (a second agent, without the first one’s context). Built with coding agents: I write the specs, review the pull requests and their tests,
+            and answer for what gets merged. I am the only one who merges into the main branch, which GitHub rules protect. What the machine checks better than I do, it checks every time: budgets,
             accessibility, links, and every figure compared with its source.
           </p>
         </>

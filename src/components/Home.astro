@@ -21,8 +21,8 @@ const id = fr ? { projects: "projets", method: "methode", about: "a-propos" } : 
 <Base
   title={fr ? "Matteo Gallo — Ingénieur logiciel & IA" : "Matteo Gallo — Software & AI Engineer"}
   description={fr
-    ? "Matteo Gallo, ingénieur logiciel et IA à Lausanne. Logiciels et systèmes d’IA conçus et mis en production de bout en bout, évalués et mesurés."
-    : "Matteo Gallo, software and AI engineer in Lausanne. Software and AI systems designed and taken to production end to end, evaluated and measured."}
+    ? "Matteo Gallo, ingénieur logiciel et IA à Lausanne. Je construis des systèmes à base de LLM et je mesure s’ils tiennent leurs promesses : recherche documentaire qui cite ou refuse, langage typé pour prompts, pipelines d’analyse."
+    : "Matteo Gallo, software and AI engineer in Lausanne. I build LLM systems and measure whether they deliver: document search that cites or refuses, a typed language for prompts, analysis pipelines."}
   serif
   stickyHeader
 >
@@ -50,9 +50,9 @@ const id = fr ? { projects: "projets", method: "methode", about: "a-propos" } : 
           <span class="status"><span class="dot" aria-hidden="true"></span>{fr ? "Disponible" : "Available"}</span>
         </p>
       </div>
-      <h1 id="claim">{fr ? "Je conçois des logiciels et des systèmes d’IA, de l’idée à la production." : "I build software and AI systems, from idea to production."}</h1>
+      <h1 id="claim">{fr ? "Je construis des systèmes à base de LLM, et je mesure s’ils tiennent leurs promesses." : "I build LLM systems and measure whether they deliver."}</h1>
       <p class="message">
-        {fr ? "Ma spécialité : mesurer ce qu’ils valent vraiment. Tests, évaluations, limites publiées." : "My focus: measuring what they are actually worth. Tests, evaluations, published limits."}
+        {fr ? "Recherche documentaire qui cite ou refuse, langage typé pour prompts, pipelines d’analyse : chaque résultat publié avec sa preuve." : "Document search that cites or refuses, a typed language for prompts, analysis pipelines: every result published with its proof."}
       </p>
       <p class="actions">
         <a class="button primary" href={`#${id.projects}`}>{fr ? "Voir les projets" : "See the projects"}</a>

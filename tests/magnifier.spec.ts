@@ -207,7 +207,7 @@ test.describe("without JavaScript", () => {
     await expect(page.locator("#verity-panel-answer")).toBeVisible();
     await expect(page.locator("#verity-panel-refusal")).toBeVisible();
     await expect(page.getByRole("tablist")).toBeHidden();
-    await expect(page.locator(".bio p")).toHaveCount(5);
+    await expect(page.locator(".bio p")).toHaveCount(6);
     await expect(page.locator(".bio button")).toHaveCount(0);
   });
 });
