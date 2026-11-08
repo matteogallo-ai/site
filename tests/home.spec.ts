@@ -22,10 +22,10 @@ const WORDS = {
       ],
       [
         "Langage typé pour écrire les consignes (prompts) des modèles de langage, compilé vers TypeScript et Python, publié sur npm.",
-        "96,13 % des erreurs introduites exprès dans la lecture du langage sont repérées par ses tests",
+        "96,13 % des 1914 mutants détectés par ses tests (erreurs introduites exprès dans la lecture du langage)",
       ],
     ],
-    experiments: ["Expériences", "Praxis — pipeline d'analyse en 7 étapes ; comparé à l'aveugle à un appel unique 10× moins cher, il n'a pas fait mieux. Résultat publié.", "/projets/praxis/"],
+    experiments: ["Expériences", "Praxis — pipeline d'analyse en 7 étapes ; comparé à l'aveugle à un appel unique 9,8× moins cher, il n'a pas fait mieux. Résultat publié.", "/projets/praxis/"],
     method: [
       ["Audit indépendant", "Audit à froid par un agent IA sans contexte. Sur PromptLang : 23 constats, chacun corrigé, réfuté ou laissé ouvert.", "PR promptlang#32"],
       ["Lecture des sorties réelles", "Les tests ne suffisent pas. La relecture d'un briefing Praxis a révélé des estimations présentées comme des faits ; le validateur a été corrigé.", "PR praxis#47"],
@@ -34,7 +34,7 @@ const WORDS = {
     bio: [
       "Ingénieur logiciel et IA basé à Lausanne. Je construis des systèmes à base de LLM, avec leurs tests, leurs évaluations et leurs mesures publiées.",
       "Développement assisté par agents de code : je spécifie, je relis les PR et leurs tests, et je réponds de ce qui est fusionné.",
-      "Formation professionnelle d'automaticien à l'ETML, interrompue en deuxième année pour me consacrer au développement logiciel.",
+      "Formation d'automaticien à l'ETML (école des métiers), interrompue en deuxième année pour me consacrer au développement logiciel.",
       "Langues : français et italien (maternelles), anglais (intermédiaire), espagnol (notions).",
       "Ouvert à un poste d'ingénieur logiciel et IA en Suisse romande.",
       "En dehors du code, j'assemble des montres Seiko personnalisées et je joue du piano.",
@@ -58,10 +58,10 @@ const WORDS = {
       ],
       [
         "A typed language for writing the instructions (prompts) given to language models, compiled to TypeScript and Python, published on npm.",
-        "96.13% of the errors deliberately introduced into the language reader are caught by its tests",
+        "96.13% of 1914 mutants detected by its tests (errors deliberately introduced into the language reader)",
       ],
     ],
-    experiments: ["Experiments", "Praxis — a 7-stage analysis pipeline; compared blind with a single call 10× cheaper, it did no better. Result published.", "/en/projects/praxis/"],
+    experiments: ["Experiments", "Praxis — a 7-stage analysis pipeline; compared blind with a single call 9.8× cheaper, it did no better. Result published.", "/en/projects/praxis/"],
     method: [
       ["Independent audit", "Cold audit by an AI agent with no prior context. On PromptLang: 23 findings, each fixed, refuted or left open.", "PR promptlang#32"],
       ["Reading real outputs", "Tests are not enough. Reviewing a Praxis briefing revealed estimates presented as facts; the validator was fixed.", "PR praxis#47"],
@@ -70,7 +70,7 @@ const WORDS = {
     bio: [
       "Software and AI engineer based in Lausanne. I build LLM systems, with their tests, evaluations and published measurements.",
       "Built with coding agents: I write the specs, review the pull requests and their tests, and answer for what gets merged.",
-      "Vocational training as an automation technician at ETML, left in the second year to focus on software development.",
+      "Automation technician training at ETML (vocational school), left in the second year to focus on software development.",
       "Languages: French and Italian (native), English (intermediate), Spanish (basic).",
       "Open to a software and AI engineering role in French-speaking Switzerland.",
       "Outside of code, I build custom Seiko watches and play the piano.",

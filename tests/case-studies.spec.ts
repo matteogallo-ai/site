@@ -184,6 +184,20 @@ for (const [lang, slug] of (["fr", "en"] as const).flatMap((l) => CASES.map((c) 
     });
   }
 
+  // Praxis's brief leads with its result, the blind comparison; the completion count is not in the
+  // brief but in the measures, with the reason it has no interval.
+  if (path.endsWith("/praxis/")) {
+    test(`${path}: the brief leads with the blind comparison, the completion count stays in the measures`, async ({ page }) => {
+      await page.goto(path);
+      const big = page.locator(".brief .big .figure");
+      await expect(big.first()).toHaveAttribute("data-id", "praxis.q12_cost_ratio");
+      await expect(page.locator('.brief .figure[data-id="praxis.live_completed"]')).toHaveCount(0);
+      await page.locator("#mesures summary").click();
+      const row = page.locator("#mesures tbody tr", { has: page.locator('.figure[data-id="praxis.live_completed"]') });
+      await expect(row.locator("td.ci.reason")).toHaveText(/\S/);
+    });
+  }
+
   test(`${path}: three decisions, each linking to its ADR at a pinned commit`, async ({ page }) => {
     await page.goto(path);
     await expect(page.locator("#decisions .decisions > li")).toHaveCount(3);

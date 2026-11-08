@@ -71,7 +71,7 @@ const CALQUES = [
   /\bmeasures\b(?! whether)/i, // the noun « mesures »: results, measurements or metrics; the verb stays
   /\bMeasure\s*<\/th>/, // a table column headed « Mesure »
   /refuses? rightly/, // « à raison »: correctly
-  /technician training/, // « formation professionnelle d’automaticien »: vocational training as an automation technician
+  /\bapprentice(ship)?\b/i, // ETML is a full-time vocational school, not an apprenticeship
   /\bWrite (to me|an e-mail)\b/,
   /\banalysis note|\bnotes?\b(?![^<]*<\/code>)/, // Praxis delivers briefings
   /\bFrame of\b/, // « Image de l’enregistrement »: a still
