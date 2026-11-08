@@ -150,8 +150,9 @@ for (const [lang, w] of Object.entries(WORDS)) {
     await page.goto(w.path);
     const figures = await page.locator("main .figure").evaluateAll((els) => els.map((a) => ({ id: a.getAttribute("data-id")!, href: a.getAttribute("href")!, value: (a.querySelector(".value") as HTMLElement).innerText })));
     // Verity's figure is a comparison of three (its count, the baseline's, the test's p), PromptLang's
-    // one, the Praxis experiment its stage count and its cost ratio; two method cards.
-    expect(figures.length).toBe(8);
+    // two (its score and the mutant count it is taken over), the Praxis experiment its stage count and
+    // its cost ratio; two method cards.
+    expect(figures.length).toBe(9);
     for (const f of figures) {
       const m = measure(f.id);
       expect(f.href, f.id).toBe(m.url);
