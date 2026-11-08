@@ -29,7 +29,7 @@ const t = {
     <article class="project card" aria-labelledby="p-promptlang">
       <h3 id="p-promptlang"><a class="card-link" href={study("promptlang")}>PromptLang</a></h3>
       <ProductShot id="promptlang" size="card" />
-      <p>{fr ? "Langage typé pour écrire les consignes (prompts) des modèles de langage, compilé vers TypeScript et Python, publié sur npm." : "A typed language for writing the instructions (prompts) given to language models, compiled to TypeScript and Python, published on npm."}</p>
+      <p>{fr ? "Compilateur pour un langage typé de prompts : génère du code TypeScript et Python, publié sur npm." : "A compiler for a typed prompt language: generates TypeScript and Python, published on npm."}</p>
       <p class="figure-line"><Figure id="promptlang.mutation_score" where="card" sentence /> {fr ? "des" : "of"} <Figure id="promptlang.mutants_total" where="card" sentence /> {fr ? "mutants détectés par ses tests (erreurs introduites exprès dans la lecture du langage et le contrôle de version)" : "mutants detected by its tests (errors deliberately introduced into the language reader and the version check)"}</p>
       <p class="links"><a class="button" href={study("promptlang")}>{t.read}</a> <a href={repo("promptlang")}>{t.code}</a></p>
     </article>

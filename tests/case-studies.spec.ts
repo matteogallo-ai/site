@@ -230,3 +230,14 @@ test("the number check reports a figure typed into the prose, and one inside a l
   expect(stray[0]).toMatch(/^p: .*17 sur 20\.$/s);
   expect(stray[1]).toMatch(/^desc: .*8 passages\.$/);
 });
+
+// PromptLang says first what it is technically, in the same words on its card and under its title.
+for (const [path, sentence] of [
+  ["/projets/promptlang/", "Compilateur pour un langage typé de prompts : génère du code TypeScript et Python, publié sur npm."],
+  ["/en/projects/promptlang/", "A compiler for a typed prompt language: generates TypeScript and Python, published on npm."],
+] as const) {
+  test(`${path}: the first sentence names what PromptLang is technically`, async ({ page }) => {
+    await page.goto(path);
+    expect(plain(await page.locator(".summary").innerText())).toBe(plain(sentence));
+  });
+}
