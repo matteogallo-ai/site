@@ -11,6 +11,7 @@ const WORDS = {
     title: "Matteo Gallo — Ingénieur logiciel & IA",
     description: "Matteo Gallo, ingénieur logiciel et IA à Lausanne. Je construis des systèmes à base de LLM et je mesure s'ils tiennent leurs promesses : recherche documentaire qui cite ou refuse, langage typé pour prompts, pipelines d'analyse.",
     role: "Ingénieur logiciel & IA · Lausanne",
+    status: "Disponible pour un poste",
     h1: "Je construis des systèmes à base de LLM, et je mesure s'ils tiennent leurs promesses.",
     message: "Recherche documentaire qui cite ou refuse, langage typé pour prompts, pipelines d'analyse : chaque résultat publié avec sa preuve.",
     actions: ["Voir les projets", "Écrire un e-mail"],
@@ -30,16 +31,16 @@ const WORDS = {
     ],
     inProgress: "en cours",
     method: [
-      ["Audit indépendant", "Audit à froid par un agent IA sans contexte. Sur PromptLang : 23 constats, chacun corrigé, réfuté ou documenté.", "PR promptlang#32"],
+      ["Audit indépendant", "Audit à froid par un agent IA sans contexte. Sur PromptLang : 23 constats, chacun corrigé, réfuté ou laissé ouvert.", "PR promptlang#32"],
       ["Lecture des sorties réelles", "Les tests ne suffisent pas. La relecture d'un briefing Praxis a révélé des estimations présentées comme des faits ; le validateur a été corrigé.", "PR praxis#47"],
-      ["Évaluation pré-enregistrée", "Échantillon tiré avec une graine fixe et commité avant l'annotation. Le résultat est publié tel quel, même défavorable : 12/40.", "PR promptlang#39"],
+      ["Évaluation pré-enregistrée", "Échantillon tiré avec une graine fixe et enregistré dans le dépôt avant l'annotation. Le résultat est publié tel quel, même défavorable : 12/40.", "PR promptlang#39"],
     ],
     bio: [
       "Ingénieur logiciel et IA basé à Lausanne. Je construis des systèmes à base de LLM, avec leurs tests, leurs évaluations et leurs mesures publiées.",
       "Développement assisté par agents de code : je spécifie, je relis les PR et leurs tests, et je réponds de ce qui est fusionné.",
-      "Formation d'automaticien à l'ETML, interrompue en deuxième année pour me consacrer au développement logiciel.",
+      "Formation professionnelle d'automaticien à l'ETML, interrompue en deuxième année pour me consacrer au développement logiciel.",
       "Langues : français et italien (maternelles), anglais (intermédiaire), espagnol (notions).",
-      "Ouvert à un poste d'ingénieur logiciel ou IA en Suisse romande.",
+      "Ouvert à un poste d'ingénieur logiciel et IA en Suisse romande.",
       "En dehors du code, j'assemble des montres Seiko personnalisées et je joue du piano.",
     ],
     caption: "Démo : Verity sur un contrat de test",
@@ -50,6 +51,7 @@ const WORDS = {
     title: "Matteo Gallo — Software & AI Engineer",
     description: "Matteo Gallo, software and AI engineer in Lausanne. I build LLM systems and measure whether they deliver: document search that cites or refuses, a typed language for prompts, analysis pipelines.",
     role: "Software & AI Engineer · Lausanne",
+    status: "Available for a role",
     h1: "I build LLM systems and measure whether they deliver.",
     message: "Document search that cites or refuses, a typed language for prompts, analysis pipelines: every result published with its proof.",
     actions: ["See the projects", "Get in touch"],
@@ -69,16 +71,16 @@ const WORDS = {
     ],
     inProgress: "in progress",
     method: [
-      ["Independent audit", "Cold audit by an AI agent with no prior context. On PromptLang: 23 findings, each fixed, refuted or documented.", "PR promptlang#32"],
+      ["Independent audit", "Cold audit by an AI agent with no prior context. On PromptLang: 23 findings, each fixed, refuted or left open.", "PR promptlang#32"],
       ["Reading real outputs", "Tests are not enough. Reviewing a Praxis briefing revealed estimates presented as facts; the validator was fixed.", "PR praxis#47"],
       ["Pre-registered evaluation", "Sample drawn with a fixed seed and committed before annotation. The result is published as is, even when unfavourable: 12/40.", "PR promptlang#39"],
     ],
     bio: [
       "Software and AI engineer based in Lausanne. I build LLM systems, with their tests, evaluations and published measurements.",
       "Built with coding agents: I write the specs, review the pull requests and their tests, and answer for what gets merged.",
-      "Automation-technician apprenticeship at ETML, left in the second year to focus on software development.",
+      "Vocational training as an automation technician at ETML, left in the second year to focus on software development.",
       "Languages: French and Italian (native), English (intermediate), Spanish (basic).",
-      "Open to a software or AI engineering role in French-speaking Switzerland.",
+      "Open to a software and AI engineering role in French-speaking Switzerland.",
       "Outside of code, I build custom Seiko watches and play the piano.",
     ],
     caption: "Demo: Verity on a test contract",
@@ -95,6 +97,7 @@ for (const [lang, w] of Object.entries(WORDS)) {
     expect(plain(await page.title())).toBe(plain(w.title));
     expect(plain((await page.locator('meta[name="description"]').getAttribute("content")) ?? "")).toBe(w.description);
     expect(await texts(page, ".hero .role")).toEqual([w.role]);
+    expect(await texts(page, ".hero .status")).toEqual([w.status]);
     expect(await texts(page, "h1")).toEqual([w.h1]);
     expect(await texts(page, ".hero .message")).toEqual([w.message]);
     expect(await texts(page, ".hero .actions a")).toEqual([...w.actions]);
@@ -209,7 +212,7 @@ test("/: no English text a reader sees, outside the folded original and the fold
   // Both folds exist, closed, and hold the English.
   await expect(page.locator("details.original:not([open]) [lang='en']")).toHaveCount(2);
   await expect(page.locator("details.contract:not([open]) [lang='en']")).toHaveCount(1);
-  await expect(page.locator("details.original summary").first()).toHaveText("Original anglais");
+  await expect(page.locator("details.original summary").first()).toHaveText("Original en anglais");
   await expect(page.locator("details.contract summary")).toHaveText("Voir le contrat complet (anglais)");
 });
 
@@ -234,7 +237,7 @@ test("/: the demo shows the question, the passage and the answer in French, the 
   await expect(card.locator(".passage mark")).toHaveText(/^Priorité 1/);
   await expect(card.locator(".a-text")).toHaveText(/^Pour une demande de support/);
   await expect(card.locator(".checks")).toContainText("Citation retrouvée mot pour mot dans le document");
-  await expect(page.locator("[data-verity-demo] .note")).toHaveText(/^Traduit d.un run réel en anglais · Voir la trace originale$/);
+  await expect(page.locator("[data-verity-demo] .note")).toHaveText(/^Traduit d.une exécution réelle en anglais · Voir la trace originale$/);
   expect(await page.locator("[data-verity-demo] .note a").getAttribute("href")).toMatch(/^https:\/\/github\.com\/matteogallo-ai\/verity\/blob\/[0-9a-f]{40}\//);
   // The contract opens on demand, its passage in the spotlight.
   await page.locator("details.contract summary").click();
