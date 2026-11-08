@@ -37,14 +37,6 @@ export const OG = {
       caption: { fr: "des erreurs introduites exprès dans la lecture du langage sont repérées par ses tests", en: "of the errors deliberately introduced into the language reader are caught by its tests" },
       dash: false,
     },
-    {
-      id: "praxis.cost_per_briefing",
-      caption: {
-        fr: `d’appels au modèle par briefing réel terminé, sur ${measure("praxis.live_completed").k} briefings`,
-        en: `in model calls per completed real briefing, over ${measure("praxis.live_completed").k} briefings`,
-      },
-      dash: false,
-    },
   ],
   /** Each case study's image leads with the first figure of its brief, captioned as there. */
   cases: {

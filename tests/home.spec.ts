@@ -24,12 +24,8 @@ const WORDS = {
         "Langage typé pour écrire les consignes (prompts) des modèles de langage, compilé vers TypeScript et Python, publié sur npm.",
         "96,13 % des erreurs introduites exprès dans la lecture du langage sont repérées par ses tests",
       ],
-      [
-        "Prépare, à partir d'une question métier, un briefing d'analyse qui cite ses sources, relu par un second modèle chargé d'en trouver les failles.",
-        "3,29–4,75 $ d'appels au modèle par briefing réel terminé, sur 6 briefings",
-      ],
     ],
-    inProgress: "en cours",
+    experiments: ["Expériences", "Praxis — pipeline d'analyse en 7 étapes ; comparé à l'aveugle à un appel unique 10× moins cher, il n'a pas fait mieux. Résultat publié.", "/projets/praxis/"],
     method: [
       ["Audit indépendant", "Audit à froid par un agent IA sans contexte. Sur PromptLang : 23 constats, chacun corrigé, réfuté ou laissé ouvert.", "PR promptlang#32"],
       ["Lecture des sorties réelles", "Les tests ne suffisent pas. La relecture d'un briefing Praxis a révélé des estimations présentées comme des faits ; le validateur a été corrigé.", "PR praxis#47"],
@@ -64,12 +60,8 @@ const WORDS = {
         "A typed language for writing the instructions (prompts) given to language models, compiled to TypeScript and Python, published on npm.",
         "96.13% of the errors deliberately introduced into the language reader are caught by its tests",
       ],
-      [
-        "Prepares, from a business question, an analysis briefing that cites its sources, reviewed by a second model tasked with finding its flaws.",
-        "$3.29–$4.75 in model calls per completed real briefing, over 6 briefings",
-      ],
     ],
-    inProgress: "in progress",
+    experiments: ["Experiments", "Praxis — a 7-stage analysis pipeline; compared blind with a single call 10× cheaper, it did no better. Result published.", "/en/projects/praxis/"],
     method: [
       ["Independent audit", "Cold audit by an AI agent with no prior context. On PromptLang: 23 findings, each fixed, refuted or left open.", "PR promptlang#32"],
       ["Reading real outputs", "Tests are not enough. Reviewing a Praxis briefing revealed estimates presented as facts; the validator was fixed.", "PR praxis#47"],
@@ -104,7 +96,7 @@ for (const [lang, w] of Object.entries(WORDS)) {
     expect(await texts(page, "[data-verity-demo] .caption")).toEqual([w.caption]);
     expect(await page.locator("[data-verity-demo] [role=tab]").evaluateAll((ts) => ts.map((t) => t.getAttribute("aria-label")))).toEqual([...w.tabs]);
     const cards = page.locator(".project");
-    await expect(cards).toHaveCount(3);
+    await expect(cards).toHaveCount(2);
     // A card is its sentence, one figure with what it is compared with, and its links: limits and
     // stack live on the case study.
     for (const [i, [sentence, figure]] of w.projects.entries()) {
@@ -114,9 +106,14 @@ for (const [lang, w] of Object.entries(WORDS)) {
       await expect(card.locator(".limit, .stack")).toHaveCount(0);
       await expect(card.locator(".links a")).toHaveText(lang === "fr" ? ["Lire l’étude de cas →", "Code sur GitHub"] : ["Read the case study →", "Code on GitHub"]);
     }
-    // Praxis, the project still being proven, says so beside its name.
-    expect(await texts(page, ".project .wip")).toEqual([w.inProgress]);
-    await expect(cards.nth(2).locator(".wip")).toHaveCount(1);
+    // Praxis is no longer a project card: its blind comparison found no gain over a single call. It
+    // stays on the page as one experiment, its line leading to its case study.
+    await expect(page.locator(".project .wip")).toHaveCount(0);
+    await expect(page.locator("#p-praxis")).toHaveCount(0);
+    const [heading, line, study] = w.experiments;
+    expect(await texts(page, ".experiments h3")).toEqual([heading]);
+    expect(await texts(page, ".experiments li")).toEqual([line]);
+    await expect(page.locator(".experiments li a").first()).toHaveAttribute("href", study);
     await expect(page.locator(".rules > li")).toHaveCount(3);
     for (const [i, [title, body, pr]] of w.method.entries()) {
       const card = page.locator(".rules > li").nth(i);
@@ -152,7 +149,7 @@ for (const [lang, w] of Object.entries(WORDS)) {
     await page.goto(w.path);
     const figures = await page.locator("main .figure").evaluateAll((els) => els.map((a) => ({ id: a.getAttribute("data-id")!, href: a.getAttribute("href")!, value: (a.querySelector(".value") as HTMLElement).innerText })));
     // Verity's figure is a comparison of three (its count, the baseline's, the test's p), PromptLang's
-    // one, Praxis's its cost and the number of briefings it is measured on; two method cards.
+    // one, the Praxis experiment its stage count and its cost ratio; two method cards.
     expect(figures.length).toBe(8);
     for (const f of figures) {
       const m = measure(f.id);

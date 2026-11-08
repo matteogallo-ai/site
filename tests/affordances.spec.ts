@@ -8,7 +8,7 @@ const HOMES = [
   { path: "/", study: (slug: string) => `/projets/${slug}/`, read: "Lire l’étude de cas →", code: "Code sur GitHub ↗" },
   { path: "/en/", study: (slug: string) => `/en/projects/${slug}/`, read: "Read the case study →", code: "Code on GitHub ↗" },
 ];
-const SLUGS = ["verity", "promptlang", "praxis"];
+const SLUGS = ["verity", "promptlang"];
 
 /** What a link shows: its text and the sign drawn after it (global.css). */
 const shown = (a: Element) => `${(a as HTMLElement).innerText}${getComputedStyle(a, "::after").content.replace(/^"(.*?)"(?: \/ "")?$/, "$1").replace(/^none$/, "")}`;
@@ -140,8 +140,8 @@ for (const path of ["/", "/en/"]) {
         return { text: (a as HTMLElement).innerText, gap: range.getBoundingClientRect().left - a.getBoundingClientRect().right, space };
       }),
     );
-    // Every card's figure line is a sentence: Verity's three figures, PromptLang's, Praxis's two.
-    expect(gaps.length).toBeGreaterThanOrEqual(6);
+    // Every card's figure line is a sentence: Verity's three figures, PromptLang's.
+    expect(gaps.length).toBeGreaterThanOrEqual(4);
     for (const g of gaps) expect(g.gap, JSON.stringify(g)).toBeLessThanOrEqual(g.space + 0.5);
   });
 }
