@@ -21,7 +21,7 @@ const WORDS = {
         "4/31 questions sans réponse traitées comme si elles en avaient une, contre 12/31 pour un RAG naïf (même recherche, sans contrôles ; test apparié, p = 0,023)",
       ],
       [
-        "Langage typé pour écrire les consignes (prompts) des modèles de langage, compilé vers TypeScript et Python, publié sur npm.",
+        "Compilateur pour un langage typé de prompts : génère du code TypeScript et Python, publié sur npm.",
         "96,13 % des 1 914 mutants détectés par ses tests (erreurs introduites exprès dans la lecture du langage et le contrôle de version)",
       ],
     ],
@@ -57,7 +57,7 @@ const WORDS = {
         "4/31 unanswerable questions answered as if they had an answer, against 12/31 for a naive RAG (same retrieval, no checks; paired test, p = 0.023)",
       ],
       [
-        "A typed language for writing the instructions (prompts) given to language models, compiled to TypeScript and Python, published on npm.",
+        "A compiler for a typed prompt language: generates TypeScript and Python, published on npm.",
         "96.13% of 1,914 mutants detected by its tests (errors deliberately introduced into the language reader and the version check)",
       ],
     ],
