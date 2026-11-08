@@ -3,7 +3,8 @@ import { Font } from "astro:assets";
 import "../styles/global.css";
 import Glass from "../components/Glass.astro";
 import { alternates, langOf } from "../lib/i18n.ts";
-import { OG, ogImage } from "../lib/og.ts";
+import { readFileSync } from "node:fs";
+import { OG, ogImage, ogImageUrl } from "../lib/og.ts";
 
 interface Props {
   title: string;
@@ -41,7 +42,7 @@ const image = ogImage(Astro.url.pathname);
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     {canonical && <meta property="og:url" content={canonical} />}
-    <meta property="og:image" content={new URL(image.file.replace(/^public/, ""), Astro.site)} />
+    <meta property="og:image" content={ogImageUrl(image.file, readFileSync(image.file), Astro.site!)} />
     <meta property="og:image:width" content={String(OG.width)} />
     <meta property="og:image:height" content={String(OG.height)} />
     <meta property="og:image:alt" content={image.alt} />
