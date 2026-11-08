@@ -180,3 +180,12 @@ test("the directory at the commit must hold exactly the listed files", () => {
   assert.equal(listingError([...found, "q3/run-c/metadata.json"], e), "runs: unlisted q3/run-c/metadata.json");
   assert.equal(listingError(found.slice(1), e), "runs: missing q1/run-a/metadata.json");
 });
+
+// A label cannot round an interval outwards (its numbers must be stated by the evidence), and
+// rounding to the nearest makes it narrower than its source, against the Colophon's one rule:
+// an interval written in a label keeps the source's precision.
+test("the earlier judge's bootstrap interval is written as its source states it", () => {
+  const kappa = measures.measures.find((m) => m.id === "verity.judge_kappa_all");
+  assert.match(kappa?.label.fr ?? "", /IC bootstrap 0,4872–0,8934\)/);
+  assert.match(kappa?.label.en ?? "", /bootstrap CI 0\.4872–0\.8934\)/);
+});

@@ -316,8 +316,8 @@
     {
       "id": "verity.judge_kappa_all",
       "label": {
-        "fr": "Accord juge–humain à l'aveugle, kappa de Cohen, ancienne consigne du juge (60 affirmations, dont 1 hallucination réelle ; IC bootstrap 0,49–0,89)",
-        "en": "Judge–blind human agreement, Cohen's kappa, earlier judge prompt (60 claims, of which 1 real hallucination; bootstrap CI 0.49–0.89)"
+        "fr": "Accord juge–humain à l'aveugle, kappa de Cohen, ancienne consigne du juge (60 affirmations, dont 1 hallucination réelle ; IC bootstrap 0,4872–0,8934)",
+        "en": "Judge–blind human agreement, Cohen's kappa, earlier judge prompt (60 claims, of which 1 real hallucination; bootstrap CI 0.4872–0.8934)"
       },
       "display": {
         "fr": "κ 0,71",
