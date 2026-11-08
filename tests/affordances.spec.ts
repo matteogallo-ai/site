@@ -8,7 +8,7 @@ const HOMES = [
   { path: "/", study: (slug: string) => `/projets/${slug}/`, read: "Lire l’étude de cas →", code: "Code sur GitHub ↗" },
   { path: "/en/", study: (slug: string) => `/en/projects/${slug}/`, read: "Read the case study →", code: "Code on GitHub ↗" },
 ];
-const SLUGS = ["verity", "promptlang", "praxis"];
+const SLUGS = ["verity", "promptlang"];
 
 /** What a link shows: its text and the sign drawn after it (global.css). */
 const shown = (a: Element) => `${(a as HTMLElement).innerText}${getComputedStyle(a, "::after").content.replace(/^"(.*?)"(?: \/ "")?$/, "$1").replace(/^none$/, "")}`;
@@ -61,14 +61,14 @@ for (const home of HOMES) {
     }
   });
 
-  test(`${home.path}: the plain words of a card's caption, figure line and limit open its case study too`, async ({ page }) => {
+  test(`${home.path}: the plain words of a card's caption and figure line open its case study too`, async ({ page }) => {
     await page.emulateMedia({ reducedMotion: "reduce" });
     await page.goto(home.path);
     for (const [i, slug] of SLUGS.entries()) {
       const card = page.locator(".project").nth(i);
       await card.scrollIntoViewIfNeeded();
       const hits = await card.evaluate((c) =>
-        ["figcaption", ".figure-line", ".limit"].map((sel) => {
+        ["figcaption", ".figure-line"].map((sel) => {
           const block = c.querySelector(sel)!;
           // The first run of words of the block that is not itself in a link.
           const text = [...block.childNodes].find((n) => n.nodeType === Node.TEXT_NODE && /\S{3}/.test(n.textContent ?? ""))!;
@@ -140,8 +140,8 @@ for (const path of ["/", "/en/"]) {
         return { text: (a as HTMLElement).innerText, gap: range.getBoundingClientRect().left - a.getBoundingClientRect().right, space };
       }),
     );
-    // "3", "12 signalements justes sur 40" and "6" in the cards' limits.
-    expect(gaps.length).toBeGreaterThanOrEqual(3);
+    // Every card's figure line is a sentence: Verity's three figures, PromptLang's.
+    expect(gaps.length).toBeGreaterThanOrEqual(4);
     for (const g of gaps) expect(g.gap, JSON.stringify(g)).toBeLessThanOrEqual(g.space + 0.5);
   });
 }

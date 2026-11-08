@@ -5,6 +5,7 @@ import CaseSection from "../../../components/case/CaseSection.astro";
 import Diagram from "../../../components/case/Diagram.astro";
 import MeasuresDetail from "../../../components/case/MeasuresDetail.astro";
 import MeasuresTable from "../../../components/case/MeasuresTable.astro";
+import Limit from "../../../components/case/Limit.astro";
 import Figure from "../../../components/Figure.astro";
 import { pinned, pull } from "../../../lib/sources.ts";
 
@@ -23,7 +24,7 @@ const pr = (n: number) => pull("promptlang", n);
     slot="brief"
     does="It turns a prompt into a checked file, compiled to TypeScript or Python code, and flags when a new version breaks the code of those who use it."
     measured="How solid the tests of the language reader and of the version check are, and how often an automatic reviewer, the AI linter, is right when it points at writing defects in prompts."
-    defect="Most of the AI linter’s flags are wrong, barely better than flagging everything. What I did about it: I measured it against that reference point, published it, and the linter is presented as an aid to the human reviewer, not as a check."
+    defect="Most of the AI linter’s flags are wrong, barely better than flagging everything; measured against that reference point, it is presented as an aid to the human reviewer, not as a check."
     figures={[
       { id: "promptlang.mutation_score", caption: "of the errors deliberately introduced into the language reader and the version check, caught by the tests" },
       { id: "promptlang.linter_recall", caption: "designed defects found by the AI linter; a linter that flags everything finds them all" },
@@ -95,12 +96,12 @@ const pr = (n: number) => pull("promptlang", n);
           {
             id: "promptlang.linter_precision_reviewed",
             defect: true,
-            reading: "The main defect: in human review, most flags are wrong. Not distinguishable from the bound already published.",
+            reading: "The main defect: in human review, most flags are wrong. Not distinguishable from the precision measured on the test prompts, below.",
           },
           {
             id: "promptlang.audit_findings",
             noInterval: "A count, not an estimate.",
-            reading: "Audit of the repository by an AI agent that did not know the project: defects, and one finding about context. Every defect is fixed or refuted in writing.",
+            reading: "Audit of the repository by an AI agent that did not know the project: all defects except the last, a remark on the process left open. Every defect is fixed or refuted in writing.",
           },
         ]}
       />
@@ -131,29 +132,29 @@ const pr = (n: number) => pull("promptlang", n);
     </MeasuresDetail>
   </CaseSection>
 
-  <CaseSection n={4} id="echecs" title="What did not work, and what I did" lead="What an uncompromising audit found, and what became of each finding.">
+  <CaseSection n={4} id="echecs" title="Known limits and next steps" lead="What an uncompromising audit left open, each limit with its scope and its next step.">
     <p>
-      I had the repository audited by an AI agent that knew nothing about the project, tasked with looking for the flaw. Its verdict: the promises of the project’s front page (the README) went beyond
-      what the code actually did. What I did about it, finding by finding, is in the <a href={at("docs/audit/2026-11-03-f1-follow-up.md")}>audit follow-up</a>.
+      An AI agent that knew nothing about the project audited the repository, tasked with looking for the flaw: the promises of the project’s front page (the README) went beyond what the code actually
+      did. The findings that were fixed, such as a typed output the generated code did not check and now checks in TypeScript as in Python (<a href={pr(27)}>#27</a>), are in the <a
+        href={at("docs/audit/2026-11-03-f1-follow-up.md")}>audit follow-up</a
+      >. Two limits remain.
     </p>
-    <h3>An AI linter declared shipped, with no reference point</h3>
-    <p>
-      That page presented the linter as shipped although its precision was low and nothing said what it was worth. A linter that flags everything finds every designed defect: finding many proved
-      almost nothing. I published its precision next to that reference point (<a href={pr(29)}>#29</a>), then had flags reviewed by hand; the linter is described as an aid to the reviewer, not
-      as a check.
-    </p>
-    <h3>A typed output never checked</h3>
-    <p>
-      The generated code promised a model response matching a type, without checking it. It now checks it, in TypeScript as in Python, and raises an error otherwise; both languages run on the same
-      responses and must agree (<a href={pr(27)}>#27</a>). The fix started with a failing test.
-    </p>
-    <h3>Tests measured where the risk was not</h3>
-    <p>
-      Measuring the tests with introduced errors covers only the language reader and the version check. The audit found defects outside that scope (compiler, execution, command line, text analysis,
-      spending cap), and one in the version check itself: renaming an exported type was classed as a mere fix (a patch), the smallest version change. That was a choice written in the decision record,
-      and no introduced error reveals a badly chosen rule. The report now lists what it does not cover (<a href={at("docs/mutation/README.md")}>report</a>), and that renaming requires a major version
-      (<a href={pr(25)}>#25</a>).
-    </p>
+    <Limit title="An AI linter with low precision">
+      <Fragment slot="scope">The AI linter, which flags the likely defects of a prompt file.</Fragment>
+      <Fragment slot="limit">
+        In human review, <Figure id="promptlang.linter_precision_reviewed" where="limits" text="12 of 40 flags correct" />. A linter that flags everything finds every designed defect, so its precision
+        reads next to that reference point, published with it (<a href={pr(29)}>#29</a>).
+      </Fragment>
+      <Fragment slot="next">The linter is presented as an aid to the reviewer, not as a check; a version that queries other model providers is not scheduled.</Fragment>
+    </Limit>
+    <Limit title="Tests measured where the risk is not">
+      <Fragment slot="scope">Measuring the tests with deliberately introduced errors, which covers only the language reader and the version check.</Fragment>
+      <Fragment slot="limit">
+        The audit found defects outside that scope (compiler, execution, command line, text analysis, spending cap), and one in the version check itself: renaming an exported type was classed as a mere
+        fix, the smallest version change. No introduced error reveals a badly chosen rule; that renaming now requires a major version (<a href={pr(25)}>#25</a>).
+      </Fragment>
+      <Fragment slot="next">Extending this measurement to the compiler and the execution is not scheduled; the <a href={at("docs/mutation/README.md")}>report</a> lists what it does not cover.</Fragment>
+    </Limit>
   </CaseSection>
 
   <CaseSection
@@ -184,7 +185,7 @@ const pr = (n: number) => pull("promptlang", n);
         <h3>The approved cost is a spending cap</h3>
         <p>
           Every paid run shows its estimated cost and asks for approval; that estimate becomes a cap. Before every call, the client reserves the call’s maximum cost; a call that would exceed the cap is
-          not sent. The record also writes what the cap does not guarantee: a text more costly to process than expected exceeds the estimate.
+          not sent. The record also states what the cap does not guarantee: a text more costly to process than expected exceeds the estimate.
         </p>
         <p><a href={at("docs/adr/0004-spending-cap.md")}>ADR 0004</a></p>
       </li>
@@ -202,7 +203,7 @@ const pr = (n: number) => pull("promptlang", n);
 
   <CaseSection n={7} id="suite" title="What comes next" lead="What is missing, according to the project’s roadmap; none of it is scheduled.">
     <ul>
-      <li>Running the tests written in the prompt files: they are read, not run.</li>
+      <li>Running the <code>eval</code> blocks: they are read, not run.</li>
       <li>Measuring the tests of the compiler and of the execution with introduced errors, outside the scope measured today.</li>
       <li>An AI linter with providers other than Claude, each with its own measurement.</li>
       <li>Streaming the response as it is written, and editor support (highlighting, completion).</li>

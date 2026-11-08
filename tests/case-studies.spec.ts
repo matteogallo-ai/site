@@ -6,14 +6,15 @@ import { plain } from "../scripts/typography.ts";
 // SPEC §3.2, in its order: problem, what I built (one SVG diagram), measures, what did not
 // work, three decisions (ADR), how it is built, what comes next.
 const SECTIONS: Record<Lang, string[]> = {
-  fr: ["Le problème", "Ce que j’ai construit", "Mesures", "Ce qui n’a pas marché, et ce que j’ai fait", "Trois décisions", "Comment c’est construit", "La suite"],
-  en: ["The problem", "What I built", "Results", "What did not work, and what I did", "Three decisions", "How it is built", "What comes next"],
+  fr: ["Le problème", "Ce que j’ai construit", "Mesures", "Limites connues et prochaines étapes", "Trois décisions", "Comment c’est construit", "La suite"],
+  en: ["The problem", "What I built", "Results", "Known limits and next steps", "Three decisions", "How it is built", "What comes next"],
 };
 const BRIEF: Record<Lang, { title: string; terms: string[] }> = {
-  fr: { title: "En bref", terms: ["Ce que ça fait", "Ce qui est mesuré", "Défaut principal"] },
-  en: { title: "In brief", terms: ["What it does", "What is measured", "Main defect"] },
+  fr: { title: "En bref", terms: ["Ce que ça fait", "Ce qui est mesuré", "Limite principale"] },
+  en: { title: "In brief", terms: ["What it does", "What is measured", "Main limit"] },
 };
 const CASES = ["verity", "promptlang", "praxis"];
+const LIMIT_LABELS: Record<Lang, string[]> = { fr: ["Périmètre", "Limite connue", "Prochaine étape"], en: ["Scope", "Known limit", "Next step"] };
 // Words a recruiter would have to look up; each page says it in plain words instead. Code,
 // links and verbatim quotes keep their own words. A list catches only the words on it: terms
 // the pages keep and explain where they first appear (kappa, RAG, API, JSON, README, ADR)
@@ -67,7 +68,8 @@ for (const [lang, slug] of (["fr", "en"] as const).flatMap((l) => CASES.map((c) 
     await expect(brief.locator("dt")).toHaveText(BRIEF[lang].terms);
     for (const dd of await brief.locator("dd").all()) await expect(dd).toHaveText(/\S/);
     await expect(brief.locator(".big .figure")).toHaveCount(3);
-    await expect(brief.locator(".big .figure.defect")).toHaveCount(1);
+    // Praxis has two: the blind comparison and the sourcing flag.
+    expect(await brief.locator(".big .figure.defect").count()).toBeGreaterThanOrEqual(1);
     for (const href of await brief.locator(".figure").evaluateAll((els) => els.map((a) => a.getAttribute("href")))) expect(href).toMatch(PINNED(slug));
   });
 
@@ -146,13 +148,56 @@ for (const [lang, slug] of (["fr", "en"] as const).flatMap((l) => CASES.map((c) 
     }
     for (const row of await rows.all()) await expect(row.locator(".figure").first()).toBeVisible();
     const intervals = await page.locator("[data-measure]").evaluateAll((els) => els.map((e) => [e.getAttribute("data-measure")!, e.textContent!.trim()]));
-    expect(intervals.length).toBeGreaterThan(0);
+    // Every interval cell is its measure's interval or a written reason for having none. Praxis
+    // publishes no interval, so its tables hold reasons only; the other case studies show some.
+    const cells = await page.locator("#mesures td.ci").count();
+    expect(cells).toBeGreaterThan(0);
+    expect(intervals.length + (await page.locator("#mesures td.ci.reason").count())).toBe(cells);
+    if (slug !== "praxis") expect(intervals.length).toBeGreaterThan(0);
     for (const [id, text] of intervals) expect(plain(text!), id).toBe(plain(interval(measure(id!), lang)));
     const labels = await page.locator("[data-label]").evaluateAll((els) => els.map((e) => [e.getAttribute("data-label")!, e.textContent!.trim()]));
     for (const [id, text] of labels) expect(plain(text!), id).toBe(plain(measure(id!).label[lang]));
     // SPEC §6: defects at the same level as measures, in the same table.
     await expect(page.locator("#mesures tbody .figure.defect")).not.toHaveCount(0);
   });
+
+  // Each known limit reads as engineering: its scope, the limit, the next step, labelled as such; the
+  // template phrase « Ce que j’en ai fait » / "What I did about it" is gone.
+  test(`${path}: each known limit states its scope, the limit and the next step`, async ({ page }) => {
+    await page.goto(path);
+    const labels = LIMIT_LABELS[lang];
+    const limits = page.locator("#echecs .limit-steps");
+    expect(await limits.count()).toBeGreaterThanOrEqual(1);
+    for (const limit of await limits.all()) await expect(limit.locator("dt")).toHaveText(labels);
+    expect(await page.locator("main").innerText()).not.toMatch(lang === "fr" ? /Ce que j.(en )?ai fait/ : /What I did/);
+  });
+
+  // The blind comparison with a single model call is Praxis's main result: it is a known limit,
+  // with its cost ratio as a measure and the reviewer's grades at the pinned commit.
+  if (path.endsWith("/praxis/")) {
+    test(`${path}: the blind comparison with a single call is a known limit, with its grades`, async ({ page }) => {
+      await page.goto(path);
+      const limit = page.locator("#echecs h3", { hasText: lang === "fr" ? "appel unique" : "single call" });
+      await expect(limit).toHaveCount(1);
+      const steps = limit.locator("xpath=following-sibling::dl[1]");
+      await expect(steps.locator('.figure[data-id="praxis.q12_cost_ratio"]')).toHaveCount(1);
+      await expect(steps.locator('a[href$="/benchmarks/review/q12/grades.md"]')).toHaveAttribute("href", PINNED("praxis"));
+    });
+  }
+
+  // Praxis's brief leads with its result, the blind comparison; the completion count is not in the
+  // brief but in the measures, with the reason it has no interval.
+  if (path.endsWith("/praxis/")) {
+    test(`${path}: the brief leads with the blind comparison, the completion count stays in the measures`, async ({ page }) => {
+      await page.goto(path);
+      const big = page.locator(".brief .big .figure");
+      await expect(big.first()).toHaveAttribute("data-id", "praxis.q12_cost_ratio");
+      await expect(page.locator('.brief .figure[data-id="praxis.live_completed"]')).toHaveCount(0);
+      await page.locator("#mesures summary").click();
+      const row = page.locator("#mesures tbody tr", { has: page.locator('.figure[data-id="praxis.live_completed"]') });
+      await expect(row.locator("td.ci.reason")).toHaveText(/\S/);
+    });
+  }
 
   test(`${path}: three decisions, each linking to its ADR at a pinned commit`, async ({ page }) => {
     await page.goto(path);

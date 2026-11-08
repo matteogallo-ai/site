@@ -9,39 +9,35 @@ const WORDS = {
   fr: {
     path: "/",
     title: "Matteo Gallo — Ingénieur logiciel & IA",
-    description: "Matteo Gallo, ingénieur logiciel et IA à Lausanne. Logiciels et systèmes d'IA conçus et mis en production de bout en bout, évalués et mesurés.",
+    description: "Matteo Gallo, ingénieur logiciel et IA à Lausanne. Je construis des systèmes à base de LLM et je mesure s'ils tiennent leurs promesses : recherche documentaire qui cite ou refuse, langage typé pour prompts, pipelines d'analyse.",
     role: "Ingénieur logiciel & IA · Lausanne",
-    h1: "Je conçois des logiciels et des systèmes d'IA, de l'idée à la production.",
-    message: "Ma spécialité : mesurer ce qu'ils valent vraiment. Tests, évaluations, limites publiées.",
+    status: "Disponible pour un poste",
+    h1: "Je construis des systèmes à base de LLM, et je mesure s'ils tiennent leurs promesses.",
+    message: "Recherche documentaire qui cite ou refuse, langage typé pour prompts, pipelines d'analyse : chaque résultat publié avec sa preuve.",
     actions: ["Voir les projets", "Écrire un e-mail"],
     projects: [
       [
         "Assistant de questions-réponses sur des documents d'entreprise : chaque réponse cite le passage source, et l'absence de preuve produit un refus.",
         "4/31 questions sans réponse traitées comme si elles en avaient une, contre 12/31 pour un RAG naïf (même recherche, sans contrôles ; test apparié, p = 0,023)",
-        "Limite : 5 questions sans réponse ont reçu une réponse au lieu d'un refus.",
       ],
       [
-        "Langage typé pour les prompts LLM, compilé vers TypeScript et Python, publié sur npm.",
-        "96,13 % — score de mutation (lexer, parser, semver ; exécution locale, hors CI)",
-        "Limite : Linter IA : 12 signalements justes sur 40 en revue humaine.",
-      ],
-      [
-        "Pipeline qui transforme une question business en briefing d'analyse sourcé, avec relecture adverse automatique.",
-        "3,29–4,75 $ — par briefing live terminé",
-        "Limite : Les 6 briefings live terminés sont signalés insuffisamment sourcés par son propre contrôle.",
+        "Langage typé pour écrire les consignes (prompts) des modèles de langage, compilé vers TypeScript et Python, publié sur npm.",
+        "96,13 % des 1 914 mutants détectés par ses tests (erreurs introduites exprès dans la lecture du langage et le contrôle de version)",
       ],
     ],
+    experiments: ["Expériences", "Praxis — pipeline d'analyse en 7 étapes ; comparé à l'aveugle à un appel unique 9,8× moins cher, il n'a pas fait mieux. Résultat publié.", "/projets/praxis/"],
     method: [
-      ["Audit indépendant", "Audit à froid par un agent IA sans contexte. Sur PromptLang : 23 constats, chacun corrigé, réfuté ou documenté.", "PR promptlang#32"],
+      ["Audit indépendant", "Audit à froid par un agent IA sans contexte. Sur PromptLang : 23 constats, chacun corrigé, réfuté ou laissé ouvert.", "PR promptlang#32"],
       ["Lecture des sorties réelles", "Les tests ne suffisent pas. La relecture d'un briefing Praxis a révélé des estimations présentées comme des faits ; le validateur a été corrigé.", "PR praxis#47"],
-      ["Évaluation pré-enregistrée", "Échantillon tiré avec une graine fixe et commité avant l'annotation. Le résultat est publié tel quel, même défavorable : 12/40.", "PR promptlang#39"],
+      ["Évaluation pré-enregistrée", "Échantillon tiré avec une graine fixe et enregistré dans le dépôt avant l'annotation. Le résultat est publié tel quel, même défavorable : 12/40.", "PR promptlang#39"],
     ],
     bio: [
-      "Ingénieur logiciel et IA basé à Lausanne. Je conçois des produits IA de bout en bout : spécification, architecture, évaluation, mise en production.",
-      "Je travaille avec des agents de code dans un cadre strict : ils écrivent l'essentiel du code ; je spécifie, je relis chaque changement et je réponds de ce qui est mergé. Tests, CI et mesures publiées sont obligatoires sur chaque projet.",
-      "Formation d'automaticien à l'ETML, interrompue en deuxième année pour me consacrer au développement logiciel.",
+      "Ingénieur logiciel et IA basé à Lausanne. Je construis des systèmes à base de LLM, avec leurs tests, leurs évaluations et leurs mesures publiées.",
+      "Développement assisté par agents de code : je spécifie, je relis les PR et leurs tests, et je réponds de ce qui est fusionné.",
+      "Formation d'automaticien à l'ETML (école des métiers), interrompue en deuxième année pour me consacrer au développement logiciel.",
       "Langues : français et italien (maternelles), anglais (intermédiaire), espagnol (notions).",
-      "Ouvert à un poste d'ingénieur logiciel ou IA en Suisse romande.",
+      "Ouvert à un poste d'ingénieur logiciel et IA en Suisse romande.",
+      "En dehors du code, j'assemble des montres Seiko personnalisées et je joue du piano.",
     ],
     caption: "Démo : Verity sur un contrat de test",
     tabs: ["Il répond, en citant", "Il refuse, faute de preuve"],
@@ -49,35 +45,35 @@ const WORDS = {
   en: {
     path: "/en/",
     title: "Matteo Gallo — Software & AI Engineer",
-    description: "Matteo Gallo, software and AI engineer in Lausanne. Software and AI systems designed and taken to production end to end, evaluated and measured.",
+    description: "Matteo Gallo, software and AI engineer in Lausanne. I build LLM systems and measure whether they deliver: document search that cites or refuses, a typed language for prompts, analysis pipelines.",
     role: "Software & AI Engineer · Lausanne",
-    h1: "I build software and AI systems, from idea to production.",
-    message: "My focus: measuring what they are actually worth. Tests, evaluations, published limits.",
+    status: "Available for a role",
+    h1: "I build LLM systems and measure whether they deliver.",
+    message: "Document search that cites or refuses, a typed language for prompts, analysis pipelines: every result published with its proof.",
     actions: ["See the projects", "Get in touch"],
     projects: [
       [
         "Question answering over company documents: every answer cites its source passage, and missing evidence produces a refusal.",
         "4/31 unanswerable questions answered as if they had an answer, against 12/31 for a naive RAG (same retrieval, no checks; paired test, p = 0.023)",
-        "Limit: 5 unanswerable questions got an answer instead of a refusal.",
       ],
-      ["A typed language for LLM prompts, compiled to TypeScript and Python, published on npm.", "96.13% — mutation score (lexer, parser, semver; local run, not in CI)", "Limit: AI linter, 12 of 40 findings correct in human review."],
       [
-        "A pipeline that turns a business question into a sourced analysis briefing, with automatic adversarial review.",
-        "$3.29–$4.75 — per completed live briefing",
-        "Limit: all 6 completed live briefings are flagged as under-sourced by its own check.",
+        "A typed language for writing the instructions (prompts) given to language models, compiled to TypeScript and Python, published on npm.",
+        "96.13% of 1,914 mutants detected by its tests (errors deliberately introduced into the language reader and the version check)",
       ],
     ],
+    experiments: ["Experiments", "Praxis — a 7-stage analysis pipeline; compared blind with a single call 9.8× cheaper, it did no better. Result published.", "/en/projects/praxis/"],
     method: [
-      ["Independent audit", "Cold audit by an AI agent with no prior context. On PromptLang: 23 findings, each fixed, refuted or documented.", "PR promptlang#32"],
+      ["Independent audit", "Cold audit by an AI agent with no prior context. On PromptLang: 23 findings, each fixed, refuted or left open.", "PR promptlang#32"],
       ["Reading real outputs", "Tests are not enough. Reviewing a Praxis briefing revealed estimates presented as facts; the validator was fixed.", "PR praxis#47"],
       ["Pre-registered evaluation", "Sample drawn with a fixed seed and committed before annotation. The result is published as is, even when unfavourable: 12/40.", "PR promptlang#39"],
     ],
     bio: [
-      "Software and AI engineer based in Lausanne. I design AI products end to end: specification, architecture, evaluation, production.",
-      "I work with coding agents under strict rules: they write most of the code; I specify, review every change and answer for what gets merged. Tests, CI and published measurements are mandatory on every project.",
-      "Automation-technician apprenticeship at ETML, left in the second year to focus on software development.",
+      "Software and AI engineer based in Lausanne. I build LLM systems, with their tests, evaluations and published measurements.",
+      "Built with coding agents: I write the specs, review the pull requests and their tests, and answer for what gets merged.",
+      "Automation technician training at ETML (vocational school), left in the second year to focus on software development.",
       "Languages: French and Italian (native), English (intermediate), Spanish (basic).",
-      "Open to a software or AI engineering role in French-speaking Switzerland.",
+      "Open to a software and AI engineering role in French-speaking Switzerland.",
+      "Outside of code, I build custom Seiko watches and play the piano.",
     ],
     caption: "Demo: Verity on a test contract",
     tabs: ["It answers, citing", "It refuses, for lack of evidence"],
@@ -93,20 +89,33 @@ for (const [lang, w] of Object.entries(WORDS)) {
     expect(plain(await page.title())).toBe(plain(w.title));
     expect(plain((await page.locator('meta[name="description"]').getAttribute("content")) ?? "")).toBe(w.description);
     expect(await texts(page, ".hero .role")).toEqual([w.role]);
+    expect(await texts(page, ".hero .status")).toEqual([w.status]);
     expect(await texts(page, "h1")).toEqual([w.h1]);
     expect(await texts(page, ".hero .message")).toEqual([w.message]);
     expect(await texts(page, ".hero .actions a")).toEqual([...w.actions]);
     expect(await texts(page, "[data-verity-demo] .caption")).toEqual([w.caption]);
     expect(await page.locator("[data-verity-demo] [role=tab]").evaluateAll((ts) => ts.map((t) => t.getAttribute("aria-label")))).toEqual([...w.tabs]);
     const cards = page.locator(".project");
-    await expect(cards).toHaveCount(3);
-    for (const [i, [sentence, figure, limit]] of w.projects.entries()) {
+    await expect(cards).toHaveCount(2);
+    // A card is its sentence, one figure with what it is compared with, and its links: limits and
+    // stack live on the case study.
+    for (const [i, [sentence, figure]] of w.projects.entries()) {
       const card = cards.nth(i);
       expect(await texts(page, `.project:nth-child(${i + 1}) > p:not([class])`)).toEqual([sentence]);
-      expect(plain(await card.locator(".figure-line").innerText())).toBe(figure);
-      expect(plain(await card.locator(".limit").innerText()).replace(/\s+/g, " ")).toBe(limit);
+      expect(plain(await card.locator(".figure-line").innerText()).replace(/\s+/g, " ")).toBe(figure);
+      await expect(card.locator(".limit, .stack")).toHaveCount(0);
       await expect(card.locator(".links a")).toHaveText(lang === "fr" ? ["Lire l’étude de cas →", "Code sur GitHub"] : ["Read the case study →", "Code on GitHub"]);
     }
+    // Praxis is no longer a project card: its blind comparison found no gain over a single call. It
+    // stays on the page as one experiment, its line leading to its case study.
+    await expect(page.locator(".project .wip")).toHaveCount(0);
+    await expect(page.locator("#p-praxis")).toHaveCount(0);
+    const [heading, line, study] = w.experiments;
+    expect(await texts(page, ".experiments h3")).toEqual([heading]);
+    expect(await texts(page, ".experiments li")).toEqual([line]);
+    await expect(page.locator(".experiments li a").first()).toHaveAttribute("href", study);
+    await expect(page.locator(".experiments li a").last()).toHaveAttribute("href", /^https:\/\/github\.com\/matteogallo-ai\/praxis\/blob\/[0-9a-f]{40}\/README\.md#status$/);
+    await expect(page.locator(".rules > li")).toHaveCount(3);
     for (const [i, [title, body, pr]] of w.method.entries()) {
       const card = page.locator(".rules > li").nth(i);
       expect(plain(await card.locator("h3").innerText())).toBe(title);
@@ -115,6 +124,9 @@ for (const [lang, w] of Object.entries(WORDS)) {
       await expect(card.locator(".links a")).toHaveText(pr);
     }
     expect(await texts(page, ".bio p")).toEqual([...w.bio]);
+    // The personal line closes the bio, set apart from the rest.
+    await expect(page.locator(".bio p.personal")).toHaveCount(1);
+    expect(await page.locator(".bio p").last().getAttribute("class")).toContain("personal");
   });
 
   test(`${w.path}: no band of figures, no project numbers, no bio toggle, no run-source block`, async ({ page }) => {
@@ -137,9 +149,10 @@ for (const [lang, w] of Object.entries(WORDS)) {
   test(`${w.path}: every figure resolves in measures.json and links to its proof; no other number`, async ({ page }) => {
     await page.goto(w.path);
     const figures = await page.locator("main .figure").evaluateAll((els) => els.map((a) => ({ id: a.getAttribute("data-id")!, href: a.getAttribute("href")!, value: (a.querySelector(".value") as HTMLElement).innerText })));
-    // Three cards, a figure and a limit each, Verity's figure a comparison of three (its count, the
-    // baseline's, the test's p); two method cards.
-    expect(figures.length).toBe(10);
+    // Verity's figure is a comparison of three (its count, the baseline's, the test's p), PromptLang's
+    // two (its score and the mutant count it is taken over), the Praxis experiment its stage count and
+    // its cost ratio; two method cards.
+    expect(figures.length).toBe(9);
     for (const f of figures) {
       const m = measure(f.id);
       expect(f.href, f.id).toBe(m.url);
@@ -198,7 +211,7 @@ test("/: no English text a reader sees, outside the folded original and the fold
   // Both folds exist, closed, and hold the English.
   await expect(page.locator("details.original:not([open]) [lang='en']")).toHaveCount(2);
   await expect(page.locator("details.contract:not([open]) [lang='en']")).toHaveCount(1);
-  await expect(page.locator("details.original summary").first()).toHaveText("Original anglais");
+  await expect(page.locator("details.original summary").first()).toHaveText("Original en anglais");
   await expect(page.locator("details.contract summary")).toHaveText("Voir le contrat complet (anglais)");
 });
 
@@ -223,7 +236,7 @@ test("/: the demo shows the question, the passage and the answer in French, the 
   await expect(card.locator(".passage mark")).toHaveText(/^Priorité 1/);
   await expect(card.locator(".a-text")).toHaveText(/^Pour une demande de support/);
   await expect(card.locator(".checks")).toContainText("Citation retrouvée mot pour mot dans le document");
-  await expect(page.locator("[data-verity-demo] .note")).toHaveText(/^Traduit d.un run réel en anglais · Voir la trace originale$/);
+  await expect(page.locator("[data-verity-demo] .note")).toHaveText(/^Traduit d.une exécution réelle en anglais · Voir la trace originale$/);
   expect(await page.locator("[data-verity-demo] .note a").getAttribute("href")).toMatch(/^https:\/\/github\.com\/matteogallo-ai\/verity\/blob\/[0-9a-f]{40}\//);
   // The contract opens on demand, its passage in the spotlight.
   await page.locator("details.contract summary").click();

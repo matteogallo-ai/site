@@ -51,11 +51,12 @@ const unmeasured = Object.keys(import.meta.glob("../pages/**/*.astro"))
       fr ? (
         <>
         <p>
-          Chaque page est préparée d’avance, en HTML, par Astro, à partir de code TypeScript vérifié strictement. Le JavaScript se limite à la démo de Verity, à quelques interactions de l’accueil et, sur
-          chaque page, à quelques lignes qui vérifient si le navigateur sait dessiner l’effet de verre. Le site est hébergé sur Cloudflare Pages et publié à chaque fusion sur la branche principale.
+          Chaque page est préparée d’avance, en HTML, par Astro, à partir de code TypeScript vérifié strictement. Le JavaScript se limite à la démo de Verity, à quelques interactions de l’accueil, à la copie de l’adresse
+          e-mail, à la fermeture des bulles de preuve au clavier et, sur chaque page, à quelques lignes qui vérifient si le navigateur sait dessiner l’effet de verre. Tout vient du site lui-même : sa
+          politique de sécurité n’autorise aucun script, style, police ou image d’un autre site, ni l’affichage des pages dans un cadre. Le site est hébergé sur Cloudflare Pages et publié à chaque fusion sur la branche principale.
         </p>
         <p>
-          Les polices, Inter, Source Serif et JetBrains Mono, sont hébergées avec le site et réduites aux seuls caractères qu’il affiche. Aucun traceur, aucun formulaire. Chaque chiffre affiché sur un projet
+          Les polices, Inter, Source Serif et JetBrains Mono, sont hébergées avec le site et réduites aux seuls caractères qu’il affiche. Aucun traceur, aucun formulaire, aucun cookie : le site ne mesure pas son audience, et l’hébergeur traite les requêtes selon sa propre politique de confidentialité. Chaque chiffre affiché sur un projet
           vient d’un fichier publié dans son dépôt, à un commit précis, et la CI le compare à sa source à chaque modification. Une seule règle d’arrondi : un intervalle de confiance s’affiche en pour cent
           entiers, arrondi vers l’extérieur, si bien qu’il n’est jamais plus étroit que celui de sa source et peut le dépasser d’un point.
         </p>
@@ -63,11 +64,12 @@ const unmeasured = Object.keys(import.meta.glob("../pages/**/*.astro"))
       ) : (
         <>
           <p>
-            Every page is prepared in advance, as HTML, by Astro, from strictly checked TypeScript code. JavaScript is limited to the Verity demo, a few interactions on the home page and, on
-            every page, a few lines that check whether the browser can draw the glass effect. The site is hosted on Cloudflare Pages and published on every merge into the main branch.
+            Every page is prepared in advance, as HTML, by Astro, from strictly checked TypeScript code. JavaScript is limited to the Verity demo, a few interactions on the home page, copying the e-mail
+            address, closing the proof tooltips from the keyboard and, on every page, a few lines that check whether the browser can draw the glass effect. Everything comes from the site itself: its
+            security policy allows no script, style, font or image from another site, and no framing of its pages. The site is hosted on Cloudflare Pages and published on every merge into the main branch.
           </p>
           <p>
-            The fonts, Inter, Source Serif and JetBrains Mono, are hosted with the site and cut down to the characters it displays. No tracker, no form. Every figure shown for a project comes
+            The fonts, Inter, Source Serif and JetBrains Mono, are hosted with the site and cut down to the characters it displays. No tracker, no form, no cookie: the site does not measure its audience, and the host handles requests under its own privacy policy. Every figure shown for a project comes
             from a file published in its repository, at a precise commit, and CI compares it with its source on every change. One rounding rule: a confidence interval is shown in whole percents,
             rounded outwards, so it is never narrower than its source’s and may exceed it by one point.
           </p>
@@ -154,7 +156,7 @@ const unmeasured = Object.keys(import.meta.glob("../pages/**/*.astro"))
       <li>{fr ? "Les couleurs de texte sont vérifiées contre leur fond par un test : contraste AA, en clair comme en sombre." : "Text colours are checked against their background by a test: AA contrast, in light and dark mode."}</li>
       <li>{fr ? "Le site se parcourt au clavier, avec un focus visible et un lien pour sauter au contenu." : "The site can be browsed with the keyboard, with a visible focus and a link to skip to the content."}</li>
       <li>{fr ? "Le site suit les réglages du système : mode sombre, mouvement réduit, transparence réduite." : "The site follows the system settings: dark mode, reduced motion, reduced transparency."}</li>
-      <li>{fr ? "À chaque modification, axe contrôle chaque page en clair et en sombre, et un test vérifie que les polices savent dessiner chaque caractère affiché." : "On every change, axe checks every page in light and dark mode, and a test checks that the fonts can draw every character displayed."}</li>
+      <li>{fr ? "À chaque modification, l’outil d’accessibilité axe-core contrôle chaque page en clair et en sombre, et un test vérifie que les polices savent dessiner chaque caractère affiché." : "On every change, axe checks every page in light and dark mode, and a test checks that the fonts can draw every character displayed."}</li>
     </ul>
   </section>
 
@@ -169,8 +171,8 @@ const unmeasured = Object.keys(import.meta.glob("../pages/**/*.astro"))
           sans source, aucune réussite annoncée sans la commande qui la prouve (<a href={at("CLAUDE.md")}>règles des agents</a>).
         </p>
         <p>
-          Chaque modification passe par une relecture indépendante (un second agent, sans le contexte du premier), puis je relis le rapport et l’aperçu, avec l’aide d’un assistant IA, avant de la fusionner
-          moi-même. Je suis seul à fusionner sur la branche principale, que des règles GitHub protègent. Ce que la machine vérifie mieux que moi, elle le vérifie à chaque fois : budgets,
+          Chaque modification passe par une relecture indépendante (un second agent, sans le contexte du premier). Développement assisté par agents de code : je spécifie, je relis les PR et leurs tests, et je
+          réponds de ce qui est fusionné. Je suis seul à fusionner sur la branche principale, que des règles GitHub protègent. Ce que la machine vérifie mieux que moi, elle le vérifie à chaque fois : budgets,
           accessibilité, liens, et chaque chiffre comparé à sa source.
         </p>
         </>
@@ -181,8 +183,8 @@ const unmeasured = Object.keys(import.meta.glob("../pages/**/*.astro"))
             without a source, no success announced without the command that proves it (<a href={at("CLAUDE.md")}>agent rules</a>).
           </p>
           <p>
-            Every change goes through an independent review (a second agent, without the first one’s context), then I read the report and the preview, with the help of an AI assistant, before
-            merging it myself. I am the only one who merges into the main branch, which GitHub rules protect. What the machine checks better than I do, it checks every time: budgets,
+            Every change goes through an independent review (a second agent, without the first one’s context). Built with coding agents: I write the specs, review the pull requests and their tests,
+            and answer for what gets merged. I am the only one who merges into the main branch, which GitHub rules protect. What the machine checks better than I do, it checks every time: budgets,
             accessibility, links, and every figure compared with its source.
           </p>
         </>

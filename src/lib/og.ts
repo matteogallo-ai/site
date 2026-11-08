@@ -13,20 +13,19 @@ export const OG = {
   role: { fr: "Ingénieur logiciel & IA · Lausanne", en: "Software & AI Engineer · Lausanne" },
   fr: {
     file: "public/og.png",
-    headline: "Je conçois des logiciels et des systèmes d’IA, de l’idée à la production.",
-    alt: "Matteo Gallo, ingénieur logiciel et IA à Lausanne : « Je conçois des logiciels et des systèmes d’IA, de l’idée à la production. »",
+    headline: "Je construis des systèmes à base de LLM, et je mesure s’ils tiennent leurs promesses.",
+    alt: "Matteo Gallo, ingénieur logiciel et IA à Lausanne : « Je construis des systèmes à base de LLM, et je mesure s’ils tiennent leurs promesses. »",
   },
   en: {
     file: "public/og-en.png",
-    headline: "I build software and AI systems, from idea to production.",
-    alt: "Matteo Gallo, software and AI engineer in Lausanne: “I build software and AI systems, from idea to production.”",
+    headline: "I build LLM systems and measure whether they deliver.",
+    alt: "Matteo Gallo, software and AI engineer in Lausanne: “I build LLM systems and measure whether they deliver.”",
   },
   /** The home page's project cards, drawn beside the headline: one figure each, as the card shows it. */
   figures: [
     {
       id: "verity.twoarm_unanswerable_answered_verity",
-      // The card's figure is a comparison: the baseline's count and the test's p are read from their measures, and the
-      // card writes them in its sentence, with no dash after the first figure.
+      // A comparison: the baseline's count and the test's p are read from their measures.
       caption: {
         fr: `questions sans réponse traitées comme si elles en avaient une, contre ${measure("verity.twoarm_unanswerable_answered_naive").display.fr} pour un RAG naïf (même recherche, sans contrôles ; test apparié, p = ${measure("verity.twoarm_unanswerable_answered_p").display.fr})`,
         en: `unanswerable questions answered as if they had an answer, against ${measure("verity.twoarm_unanswerable_answered_naive").display.en} for a naive RAG (same retrieval, no checks; paired test, p = ${measure("verity.twoarm_unanswerable_answered_p").display.en})`,
@@ -35,11 +34,14 @@ export const OG = {
     },
     {
       id: "promptlang.mutation_score",
-      caption: { fr: "score de mutation (lexer, parser, semver ; exécution locale, hors CI)", en: "mutation score (lexer, parser, semver; local run, not in CI)" },
+      caption: {
+        fr: `des ${measure("promptlang.mutants_total").display.fr} mutants détectés par ses tests (erreurs introduites exprès dans la lecture du langage et le contrôle de version)`,
+        en: `of ${measure("promptlang.mutants_total").display.en} mutants detected by its tests (errors deliberately introduced into the language reader and the version check)`,
+      },
+      dash: false,
     },
-    { id: "praxis.cost_per_briefing", caption: { fr: "par briefing live terminé", en: "per completed live briefing" } },
   ],
-  /** Each case study's image leads with the first figure of its brief, captioned as there. */
+  /** Each case study's image leads with the first figure of its brief, captioned as there, red when the brief flags it a defect. */
   cases: {
     verity: {
       id: "verity.invented_answer_rate",
@@ -55,7 +57,14 @@ export const OG = {
         en: "of the errors deliberately introduced into the language reader and the version check, caught by the tests",
       },
     },
-    praxis: { id: "praxis.live_completed", caption: { fr: "exécutions réelles arrivées au bout, sur les tentatives", en: "real runs that reached the end, out of the attempts" } },
+    praxis: {
+      id: "praxis.q12_cost_ratio",
+      defect: true,
+      caption: {
+        fr: "moins cher : l’appel unique au modèle, préféré à Praxis à l’aveugle (une question, un relecteur)",
+        en: "cheaper: the single model call, preferred to Praxis in a blind review (one question, one reviewer)",
+      },
+    },
   },
 } as const;
 
@@ -66,22 +75,23 @@ export interface OgImage {
   lang: Lang;
   file: string;
   alt: string;
-  case?: { slug: CaseSlug; no: string; name: string; value: string; caption: string };
+  case?: { slug: CaseSlug; no: string; name: string; value: string; caption: string; defect: boolean };
 }
 
 function caseImage(slug: CaseSlug, lang: Lang): OgImage {
   const study = caseStudies(lang).find((c) => c.name.toLowerCase() === slug)!;
   const { id, caption } = OG.cases[slug];
+  const defect = "defect" in OG.cases[slug] && OG.cases[slug].defect === true;
   const value = measure(id).display[lang];
   const alt =
     lang === "fr"
       ? `${study.name}, étude de cas de Matteo Gallo : ${value} ${caption[lang]}.`
       : `${study.name}, a case study by Matteo Gallo: ${value} ${caption[lang]}.`;
-  return { lang, file: `public/og/${slug}${lang === "en" ? "-en" : ""}.png`, alt, case: { slug, no: study.no, name: study.name, value, caption: caption[lang] } };
+  return { lang, file: `public/og/${slug}${lang === "en" ? "-en" : ""}.png`, alt, case: { slug, no: study.no, name: study.name, value, caption: caption[lang], defect } };
 }
 
 /** The figures of the home image in `lang`: the value as its card shows it, and its caption. */
-/** Each card's figure: `line` is how the card writes it, value and caption joined by a dash unless the caption continues the sentence. */
+/** Each card's figure: `line` is how the card writes it, value and caption in one sentence, or joined by a dash. */
 export function homeFigures(lang: Lang): { id: string; value: string; caption: string; line: string }[] {
   return OG.figures.map((f) => {
     const value = measure(f.id).display[lang];

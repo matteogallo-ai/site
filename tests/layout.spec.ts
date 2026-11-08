@@ -64,7 +64,7 @@ test.describe("on a touch screen", () => {
 });
 
 for (const [path, caption, note] of [
-  ["/", "Démo : Verity sur un contrat de test", "Traduit d’un run réel en anglais · Voir la trace originale"],
+  ["/", "Démo : Verity sur un contrat de test", "Traduit d’une exécution réelle en anglais · Voir la trace originale"],
   ["/en/", "Demo: Verity on a test contract", "Replay of a real run · See the original trace"],
 ] as const) {
   test(`${path}: the demo says it replays a real run, and a correct refusal is not drawn as a defect`, async ({ page }) => {
@@ -131,7 +131,7 @@ for (const path of ["/", "/en/"]) {
   });
 }
 
-// B4: at 1440 the three project cards line up: same image height, links on one line across.
+// B4: at 1440 the project cards line up: same image height, links on one line across.
 for (const path of ["/", "/en/"]) {
   test(`${path} at 1440 px: the project cards' images share a height and their links a line`, async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
@@ -139,7 +139,7 @@ for (const path of ["/", "/en/"]) {
     const boxes = await page.locator(".project").evaluateAll((cards) =>
       cards.map((c) => ({ img: Math.round(c.querySelector("figure img")!.getBoundingClientRect().height), links: Math.round(c.querySelector(".links")!.getBoundingClientRect().top) })),
     );
-    expect(boxes).toHaveLength(3);
+    expect(boxes).toHaveLength(2);
     expect(new Set(boxes.map((b) => b.img)).size, JSON.stringify(boxes)).toBe(1);
     expect(new Set(boxes.map((b) => b.links)).size, JSON.stringify(boxes)).toBe(1);
   });
@@ -335,5 +335,29 @@ for (const path of ["/", "/en/projects/verity/"]) {
       }),
     );
     expect(Math.max(...middles) - Math.min(...middles), JSON.stringify(middles)).toBeLessThanOrEqual(1);
+  });
+}
+
+// French puts a space before « ; », and a line may still break after an inline-block figure: the
+// semicolon must stay on the figure's line, never open the next one.
+for (const width of [375, 1440]) {
+  test(`/ at ${width} px: the experiments line keeps « ; » on its figure's line`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto("/");
+    const tops = await page.locator(".experiments li").evaluate((li) => {
+      const figure = li.querySelector('.figure[data-id="praxis.stages"]')!;
+      const walker = document.createTreeWalker(li, NodeFilter.SHOW_TEXT);
+      for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+        const at = node.textContent!.indexOf(";");
+        if (at < 0 || figure.contains(node)) continue;
+        const range = document.createRange();
+        range.setStart(node, at);
+        range.setEnd(node, at + 1);
+        return { semicolon: Math.round(range.getBoundingClientRect().bottom), figure: Math.round(figure.querySelector(".value")!.getBoundingClientRect().bottom) };
+      }
+      return null;
+    });
+    expect(tops).not.toBeNull();
+    expect(Math.abs(tops!.semicolon - tops!.figure), JSON.stringify(tops)).toBeLessThanOrEqual(4);
   });
 }

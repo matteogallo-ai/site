@@ -5,6 +5,7 @@ import CaseSection from "../../components/case/CaseSection.astro";
 import Diagram from "../../components/case/Diagram.astro";
 import MeasuresDetail from "../../components/case/MeasuresDetail.astro";
 import MeasuresTable from "../../components/case/MeasuresTable.astro";
+import Limit from "../../components/case/Limit.astro";
 import Figure from "../../components/Figure.astro";
 import { measure } from "../../lib/measures.ts";
 import { pinned } from "../../lib/sources.ts";
@@ -51,7 +52,7 @@ const translated = (en: string) => {
     slot="brief"
     does="Il répond aux questions sur un ensemble de contrats en citant la clause exacte, et dit « je ne sais pas » quand les documents ne contiennent pas la réponse."
     measured="Sur des questions de test jamais vues pendant le réglage : s’il refuse les questions sans réponse, si ses réponses inventent quelque chose, et s’il fait mieux que la même chaîne sans contrôles."
-    defect="Il a répondu à des questions qui n’avaient pas de réponse dans les documents. Ce que j’en ai fait : je l’ai publié, avec les questions en cause nommées dans les résultats."
+    defect="Il répond encore à des questions qui n’ont pas de réponse dans les documents ; les questions en cause sont nommées dans les résultats publiés."
     figures={[
       { id: "verity.invented_answer_rate", caption: "réponses contenant une invention, sur toutes les réponses données, que la question ait une réponse ou non (selon le juge)" },
       { id: "verity.refusal_recall", caption: "questions sans réponse correctement refusées" },
@@ -198,41 +199,42 @@ const translated = (en: string) => {
     </MeasuresDetail>
   </CaseSection>
 
-  <CaseSection n={4} id="echecs" title="Ce qui n’a pas marché, et ce que j’ai fait" lead="Deux défauts que les chiffres seuls ne montrent pas, et ce que j’en ai fait.">
-    <h3>Le seuil de confiance ne décide rien</h3>
-    <p>
-      Verity donne une note de confiance à chaque réponse et peut refuser sous un seuil. Le seuil livré, celui de l’exécution de référence, est <Figure id="verity.threshold_run_of_record" where="threshold" /> :
-      il a été choisi sur les questions de réglage par une règle fixée à l’avance, aucun seuil ne faisait mieux qu’un autre, et à cette valeur il ne refuse rien.
-    </p>
-    <blockquote lang="en">
-      <p data-verbatim>{thresholdSentence.contains}</p>
-      <p class="tr" lang="fr"><span class="tr-k">traduction</span> {translated(thresholdSentence.contains)}</p>
-      <footer lang="fr"><a href={at("docs/results.md")}>docs/results.md</a></footer>
-    </blockquote>
-    <p>
-      Chaque refus vient d’un contrôle écrit en code ou du modèle de notation lui-même ; aucun n’est dû au seuil. La note de confiance est l’auto-évaluation du modèle, et elle ne correspond pas à sa fréquence
-      réelle d’erreur. Ce que j’ai fait : le publier, livrer le seuil à la valeur que la règle a choisie, et inscrire un refus fondé sur une confiance fiable dans la feuille de route au lieu de le revendiquer.
-    </p>
+  <CaseSection n={4} id="echecs" title="Limites connues et prochaines étapes" lead="Deux limites que les chiffres seuls ne montrent pas, chacune avec son périmètre et sa prochaine étape.">
+    <Limit title="Le seuil de confiance ne décide rien">
+      <Fragment slot="scope">La note de confiance qu’un modèle donne à chaque réponse, et le seuil sous lequel Verity peut refuser.</Fragment>
+      <Fragment slot="limit">
+        Le seuil livré, celui de l’exécution de référence, est <Figure id="verity.threshold_run_of_record" where="threshold" /> : la règle fixée à l’avance l’a choisi sur les questions de réglage, où aucun
+        seuil ne faisait mieux qu’un autre, et à cette valeur il ne refuse rien. Chaque refus vient d’un contrôle écrit en code ou du modèle de notation ; la note de confiance est l’auto-évaluation du modèle,
+        et elle ne correspond pas à sa fréquence réelle d’erreur.
+        <blockquote lang="en">
+          <p data-verbatim>{thresholdSentence.contains}</p>
+          <p class="tr" lang="fr"><span class="tr-k">traduction</span> {translated(thresholdSentence.contains)}</p>
+          <footer lang="fr"><a href={at("docs/results.md")}>docs/results.md</a></footer>
+        </blockquote>
+      </Fragment>
+      <Fragment slot="next">Un refus fondé sur une confiance fiable, inscrit dans la <a href={at("docs/features.md#roadmap")}>feuille de route</a> et non revendiqué tant que la mesure ne le soutient pas.</Fragment>
+    </Limit>
 
-    <h3>Une citation exacte d’un texte mal extrait</h3>
-    <blockquote lang="en">
-      <p data-verbatim>
-        {before}{DEFECT} <span class="sic" lang="en">[sic, PDF extraction defect]</span>{after}
-      </p>
-      <p class="tr" lang="fr"><span class="tr-k">traduction</span> {translated(cited.quote)}</p>
-      <footer lang="fr">Citation de la réponse à <code>{answer.example_id}</code>, <a href={demoRun}>exécution de test précédente</a></footer>
-    </blockquote>
-    <p>
-      Dans le <a href={at("datasets/corpus/order_form_northwind_2025.pdf")}>PDF du bon de commande</a>, « twenty- » finit une ligne et « four » commence la suivante ; l’extraction du texte a recollé les deux
-      sans le trait d’union. Le contrôle « mot pour mot » l’a accepté, puisque la citation recopie fidèlement le passage fautif : il prouve que la citation est dans le texte extrait, pas que le texte extrait est
-      fidèle au document.
-    </p>
-    <p>
-      Un audit a proposé une règle : refuser toute réponse dont un chiffre n’est pas dans ses citations. Mesurée sur les exécutions publiées avant de l’activer, elle refusait des réponses justes, pour des
-      chiffres calculés, des chiffres repris de la question, des identifiants, et ici une durée écrite en chiffres dans la réponse et en lettres dans la citation fautive. Elle n’est pas activée (<a
-        href={at("docs/audit/2026-11-03-figure-rule-measurement.md")}>mesure</a
-      >).
-    </p>
+    <Limit title="Une citation exacte d’un texte mal extrait">
+      <Fragment slot="scope">Le contrôle « mot pour mot », qui vérifie que chaque citation se trouve dans le texte extrait du document.</Fragment>
+      <Fragment slot="limit">
+        <blockquote lang="en">
+          <p data-verbatim>
+            {before}{DEFECT} <span class="sic" lang="en">[sic, PDF extraction defect]</span>{after}
+          </p>
+          <p class="tr" lang="fr"><span class="tr-k">traduction</span> {translated(cited.quote)}</p>
+          <footer lang="fr">Citation de la réponse à <code>{answer.example_id}</code>, <a href={demoRun}>exécution de test précédente</a></footer>
+        </blockquote>
+        Dans le <a href={at("datasets/corpus/order_form_northwind_2025.pdf")}>PDF du bon de commande</a>, « twenty- » finit une ligne et « four » commence la suivante ; l’extraction du texte a recollé les deux
+        sans le trait d’union. Le contrôle a accepté la citation, qui recopie fidèlement le passage fautif : il prouve qu’une citation est dans le texte extrait, pas que ce texte est fidèle au document.
+      </Fragment>
+      <Fragment slot="next">
+        Non planifiée. Une règle proposée par un audit, refuser toute réponse dont un chiffre manque à ses citations, a été mesurée sur les exécutions publiées avant d’être activée : elle refusait des réponses
+        justes (chiffres calculés, repris de la question, identifiants, et ici une durée écrite en chiffres puis en lettres). Elle reste désactivée (<a
+          href={at("docs/audit/2026-11-03-figure-rule-measurement.md")}>mesure</a
+        >).
+      </Fragment>
+    </Limit>
   </CaseSection>
 
   <CaseSection
@@ -286,8 +288,8 @@ const translated = (en: string) => {
       <li>La comparaison au corpus entier placé dans la consigne du modèle : spécifiée dans le pré-enregistrement, non exécutée.</li>
       <li>Un refus fondé sur une confiance fiable : l’erreur de confiance mesurée sur le test ne le permet pas.</li>
       <li>Un juge d’une autre famille de modèles, et un second annotateur humain.</li>
-      <li>La lecture de pages web : le code existe, aucun test ne l’exerce.</li>
+      <li>La lecture de pages web : le code existe, aucun test ne le couvre.</li>
     </ul>
-    <p><a href={at("README.md#roadmap")}>Feuille de route</a> · <a href={at("docs/results.md")}>ce que les chiffres ne disent pas</a></p>
+    <p><a href={at("docs/features.md#roadmap")}>Feuille de route</a> · <a href={at("docs/results.md")}>ce que les chiffres ne disent pas</a></p>
   </CaseSection>
 </CaseStudy>

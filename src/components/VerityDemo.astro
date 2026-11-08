@@ -78,7 +78,7 @@ const t = {
     verdict: "Refus du modèle, confiance",
     closest: "Passage le plus proche\u00A0:",
     insufficient: "jugé insuffisant",
-    note: "Traduit d’un run réel en anglais",
+    note: "Traduit d’une exécution réelle en anglais",
     trace: "Voir la trace originale",
     names: { "sla.md": "contrat SLA", "order_form_northwind_2025.pdf": "bon de commande Northwind" } as Record<string, string>,
   },
@@ -153,7 +153,7 @@ const nameOf = (path: string) => {
     </ul>
     {lang === "fr" && (
       <details class="original">
-        <summary>Original anglais</summary>
+        <summary>Original en anglais</summary>
         <div lang="en" data-verbatim>
           <p>{answer.question}</p>
           <p>{answer.answer_text}</p>
@@ -174,7 +174,7 @@ const nameOf = (path: string) => {
     {lang === "fr" ? <p class="why">{translation(refusal).rationale!.fr}</p> : <p class="why"><span class="why-k">the model’s words, as recorded; document index 0 is the SLA</span> <span data-verbatim>{translation(refusal).rationale!.en}</span></p>}
     {lang === "fr" && (
       <details class="original">
-        <summary>Original anglais</summary>
+        <summary>Original en anglais</summary>
         <div lang="en" data-verbatim>
           <p>{refusal.question}</p>
           <p>{refusal.answer_text}</p>

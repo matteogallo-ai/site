@@ -10,9 +10,12 @@ interface Props {
   defect?: boolean;
   /** Words to show instead of the value, such as "3" in a sentence; each number in them must be the measure's. */
   text?: string | undefined;
+  /** A word of the sentence around it (a card's figure line): read as part of the sentence, not as a labelled figure. */
+  sentence?: boolean;
 }
 
-const { id, where, defect = false, text } = Astro.props;
+const { id, where, defect = false, text, sentence = false } = Astro.props;
+const inSentence = where === "prose" || text !== undefined || sentence;
 const lang = langOf(Astro.url.pathname);
 const tip = `src-${where}-${id.replaceAll(".", "-")}`;
 const m = measure(id);
@@ -31,7 +34,7 @@ if (text !== undefined) {
 }
 ---
 
-<a class:list={["figure", "tip-host", { defect }]} href={m.url} data-id={id} data-where={where} data-in-sentence={where === "prose" || text !== undefined ? "" : undefined} aria-label={where === "prose" || text !== undefined ? undefined : name} aria-describedby={tip}>
+<a class:list={["figure", "tip-host", { defect }]} href={m.url} data-id={id} data-where={where} data-in-sentence={inSentence ? "" : undefined} aria-label={inSentence ? undefined : name} aria-describedby={tip}>
   <span class:list={["value", { mono: text === undefined || !/\p{L}/u.test(text) }]}>{shown}</span>
   <span class="path tip mono" id={tip} role="tooltip">{proof} {m.repo.split("/")[1]}/{m.path}</span>
 </a>

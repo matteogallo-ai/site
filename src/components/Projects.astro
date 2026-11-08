@@ -2,14 +2,15 @@
 import Figure from "./Figure.astro";
 import ProductShot from "./ProductShot.astro";
 import { langOf, twin } from "../lib/i18n.ts";
+import { pinned } from "../lib/sources.ts";
 
 const repo = (name: string) => `https://github.com/matteogallo-ai/${name}`;
 const lang = langOf(Astro.url.pathname);
 const fr = lang === "fr";
 const study = (slug: string) => (lang === "fr" ? `/projets/${slug}/` : twin(`/projets/${slug}/`));
 const t = {
-  fr: { id: "projets", title: "Projets", limit: "Limite\u00A0:", read: "Lire l’étude de cas →", code: "Code sur GitHub" },
-  en: { id: "projects", title: "Projects", limit: "Limit:", read: "Read the case study →", code: "Code on GitHub" },
+  fr: { id: "projets", title: "Projets", read: "Lire l’étude de cas →", code: "Code sur GitHub", experiments: "Expériences" },
+  en: { id: "projects", title: "Projects", read: "Read the case study →", code: "Code on GitHub", experiments: "Experiments" },
 }[lang];
 ---
 
@@ -21,31 +22,27 @@ const t = {
       <h3 id="p-verity"><a class="card-link" href={study("verity")}>Verity</a></h3>
       <ProductShot id="verity" size="card" />
       <p>{fr ? "Assistant de questions-réponses sur des documents d’entreprise : chaque réponse cite le passage source, et l’absence de preuve produit un refus." : "Question answering over company documents: every answer cites its source passage, and missing evidence produces a refusal."}</p>
-      <p class="figure-line"><Figure id="verity.twoarm_unanswerable_answered_verity" where="card" /> {fr ? "questions sans réponse traitées comme si elles en avaient une, contre" : "unanswerable questions answered as if they had an answer, against"} <Figure id="verity.twoarm_unanswerable_answered_naive" where="card" /> {fr ? "pour un RAG naïf (même recherche, sans contrôles ; test apparié, p =" : "for a naive RAG (same retrieval, no checks; paired test, p ="} <Figure id="verity.twoarm_unanswerable_answered_p" where="card" />)</p>
-      <p class="limit"><span class="k">{t.limit}</span> <Figure id="verity.unanswerable_answered" where="card" defect text="5" /> {fr ? "questions sans réponse ont reçu une réponse au lieu d’un refus." : "unanswerable questions got an answer instead of a refusal."}</p>
-      <p class="stack">Python 3.12, FastAPI, Postgres + pgvector, Next.js, Claude.</p>
+      <p class="figure-line"><Figure id="verity.twoarm_unanswerable_answered_verity" where="card" sentence /> {fr ? "questions sans réponse traitées comme si elles en avaient une, contre" : "unanswerable questions answered as if they had an answer, against"} <Figure id="verity.twoarm_unanswerable_answered_naive" where="card" sentence /> {fr ? "pour un RAG naïf (même recherche, sans contrôles ; test apparié, p =" : "for a naive RAG (same retrieval, no checks; paired test, p ="} <Figure id="verity.twoarm_unanswerable_answered_p" where="card" sentence />)</p>
       <p class="links"><a class="button" href={study("verity")}>{t.read}</a> <a href={repo("verity")}>{t.code}</a></p>
     </article>
 
     <article class="project card" aria-labelledby="p-promptlang">
       <h3 id="p-promptlang"><a class="card-link" href={study("promptlang")}>PromptLang</a></h3>
       <ProductShot id="promptlang" size="card" />
-      <p>{fr ? "Langage typé pour les prompts LLM, compilé vers TypeScript et Python, publié sur npm." : "A typed language for LLM prompts, compiled to TypeScript and Python, published on npm."}</p>
-      <p class="figure-line"><Figure id="promptlang.mutation_score" where="card" /> — {fr ? "score de mutation (lexer, parser, semver ; exécution locale, hors CI)" : "mutation score (lexer, parser, semver; local run, not in CI)"}</p>
-      <p class="limit"><span class="k">{t.limit}</span> {fr ? "Linter IA :" : "AI linter,"} <Figure id="promptlang.linter_precision_reviewed" where="card" defect text={fr ? "12 signalements justes sur 40" : "12 of 40 findings"} /> {fr ? "en revue humaine." : "correct in human review."}</p>
-      <p class="stack">{fr ? "TypeScript strict, Bun, npm." : "Strict TypeScript, Bun, npm."}</p>
+      <p>{fr ? "Langage typé pour écrire les consignes (prompts) des modèles de langage, compilé vers TypeScript et Python, publié sur npm." : "A typed language for writing the instructions (prompts) given to language models, compiled to TypeScript and Python, published on npm."}</p>
+      <p class="figure-line"><Figure id="promptlang.mutation_score" where="card" sentence /> {fr ? "des" : "of"} <Figure id="promptlang.mutants_total" where="card" sentence /> {fr ? "mutants détectés par ses tests (erreurs introduites exprès dans la lecture du langage et le contrôle de version)" : "mutants detected by its tests (errors deliberately introduced into the language reader and the version check)"}</p>
       <p class="links"><a class="button" href={study("promptlang")}>{t.read}</a> <a href={repo("promptlang")}>{t.code}</a></p>
     </article>
+  </div>
 
-    <article class="project card" aria-labelledby="p-praxis">
-      <h3 id="p-praxis"><a class="card-link" href={study("praxis")}>Praxis</a></h3>
-      <ProductShot id="praxis" size="card" />
-      <p>{fr ? "Pipeline qui transforme une question business en briefing d’analyse sourcé, avec relecture adverse automatique." : "A pipeline that turns a business question into a sourced analysis briefing, with automatic adversarial review."}</p>
-      <p class="figure-line"><Figure id="praxis.cost_per_briefing" where="card" /> — {fr ? "par briefing live terminé" : "per completed live briefing"}</p>
-      <p class="limit"><span class="k">{t.limit}</span> {fr ? "Les" : "all"} <Figure id="praxis.insufficiently_sourced" where="card" defect text="6" /> {fr ? "briefings live terminés sont signalés insuffisamment sourcés par son propre contrôle." : "completed live briefings are flagged as under-sourced by its own check."}</p>
-      <p class="stack">{fr ? "TypeScript, Bun ; sorties Markdown, PDF, DOCX." : "TypeScript, Bun; Markdown, PDF and DOCX output."}</p>
-      <p class="links"><a class="button" href={study("praxis")}>{t.read}</a> <a href={repo("praxis")}>{t.code}</a></p>
-    </article>
+  {/* A project whose result did not hold stays on the page as an experiment, with that result, not as a project card. */}
+  <div class="experiments">
+    <h3>{t.experiments}</h3>
+    <ul>
+      <li>
+        <a href={study("praxis")}>Praxis</a> — {fr ? "pipeline d’analyse en" : "a"} {fr ? <span class="keep"><Figure id="praxis.stages" where="experiments" text="7 étapes" /> ;</span> : <Figure id="praxis.stages" where="experiments" text="7-stage" />}{fr ? " comparé à l’aveugle à un appel unique" : " analysis pipeline; compared blind with a single call"} <Figure id="praxis.q12_cost_ratio" where="experiments" text={fr ? "9,8× moins cher" : "9.8× cheaper"} />, {fr ? "il n’a pas fait mieux." : "it did no better."} <a href={`${pinned("praxis", "README.md")}#status`}>{fr ? "Résultat publié" : "Result published"}</a>.
+      </li>
+    </ul>
   </div>
 </section>
 
@@ -57,7 +54,7 @@ const t = {
 
   @media (min-width: 64rem) {
     .projects {
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(2, 1fr);
     }
   }
 
@@ -98,15 +95,13 @@ const t = {
      above its neighbours, so its proof tooltip is not drawn under the next line. */
   .project :global(figcaption a),
   .figure-line :global(a),
-  .limit :global(a),
   .links a:not(.card-link) {
     position: relative;
     z-index: 1;
   }
 
   .project :global(figcaption a):is(:hover, :focus-visible),
-  .figure-line :global(a):is(:hover, :focus-visible),
-  .limit :global(a):is(:hover, :focus-visible) {
+  .figure-line :global(a):is(:hover, :focus-visible) {
     z-index: 2;
   }
 
@@ -120,23 +115,25 @@ const t = {
     font-size: var(--step-14);
   }
 
-  /* The limit is the project's known defect: its label carries the defect colour, the text stays ink. */
-  .limit {
+  .experiments {
+    margin-top: 2.5rem;
     font-size: var(--step-14);
   }
 
-  .limit .k {
-    color: var(--defect);
-    font-weight: 600;
+  .experiments h3 {
+    margin: 0;
   }
 
-  .limit :global(.figure.defect) {
-    color: var(--ink);
+  /* A line may break after an inline-block figure even before a no-break space: the French « ; »
+     stays with its figure. */
+  .keep {
+    white-space: nowrap;
   }
 
-  .stack {
-    font-size: var(--step-14);
-    color: var(--graphite);
+  .experiments ul {
+    margin: 0.5rem 0 0;
+    padding: 0;
+    list-style: none;
   }
 
   .links {

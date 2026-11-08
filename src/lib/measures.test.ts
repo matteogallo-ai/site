@@ -17,9 +17,11 @@ test("an interval reads as whole percents rounded outwards, never narrower than 
   assert.equal(interval(measure("verity.refusal_recall"), "fr"), "49–88\u00A0%");
   // Printed by its source as [9.5%, 16.3%]: rounding to nearest would show 10–16, inside it.
   assert.equal(interval(measure("promptlang.baseline_report_all_precision"), "fr"), "9–17\u00A0%");
-  // Whole percents already ([0.23, 0.71]): floating-point error must not move them.
-  assert.equal(interval(measure("praxis.live_completed"), "fr"), "23–71\u00A0%");
-  assert.equal(interval(measure("praxis.live_completed"), "en"), "23–71%");
+  // Whole percents already ([0.23, 0.71]): floating-point error must not move them. No measure
+  // has such an interval now; the case is kept on a copy of one.
+  const whole = { ...measure("verity.refusal_recall"), ci95: [0.23, 0.71] as [number, number] };
+  assert.equal(interval(whole, "fr"), "23–71\u00A0%");
+  assert.equal(interval(whole, "en"), "23–71%");
 });
 
 test("an interval is refused for a measure that has none", () => {
@@ -33,4 +35,37 @@ test("shownTextError: words shown for a figure carry only the measure's own numb
   // A figure in words must still show a number: "trois" would escape the check.
   assert.match(shownTextError(m, "trois", "fr") ?? "", /no number/);
   assert.equal(shownTextError(measure("praxis.cost_per_briefing"), "$3.29–4.75", "en"), undefined);
+});
+
+test("Praxis is pinned on the merge of praxis#65, where README and the system card state the blind comparison", () => {
+  for (const id of ["praxis.q12_cost_ratio", "praxis.live_completed", "praxis.cost_per_briefing", "praxis.insufficiently_sourced", "praxis.stages"]) {
+    assert.equal(measure(id).commit, "bfad47e21f0d191d5c7cf57993932a640c3453d2", id);
+  }
+  // 4.752918 / 0.482876 = 9.84: the unit hid the decimal the brief now leads with.
+  assert.deepEqual(measure("praxis.q12_cost_ratio").display, { fr: "9,8×", en: "9.8×" });
+});
+
+test("PromptLang's mutant count is the artefact's total, the denominator of its score", () => {
+  const n = measure("promptlang.mutants_total");
+  assert.equal(n.value, 1914);
+  assert.deepEqual(n.display, { fr: "1\u00A0914", en: "1,914" });
+  assert.equal(n.commit, measure("promptlang.mutation_score").commit);
+});
+
+test("the derived figures follow from their own evidence", () => {
+  const stated = (id: string, pointer: string, path?: string): number => {
+    for (const e of measure(id).evidence) {
+      if ("equals" in e && e.pointer === pointer && (path === undefined || e.path === path)) return e.equals as number;
+    }
+    throw new Error(`${id}: no evidence at ${pointer}`);
+  };
+  const total = measure("promptlang.mutants_total").value as number;
+  const n = ["/total/killed", "/total/timeout", "/total/survived", "/total/noCoverage"].map((p) => stated("promptlang.mutants_total", p));
+  assert.equal(n.reduce((a, b) => a + b, 0), total);
+  // Stryker's score: mutants detected (killed or timed out) over all mutants, to two decimals.
+  assert.equal(Math.round(((n[0]! + n[1]!) / total) * 10_000) / 100, measure("promptlang.mutation_score").value);
+  const cost = (path: string) => stated("praxis.q12_cost_ratio", "/usage/total/cost_usd", path);
+  const ratio = cost("benchmarks/outputs/live/12-sodium-ion-plant-morocco/run-2026-11-04T13-20-16-572Z/metadata.json") / cost("benchmarks/outputs/baseline/12-sodium-ion-plant-morocco/run-2026-11-07T11-28-59-229Z/metadata.json");
+  assert.equal(ratio.toFixed(1), "9.8");
+  assert.equal(measure("praxis.q12_cost_ratio").value, Number(ratio.toFixed(4)));
 });

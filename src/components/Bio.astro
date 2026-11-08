@@ -8,19 +8,21 @@ const lang = langOf(Astro.url.pathname);
   {
     lang === "fr" ? (
       <>
-        <p>Ingénieur logiciel et IA basé à Lausanne. Je conçois des produits IA de bout en bout : spécification, architecture, évaluation, mise en production.</p>
-        <p>Je travaille avec des agents de code dans un cadre strict : ils écrivent l’essentiel du code ; je spécifie, je relis chaque changement et je réponds de ce qui est mergé. Tests, CI et mesures publiées sont obligatoires sur chaque projet.</p>
-        <p>Formation d’automaticien à l’ETML, interrompue en deuxième année pour me consacrer au développement logiciel.</p>
+        <p>Ingénieur logiciel et IA basé à Lausanne. Je construis des systèmes à base de LLM, avec leurs tests, leurs évaluations et leurs mesures publiées.</p>
+        <p>Développement assisté par agents de code : je spécifie, je relis les PR et leurs tests, et je réponds de ce qui est fusionné.</p>
+        <p>Formation d’automaticien à l’ETML (école des métiers), interrompue en deuxième année pour me consacrer au développement logiciel.</p>
         <p>Langues : français et italien (maternelles), anglais (intermédiaire), espagnol (notions).</p>
-        <p>Ouvert à un poste d’ingénieur logiciel ou IA en Suisse romande.</p>
+        <p>Ouvert à un poste d’ingénieur logiciel et IA en Suisse romande.</p>
+        <p class="personal">En dehors du code, j’assemble des montres Seiko personnalisées et je joue du piano.</p>
       </>
     ) : (
       <>
-        <p>Software and AI engineer based in Lausanne. I design AI products end to end: specification, architecture, evaluation, production.</p>
-        <p>I work with coding agents under strict rules: they write most of the code; I specify, review every change and answer for what gets merged. Tests, CI and published measurements are mandatory on every project.</p>
-        <p>Automation-technician apprenticeship at ETML, left in the second year to focus on software development.</p>
+        <p>Software and AI engineer based in Lausanne. I build LLM systems, with their tests, evaluations and published measurements.</p>
+        <p>Built with coding agents: I write the specs, review the pull requests and their tests, and answer for what gets merged.</p>
+        <p>Automation technician training at ETML (vocational school), left in the second year to focus on software development.</p>
         <p>Languages: French and Italian (native), English (intermediate), Spanish (basic).</p>
-        <p>Open to a software or AI engineering role in French-speaking Switzerland.</p>
+        <p>Open to a software and AI engineering role in French-speaking Switzerland.</p>
+        <p class="personal">Outside of code, I build custom Seiko watches and play the piano.</p>
       </>
     )
   }
@@ -29,5 +31,13 @@ const lang = langOf(Astro.url.pathname);
 <style>
   .bio {
     max-width: 46rem;
+  }
+
+  /* The one personal line, set apart from the professional ones by a rule. */
+  .personal {
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--rule);
+    color: var(--graphite);
   }
 </style>

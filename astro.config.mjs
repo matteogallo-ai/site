@@ -1,6 +1,7 @@
 // @ts-check
 import { defineConfig, fontProviders } from "astro/config";
 import { noGaps } from "./scripts/gaps.ts";
+import { edgeHeaders } from "./scripts/headers.ts";
 import { nestedNotFound } from "./scripts/not-found.ts";
 import { typography } from "./scripts/typography.ts";
 
@@ -12,9 +13,10 @@ export default defineConfig({
   site: "https://matteogallo.ch",
   trailingSlash: "ignore",
   build: { format: "directory" },
-  // nestedNotFound first: the other two then read every page where it is served from. The
-  // placeholder check reads the text as typeset, as it ships.
-  integrations: [nestedNotFound(), typography(), noGaps()],
+  // nestedNotFound first: the others then read every page where it is served from. The
+  // placeholder check reads the text as typeset, as it ships; edgeHeaders last, as it hashes the
+  // inline scripts and styles of the finished pages.
+  integrations: [nestedNotFound(), typography(), noGaps(), edgeHeaders()],
   fonts: [
     {
       name: "Inter",

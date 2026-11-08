@@ -22,8 +22,8 @@ interface Big {
 const { does, measured, defect, figures } = Astro.props;
 if (!figures.some((f) => f.defect)) throw new Error("the brief shows the main defect among its figures");
 const t = {
-  fr: { title: "En bref", does: "Ce que ça fait", measured: "Ce qui est mesuré", defect: "Défaut principal" },
-  en: { title: "In brief", does: "What it does", measured: "What is measured", defect: "Main defect" },
+  fr: { title: "En bref", does: "Ce que ça fait", measured: "Ce qui est mesuré", defect: "Limite principale" },
+  en: { title: "In brief", does: "What it does", measured: "What is measured", defect: "Main limit" },
 }[langOf(Astro.url.pathname)];
 ---
 

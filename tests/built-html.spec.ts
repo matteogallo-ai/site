@@ -71,7 +71,7 @@ const CALQUES = [
   /\bmeasures\b(?! whether)/i, // the noun « mesures »: results, measurements or metrics; the verb stays
   /\bMeasure\s*<\/th>/, // a table column headed « Mesure »
   /refuses? rightly/, // « à raison »: correctly
-  /technician training/, // « formation d’automaticien »: apprenticeship
+  /\bapprentice(ship)?\b/i, // ETML is a full-time vocational school, not an apprenticeship
   /\bWrite (to me|an e-mail)\b/,
   /\banalysis note|\bnotes?\b(?![^<]*<\/code>)/, // Praxis delivers briefings
   /\bFrame of\b/, // « Image de l’enregistrement »: a still
@@ -79,26 +79,80 @@ const CALQUES = [
   /programming interface \(API\)/,
   /point of comparison|test bench/, // « point de comparaison », « banc de test »: baseline, test harness
 ];
+const VOID = /^<(?:area|base|br|col|embed|hr|img|input|link|meta|source|track|wbr)\b/i;
+
+/**
+ * What a reader or a link preview shows on a built page: the text, and the attributes written for
+ * people. Read token by token, scripts and styles skipped whole, rather than by deleting markup.
+ * An element whose opening tag matches `skip` is left out with everything inside it; a </th> is
+ * kept as a marker.
+ */
+function readerText(file: string, skip: RegExp): string {
+  const parts: string[] = [];
+  const open: boolean[] = [];
+  for (const [token] of html(file).matchAll(/<(script|style)\b[^>]*>[\s\S]*?<\/\1\s*>|<[^>]*>|[^<]+/gi)) {
+    const skipped = open.includes(true);
+    if (token[0] !== "<") {
+      if (!skipped) parts.push(token);
+      continue;
+    }
+    if (/^<(script|style)\b/i.test(token) || token.startsWith("<!")) continue;
+    if (token[1] === "/") {
+      open.pop();
+      if (token === "</th>" && !skipped) parts.push(token);
+    } else {
+      if (!skipped) parts.push(...[...token.matchAll(/\b(?:alt|content|aria-label|title)="([^"]*)"/g)].map((m) => `\n${m[1]}\n`));
+      if (!VOID.test(token) && !token.endsWith("/>")) open.push(skip.test(token));
+    }
+    parts.push(" ");
+  }
+  return parts.join("");
+}
+
 for (const file of files.filter((f) => f.startsWith("en/"))) {
   test(`${file}: no French calque in the English`, () => {
-    // What a reader or a link preview shows: the text, and the attributes written for people.
-    // Read token by token, scripts and styles skipped whole, rather than by deleting markup: the
-    // text that follows an opening tag marked lang="fr" is left out, a </th> kept as a marker.
-    const parts: string[] = [];
-    let french = false;
-    for (const [token] of html(file).matchAll(/<(script|style)\b[^>]*>[\s\S]*?<\/\1\s*>|<[^>]*>|[^<]+/gi)) {
-      if (token[0] === "<") {
-        if (/^<(script|style)\b/i.test(token)) continue;
-        if (token === "</th>") parts.push(token);
-        else if (token[1] !== "/") parts.push(...[...token.matchAll(/\b(?:alt|content|aria-label|title)="([^"]*)"/g)].map((m) => `\n${m[1]}\n`));
-        french = /\blang="fr"/.test(token);
-        parts.push(" ");
-      } else if (!french) parts.push(token);
-    }
-    const text = parts.join("");
-    expect(CALQUES.flatMap((c) => around(text, c))).toEqual([]);
+    expect(CALQUES.flatMap((c) => around(readerText(file, /\blang="fr"/), c))).toEqual([]);
   });
 }
+
+// The French pages say in French what a French reader would otherwise have to translate: Git and
+// English jargon (« mergé », « commité », « run », « business », « live ») and calques of English
+// (« support d’éditeur », « l’exerce »). Code and text marked lang="en" keep their own words.
+const ANGLICISMS = [/\b(?:mergée?s?|commitée?s?|business|runs?|baseline)\b/i, /\bbriefings? live\b/i, /support d.éditeur/i, /\bl.exerce\b/i];
+for (const file of files.filter((f) => !f.startsWith("en/"))) {
+  test(`${file}: no English jargon in the French`, () => {
+    const text = readerText(file, /\blang="en"|^<code\b|\bclass="[^"]*\bmono\b/);
+    expect(ANGLICISMS.flatMap((a) => around(text, a))).toEqual([]);
+  });
+}
+
+// M9: PromptLang's "not supported" list names the eval blocks, which are read and not run; the
+// test blocks are run (promptlang/docs/CLAIMS.md, "Native tests").
+for (const [file, line] of [
+  ["projets/promptlang/index.html", /Exécuter les blocs <code>eval<\/code>\s*:\s*ils sont lus, pas exécutés\./],
+  ["en/projects/promptlang/index.html", /Running the <code>eval<\/code> blocks: they are read, not run\./],
+] as const) {
+  test(`${file}: the eval blocks, not the tests, are the ones not run`, () => {
+    expect(html(file)).toMatch(line);
+    expect(html(file)).not.toMatch(/tests écrits dans les fichiers de prompt|tests written in the prompt files/);
+  });
+}
+
+// Cloudflare's e-mail obfuscation rewrites every address it finds into a link that works only
+// with its script; it leaves alone what sits between email_off comments, so the address and the
+// mailto links read the same with or without JavaScript, whatever the zone setting.
+for (const file of files) {
+  test(`${file}: every e-mail address sits inside email_off`, () => {
+    const outside = html(file).replace(/<!--email_off-->[\s\S]*?<!--\/email_off-->/g, "");
+    expect(around(outside, /matteogallo\.office@/)).toEqual([]);
+  });
+}
+
+// M1: the French 404 names the role in French.
+test("404.html: the role reads in French", () => {
+  expect(html("404.html")).toContain("Matteo Gallo · Ingénieur logiciel &amp; IA");
+  expect(html("404.html")).not.toContain("Software &amp; AI Engineer");
+});
 
 // D4: the English refusal rationale is the trace's own text, internal reference included; a short
 // label says so and what the reference points to.

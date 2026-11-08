@@ -15,7 +15,7 @@ const fr = lang === "fr";
 >
   <div class="container top" slot="header"><LangSwitch /></div>
   <section class="container lost" aria-labelledby="lost-title">
-    <p class="who">Matteo Gallo · Software &amp; AI Engineer</p>
+    <p class="who">{fr ? "Matteo Gallo · Ingénieur logiciel & IA" : "Matteo Gallo · Software & AI Engineer"}</p>
     <h1 id="lost-title">{fr ? "Aucune preuve à cette adresse." : "No proof at this address."}</h1>
     <p><a class="home" href={fr ? "/" : "/en/"}>{fr ? "Retour à l’accueil" : "Back to the home page"}</a></p>
     <nav class="cases" aria-label={fr ? "Études de cas" : "Case studies"}>
