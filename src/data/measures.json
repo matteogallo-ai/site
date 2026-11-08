@@ -1033,8 +1033,8 @@
     {
       "id": "praxis.insufficiently_sourced",
       "label": {
-        "fr": "Briefings live signalés insuffisamment sourcés",
-        "en": "Live briefings flagged insufficiently sourced"
+        "fr": "Briefings réels signalés comme insuffisamment sourcés",
+        "en": "Real briefings flagged as insufficiently sourced"
       },
       "display": {
         "fr": "6/6",
@@ -1084,8 +1084,8 @@
     {
       "id": "praxis.cost_per_briefing",
       "label": {
-        "fr": "Coût d'un briefing live terminé",
-        "en": "Cost of one completed live briefing"
+        "fr": "Coût d'un briefing réel terminé",
+        "en": "Cost of one completed real briefing"
       },
       "display": {
         "fr": "3,29–4,75 $",
@@ -1218,7 +1218,7 @@
     {
       "id": "promptlang.baseline_report_all_precision",
       "label": {
-        "fr": "Précision de la baseline « tout signaler » (test)",
+        "fr": "Précision de la référence « tout signaler » (test)",
         "en": "Precision of the report-everything baseline (test)"
       },
       "display": {
@@ -1248,7 +1248,7 @@
     {
       "id": "promptlang.baseline_report_all_recall",
       "label": {
-        "fr": "Rappel de la baseline « tout signaler » (test)",
+        "fr": "Rappel de la référence « tout signaler » (test)",
         "en": "Recall of the report-everything baseline (test)"
       },
       "display": {
@@ -1278,8 +1278,8 @@
     {
       "id": "praxis.live_completed",
       "label": {
-        "fr": "Briefings live terminés, sur les tentatives",
-        "en": "Live briefings completed, of the attempts"
+        "fr": "Briefings réels terminés, sur les tentatives",
+        "en": "Real briefings completed, of the attempts"
       },
       "display": {
         "fr": "6/13",

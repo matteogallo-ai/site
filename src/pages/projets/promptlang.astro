@@ -96,12 +96,12 @@ const pr = (n: number) => pull("promptlang", n);
           {
             id: "promptlang.linter_precision_reviewed",
             defect: true,
-            reading: "Le défaut principal : à la relecture humaine, la plupart des signalements sont faux. Ne se distingue pas de la borne déjà publiée.",
+            reading: "Le défaut principal : à la relecture humaine, la plupart des signalements sont faux. Ne se distingue pas de la justesse mesurée sur les prompts de test, plus bas.",
           },
           {
             id: "promptlang.audit_findings",
             noInterval: "Un décompte, pas une estimation.",
-            reading: "Audit du dépôt par un agent IA qui ne connaissait pas le projet : des défauts, et un constat de contexte. Chaque défaut est corrigé ou réfuté par écrit.",
+            reading: "Audit du dépôt par un agent IA qui ne connaissait pas le projet : tous des défauts sauf le dernier, une remarque sur le processus laissée ouverte. Chaque défaut est corrigé ou réfuté par écrit.",
           },
         ]}
       />
@@ -178,7 +178,7 @@ const pr = (n: number) => pull("promptlang", n);
         <h3>Comment le contrôle de version trouve la version précédente</h3>
         <p>
           La version précédente vient de Git : la référence donnée, sinon <code>origin/main</code>, sinon la dernière étiquette de version posée dans Git (un tag) ; la version courante est celle des fichiers sur le disque, donc le contrôle
-          tourne avant l’enregistrement comme en intégration continue. Le niveau exigé est celui du changement le plus grave, et un fichier illisible dans la version précédente est une erreur, jamais un fichier
+          tourne avant l’enregistrement aussi bien qu’en intégration continue. Le niveau exigé est celui du changement le plus grave, et un fichier illisible dans la version précédente est une erreur, jamais un fichier
           nouveau.
         </p>
         <p><a href={at("docs/adr/0003-semver-check.md")}>ADR 0003</a></p>
@@ -205,10 +205,10 @@ const pr = (n: number) => pull("promptlang", n);
 
   <CaseSection n={7} id="suite" title="La suite" lead="Ce qui manque, d’après la feuille de route du projet ; rien n’y est planifié.">
     <ul>
-      <li>Exécuter les tests écrits dans les fichiers de prompt : ils sont lus, pas exécutés.</li>
+      <li>Exécuter les blocs <code>eval</code> : ils sont lus, pas exécutés.</li>
       <li>Mesurer les tests du compilateur et de l’exécution par erreurs introduites, hors du périmètre mesuré aujourd’hui.</li>
       <li>Un linter IA chez d’autres fournisseurs que Claude, chacun avec sa propre mesure.</li>
-      <li>La réponse affichée au fil de l’eau, et un support d’éditeur (coloration, complétion).</li>
+      <li>La réponse affichée au fil de l’eau, et une prise en charge dans l’éditeur (coloration, complétion).</li>
     </ul>
     <p><a href={at("docs/roadmap.md")}>Feuille de route</a></p>
   </CaseSection>

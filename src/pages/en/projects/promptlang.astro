@@ -96,12 +96,12 @@ const pr = (n: number) => pull("promptlang", n);
           {
             id: "promptlang.linter_precision_reviewed",
             defect: true,
-            reading: "The main defect: in human review, most flags are wrong. Not distinguishable from the bound already published.",
+            reading: "The main defect: in human review, most flags are wrong. Not distinguishable from the precision measured on the test prompts, below.",
           },
           {
             id: "promptlang.audit_findings",
             noInterval: "A count, not an estimate.",
-            reading: "Audit of the repository by an AI agent that did not know the project: defects, and one finding about context. Every defect is fixed or refuted in writing.",
+            reading: "Audit of the repository by an AI agent that did not know the project: all defects except the last, a remark on the process left open. Every defect is fixed or refuted in writing.",
           },
         ]}
       />
@@ -185,7 +185,7 @@ const pr = (n: number) => pull("promptlang", n);
         <h3>The approved cost is a spending cap</h3>
         <p>
           Every paid run shows its estimated cost and asks for approval; that estimate becomes a cap. Before every call, the client reserves the call’s maximum cost; a call that would exceed the cap is
-          not sent. The record also writes what the cap does not guarantee: a text more costly to process than expected exceeds the estimate.
+          not sent. The record also states what the cap does not guarantee: a text more costly to process than expected exceeds the estimate.
         </p>
         <p><a href={at("docs/adr/0004-spending-cap.md")}>ADR 0004</a></p>
       </li>
@@ -203,7 +203,7 @@ const pr = (n: number) => pull("promptlang", n);
 
   <CaseSection n={7} id="suite" title="What comes next" lead="What is missing, according to the project’s roadmap; none of it is scheduled.">
     <ul>
-      <li>Running the tests written in the prompt files: they are read, not run.</li>
+      <li>Running the <code>eval</code> blocks: they are read, not run.</li>
       <li>Measuring the tests of the compiler and of the execution with introduced errors, outside the scope measured today.</li>
       <li>An AI linter with providers other than Claude, each with its own measurement.</li>
       <li>Streaming the response as it is written, and editor support (highlighting, completion).</li>
