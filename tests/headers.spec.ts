@@ -32,7 +32,8 @@ for (const path of builtPages()) {
     // The scripts ran: the address became a copy button, the demo lit its spotlight.
     if (!path.includes("404")) await expect(page.locator(".contact button.address")).toHaveCount(1);
     if (path === "/" || path === "/en/") await expect(page.locator("[data-verity-demo][data-lit]")).toHaveCount(1);
-    expect(await page.evaluate(() => [...document.fonts].filter((f) => f.status === "error").map((f) => f.family))).toEqual([]);
+    // The site's own fonts loaded; Astro's metric fallbacks point at local() system fonts a machine may not have.
+    expect(await page.evaluate(() => [...document.fonts].filter((f) => f.status === "error" && !/ fallback: /.test(f.family)).map((f) => f.family))).toEqual([]);
     expect(await context.cookies()).toEqual([]);
   });
 }
