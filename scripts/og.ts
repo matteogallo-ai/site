@@ -46,7 +46,7 @@ function page(image: OgImage): string {
     ? `${who}<div><div class="kind">${text(`${lang === "fr" ? "Étude de cas" : "Case study"} · ${numbered(image.case.no, lang)}`, lang)}</div><h1 class="case-name">${text(image.case.name, lang)}</h1></div>${site}`
     : `${who}<h1>${text(OG[lang].headline, lang)}</h1>${site}`;
   const figures = image.case
-    ? [{ value: image.case.value, caption: image.case.caption, defect: false, big: true }]
+    ? [{ value: image.case.value, caption: image.case.caption, defect: image.case.defect, big: true }]
     : homeFigures(lang).map((f) => ({ value: f.value, caption: f.caption, defect: false, big: false }));
   const right = figures
     .map((f) => `<div class="figure${f.defect ? " defect" : ""}${f.big ? " big" : ""}"><div class="value">${escape(lang === "fr" ? french(f.value, " ", true) : f.value)}</div><div class="caption">${text(f.caption, lang)}</div></div>`)

@@ -35,13 +35,13 @@ export const OG = {
     {
       id: "promptlang.mutation_score",
       caption: {
-        fr: `des ${measure("promptlang.mutants_total").display.fr} mutants détectés par ses tests (erreurs introduites exprès dans la lecture du langage)`,
-        en: `of ${measure("promptlang.mutants_total").display.en} mutants detected by its tests (errors deliberately introduced into the language reader)`,
+        fr: `des ${measure("promptlang.mutants_total").display.fr} mutants détectés par ses tests (erreurs introduites exprès dans la lecture du langage et le contrôle de version)`,
+        en: `of ${measure("promptlang.mutants_total").display.en} mutants detected by its tests (errors deliberately introduced into the language reader and the version check)`,
       },
       dash: false,
     },
   ],
-  /** Each case study's image leads with the first figure of its brief, captioned as there. */
+  /** Each case study's image leads with the first figure of its brief, captioned as there, red when the brief flags it a defect. */
   cases: {
     verity: {
       id: "verity.invented_answer_rate",
@@ -59,6 +59,7 @@ export const OG = {
     },
     praxis: {
       id: "praxis.q12_cost_ratio",
+      defect: true,
       caption: {
         fr: "moins cher : l’appel unique au modèle, préféré à Praxis à l’aveugle (une question, un relecteur)",
         en: "cheaper: the single model call, preferred to Praxis in a blind review (one question, one reviewer)",
@@ -74,18 +75,19 @@ export interface OgImage {
   lang: Lang;
   file: string;
   alt: string;
-  case?: { slug: CaseSlug; no: string; name: string; value: string; caption: string };
+  case?: { slug: CaseSlug; no: string; name: string; value: string; caption: string; defect: boolean };
 }
 
 function caseImage(slug: CaseSlug, lang: Lang): OgImage {
   const study = caseStudies(lang).find((c) => c.name.toLowerCase() === slug)!;
   const { id, caption } = OG.cases[slug];
+  const defect = "defect" in OG.cases[slug] && OG.cases[slug].defect === true;
   const value = measure(id).display[lang];
   const alt =
     lang === "fr"
       ? `${study.name}, étude de cas de Matteo Gallo : ${value} ${caption[lang]}.`
       : `${study.name}, a case study by Matteo Gallo: ${value} ${caption[lang]}.`;
-  return { lang, file: `public/og/${slug}${lang === "en" ? "-en" : ""}.png`, alt, case: { slug, no: study.no, name: study.name, value, caption: caption[lang] } };
+  return { lang, file: `public/og/${slug}${lang === "en" ? "-en" : ""}.png`, alt, case: { slug, no: study.no, name: study.name, value, caption: caption[lang], defect } };
 }
 
 /** The figures of the home image in `lang`: the value as its card shows it, and its caption. */

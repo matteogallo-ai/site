@@ -152,8 +152,14 @@ function numbersIn(x: unknown): number[] {
   return [];
 }
 
-/** Numbers written in French or English: "0,71", "96.13", "3/20" gives 3 and 20. */
-const numberTokens = (text: string) => (text.match(/\d+(?:[.,]\d+)?/g) ?? []).map((t) => t.replace(",", "."));
+/**
+ * Numbers written in French or English: "0,71", "96.13", "3/20" gives 3 and 20. Thousands are
+ * grouped as each language writes them, "1 914" and "1,914": read as one number, not two.
+ */
+const numberTokens = (text: string, lang: "fr" | "en") =>
+  lang === "fr"
+    ? (text.match(/\d{1,3}(?:[ \u00A0]\d{3})+(?!\d)|\d+(?:,\d+)?/g) ?? []).map((t) => t.replace(/[ \u00A0]/g, "").replace(",", "."))
+    : (text.match(/\d{1,3}(?:,\d{3})+(?![\d.])|\d+(?:\.\d+)?/g) ?? []).map((t) => t.replace(/,/g, ""));
 
 /**
  * Every number a reader sees must come from the measure. A displayed number must be
@@ -166,8 +172,8 @@ export function textNumberErrors(m: VerifiedMeasure): string[] {
   const matches = (pool: number[]) => (t: string) => pool.some((x) => x.toFixed(t.split(".")[1]?.length ?? 0) === t);
   const errors: string[] = [];
   for (const lang of ["fr", "en"] as const) {
-    for (const t of numberTokens(m.display[lang])) if (!matches(figures)(t)) errors.push(`${m.id}: display.${lang} shows ${t}, which is none of its figures`);
-    for (const t of numberTokens(m.label[lang])) if (!matches(stated)(t)) errors.push(`${m.id}: label.${lang} says ${t}, which no evidence states`);
+    for (const t of numberTokens(m.display[lang], lang)) if (!matches(figures)(t)) errors.push(`${m.id}: display.${lang} shows ${t}, which is none of its figures`);
+    for (const t of numberTokens(m.label[lang], lang)) if (!matches(stated)(t)) errors.push(`${m.id}: label.${lang} says ${t}, which no evidence states`);
   }
   return errors;
 }
