@@ -17,8 +17,8 @@ const WORDS = {
     projects: [
       [
         "Assistant de questions-réponses sur des documents d'entreprise : chaque réponse cite le passage source, et l'absence de preuve produit un refus.",
-        "17/20 — questions sans réponse correctement refusées",
-        "Limite : 3 questions sans réponse ont reçu une réponse au lieu d'un refus.",
+        "4/31 questions sans réponse traitées comme si elles en avaient une, contre 12/31 pour un RAG naïf (même recherche, sans contrôles ; test apparié, p = 0,023)",
+        "Limite : 5 questions sans réponse ont reçu une réponse au lieu d'un refus.",
       ],
       [
         "Langage typé pour les prompts LLM, compilé vers TypeScript et Python, publié sur npm.",
@@ -57,8 +57,8 @@ const WORDS = {
     projects: [
       [
         "Question answering over company documents: every answer cites its source passage, and missing evidence produces a refusal.",
-        "17/20 — unanswerable questions correctly refused",
-        "Limit: 3 unanswerable questions got an answer instead of a refusal.",
+        "4/31 unanswerable questions answered as if they had an answer, against 12/31 for a naive RAG (same retrieval, no checks; paired test, p = 0.023)",
+        "Limit: 5 unanswerable questions got an answer instead of a refusal.",
       ],
       ["A typed language for LLM prompts, compiled to TypeScript and Python, published on npm.", "96.13% — mutation score (lexer, parser, semver; local run, not in CI)", "Limit: AI linter, 12 of 40 findings correct in human review."],
       [
@@ -137,8 +137,9 @@ for (const [lang, w] of Object.entries(WORDS)) {
   test(`${w.path}: every figure resolves in measures.json and links to its proof; no other number`, async ({ page }) => {
     await page.goto(w.path);
     const figures = await page.locator("main .figure").evaluateAll((els) => els.map((a) => ({ id: a.getAttribute("data-id")!, href: a.getAttribute("href")!, value: (a.querySelector(".value") as HTMLElement).innerText })));
-    // Three cards, a figure and a limit each; two method cards.
-    expect(figures.length).toBe(8);
+    // Three cards, a figure and a limit each, Verity's figure a comparison of three (its count, the
+    // baseline's, the test's p); two method cards.
+    expect(figures.length).toBe(10);
     for (const f of figures) {
       const m = measure(f.id);
       expect(f.href, f.id).toBe(m.url);

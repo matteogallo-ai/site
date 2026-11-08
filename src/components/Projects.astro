@@ -21,8 +21,8 @@ const t = {
       <h3 id="p-verity"><a class="card-link" href={study("verity")}>Verity</a></h3>
       <ProductShot id="verity" size="card" />
       <p>{fr ? "Assistant de questions-réponses sur des documents d’entreprise : chaque réponse cite le passage source, et l’absence de preuve produit un refus." : "Question answering over company documents: every answer cites its source passage, and missing evidence produces a refusal."}</p>
-      <p class="figure-line"><Figure id="verity.refusal_recall" where="card" /> — {fr ? "questions sans réponse correctement refusées" : "unanswerable questions correctly refused"}</p>
-      <p class="limit"><span class="k">{t.limit}</span> <Figure id="verity.unanswerable_answered" where="card" defect text="3" /> {fr ? "questions sans réponse ont reçu une réponse au lieu d’un refus." : "unanswerable questions got an answer instead of a refusal."}</p>
+      <p class="figure-line"><Figure id="verity.twoarm_unanswerable_answered_verity" where="card" /> {fr ? "questions sans réponse traitées comme si elles en avaient une, contre" : "unanswerable questions answered as if they had an answer, against"} <Figure id="verity.twoarm_unanswerable_answered_naive" where="card" /> {fr ? "pour un RAG naïf (même recherche, sans contrôles ; test apparié, p =" : "for a naive RAG (same retrieval, no checks; paired test, p ="} <Figure id="verity.twoarm_unanswerable_answered_p" where="card" />)</p>
+      <p class="limit"><span class="k">{t.limit}</span> <Figure id="verity.unanswerable_answered" where="card" defect text="5" /> {fr ? "questions sans réponse ont reçu une réponse au lieu d’un refus." : "unanswerable questions got an answer instead of a refusal."}</p>
       <p class="stack">Python 3.12, FastAPI, Postgres + pgvector, Next.js, Claude.</p>
       <p class="links"><a class="button" href={study("verity")}>{t.read}</a> <a href={repo("verity")}>{t.code}</a></p>
     </article>

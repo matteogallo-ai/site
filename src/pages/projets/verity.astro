@@ -11,8 +11,10 @@ import { pinned } from "../../lib/sources.ts";
 import answer from "../../data/demo/answer.json";
 
 const at = (path: string) => pinned("verity", path);
-// The run of record: its hash stays in the link, out of the prose.
-const runOfRecord = answer.source.url;
+// The run of record of the release the figures come from; the demo replays an earlier test run.
+// Hashes stay in the links, out of the prose.
+const runOfRecord = at("datasets/eval/runs/live/eval_513b839_test.incomplete-20261107T122042441670Z.json");
+const demoRun = answer.source.url;
 
 // Both quotes come from data that npm run check:sources compares with GitHub: the cited
 // passage from the committed run (demo/answer.json), the threshold sentence from the
@@ -26,7 +28,7 @@ if (!thresholdSentence || !("contains" in thresholdSentence)) throw new Error("t
 // The French line under each English quote, keyed by the exact English it translates: a quote
 // that changes at its source no longer finds its translation, and the build fails.
 const TRANSLATED: Record<string, string> = {
-  "The threshold decides nothing on this data.": "Le seuil ne décide rien sur ces données.",
+  "The threshold decides nothing on this data, and refuses nothing by default.": "Le seuil ne décide rien sur ces données, et ne refuse rien par défaut.",
   "Premium Support shortens the Priority 1 response time to thirty (30) minutes, twentyfour hours a day, seven days a week.":
     "Le Premium Support ramène le délai de réponse en priorité 1 à trente (30) minutes, vingt-quatre heures sur vingt-quatre, sept jours sur sept.",
 };
@@ -48,11 +50,11 @@ const translated = (en: string) => {
   <Brief
     slot="brief"
     does="Il répond aux questions sur un ensemble de contrats en citant la clause exacte, et dit « je ne sais pas » quand les documents ne contiennent pas la réponse."
-    measured="Sur des questions de test jamais vues pendant le réglage : s’il refuse les questions sans réponse, et si ses réponses inventent quelque chose."
-    defect="Il a répondu à des questions qui n’avaient pas de réponse dans les documents. Ce que j’en ai fait : je l’ai publié, avec les trois questions en cause nommées dans les résultats."
+    measured="Sur des questions de test jamais vues pendant le réglage : s’il refuse les questions sans réponse, si ses réponses inventent quelque chose, et s’il fait mieux que la même chaîne sans contrôles."
+    defect="Il a répondu à des questions qui n’avaient pas de réponse dans les documents. Ce que j’en ai fait : je l’ai publié, avec les questions en cause nommées dans les résultats."
     figures={[
+      { id: "verity.invented_answer_rate", caption: "réponses contenant une invention, sur toutes les réponses données, que la question ait une réponse ou non (selon le juge)" },
       { id: "verity.refusal_recall", caption: "questions sans réponse correctement refusées" },
-      { id: "verity.hallucination_rate", caption: "réponses contenant une invention, selon un juge vérifié contre mes propres notes, parmi les questions avec réponse auxquelles il a répondu ; ses réponses aux questions sans réponse sont comptées à part" },
       { id: "verity.unanswerable_answered", caption: "questions sans réponse auxquelles il a quand même répondu", defect: true },
     ]}
   />
@@ -77,14 +79,14 @@ const translated = (en: string) => {
         { title: "Question", lines: ["sur un corpus de contrats et de politiques"] },
         { title: "Recherche des passages", lines: ["par le sens et par les mots,", "puis tri des passages les plus utiles"] },
         { title: "Rédaction avec citations", lines: ["chaque citation doit être un extrait exact", "du document ; sans citation, refus"] },
-        { title: "Contrôles en code, sans modèle", lines: ["citations : couvrent-elles la réponse,", "sont-elles pertinentes ? manipulation ?", "un seul échec refuse"] },
+        { title: "Contrôles en code, sans modèle", lines: ["citations : couvrent-elles la réponse ?", "manipulation ?", "un seul échec refuse"] },
         { title: "Note de confiance et seuil", lines: ["un modèle note la réponse et peut refuser ;", "il ne peut pas annuler un contrôle"] },
       ]}
       outcomes={[
         { title: "Réponse citée", lines: ["clause et position"], tone: "proof" },
         { title: "Refus motivé", lines: ["cause enregistrée"], tone: "defect" },
       ]}
-      desc="Une question porte sur un corpus de contrats et de politiques. Verity cherche les passages par le sens et par les mots, puis trie les plus utiles. Il rédige une réponse où chaque citation doit être un extrait exact du document ; sans citation, il refuse. Des contrôles écrits en code, sans modèle, vérifient que les citations couvrent la réponse, qu’elles sont pertinentes et que rien ne les manipule ; un seul échec suffit à refuser. Enfin un modèle note la réponse et peut refuser sous un seuil, sans pouvoir annuler un contrôle. Deux issues : une réponse qui cite sa clause et sa position, ou un refus dont la cause est enregistrée."
+      desc="Une question porte sur un corpus de contrats et de politiques. Verity cherche les passages par le sens et par les mots, puis trie les plus utiles. Il rédige une réponse où chaque citation doit être un extrait exact du document ; sans citation, il refuse. Des contrôles écrits en code, sans modèle, vérifient que les citations couvrent la réponse et que rien ne les manipule ; un seul échec suffit à refuser. Enfin un modèle note la réponse et peut refuser sous un seuil, sans pouvoir annuler un contrôle. Deux issues : une réponse qui cite sa clause et sa position, ou un refus dont la cause est enregistrée."
       caption="Le refus se décide dans l’ordre : pas de citation, puis les contrôles écrits en code, puis la note de confiance et son seuil. Le juge, un second modèle qui note les réponses, n’est pas sur ce chemin : il évalue les exécutions après coup."
     />
     <p>
@@ -100,24 +102,36 @@ const translated = (en: string) => {
     lead="Ce que valent ses réponses et ses refus, chiffres à l’appui, avec leur incertitude et une comparaison à un système plus simple."
   >
     <p>
-      Les chiffres viennent de l’<a href={runOfRecord}>exécution de référence</a>, sur des questions de test jamais vues pendant le réglage. Sur les questions dont les documents ne contiennent pas la réponse,
-      Verity en refuse <Figure id="verity.refusal_recall" where="prose" />, mais répond quand même à <Figure id="verity.unanswerable_answered" where="prose" defect />. Le juge, un second modèle chargé de noter
-      les réponses, trouve une invention dans <Figure id="verity.hallucination_rate" where="prose" /> réponses. Ce juge s’accorde avec mes propres notes, posées sans voir les siennes, à <Figure
-        id="verity.judge_kappa_all"
+      Les chiffres viennent de l’<a href={runOfRecord}>exécution de référence</a> de la version publiée, sur des questions de test jamais vues pendant le réglage ; le plafond de dépense l’a arrêtée
+      avant les deux dernières questions, qui ne comptent nulle part. Sur les questions dont les documents ne contiennent pas la réponse, Verity en refuse <Figure id="verity.refusal_recall" where="prose" />,
+      mais répond quand même à <Figure id="verity.unanswerable_answered" where="prose" defect />. Le juge, un second modèle chargé de noter les réponses, trouve une invention dans <Figure
+        id="verity.invented_answer_rate"
         where="prose"
-      /> : c’est un kappa de Cohen, une mesure d’accord qui retire la part due au hasard, de zéro pour le hasard à un pour un accord parfait. Ce chiffre mêle des affirmations réelles et des affirmations piégées exprès ; sur les seules réelles, il tombe à <Figure
-        id="verity.judge_kappa_real"
-        where="prose"
-      />, un chiffre fragile.
+      /> réponses données (<code>q-089</code>), toutes questions comptées. L’ancienne définition ne comptait que les questions qui ont une réponse : elle excluait par construction la seule invention réelle de
+      l’exécution précédente (<code>q-074</code>). Elle donne ici <Figure id="verity.hallucination_rate" where="prose" /> et reste publiée dans le détail, avec sa définition.
     </p>
     <p>
-      Comparé à un RAG naïf, le même principe sans aucun contrôle, sur des questions de réglage et sur des exécutions que le budget a arrêtées avant la fin, Verity ne fait pas mieux de façon mesurable : il traite <Figure id="verity.baseline_verity_answerable_answered" where="prose" /> questions qui ont
-      une réponse, contre <Figure id="verity.baseline_naive_answerable_answered" where="prose" />, et sur si peu de questions l’écart ne se distingue pas du hasard. C’est le résultat publié, pas le résultat
-      favorable.
+      Ce juge s’accorde avec mes propres notes, posées sans voir les siennes, à <Figure id="verity.judge_kappa_v020" where="prose" />, sur une partie seulement des affirmations de validation : son budget a
+      arrêté la vérification avant la fin. C’est un kappa de Cohen, une mesure d’accord qui retire la part due au hasard, de zéro pour le hasard à un pour un accord parfait. L’ancienne consigne du juge, celle
+      des exécutions précédentes, atteignait <Figure id="verity.judge_kappa_all" where="prose" /> sur des affirmations où une seule hallucination est réelle ; son intervalle figure dans le détail.
+    </p>
+    <p>
+      Face à un RAG naïf, la même recherche et la même rédaction sans aucun contrôle, la comparaison a été pré-enregistrée et porte sur les questions de réglage et de test terminées par les deux. Verity
+      traite comme si elles avaient une réponse <Figure id="verity.twoarm_unanswerable_answered_verity" where="prose" /> questions sans réponse, contre <Figure
+        id="verity.twoarm_unanswerable_answered_naive"
+        where="prose"
+      /> pour le RAG naïf : l’écart est net (test apparié, corrigé pour trois comparaisons : p = <Figure id="verity.twoarm_unanswerable_answered_p" where="prose" />). Il répond à <Figure
+        id="verity.twoarm_answerable_answered_verity"
+        where="prose"
+      /> questions qui ont une réponse, contre <Figure id="verity.twoarm_answerable_answered_naive" where="prose" />, et donne <Figure id="verity.twoarm_invented_answer_verity" where="prose" /> réponse inventée,
+      contre <Figure id="verity.twoarm_invented_answer_naive" where="prose" /> : à cette taille, ni ce coût ni ce gain ne se distinguent du hasard (p = <Figure
+        id="verity.twoarm_answerable_answered_p"
+        where="prose"
+      /> et <Figure id="verity.twoarm_invented_answer_p" where="prose" />). Le gain mesuré est le refus ; le reste n’est pas mesurable sur ces données.
     </p>
     <MeasuresDetail>
       <p>
-        Seuil de refus de l’exécution : <Figure
+        Seuil de refus de l’exécution, qui est aussi celui du code : <Figure
           id="verity.threshold_run_of_record"
           where="detail"
         />.
@@ -126,18 +140,24 @@ const translated = (en: string) => {
         where="run"
         caption="Exécution de référence, questions de test"
         rows={[
+          { id: "verity.invented_answer_rate", reading: "Toutes les réponses données, que la question ait une réponse ou non. Une seule invention, nommée dans les résultats." },
           { id: "verity.refusal_recall", reading: "Questions sans réponse dans les documents, refusées." },
-          { id: "verity.refusal_precision", reading: "Refus qui portaient sur une question vraiment sans réponse ; les autres viennent des contrôles de citation." },
+          { id: "verity.refusal_precision", reading: "Refus qui portaient sur une question vraiment sans réponse ; l’autre vient d’un contrôle de citation." },
           { id: "verity.unanswerable_answered", defect: true, reading: "Le défaut principal : une réponse livrée là où les documents n’en contiennent pas." },
-          { id: "verity.hallucination_rate", reading: "Selon le juge vérifié ci-dessous. Zéro observé n’est pas zéro garanti : d’où l’intervalle." },
+          { id: "verity.hallucination_rate", reading: "L’ancienne définition : une réponse à une question sans réponse en est exclue. Zéro observé n’est pas zéro garanti : d’où l’intervalle." },
+          {
+            id: "verity.judge_kappa_v020",
+            noInterval: "Kappa n’est pas une proportion, et le fichier source ne donne pas d’intervalle pour cette vérification incomplète.",
+            reading: "Le juge de cette exécution, face à mes notes posées à l’aveugle ; son budget l’a arrêté avant la fin.",
+          },
           {
             id: "verity.judge_kappa_all",
-            noInterval: "Kappa n’est pas une proportion : le fichier source ne lui donne pas d’intervalle.",
-            reading: "Accord du juge avec mes notes posées à l’aveugle, affirmations réelles et piégées.",
+            noInterval: "Kappa n’est pas une proportion : son intervalle bootstrap est dans l’intitulé.",
+            reading: "Le juge des exécutions précédentes, affirmations réelles et piégées.",
           },
           {
             id: "verity.judge_kappa_real",
-            noInterval: "Kappa n’est pas une proportion : le fichier source ne lui donne pas d’intervalle.",
+            noInterval: "Kappa n’est pas une proportion : le fichier source ne lui donne pas d’intervalle utile.",
             reading: "Fragile : presque aucune affirmation réelle n’est jugée non étayée par l’humain, si bien qu’un désaccord le déplace fortement.",
           },
           { id: "verity.judge_traps_detected", reading: "Borne haute : une affirmation piégée compte comme détectée dès qu’une de ses parties est rejetée." },
@@ -145,33 +165,34 @@ const translated = (en: string) => {
       />
       <MeasuresTable
         where="naive"
-        caption="Contre un RAG naïf (questions de réglage, exécutions incomplètes)"
+        caption="Contre un RAG naïf, comparaison pré-enregistrée (questions de réglage et de test)"
         ours="Verity"
         baseline="RAG naïf"
         rows={[
           {
-            id: "verity.baseline_verity_answerable_answered",
-            base: "verity.baseline_naive_answerable_answered",
+            id: "verity.twoarm_unanswerable_answered_verity",
+            base: "verity.twoarm_unanswerable_answered_naive",
+            label: "Questions sans réponse traitées comme si elles en avaient une",
+            reading: "Les contrôles de Verity refusent des questions sans réponse auxquelles la version naïve répond : écart significatif après correction.",
+          },
+          {
+            id: "verity.twoarm_answerable_answered_verity",
+            base: "verity.twoarm_answerable_answered_naive",
             label: "Questions avec réponse traitées",
-            reading: "Non distinguables selon le fichier de comparaison. Verity refuse davantage, sans gain mesuré en échange.",
+            reading: "Aucun coût mesurable à cette taille d’échantillon.",
           },
           {
-            id: "verity.baseline_verity_hallucination_rate",
-            base: "verity.baseline_naive_hallucination_rate",
-            label: "Taux d’invention (juge)",
-            reading: "Aucune invention mesurée d’un côté comme de l’autre : rien à départager.",
-          },
-          {
-            id: "verity.baseline_verity_unanswerable_answered",
-            base: "verity.baseline_naive_unanswerable_answered",
-            label: "Questions sans réponse auxquelles il a répondu",
-            reading: "L’avantage attendu de Verity, mais sur si peu de questions qu’il ne se distingue pas du hasard.",
+            id: "verity.twoarm_invented_answer_verity",
+            base: "verity.twoarm_invented_answer_naive",
+            label: "Réponses inventées",
+            reading: "Aucune différence mesurable à cette taille d’échantillon.",
           },
         ]}
       />
       <p>
-        Le budget a arrêté les deux exécutions avant la fin ; la comparaison porte sur les questions que les deux ont terminées (<a href={at("scorecards/naive-baseline-comparison.json")}>fichier de
-          comparaison</a
+        Une réponse qui se récuse d’elle-même compte comme un refus, dans les deux bras : la version naïve ne refuse jamais, et la comparaison serait sinon gagnée d’avance. Le plafond de dépense a arrêté
+        l’exécution de test de Verity avant la fin ; la comparaison porte sur les questions terminées par les deux (<a href={at("scorecards/two-arm-comparison.json")}>fichier de comparaison</a>, <a
+          href={at("docs/preregistration/two-arm-comparison.md")}>pré-enregistrement</a
         >).
       </p>
     </MeasuresDetail>
@@ -180,8 +201,8 @@ const translated = (en: string) => {
   <CaseSection n={4} id="echecs" title="Ce qui n’a pas marché, et ce que j’ai fait" lead="Deux défauts que les chiffres seuls ne montrent pas, et ce que j’en ai fait.">
     <h3>Le seuil de confiance ne décide rien</h3>
     <p>
-      Verity donne une note de confiance à chaque réponse et refuse sous un seuil. Le code refuse par défaut sous <Figure id="verity.threshold_code_default" where="threshold" />. L’exécution de référence a
-      tourné à <Figure id="verity.threshold_run_of_record" where="threshold" /> : le seuil a été choisi sur les questions de réglage par une règle fixée à l’avance, et aucun seuil ne faisait mieux qu’un autre.
+      Verity donne une note de confiance à chaque réponse et peut refuser sous un seuil. Le seuil livré, celui de l’exécution de référence, est <Figure id="verity.threshold_run_of_record" where="threshold" /> :
+      il a été choisi sur les questions de réglage par une règle fixée à l’avance, aucun seuil ne faisait mieux qu’un autre, et à cette valeur il ne refuse rien.
     </p>
     <blockquote lang="en">
       <p data-verbatim>{thresholdSentence.contains}</p>
@@ -190,7 +211,7 @@ const translated = (en: string) => {
     </blockquote>
     <p>
       Chaque refus vient d’un contrôle écrit en code ou du modèle de notation lui-même ; aucun n’est dû au seuil. La note de confiance est l’auto-évaluation du modèle, et elle ne correspond pas à sa fréquence
-      réelle d’erreur. Ce que j’ai fait : le publier. Le seuil réel figure à côté de celui du code, et un refus fondé sur une confiance fiable est dans la feuille de route au lieu d’être revendiqué.
+      réelle d’erreur. Ce que j’ai fait : le publier, livrer le seuil à la valeur que la règle a choisie, et inscrire un refus fondé sur une confiance fiable dans la feuille de route au lieu de le revendiquer.
     </p>
 
     <h3>Une citation exacte d’un texte mal extrait</h3>
@@ -199,7 +220,7 @@ const translated = (en: string) => {
         {before}{DEFECT} <span class="sic" lang="en">[sic, PDF extraction defect]</span>{after}
       </p>
       <p class="tr" lang="fr"><span class="tr-k">traduction</span> {translated(cited.quote)}</p>
-      <footer lang="fr">Citation de la réponse à <code>{answer.example_id}</code>, <a href={runOfRecord}>exécution de référence</a></footer>
+      <footer lang="fr">Citation de la réponse à <code>{answer.example_id}</code>, <a href={demoRun}>exécution de test précédente</a></footer>
     </blockquote>
     <p>
       Dans le <a href={at("datasets/corpus/order_form_northwind_2025.pdf")}>PDF du bon de commande</a>, « twenty- » finit une ligne et « four » commence la suivante ; l’extraction du texte a recollé les deux
@@ -262,7 +283,7 @@ const translated = (en: string) => {
 
   <CaseSection n={7} id="suite" title="La suite" lead="Ce qui manque encore, d’après le projet lui-même.">
     <ul>
-      <li>Une exécution publiée de la version actuelle : celles de référence précèdent les consignes actuelles du modèle.</li>
+      <li>La comparaison au corpus entier placé dans la consigne du modèle : spécifiée dans le pré-enregistrement, non exécutée.</li>
       <li>Un refus fondé sur une confiance fiable : l’erreur de confiance mesurée sur le test ne le permet pas.</li>
       <li>Un juge d’une autre famille de modèles, et un second annotateur humain.</li>
       <li>La lecture de pages web : le code existe, aucun test ne l’exerce.</li>

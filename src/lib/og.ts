@@ -23,7 +23,16 @@ export const OG = {
   },
   /** The home page's project cards, drawn beside the headline: one figure each, as the card shows it. */
   figures: [
-    { id: "verity.refusal_recall", caption: { fr: "questions sans réponse correctement refusées", en: "unanswerable questions correctly refused" } },
+    {
+      id: "verity.twoarm_unanswerable_answered_verity",
+      // The card's figure is a comparison: the baseline's count and the test's p are read from their measures, and the
+      // card writes them in its sentence, with no dash after the first figure.
+      caption: {
+        fr: `questions sans réponse traitées comme si elles en avaient une, contre ${measure("verity.twoarm_unanswerable_answered_naive").display.fr} pour un RAG naïf (même recherche, sans contrôles ; test apparié, p = ${measure("verity.twoarm_unanswerable_answered_p").display.fr})`,
+        en: `unanswerable questions answered as if they had an answer, against ${measure("verity.twoarm_unanswerable_answered_naive").display.en} for a naive RAG (same retrieval, no checks; paired test, p = ${measure("verity.twoarm_unanswerable_answered_p").display.en})`,
+      },
+      dash: false,
+    },
     {
       id: "promptlang.mutation_score",
       caption: { fr: "score de mutation (lexer, parser, semver ; exécution locale, hors CI)", en: "mutation score (lexer, parser, semver; local run, not in CI)" },
@@ -32,7 +41,13 @@ export const OG = {
   ],
   /** Each case study's image leads with the first figure of its brief, captioned as there. */
   cases: {
-    verity: { id: "verity.refusal_recall", caption: { fr: "questions sans réponse correctement refusées", en: "unanswerable questions correctly refused" } },
+    verity: {
+      id: "verity.invented_answer_rate",
+      caption: {
+        fr: "réponses contenant une invention, sur toutes les réponses données, que la question ait une réponse ou non (selon le juge)",
+        en: "answers containing a fabrication, over every answer given, whether the question has an answer or not (according to the judge)",
+      },
+    },
     promptlang: {
       id: "promptlang.mutation_score",
       caption: {
@@ -66,8 +81,12 @@ function caseImage(slug: CaseSlug, lang: Lang): OgImage {
 }
 
 /** The figures of the home image in `lang`: the value as its card shows it, and its caption. */
-export function homeFigures(lang: Lang): { id: string; value: string; caption: string }[] {
-  return OG.figures.map((f) => ({ id: f.id, value: measure(f.id).display[lang], caption: f.caption[lang] }));
+/** Each card's figure: `line` is how the card writes it, value and caption joined by a dash unless the caption continues the sentence. */
+export function homeFigures(lang: Lang): { id: string; value: string; caption: string; line: string }[] {
+  return OG.figures.map((f) => {
+    const value = measure(f.id).display[lang];
+    return { id: f.id, value, caption: f.caption[lang], line: "dash" in f && !f.dash ? `${value} ${f.caption[lang]}` : `${value} — ${f.caption[lang]}` };
+  });
 }
 
 /** The image a page at `path` points to: its case study's, or its language's home image. */
