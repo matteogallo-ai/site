@@ -7,8 +7,14 @@ import { builtPages } from "../scripts/built-pages.ts";
 const headers = readFileSync("dist/_headers", "utf8");
 const csp = /Content-Security-Policy: (.+)/.exec(headers)?.[1] ?? "";
 
+// Cloudflare Pages ignores a _headers line over 2,000 characters; every inline script or style
+// adds a hash to the policy line.
+test("dist/_headers: every line within Cloudflare's limit", () => {
+  expect(headers.split("\n").filter((line) => line.length > 2000)).toEqual([]);
+});
+
 for (const path of builtPages()) {
-  test(`${path}: nothing the security policy blocks`, async ({ page }) => {
+  test(`${path}: nothing the security policy blocks, no cookie`, async ({ page, context }) => {
     await page.route("**/*", async (route) => {
       if (route.request().resourceType() !== "document") return route.continue();
       const response = await route.fetch();
@@ -27,6 +33,7 @@ for (const path of builtPages()) {
     if (!path.includes("404")) await expect(page.locator(".contact button.address")).toHaveCount(1);
     if (path === "/" || path === "/en/") await expect(page.locator("[data-verity-demo][data-lit]")).toHaveCount(1);
     expect(await page.evaluate(() => [...document.fonts].filter((f) => f.status === "error").map((f) => f.family))).toEqual([]);
+    expect(await context.cookies()).toEqual([]);
   });
 }
 
