@@ -138,6 +138,16 @@ for (const [file, line] of [
   });
 }
 
+// Cloudflare's e-mail obfuscation rewrites every address it finds into a link that works only
+// with its script; it leaves alone what sits between email_off comments, so the address and the
+// mailto links read the same with or without JavaScript, whatever the zone setting.
+for (const file of files) {
+  test(`${file}: every e-mail address sits inside email_off`, () => {
+    const outside = html(file).replace(/<!--email_off-->[\s\S]*?<!--\/email_off-->/g, "");
+    expect(around(outside, /matteogallo\.office@/)).toEqual([]);
+  });
+}
+
 // M1: the French 404 names the role in French.
 test("404.html: the role reads in French", () => {
   expect(html("404.html")).toContain("Matteo Gallo · Ingénieur logiciel &amp; IA");
