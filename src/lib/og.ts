@@ -34,7 +34,10 @@ export const OG = {
     },
     {
       id: "promptlang.mutation_score",
-      caption: { fr: "des erreurs introduites exprès dans la lecture du langage sont repérées par ses tests", en: "of the errors deliberately introduced into the language reader are caught by its tests" },
+      caption: {
+        fr: `des ${measure("promptlang.mutants_total").display.fr} mutants détectés par ses tests (erreurs introduites exprès dans la lecture du langage)`,
+        en: `of ${measure("promptlang.mutants_total").display.en} mutants detected by its tests (errors deliberately introduced into the language reader)`,
+      },
       dash: false,
     },
   ],
@@ -54,7 +57,13 @@ export const OG = {
         en: "of the errors deliberately introduced into the language reader and the version check, caught by the tests",
       },
     },
-    praxis: { id: "praxis.live_completed", caption: { fr: "exécutions réelles arrivées au bout, sur les tentatives", en: "real runs that reached the end, out of the attempts" } },
+    praxis: {
+      id: "praxis.q12_cost_ratio",
+      caption: {
+        fr: "moins cher : l’appel unique au modèle, préféré à Praxis à l’aveugle (une question, un relecteur)",
+        en: "cheaper: the single model call, preferred to Praxis in a blind review (one question, one reviewer)",
+      },
+    },
   },
 } as const;
 

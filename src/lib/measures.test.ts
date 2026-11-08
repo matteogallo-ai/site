@@ -36,3 +36,18 @@ test("shownTextError: words shown for a figure carry only the measure's own numb
   assert.match(shownTextError(m, "trois", "fr") ?? "", /no number/);
   assert.equal(shownTextError(measure("praxis.cost_per_briefing"), "$3.29–4.75", "en"), undefined);
 });
+
+test("Praxis is pinned on the merge of praxis#65, where README and the system card state the blind comparison", () => {
+  for (const id of ["praxis.q12_cost_ratio", "praxis.live_completed", "praxis.cost_per_briefing", "praxis.insufficiently_sourced", "praxis.stages"]) {
+    assert.equal(measure(id).commit, "bfad47e21f0d191d5c7cf57993932a640c3453d2", id);
+  }
+  // 4.752918 / 0.482876 = 9.84: the unit hid the decimal the brief now leads with.
+  assert.deepEqual(measure("praxis.q12_cost_ratio").display, { fr: "9,8×", en: "9.8×" });
+});
+
+test("PromptLang's mutant count is the artefact's total, the denominator of its score", () => {
+  const n = measure("promptlang.mutants_total");
+  assert.equal(n.value, 1914);
+  assert.deepEqual(n.display, { fr: "1914", en: "1914" });
+  assert.equal(n.commit, measure("promptlang.mutation_score").commit);
+});
