@@ -118,7 +118,7 @@ export function ogImages(): OgImage[] {
 /**
  * The address a page shares for the image `file`, whose bytes are `png`: its path with the first 8
  * hex digits of their sha256. LinkedIn caches a preview by image URL, so a fixed /og.png kept the
- * old picture after a redraw; a new drawing now has a new address.
+ * old picture after a redraw; a new drawing gets a new address.
  */
 export function ogImageUrl(file: string, png: Uint8Array, site: string | URL): string {
   const version = createHash("sha256").update(png).digest("hex").slice(0, 8);

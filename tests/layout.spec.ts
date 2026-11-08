@@ -362,13 +362,15 @@ for (const width of [375, 1440]) {
   });
 }
 
-// The headline is the first thing read: at 6 lines on a 1440 px screen it pushed the message and
-// the buttons off the first screen. Lines are counted from the text's own boxes, not its height.
+// The headline is the first thing read: at 7 lines on a 1440 px screen it pushed the message and
+// the buttons down. Lines are counted from the text's own boxes, not its height, once the site's
+// fonts are in: a narrower fallback would pass with fewer lines.
 for (const [width, most] of [[1440, 4], [375, 5]] as const) {
   for (const path of ["/", "/en/"]) {
     test(`${path} at ${width} px: the headline holds in ${most} lines or fewer`, async ({ page }) => {
       await page.setViewportSize({ width, height: 900 });
       await page.goto(path);
+      await page.evaluate(() => document.fonts.ready);
       const lines = await page.locator("h1").evaluate((h1) => {
         const range = document.createRange();
         range.selectNodeContents(h1);
