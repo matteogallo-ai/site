@@ -11,14 +11,14 @@ const lang = langOf(Astro.url.pathname);
       <>
         <summary>Détail des mesures</summary>
         <p class="ci-note">
-          Une proportion porte son intervalle de confiance à <span class="ci-level">95&nbsp;%</span> (IC) : la plage où se trouve probablement la vraie valeur, large quand l’échantillon est petit.
+          Une proportion porte son intervalle de confiance à <span class="ci-level">95&nbsp;%</span> (IC) : la plage où se trouve probablement la vraie valeur, large quand l’échantillon est petit. Ses bornes sont arrondies au pour cent entier vers l’extérieur : elles peuvent dépasser d’un point celles du fichier source.
         </p>
       </>
     ) : (
       <>
         <summary>Results in detail</summary>
         <p class="ci-note">
-          A proportion carries its <span class="ci-level">95%</span> confidence interval (CI): the range where the true value probably lies, wide when the sample is small.
+          A proportion carries its <span class="ci-level">95%</span> confidence interval (CI): the range where the true value probably lies, wide when the sample is small. Its bounds are rounded outwards to whole percents: they may exceed the source file’s by one point.
         </p>
       </>
     )
