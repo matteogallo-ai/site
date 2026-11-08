@@ -147,11 +147,12 @@ for (const [lang, slug] of (["fr", "en"] as const).flatMap((l) => CASES.map((c) 
     }
     for (const row of await rows.all()) await expect(row.locator(".figure").first()).toBeVisible();
     const intervals = await page.locator("[data-measure]").evaluateAll((els) => els.map((e) => [e.getAttribute("data-measure")!, e.textContent!.trim()]));
-    // Every interval cell is its measure's interval or a written reason for having none; Praxis
-    // publishes no interval, so its tables hold reasons only.
+    // Every interval cell is its measure's interval or a written reason for having none. Praxis
+    // publishes no interval, so its tables hold reasons only; the other case studies show some.
     const cells = await page.locator("#mesures td.ci").count();
     expect(cells).toBeGreaterThan(0);
     expect(intervals.length + (await page.locator("#mesures td.ci.reason").count())).toBe(cells);
+    if (slug !== "praxis") expect(intervals.length).toBeGreaterThan(0);
     for (const [id, text] of intervals) expect(plain(text!), id).toBe(plain(interval(measure(id!), lang)));
     const labels = await page.locator("[data-label]").evaluateAll((els) => els.map((e) => [e.getAttribute("data-label")!, e.textContent!.trim()]));
     for (const [id, text] of labels) expect(plain(text!), id).toBe(plain(measure(id!).label[lang]));

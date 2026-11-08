@@ -114,6 +114,7 @@ for (const [lang, w] of Object.entries(WORDS)) {
     expect(await texts(page, ".experiments h3")).toEqual([heading]);
     expect(await texts(page, ".experiments li")).toEqual([line]);
     await expect(page.locator(".experiments li a").first()).toHaveAttribute("href", study);
+    await expect(page.locator(".experiments li a").last()).toHaveAttribute("href", /^https:\/\/github\.com\/matteogallo-ai\/praxis\/blob\/[0-9a-f]{40}\/benchmarks\/review\/q12\/grades\.md$/);
     await expect(page.locator(".rules > li")).toHaveCount(3);
     for (const [i, [title, body, pr]] of w.method.entries()) {
       const card = page.locator(".rules > li").nth(i);
