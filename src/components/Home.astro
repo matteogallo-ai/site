@@ -254,19 +254,14 @@ const id = fr ? { projects: "projets", method: "methode", about: "a-propos" } : 
     background: var(--proof);
   }
 
+  /* 32 px at 375 px, 38 px from 1440 px: the French headline holds in 5 lines on a phone and 4 beside
+     the demo, where its column is 480 px wide; at 68 px it took 7 (tests/layout.spec.ts). */
   h1 {
     margin: 1.75rem 0 0;
-    font-size: var(--step-44);
+    font-size: clamp(2rem, 1.868rem + 0.563vw, 2.375rem);
     line-height: 1.02;
     letter-spacing: var(--track-44);
     text-wrap: balance;
-  }
-
-  @media (min-width: 64rem) {
-    h1 {
-      font-size: var(--step-68);
-      letter-spacing: var(--track-68);
-    }
   }
 
   .message {

@@ -361,3 +361,21 @@ for (const width of [375, 1440]) {
     expect(Math.abs(tops!.semicolon - tops!.figure), JSON.stringify(tops)).toBeLessThanOrEqual(4);
   });
 }
+
+// The headline is the first thing read: at 6 lines on a 1440 px screen it pushed the message and
+// the buttons off the first screen. Lines are counted from the text's own boxes, not its height.
+for (const [width, most] of [[1440, 4], [375, 5]] as const) {
+  for (const path of ["/", "/en/"]) {
+    test(`${path} at ${width} px: the headline holds in ${most} lines or fewer`, async ({ page }) => {
+      await page.setViewportSize({ width, height: 900 });
+      await page.goto(path);
+      const lines = await page.locator("h1").evaluate((h1) => {
+        const range = document.createRange();
+        range.selectNodeContents(h1);
+        return new Set([...range.getClientRects()].filter((r) => r.width > 0).map((r) => Math.round(r.top))).size;
+      });
+      expect(lines, `${lines} lines`).toBeLessThanOrEqual(most);
+      expect(lines).toBeGreaterThan(0);
+    });
+  }
+}
