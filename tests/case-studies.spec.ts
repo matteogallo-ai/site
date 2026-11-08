@@ -6,14 +6,15 @@ import { plain } from "../scripts/typography.ts";
 // SPEC §3.2, in its order: problem, what I built (one SVG diagram), measures, what did not
 // work, three decisions (ADR), how it is built, what comes next.
 const SECTIONS: Record<Lang, string[]> = {
-  fr: ["Le problème", "Ce que j’ai construit", "Mesures", "Ce qui n’a pas marché, et ce que j’ai fait", "Trois décisions", "Comment c’est construit", "La suite"],
-  en: ["The problem", "What I built", "Results", "What did not work, and what I did", "Three decisions", "How it is built", "What comes next"],
+  fr: ["Le problème", "Ce que j’ai construit", "Mesures", "Limites connues et prochaines étapes", "Trois décisions", "Comment c’est construit", "La suite"],
+  en: ["The problem", "What I built", "Results", "Known limits and next steps", "Three decisions", "How it is built", "What comes next"],
 };
 const BRIEF: Record<Lang, { title: string; terms: string[] }> = {
-  fr: { title: "En bref", terms: ["Ce que ça fait", "Ce qui est mesuré", "Défaut principal"] },
-  en: { title: "In brief", terms: ["What it does", "What is measured", "Main defect"] },
+  fr: { title: "En bref", terms: ["Ce que ça fait", "Ce qui est mesuré", "Limite principale"] },
+  en: { title: "In brief", terms: ["What it does", "What is measured", "Main limit"] },
 };
 const CASES = ["verity", "promptlang", "praxis"];
+const LIMIT_LABELS: Record<Lang, string[]> = { fr: ["Périmètre", "Limite connue", "Prochaine étape"], en: ["Scope", "Known limit", "Next step"] };
 // Words a recruiter would have to look up; each page says it in plain words instead. Code,
 // links and verbatim quotes keep their own words. A list catches only the words on it: terms
 // the pages keep and explain where they first appear (kappa, RAG, API, JSON, README, ADR)
@@ -152,6 +153,17 @@ for (const [lang, slug] of (["fr", "en"] as const).flatMap((l) => CASES.map((c) 
     for (const [id, text] of labels) expect(plain(text!), id).toBe(plain(measure(id!).label[lang]));
     // SPEC §6: defects at the same level as measures, in the same table.
     await expect(page.locator("#mesures tbody .figure.defect")).not.toHaveCount(0);
+  });
+
+  // Each known limit reads as engineering: its scope, the limit, the next step, labelled as such; the
+  // template phrase « Ce que j’en ai fait » / "What I did about it" is gone.
+  test(`${path}: each known limit states its scope, the limit and the next step`, async ({ page }) => {
+    await page.goto(path);
+    const labels = LIMIT_LABELS[lang];
+    const limits = page.locator("#echecs .limit-steps");
+    expect(await limits.count()).toBeGreaterThanOrEqual(1);
+    for (const limit of await limits.all()) await expect(limit.locator("dt")).toHaveText(labels);
+    expect(await page.locator("main").innerText()).not.toMatch(lang === "fr" ? /Ce que j.(en )?ai fait/ : /What I did/);
   });
 
   test(`${path}: three decisions, each linking to its ADR at a pinned commit`, async ({ page }) => {
