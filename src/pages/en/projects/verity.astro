@@ -5,6 +5,7 @@ import CaseSection from "../../../components/case/CaseSection.astro";
 import Diagram from "../../../components/case/Diagram.astro";
 import MeasuresDetail from "../../../components/case/MeasuresDetail.astro";
 import MeasuresTable from "../../../components/case/MeasuresTable.astro";
+import Limit from "../../../components/case/Limit.astro";
 import Figure from "../../../components/Figure.astro";
 import { measure } from "../../../lib/measures.ts";
 import { pinned } from "../../../lib/sources.ts";
@@ -39,7 +40,7 @@ if (!thresholdSentence || !("contains" in thresholdSentence)) throw new Error("t
     slot="brief"
     does="It answers questions about a set of contracts by quoting the exact clause, and says “I don’t know” when the documents do not contain the answer."
     measured="On test questions never seen during tuning: whether it refuses the unanswerable questions, whether its answers make anything up, and whether it does better than the same chain with no checks."
-    defect="It answered questions that had no answer in the documents. What I did about it: I published it, with the questions involved named in the results."
+    defect="It still answers some questions that have no answer in the documents; the questions involved are named in the published results."
     figures={[
       { id: "verity.invented_answer_rate", caption: "answers containing a fabrication, over every answer given, whether the question has an answer or not (according to the judge)" },
       { id: "verity.refusal_recall", caption: "unanswerable questions correctly refused" },
@@ -189,39 +190,40 @@ if (!thresholdSentence || !("contains" in thresholdSentence)) throw new Error("t
     </MeasuresDetail>
   </CaseSection>
 
-  <CaseSection n={4} id="echecs" title="What did not work, and what I did" lead="Two defects the figures alone do not show, and what I did about them.">
-    <h3>The confidence threshold decides nothing</h3>
-    <p>
-      Verity gives each answer a confidence rating and may refuse below a threshold. The shipped threshold, the one of the reference run, is <Figure id="verity.threshold_run_of_record" where="threshold" />:
-      it was chosen on the tuning questions by a rule fixed in advance, no threshold did better than another, and at this value it refuses nothing.
-    </p>
-    <blockquote lang="en">
-      <p data-verbatim>{thresholdSentence.contains}</p>
-      <footer><a href={at("docs/results.md")}>docs/results.md</a></footer>
-    </blockquote>
-    <p>
-      Every refusal comes from a check written in code or from the rating model itself; none is due to the threshold. The confidence rating is the model’s self-assessment, and it does not match its
-      actual error rate. What I did: publish it, ship the threshold at the value the rule chose, and put a refusal based on reliable confidence on the roadmap instead of claiming it.
-    </p>
+  <CaseSection n={4} id="echecs" title="Known limits and next steps" lead="Two limits the figures alone do not show, each with its scope and its next step.">
+    <Limit title="The confidence threshold decides nothing">
+      <Fragment slot="scope">The confidence rating a model gives each answer, and the threshold below which Verity may refuse.</Fragment>
+      <Fragment slot="limit">
+        The shipped threshold, the one of the reference run, is <Figure id="verity.threshold_run_of_record" where="threshold" />: the rule fixed in advance chose it on the tuning questions, where no
+        threshold did better than another, and at this value it refuses nothing. Every refusal comes from a check written in code or from the rating model; the confidence rating is the model’s
+        self-assessment, and it does not match its actual error rate.
+        <blockquote lang="en">
+          <p data-verbatim>{thresholdSentence.contains}</p>
+          <footer><a href={at("docs/results.md")}>docs/results.md</a></footer>
+        </blockquote>
+      </Fragment>
+      <Fragment slot="next">A refusal based on reliable confidence, on the <a href={at("docs/features.md#roadmap")}>roadmap</a> and not claimed while the measurement does not support it.</Fragment>
+    </Limit>
 
-    <h3>An exact quote of a badly extracted text</h3>
-    <blockquote lang="en">
-      <p data-verbatim>
-        {before}{DEFECT} <span class="sic" lang="en">[sic, PDF extraction defect]</span>{after}
-      </p>
-      <footer>Quote from the answer to <code>{answer.example_id}</code>, <a href={demoRun}>previous test run</a></footer>
-    </blockquote>
-    <p>
-      In the <a href={at("datasets/corpus/order_form_northwind_2025.pdf")}>order form PDF</a>, “twenty-” ends a line and “four” starts the next one; text extraction glued the two together without the
-      hyphen. The “word for word” check accepted it, since the quote faithfully copies the faulty passage: it proves the quote is in the extracted text, not that the extracted text is faithful to the
-      document.
-    </p>
-    <p>
-      An audit proposed a rule: refuse any answer with a number that is not in its quotes. Measured on the published runs before switching it on, it refused correct answers, for computed numbers,
-      numbers taken from the question, identifiers, and here a duration written in digits in the answer and in words in the faulty quote. It is not switched on (<a
-        href={at("docs/audit/2026-11-03-figure-rule-measurement.md")}>measurement</a
-      >).
-    </p>
+    <Limit title="An exact quote of a badly extracted text">
+      <Fragment slot="scope">The “word for word” check, which verifies that every quote is in the text extracted from the document.</Fragment>
+      <Fragment slot="limit">
+        <blockquote lang="en">
+          <p data-verbatim>
+            {before}{DEFECT} <span class="sic" lang="en">[sic, PDF extraction defect]</span>{after}
+          </p>
+          <footer>Quote from the answer to <code>{answer.example_id}</code>, <a href={demoRun}>previous test run</a></footer>
+        </blockquote>
+        In the <a href={at("datasets/corpus/order_form_northwind_2025.pdf")}>order form PDF</a>, “twenty-” ends a line and “four” starts the next one; text extraction glued the two together without the
+        hyphen. The check accepted the quote, which faithfully copies the faulty passage: it proves a quote is in the extracted text, not that this text is faithful to the document.
+      </Fragment>
+      <Fragment slot="next">
+        Not scheduled. A rule an audit proposed, refusing any answer with a number missing from its quotes, was measured on the published runs before being switched on: it refused correct answers
+        (computed numbers, numbers taken from the question, identifiers, and here a duration written in digits, then in words). It stays off (<a
+          href={at("docs/audit/2026-11-03-figure-rule-measurement.md")}>measurement</a
+        >).
+      </Fragment>
+    </Limit>
   </CaseSection>
 
   <CaseSection
@@ -277,6 +279,6 @@ if (!thresholdSentence || !("contains" in thresholdSentence)) throw new Error("t
       <li>A judge from another model family, and a second human annotator.</li>
       <li>Reading web pages: the code exists, no test exercises it.</li>
     </ul>
-    <p><a href={at("README.md#roadmap")}>Roadmap</a> · <a href={at("docs/results.md")}>what the figures do not say</a></p>
+    <p><a href={at("docs/features.md#roadmap")}>Roadmap</a> · <a href={at("docs/results.md")}>what the figures do not say</a></p>
   </CaseSection>
 </CaseStudy>

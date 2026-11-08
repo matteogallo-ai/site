@@ -28,8 +28,9 @@ src/components/          VerityDemo (contract, spotlight, tabs, cards), Figure (
                          image with its source link, on the cards and after a case study's brief),
                          Glass (SVG refraction filters, Chromium only), Projects, Bio, Home, Colophon, Lost (404),
                          LangSwitch (FR | EN, plain links); every component reads its language from the URL;
-                         case/: Brief (« En bref »: three plain lines, three figures, the main defect among them),
-                         CaseSection (each opens with a lead sentence), Diagram (the one SVG of a case study),
+                         case/: Brief (« En bref »: three plain lines, three figures, the main limit among them),
+                         CaseSection (each opens with a lead sentence), Limit (a known limit: scope, limit, next step),
+                         Diagram (the one SVG of a case study),
                          MeasuresDetail (the folded tables), MeasuresTable (figures, intervals, baseline; a missing
                          interval must say why or the build fails; stacked cards under 48rem)
 src/lib/                 i18n.ts (language of a path, its twin in the other language, hreflang alternates, the case

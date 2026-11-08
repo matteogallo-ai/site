@@ -1,0 +1,59 @@
+---
+import { langOf } from "../../lib/i18n.ts";
+
+/**
+ * One known limit of a case study, written as engineering rather than as a confession: what it
+ * concerns, the limit itself, and the next step. Each part is a named slot, so a part can hold
+ * a figure, a link or code; a missing part fails the build.
+ */
+interface Props {
+  title: string;
+}
+
+const { title } = Astro.props;
+const t = {
+  fr: { scope: "Périmètre", limit: "Limite connue", next: "Prochaine étape" },
+  en: { scope: "Scope", limit: "Known limit", next: "Next step" },
+}[langOf(Astro.url.pathname)];
+for (const part of ["scope", "limit", "next"] as const) if (!Astro.slots.has(part)) throw new Error(`limit "${title}" has no ${part}`);
+---
+
+<h3>{title}</h3>
+<dl class="limit-steps">
+  <div>
+    <dt>{t.scope}</dt>
+    <dd><slot name="scope" /></dd>
+  </div>
+  <div>
+    <dt>{t.limit}</dt>
+    <dd><slot name="limit" /></dd>
+  </div>
+  <div>
+    <dt>{t.next}</dt>
+    <dd><slot name="next" /></dd>
+  </div>
+</dl>
+
+<style>
+  .limit-steps {
+    margin: 0.75rem 0 0;
+  }
+
+  .limit-steps div + div {
+    margin-top: 0.75rem;
+  }
+
+  dt {
+    font-size: var(--step-14);
+    font-weight: 600;
+  }
+
+  dd {
+    margin: 0.2rem 0 0;
+  }
+
+  /* A quote inside a part keeps the prose's measure and spacing. */
+  dd > :global(blockquote) {
+    margin-block: 0.75rem;
+  }
+</style>

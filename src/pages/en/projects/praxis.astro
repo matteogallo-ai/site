@@ -5,6 +5,7 @@ import CaseSection from "../../../components/case/CaseSection.astro";
 import Diagram from "../../../components/case/Diagram.astro";
 import MeasuresDetail from "../../../components/case/MeasuresDetail.astro";
 import MeasuresTable from "../../../components/case/MeasuresTable.astro";
+import Limit from "../../../components/case/Limit.astro";
 import Figure from "../../../components/Figure.astro";
 import { pinned, pull } from "../../../lib/sources.ts";
 
@@ -22,7 +23,7 @@ const at = (path: string) => pinned("praxis", path);
     slot="brief"
     does="From a business question, it searches the web, checks in code that every fact has an acceptable source, then writes a briefing that itself says what it could not source."
     measured="How many real, paid runs end in a briefing, what a briefing costs, and how many briefings pass the source check."
-    defect="No real briefing passes the source check. What I did about it: the briefing is delivered anyway, with a section written by the code that lists every unsourced item; the defect is published, not hidden."
+    defect="No real briefing passes the source check; the briefing is delivered anyway, with a section written by the code that lists every unsourced item."
     figures={[
       { id: "praxis.live_completed", caption: "real runs that reached the end, out of the attempts" },
       { id: "praxis.cost_per_briefing", caption: "cost of a completed briefing, from the cheapest to the most expensive" },
@@ -106,29 +107,37 @@ const at = (path: string) => pinned("praxis", path);
     </MeasuresDetail>
   </CaseSection>
 
-  <CaseSection n={4} id="echecs" title="What did not work, and what I did" lead="Three real failures, their cause when it is known, and what each one changed.">
-    <h3>Declared done before a single real briefing</h3>
-    <p>
-      Every stage and every format was built and tested on hand-written examples before the first real run. The tests could only prove that the stages fitted together, the test harness measured those
-      examples, and the first real runs all failed. What I did: an independent audit, then fixes without any paid call (general instruction in its proper place, model chosen per stage, tolerant
-      reading of the structured response, time limits per stage, resuming where the run had stopped, cost measurement), then real runs published, failures included (<a href={at("ROADMAP.md")}
-        >fix plan</a
-      >).
-    </p>
-    <h3>The strict check threw all the work away</h3>
-    <p>
-      In strict mode, a single item without a source cancelled every stage already done. No trace of those runs was kept: the cause is read in the instruction and the code, not observed. The search
-      instruction required a consultation date that the model cannot know, which left only one compliant answer: “missing source”. Praxis now dates its consultations itself, which removes the
-      probable cause without guaranteeing a source for every item, and the briefing is delivered with its gaps written into it (<a href={at("docs/adr/0002-degrade-on-insufficient-sourcing.md")}
-        >ADR 0002</a
-      >).
-    </p>
-    <h3>A section refused for a web address in its text</h3>
-    <p>
-      A summary section was refused, then refused again on the retry, this time for a <code>www.</code> address in the text, which document readers turn into a link. The fix (<a
-        href={pull("praxis", 44)}>#44</a
-      >) replaces that instruction with numbered references to the sources, checked by the code. No paid retry was run to “verify” it: the fix is not proven on a real run.
-    </p>
+  <CaseSection n={4} id="echecs" title="Known limits and next steps" lead="Three limits observed on real runs, each with its scope and its next step.">
+    <Limit title="Real briefings still under-sourced">
+      <Fragment slot="scope">Real runs, on a real model, after a development carried out on hand-written examples.</Fragment>
+      <Fragment slot="limit">
+        The first real runs all failed; since an independent audit and fixes made without any paid call, <Figure id="praxis.live_completed" where="limits" /> attempts reached the end, and all <Figure
+          id="praxis.insufficiently_sourced"
+          where="limits"
+          defect
+          text="6"
+        /> completed briefings are flagged as under-sourced by Praxis’s check.
+      </Fragment>
+      <Fragment slot="next">The last part of the <a href={at("ROADMAP.md")}>fix plan</a>: a sample of real briefings scored by a judge validated against human ratings.</Fragment>
+    </Limit>
+    <Limit title="The strict check threw all the work away">
+      <Fragment slot="scope">The strict mode of the source check.</Fragment>
+      <Fragment slot="limit">
+        A single item without a source cancelled every stage already done. No trace of those runs was kept: the cause is read in the instruction and the code, not observed. The search instruction required
+        a consultation date that the model cannot know; Praxis now dates its consultations itself, which removes the probable cause without guaranteeing a source for every item, and the briefing is
+        delivered with its gaps written into it (<a href={at("docs/adr/0002-degrade-on-insufficient-sourcing.md")}>ADR 0002</a>).
+      </Fragment>
+      <Fragment slot="next">Observing the cause on real runs that are kept, in the same last part of the fix plan.</Fragment>
+    </Limit>
+    <Limit title="A section refused for a web address in its text">
+      <Fragment slot="scope">The adversarial review of the summary sections.</Fragment>
+      <Fragment slot="limit">
+        A section was refused, then refused again on the retry, this time for a <code>www.</code> address in the text, which document readers turn into a link. The fix (<a href={pull("praxis", 44)}
+          >#44</a
+        >) replaces that instruction with numbered references to the sources, checked by the code; no paid retry was run only to verify it.
+      </Fragment>
+      <Fragment slot="next">A published real run that goes through this section.</Fragment>
+    </Limit>
   </CaseSection>
 
   <CaseSection
