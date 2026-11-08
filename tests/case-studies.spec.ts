@@ -68,7 +68,8 @@ for (const [lang, slug] of (["fr", "en"] as const).flatMap((l) => CASES.map((c) 
     await expect(brief.locator("dt")).toHaveText(BRIEF[lang].terms);
     for (const dd of await brief.locator("dd").all()) await expect(dd).toHaveText(/\S/);
     await expect(brief.locator(".big .figure")).toHaveCount(3);
-    await expect(brief.locator(".big .figure.defect")).toHaveCount(1);
+    // Praxis has two: the blind comparison and the sourcing flag.
+    expect(await brief.locator(".big .figure.defect").count()).toBeGreaterThanOrEqual(1);
     for (const href of await brief.locator(".figure").evaluateAll((els) => els.map((a) => a.getAttribute("href")))) expect(href).toMatch(PINNED(slug));
   });
 

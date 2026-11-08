@@ -30,7 +30,7 @@ const t = {
       <h3 id="p-promptlang"><a class="card-link" href={study("promptlang")}>PromptLang</a></h3>
       <ProductShot id="promptlang" size="card" />
       <p>{fr ? "Langage typé pour écrire les consignes (prompts) des modèles de langage, compilé vers TypeScript et Python, publié sur npm." : "A typed language for writing the instructions (prompts) given to language models, compiled to TypeScript and Python, published on npm."}</p>
-      <p class="figure-line"><Figure id="promptlang.mutation_score" where="card" sentence /> {fr ? "des" : "of"} <Figure id="promptlang.mutants_total" where="card" sentence /> {fr ? "mutants détectés par ses tests (erreurs introduites exprès dans la lecture du langage)" : "mutants detected by its tests (errors deliberately introduced into the language reader)"}</p>
+      <p class="figure-line"><Figure id="promptlang.mutation_score" where="card" sentence /> {fr ? "des" : "of"} <Figure id="promptlang.mutants_total" where="card" sentence /> {fr ? "mutants détectés par ses tests (erreurs introduites exprès dans la lecture du langage et le contrôle de version)" : "mutants detected by its tests (errors deliberately introduced into the language reader and the version check)"}</p>
       <p class="links"><a class="button" href={study("promptlang")}>{t.read}</a> <a href={repo("promptlang")}>{t.code}</a></p>
     </article>
   </div>
@@ -40,7 +40,7 @@ const t = {
     <h3>{t.experiments}</h3>
     <ul>
       <li>
-        <a href={study("praxis")}>Praxis</a> — {fr ? "pipeline d’analyse en" : "a"} {fr ? <span class="keep"><Figure id="praxis.stages" where="experiments" text="7 étapes" /> ;</span> : <Figure id="praxis.stages" where="experiments" text="7-stage" />}{fr ? " comparé à l’aveugle à un appel unique" : " analysis pipeline; compared blind with a single call"} <Figure id="praxis.q12_cost_ratio" where="experiments" text={fr ? "9,8× moins cher" : "9.8× cheaper"} />, {fr ? "il n’a pas fait mieux." : "it did no better."} <a href={pinned("praxis", "benchmarks/review/q12/grades.md")}>{fr ? "Résultat publié" : "Result published"}</a>.
+        <a href={study("praxis")}>Praxis</a> — {fr ? "pipeline d’analyse en" : "a"} {fr ? <span class="keep"><Figure id="praxis.stages" where="experiments" text="7 étapes" /> ;</span> : <Figure id="praxis.stages" where="experiments" text="7-stage" />}{fr ? " comparé à l’aveugle à un appel unique" : " analysis pipeline; compared blind with a single call"} <Figure id="praxis.q12_cost_ratio" where="experiments" text={fr ? "9,8× moins cher" : "9.8× cheaper"} />, {fr ? "il n’a pas fait mieux." : "it did no better."} <a href={`${pinned("praxis", "README.md")}#status`}>{fr ? "Résultat publié" : "Result published"}</a>.
       </li>
     </ul>
   </div>

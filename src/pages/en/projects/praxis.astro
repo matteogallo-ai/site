@@ -27,7 +27,7 @@ const at = (path: string) => pinned("praxis", path);
     figures={[
       { id: "praxis.q12_cost_ratio", caption: "cheaper: the single model call, preferred to Praxis in a blind review (one question, one reviewer)", defect: true },
       { id: "praxis.cost_per_briefing", caption: "cost of a completed Praxis briefing, from the cheapest to the most expensive" },
-      { id: "praxis.insufficiently_sourced", caption: "completed briefings flagged as insufficiently sourced" },
+      { id: "praxis.insufficiently_sourced", caption: "completed briefings flagged as insufficiently sourced", defect: true },
     ]}
   />
 
@@ -74,7 +74,7 @@ const at = (path: string) => pinned("praxis", path);
     </p>
     <h3>A single reference point</h3>
     <p>
-      On one question, Praxis was compared blind with a single model call, given the same format and the same search tool, <Figure id="praxis.q12_cost_ratio" where="prose" text="9.8× cheaper" />: the
+      On one question, Praxis was compared blind with a single model call, given the same format and the same search tool, <Figure id="praxis.q12_cost_ratio" where="prose" defect text="9.8× cheaper" />: the
       reviewer preferred the single call (details in the limits below). The only score published earlier rated simulated briefings, written by hand for the tests: it measured those examples, not a model, and
       it was withdrawn (<a href={at("CHANGELOG.md")}>changelog</a>). Outside this comparison, the quality of the briefings has not been reviewed for any question; only the first-hand sources of another
       question were reviewed by a human (<a href={at("benchmarks/outputs/live/README.md")}>real runs</a>).
@@ -96,7 +96,7 @@ const at = (path: string) => pinned("praxis", path);
             label: "Briefings flagged as insufficiently sourced",
             defect: true,
             noInterval: "The repository publishes no interval for this count.",
-            reading: "The main defect: every completed briefing is flagged. The flag is raised as soon as a single item blocks.",
+            reading: "A defect, beside the blind comparison: every completed briefing is flagged. The flag is raised as soon as a single item blocks.",
           },
           {
             id: "praxis.cost_per_briefing",
@@ -113,7 +113,7 @@ const at = (path: string) => pinned("praxis", path);
     <Limit title="No better than a single call, compared blind">
       <Fragment slot="scope">One real question, a sodium-ion battery plant in Morocco; one briefing per approach; one reviewer, the author of Praxis, not told which briefing came from Praxis. The single call searched the web less, and later: the web may have changed between the two.</Fragment>
       <Fragment slot="limit">
-        A single model call, given the same format and the same search tool, cost <Figure id="praxis.q12_cost_ratio" where="limits" text="9.8× less" /> than Praxis. The reviewer preferred it, as clearer and more
+        A single model call, given the same format and the same search tool, cost <Figure id="praxis.q12_cost_ratio" where="limits" defect text="9.8× less" /> than Praxis. The reviewer preferred it, as clearer and more
         useful for a decision; among the sourced sentences checked, more were supported by their source in the single call. According to the reviewer, the grades were recorded before the key matching briefings to approaches was opened (<a
           href={at("benchmarks/review/q12/grades.md")}>reviewer’s grades</a
         >). Under the rule written before the trial, Praxis’s value over a single call is unproven. The result holds for this question only, and the blinding cannot hide the style of Praxis from its author.

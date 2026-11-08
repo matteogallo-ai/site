@@ -94,6 +94,14 @@ test("a number in a label passes when an evidence item states it, and a display 
   assert.deepEqual(errorsOf(m), []);
 });
 
+test("thousands grouped as each language writes them are one number, and a French decimal stays a decimal", () => {
+  const { k: _k, n: _n, ci95: _ci, ...rest } = base();
+  const single = (value: number, fr: string, en: string): VerifiedMeasure => ({ ...rest, value, display: { fr, en }, evidence: [{ pointer: "/v", equals: value, binds: "value" }] });
+  assert.deepEqual(errorsOf(single(1914, "1\u00A0914", "1,914")), []);
+  assert.ok(errorsOf(single(1914, "1914", "1.914")).some((e) => /display\.en shows 1\.914/.test(e)));
+  assert.deepEqual(errorsOf(single(0.023, "0,023", "0.023")), []);
+});
+
 const gap = (): GapMeasure => ({ id: "x.gap", label: { fr: "Écart", en: "Gap" }, display: { fr: GAP_DISPLAY, en: GAP_DISPLAY }, repo: "matteogallo-ai/x", value: null, status: "gap", note: "No artefact states it." });
 
 test("a gap passes without a source and is refused any figure", () => {
