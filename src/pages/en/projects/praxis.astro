@@ -72,11 +72,12 @@ const at = (path: string) => pinned("praxis", path);
       Of the real runs, <Figure id="praxis.live_completed" where="prose" /> reached the end; a completed briefing cost <Figure id="praxis.cost_per_briefing" where="prose" />. Every completed briefing is
       flagged as insufficiently sourced: <Figure id="praxis.insufficiently_sourced" where="prose" defect />. The flag is raised as soon as a single item blocks.
     </p>
-    <h3>No reference point</h3>
+    <h3>A single reference point</h3>
     <p>
-      Nothing in the repository compares Praxis with a simpler approach, a single model call or drafting without search. The only score published earlier rated simulated briefings, written by hand for
-      the tests: it measured those examples, not a model, and it was withdrawn (<a href={at("CHANGELOG.md")}>changelog</a>). The quality of the briefings themselves has not been reviewed for any question; only
-      the first-hand sources of one question were reviewed by a human (<a href={at("benchmarks/outputs/live/README.md")}>real runs</a>).
+      On one question, Praxis was compared blind with a single model call, given the same format and the same search tool, <Figure id="praxis.q12_cost_ratio" where="prose" text="10× cheaper" />: the
+      reviewer preferred the single call (details in the limits below). The only score published earlier rated simulated briefings, written by hand for the tests: it measured those examples, not a model, and
+      it was withdrawn (<a href={at("CHANGELOG.md")}>changelog</a>). Outside this comparison, the quality of the briefings has not been reviewed for any question; only the first-hand sources of another
+      question were reviewed by a human (<a href={at("benchmarks/outputs/live/README.md")}>real runs</a>).
     </p>
     <MeasuresDetail>
       <MeasuresTable
@@ -86,6 +87,7 @@ const at = (path: string) => pinned("praxis", path);
           {
             id: "praxis.live_completed",
             label: "Completed briefings, out of the attempts",
+            noInterval: "The repository publishes none: the attempts span four versions of the code, and five left no record.",
             reading:
               "The other attempts failed: source check too strict, text before the structured response, time limit exceeded, truncated response, section refused.",
           },
@@ -107,7 +109,17 @@ const at = (path: string) => pinned("praxis", path);
     </MeasuresDetail>
   </CaseSection>
 
-  <CaseSection n={4} id="echecs" title="Known limits and next steps" lead="Three limits observed on real runs, each with its scope and its next step.">
+  <CaseSection n={4} id="echecs" title="Known limits and next steps" lead="Four limits observed on real runs, each with its scope and its next step.">
+    <Limit title="No better than a single call, compared blind">
+      <Fragment slot="scope">One real question, a sodium-ion battery plant in Morocco; one briefing per approach; one reviewer, the author of Praxis, not told which briefing came from Praxis.</Fragment>
+      <Fragment slot="limit">
+        A single model call, given the same format and the same search tool, cost <Figure id="praxis.q12_cost_ratio" where="limits" text="10× less" /> than Praxis. The reviewer preferred it, as clearer and more
+        useful for a decision; among the sourced sentences checked, more were supported by their source in the single call. The grades were committed before the reviewer learned which briefing was which (<a
+          href={at("benchmarks/review/q12/grades.md")}>reviewer’s grades</a
+        >). Under the rule written before the trial, Praxis’s value over a single call is unproven. The result holds for this question only, and the blinding cannot hide the style of Praxis from its author.
+      </Fragment>
+      <Fragment slot="next">No further trial is set: the <a href={at("docs/preregistration/single-call-baseline.md")}>rule written before the trial</a> asks for this result to be published with the cost of both briefings.</Fragment>
+    </Limit>
     <Limit title="Real briefings still under-sourced">
       <Fragment slot="scope">Real runs, on a real model, after a development carried out on hand-written examples.</Fragment>
       <Fragment slot="limit">
