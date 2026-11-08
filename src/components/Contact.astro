@@ -7,6 +7,9 @@ const address = "matteogallo.office@gmail.com";
 const [user, domain] = address.split("@");
 ---
 
+{/* Cloudflare's e-mail obfuscation leaves alone what sits between these comments: the address and its links
+   then read the same with or without JavaScript, whatever the zone setting. */}
+<!--email_off-->
 <div class="contact" id="contact">
   <h2>{fr ? "Un poste d’ingénieur logiciel et IA en Suisse romande ? Écrivez-moi." : "A software and AI engineering role in French-speaking Switzerland? Get in touch."}</h2>
   <p class="email">
@@ -23,6 +26,7 @@ const [user, domain] = address.split("@");
     <a class="button" href="https://github.com/matteogallo-ai">GitHub</a>
   </p>
 </div>
+<!--/email_off-->
 
 <script>
   import { copyOnClick } from "../scripts/copy.ts";
