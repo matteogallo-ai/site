@@ -38,4 +38,20 @@ for (const path of builtPages()) {
     await expect(after).toHaveCount(1);
     expect(await after.evaluate((el) => !!el.closest("main") && !el.closest(".site-header, nav"))).toBe(true);
   });
+
+  // In the viewport is not enough: at 375 px the sticky navigation sits where the focused skip
+  // link appears, and covered it while toBeInViewport still passed.
+  test(`keyboard: ${path} the focused skip link is drawn above everything at 375 px`, async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 800 });
+    await page.goto(path);
+    await page.keyboard.press("Tab");
+    const skip = page.locator(".skip-link");
+    await expect(skip).toBeFocused();
+    const covered = await skip.evaluate((link) => {
+      const box = link.getBoundingClientRect();
+      const points = [[box.left + 2, box.top + 2], [box.right - 2, box.top + 2], [box.left + box.width / 2, box.top + box.height / 2], [box.left + 2, box.bottom - 2], [box.right - 2, box.bottom - 2]];
+      return points.filter(([x, y]) => !link.contains(document.elementFromPoint(x!, y!))).map(([x, y]) => `${Math.round(x!)},${Math.round(y!)}: ${document.elementFromPoint(x!, y!)?.className}`);
+    });
+    expect(covered).toEqual([]);
+  });
 }

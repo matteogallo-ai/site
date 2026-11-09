@@ -274,3 +274,23 @@ for (const w of Object.values(WORDS)) {
     }
   });
 }
+
+// The contract window is a tab stop because it is the keyboard's way to read the contract: focused,
+// it scrolls under the arrow keys while the page stays where it is.
+test("/: the arrow keys scroll the focused contract, not the page", async ({ page }) => {
+  // Reduced motion: the window jumps to the passage instead of gliding, so its position is settled.
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/");
+  const summary = page.locator("details.contract summary");
+  await summary.click();
+  await summary.focus();
+  await page.keyboard.press("Tab");
+  const sheet = page.locator("[data-sheet]");
+  await expect(sheet).toBeFocused();
+  const at = () => sheet.evaluate((s) => ({ sheet: s.scrollTop, page: scrollY }));
+  await expect.poll(async () => (await at()).sheet).toBeGreaterThan(0);
+  const before = await at();
+  await page.keyboard.press("ArrowUp");
+  await expect.poll(async () => (await at()).sheet).toBeLessThan(before.sheet);
+  expect((await at()).page).toBe(before.page);
+});

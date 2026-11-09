@@ -436,8 +436,8 @@ const nameOf = (path: string) => {
     height: 18rem;
     padding: 1.5rem 1.5rem 1.25rem;
     /* The script scrolls the window to the passage (scrollTo works on hidden overflow); the wheel
-       and the finger scroll the page, never the contract. A keyboard reader who focuses the
-       window may scroll it with the arrow keys. */
+       and the finger scroll the page, never the contract. Focused from the keyboard, the window
+       turns scrollable (:focus-visible below) and the arrow keys scroll it (tests/home.spec.ts). */
     overflow-y: hidden;
     scrollbar-width: none;
     border-radius: inherit;
