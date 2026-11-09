@@ -879,8 +879,8 @@
         "en": "Mutation score (lexer, parser, semver)"
       },
       "display": {
-        "fr": "96,13 %",
-        "en": "96.13%"
+        "fr": "96 %",
+        "en": "96%"
       },
       "value": 96.13,
       "repo": "matteogallo-ai/promptlang",
@@ -899,7 +899,7 @@
         }
       ],
       "status": "verified",
-      "note": "Stryker, local run, not CI; covers the lexer, parser and semver modules only."
+      "note": "Stryker, local run, not CI; covers the lexer, parser and semver modules only. Shown in whole percents; the artefact states 96.13."
     },
     {
       "id": "promptlang.mutants_total",

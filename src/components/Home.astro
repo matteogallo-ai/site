@@ -31,8 +31,8 @@ const person = {
 <Base
   title={fr ? "Matteo Gallo — Ingénieur logiciel & IA" : "Matteo Gallo — Software & AI Engineer"}
   description={fr
-    ? "Matteo Gallo, ingénieur logiciel et IA à Lausanne. Je construis des systèmes à base de LLM et je mesure s’ils tiennent leurs promesses : recherche documentaire qui cite ou refuse, langage typé pour prompts, pipelines d’analyse."
-    : "Matteo Gallo, software and AI engineer in Lausanne. I build LLM systems and measure whether they deliver: document search that cites or refuses, a typed language for prompts, analysis pipelines."}
+    ? "Matteo Gallo, ingénieur logiciel et IA à Lausanne. Je construis des systèmes à base de LLM et je mesure s’ils tiennent leurs promesses."
+    : "Matteo Gallo, software and AI engineer in Lausanne. I build LLM systems and measure whether they deliver."}
   serif
   stickyHeader
 >
@@ -62,13 +62,14 @@ const person = {
           <span class="status"><span class="dot" aria-hidden="true"></span>{fr ? "Disponible pour un poste" : "Available for a role"}</span>
         </p>
       </div>
-      <h1 id="claim">{fr ? "Je construis des systèmes à base de LLM, et je mesure s’ils tiennent leurs promesses." : "I build LLM systems and measure whether they deliver."}</h1>
+      {/* The first "LLM" of the page says what it stands for: a recruiter may not know it. */}
+      <h1 id="claim">{fr ? <>Je construis des systèmes à base de <abbr title="grand modèle de langage">LLM</abbr>, et je mesure s’ils tiennent leurs promesses.</> : <>I build <abbr title="large language model">LLM</abbr> systems and measure whether they deliver.</>}</h1>
       <p class="message">
-        {fr ? "Recherche documentaire qui cite ou refuse, langage typé pour prompts, pipelines d’analyse : chaque résultat publié avec sa preuve." : "Document search that cites or refuses, a typed language for prompts, analysis pipelines: every result published with its proof."}
+        {fr ? "Recherche documentaire qui cite ou refuse, langage typé pour prompts : chaque résultat publié avec sa preuve." : "Document search that cites or refuses, a typed language for prompts: every result published with its proof."}
       </p>
       <p class="actions">
         <a class="button primary" href={`#${id.projects}`}>{fr ? "Voir les projets" : "See the projects"}</a>
-        <a class="button" href="#contact">{fr ? "Écrire un e-mail" : "Get in touch"}</a>
+        <a class="button" href="#contact">{fr ? "Me contacter" : "Get in touch"}</a>
       </p>
     </div>
     <div class="stage">
@@ -83,8 +84,8 @@ const person = {
     <h2 id={`${id.method}-title`}>{fr ? "Méthode" : "Method"}</h2>
     <ul class="rules">
       <li class="card">
-        <h3>{fr ? "Audit indépendant" : "Independent audit"}</h3>
-        <p>{fr ? "Audit à froid par un agent IA sans contexte. Sur PromptLang :" : "Cold audit by an AI agent with no prior context. On PromptLang:"} <Figure id="promptlang.audit_findings" where="method" /> {fr ? "constats, chacun corrigé, réfuté ou laissé ouvert." : "findings, each fixed, refuted or left open."}</p>
+        <h3>{fr ? "Audit à froid" : "Cold audit"}</h3>
+        <p>{fr ? "Audit à froid par un agent IA sans contexte. Sur PromptLang :" : "Cold audit by an AI agent with no prior context. On PromptLang:"} <Figure id="promptlang.audit_defects" where="method" /> {fr ? "défauts, chacun corrigé ou réfuté, et une remarque de contexte." : "defects, each fixed or refuted, and one remark on context."}</p>
         <p class="links"><a href="https://github.com/matteogallo-ai/promptlang/pull/32">PR promptlang#32</a></p>
       </li>
       <li class="card">
@@ -94,7 +95,7 @@ const person = {
       </li>
       <li class="card">
         <h3>{fr ? "Évaluation pré-enregistrée" : "Pre-registered evaluation"}</h3>
-        <p>{fr ? "Échantillon tiré avec une graine fixe et enregistré dans le dépôt avant l’annotation. Le résultat est publié tel quel, même défavorable :" : "Sample drawn with a fixed seed and committed before annotation. The result is published as is, even when unfavourable:"} <Figure id="promptlang.linter_precision_reviewed" where="method" defect />.</p>
+        <p>{fr ? "Échantillon tiré avec une graine fixe et enregistré dans le dépôt avant l’annotation. Le résultat est publié tel quel, même défavorable :" : "Sample drawn with a fixed seed and committed before annotation. The result is published as is, even when unfavourable:"} <Figure id="promptlang.linter_precision_reviewed" where="method" defect text={fr ? "12 signalements justes sur 40" : "12 of 40 flags correct"} />.</p>
         <p class="links"><a href="https://github.com/matteogallo-ai/promptlang/pull/39">PR promptlang#39</a></p>
       </li>
     </ul>

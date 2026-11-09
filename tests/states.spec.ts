@@ -45,7 +45,7 @@ const W = {
   fr: {
     home: "/",
     see: "Voir les projets",
-    email: "Écrire un e-mail",
+    email: "Me contacter",
     refuses: "Il refuse, faute de preuve",
     write: "Écrire",
     method: "methode",

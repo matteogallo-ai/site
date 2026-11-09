@@ -86,3 +86,9 @@ test("the PromptLang audit counts its defects apart from its one remark on conte
   assert.ok(rows.includes("| C22 | Mineur |"), "row C22 is a defect");
   assert.ok(rows.includes("| C23 | Contexte (pas un défaut) |"), "row C23 is context, not a defect");
 });
+
+test("the home card rounds PromptLang's mutation score to whole percents; the value stays the artefact's", () => {
+  const m = measure("promptlang.mutation_score");
+  assert.deepEqual(m.display, { fr: "96 %", en: "96%" });
+  assert.equal(m.value, 96.13);
+});

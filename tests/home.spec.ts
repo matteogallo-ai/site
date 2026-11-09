@@ -9,34 +9,33 @@ const WORDS = {
   fr: {
     path: "/",
     title: "Matteo Gallo — Ingénieur logiciel & IA",
-    description: "Matteo Gallo, ingénieur logiciel et IA à Lausanne. Je construis des systèmes à base de LLM et je mesure s'ils tiennent leurs promesses : recherche documentaire qui cite ou refuse, langage typé pour prompts, pipelines d'analyse.",
+    description: "Matteo Gallo, ingénieur logiciel et IA à Lausanne. Je construis des systèmes à base de LLM et je mesure s'ils tiennent leurs promesses.",
     role: "Ingénieur logiciel & IA · Lausanne",
     status: "Disponible pour un poste",
     h1: "Je construis des systèmes à base de LLM, et je mesure s'ils tiennent leurs promesses.",
-    message: "Recherche documentaire qui cite ou refuse, langage typé pour prompts, pipelines d'analyse : chaque résultat publié avec sa preuve.",
-    actions: ["Voir les projets", "Écrire un e-mail"],
+    message: "Recherche documentaire qui cite ou refuse, langage typé pour prompts : chaque résultat publié avec sa preuve.",
+    actions: ["Voir les projets", "Me contacter"],
     projects: [
       [
-        "Assistant de questions-réponses sur des documents d'entreprise : chaque réponse cite le passage source, et l'absence de preuve produit un refus.",
-        "4/31 questions sans réponse traitées comme si elles en avaient une, contre 12/31 pour un RAG naïf (même recherche, sans contrôles ; test apparié, p = 0,023)",
+        "Assistant de questions-réponses sur des documents d'entreprise : chaque réponse cite le passage source, et il est conçu pour refuser quand la preuve manque.",
+        "4/31 questions sans réponse traitées comme si elles en avaient une, contre 12/31 pour la même chaîne sans contrôles",
       ],
       [
         "Compilateur pour un langage typé de prompts : génère du code TypeScript et Python, publié sur npm.",
-        "96,13 % des 1 914 mutants détectés par ses tests (erreurs introduites exprès dans la lecture du langage et le contrôle de version)",
+        "96 % des 1 914 mutants détectés par ses tests (erreurs introduites exprès dans la lecture du langage et le contrôle de version)",
       ],
     ],
-    experiments: ["Expériences", "Praxis — pipeline d'analyse en 7 étapes ; comparé à l'aveugle à un appel unique 9,8× moins cher, il n'a pas fait mieux. Résultat publié.", "/projets/praxis/"],
+    experiments: ["Expériences", "Praxis — pipeline d'analyse en 7 étapes ; comparé à l'aveugle, sur une question, à un appel unique 9,8× moins cher : le relecteur a préféré l'appel unique. Résultat publié.", "/projets/praxis/"],
     method: [
-      ["Audit indépendant", "Audit à froid par un agent IA sans contexte. Sur PromptLang : 23 constats, chacun corrigé, réfuté ou laissé ouvert.", "PR promptlang#32"],
+      ["Audit à froid", "Audit à froid par un agent IA sans contexte. Sur PromptLang : 22 défauts, chacun corrigé ou réfuté, et une remarque de contexte.", "PR promptlang#32"],
       ["Lecture des sorties réelles", "Les tests ne suffisent pas. La relecture d'un briefing Praxis a révélé des estimations présentées comme des faits ; le validateur a été corrigé.", "PR praxis#47"],
-      ["Évaluation pré-enregistrée", "Échantillon tiré avec une graine fixe et enregistré dans le dépôt avant l'annotation. Le résultat est publié tel quel, même défavorable : 12/40.", "PR promptlang#39"],
+      ["Évaluation pré-enregistrée", "Échantillon tiré avec une graine fixe et enregistré dans le dépôt avant l'annotation. Le résultat est publié tel quel, même défavorable : 12 signalements justes sur 40.", "PR promptlang#39"],
     ],
     bio: [
       "Ingénieur logiciel et IA basé à Lausanne. Je construis des systèmes à base de LLM, avec leurs tests, leurs évaluations et leurs mesures publiées.",
       "Développement assisté par agents de code : je spécifie, je relis les PR et leurs tests, et je réponds de ce qui est fusionné.",
       "Formation d'automaticien à l'ETML (école des métiers), interrompue en deuxième année pour me consacrer au développement logiciel.",
       "Langues : français et italien (maternelles), anglais (intermédiaire), espagnol (notions).",
-      "Ouvert à un poste d'ingénieur logiciel et IA en Suisse romande.",
       "En dehors du code, j'assemble des montres Seiko personnalisées et je joue du piano.",
     ],
     caption: "Démo : Verity sur un contrat de test",
@@ -45,34 +44,33 @@ const WORDS = {
   en: {
     path: "/en/",
     title: "Matteo Gallo — Software & AI Engineer",
-    description: "Matteo Gallo, software and AI engineer in Lausanne. I build LLM systems and measure whether they deliver: document search that cites or refuses, a typed language for prompts, analysis pipelines.",
+    description: "Matteo Gallo, software and AI engineer in Lausanne. I build LLM systems and measure whether they deliver.",
     role: "Software & AI Engineer · Lausanne",
     status: "Available for a role",
     h1: "I build LLM systems and measure whether they deliver.",
-    message: "Document search that cites or refuses, a typed language for prompts, analysis pipelines: every result published with its proof.",
+    message: "Document search that cites or refuses, a typed language for prompts: every result published with its proof.",
     actions: ["See the projects", "Get in touch"],
     projects: [
       [
-        "Question answering over company documents: every answer cites its source passage, and missing evidence produces a refusal.",
-        "4/31 unanswerable questions answered as if they had an answer, against 12/31 for a naive RAG (same retrieval, no checks; paired test, p = 0.023)",
+        "Question answering over company documents: every answer cites its source passage, and it is designed to refuse when the evidence is missing.",
+        "4/31 unanswerable questions answered as if they had an answer, against 12/31 for the same pipeline without checks",
       ],
       [
         "A compiler for a typed prompt language: generates TypeScript and Python, published on npm.",
-        "96.13% of 1,914 mutants detected by its tests (errors deliberately introduced into the language reader and the version check)",
+        "96% of 1,914 mutants detected by its tests (errors deliberately introduced into the language reader and the version check)",
       ],
     ],
-    experiments: ["Experiments", "Praxis — a 7-stage analysis pipeline; compared blind with a single call 9.8× cheaper, it did no better. Result published.", "/en/projects/praxis/"],
+    experiments: ["Experiments", "Praxis — a 7-stage analysis pipeline; compared blind, on one question, with a single call 9.8× cheaper: the reviewer preferred the single call. Result published.", "/en/projects/praxis/"],
     method: [
-      ["Independent audit", "Cold audit by an AI agent with no prior context. On PromptLang: 23 findings, each fixed, refuted or left open.", "PR promptlang#32"],
+      ["Cold audit", "Cold audit by an AI agent with no prior context. On PromptLang: 22 defects, each fixed or refuted, and one remark on context.", "PR promptlang#32"],
       ["Reading real outputs", "Tests are not enough. Reviewing a Praxis briefing revealed estimates presented as facts; the validator was fixed.", "PR praxis#47"],
-      ["Pre-registered evaluation", "Sample drawn with a fixed seed and committed before annotation. The result is published as is, even when unfavourable: 12/40.", "PR promptlang#39"],
+      ["Pre-registered evaluation", "Sample drawn with a fixed seed and committed before annotation. The result is published as is, even when unfavourable: 12 of 40 flags correct.", "PR promptlang#39"],
     ],
     bio: [
       "Software and AI engineer based in Lausanne. I build LLM systems, with their tests, evaluations and published measurements.",
       "Built with coding agents: I write the specs, review the pull requests and their tests, and answer for what gets merged.",
-      "Automation technician training at ETML (vocational school), left in the second year to focus on software development.",
+      "I trained as an automation technician at ETML (vocational school) and left in the second year to focus on software.",
       "Languages: French and Italian (native), English (intermediate), Spanish (basic).",
-      "Open to a software and AI engineering role in French-speaking Switzerland.",
       "Outside of code, I build custom Seiko watches and play the piano.",
     ],
     caption: "Demo: Verity on a test contract",
@@ -91,6 +89,11 @@ for (const [lang, w] of Object.entries(WORDS)) {
     expect(await texts(page, ".hero .role")).toEqual([w.role]);
     expect(await texts(page, ".hero .status")).toEqual([w.status]);
     expect(await texts(page, "h1")).toEqual([w.h1]);
+    // A recruiter may not read "LLM": its first use on the page says what it stands for.
+    await expect(page.locator("main abbr").first()).toHaveText("LLM");
+    await expect(page.locator("h1 abbr")).toHaveAttribute("title", lang === "fr" ? "grand modèle de langage" : "large language model");
+    // Search results cut a description near 160 characters.
+    expect(w.description.length).toBeLessThanOrEqual(160);
     expect(await texts(page, ".hero .message")).toEqual([w.message]);
     expect(await texts(page, ".hero .actions a")).toEqual([...w.actions]);
     expect(await texts(page, "[data-verity-demo] .caption")).toEqual([w.caption]);
@@ -149,10 +152,10 @@ for (const [lang, w] of Object.entries(WORDS)) {
   test(`${w.path}: every figure resolves in measures.json and links to its proof; no other number`, async ({ page }) => {
     await page.goto(w.path);
     const figures = await page.locator("main .figure").evaluateAll((els) => els.map((a) => ({ id: a.getAttribute("data-id")!, href: a.getAttribute("href")!, value: (a.querySelector(".value") as HTMLElement).innerText })));
-    // Verity's figure is a comparison of three (its count, the baseline's, the test's p), PromptLang's
-    // two (its score and the mutant count it is taken over), the Praxis experiment its stage count and
-    // its cost ratio; two method cards.
-    expect(figures.length).toBe(9);
+    // Verity's figure is a comparison of two (its count and the baseline's; the test's p stays on the
+    // case study), PromptLang's two (its score and the mutant count it is taken over), the Praxis
+    // experiment its stage count and its cost ratio; two method cards.
+    expect(figures.length).toBe(8);
     for (const f of figures) {
       const m = measure(f.id);
       expect(f.href, f.id).toBe(m.url);
