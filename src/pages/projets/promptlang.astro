@@ -22,7 +22,7 @@ const pr = (n: number) => pull("promptlang", n);
 >
   <Brief
     slot="brief"
-    does="Il transforme un prompt (l’instruction textuelle envoyée au modèle) en fichier vérifié, compilé en code TypeScript ou Python, et signale quand une nouvelle version casse le code de ceux qui l’utilisent."
+    does="Il transforme un prompt (l’instruction textuelle envoyée à un modèle d’IA) en fichier vérifié, compilé en code TypeScript ou Python, et signale quand une nouvelle version casse le code de ceux qui l’utilisent."
     measured="La solidité des tests de la lecture du langage et du contrôle de version, et la justesse d’un relecteur automatique, le linter IA, qui pointe les défauts d’écriture des prompts."
     defect="La plupart des signalements du linter IA sont faux, à peine mieux que tout signaler ; mesuré contre ce point de comparaison, il est présenté comme une aide au relecteur humain, pas comme un contrôle."
     figures={[
