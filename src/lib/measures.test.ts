@@ -47,8 +47,10 @@ test("Praxis is pinned on the merge of praxis#65, where README and the system ca
 
 test("PromptLang's mutant count is the artefact's total, the denominator of its score", () => {
   const n = measure("promptlang.mutants_total");
-  assert.equal(n.value, 1914);
-  assert.deepEqual(n.display, { fr: "1\u00A0914", en: "1,914" });
+  assert.equal(n.value, 1942);
+  assert.deepEqual(n.display, { fr: "1\u00A0942", en: "1,942" });
+  // The Stryker run recorded by promptlang#48, merged as 8cd7c65.
+  assert.equal(n.commit, "8cd7c6575d65c4abb1c60c6a6147cc0d060235ab");
   assert.equal(n.commit, measure("promptlang.mutation_score").commit);
 });
 
@@ -68,4 +70,27 @@ test("the derived figures follow from their own evidence", () => {
   const ratio = cost("benchmarks/outputs/live/12-sodium-ion-plant-morocco/run-2026-11-04T13-20-16-572Z/metadata.json") / cost("benchmarks/outputs/baseline/12-sodium-ion-plant-morocco/run-2026-11-07T11-28-59-229Z/metadata.json");
   assert.equal(ratio.toFixed(1), "9.8");
   assert.equal(measure("praxis.q12_cost_ratio").value, Number(ratio.toFixed(4)));
+});
+
+test("a derived figure links to a file that states what it is derived from", () => {
+  // praxis.q12_cost_ratio is $4.75 over $0.48: its link (path, url) must open a page that shows both.
+  const m = measure("praxis.q12_cost_ratio");
+  const own = m.evidence.filter((e) => "contains" in e && (e.path === undefined || e.path === m.path)).map((e) => ("contains" in e ? e.contains : ""));
+  assert.ok(own.some((t) => t.includes("$0.48") && t.includes("$4.75")), `${m.path} states neither cost`);
+  assert.equal(m.commit, "bfad47e21f0d191d5c7cf57993932a640c3453d2");
+});
+
+test("the PromptLang audit counts its defects apart from its one remark on context", () => {
+  const m = measure("promptlang.audit_defects");
+  assert.equal(m.value, 22);
+  assert.equal(m.path, measure("promptlang.audit_findings").path);
+  const rows = m.evidence.map((e) => ("contains" in e ? e.contains : ""));
+  assert.ok(rows.includes("| C22 | Mineur |"), "row C22 is a defect");
+  assert.ok(rows.includes("| C23 | Contexte (pas un défaut) |"), "row C23 is context, not a defect");
+});
+
+test("the home card rounds PromptLang's mutation score to whole percents; the value stays the artefact's", () => {
+  const m = measure("promptlang.mutation_score");
+  assert.deepEqual(m.display, { fr: "96 %", en: "96%" });
+  assert.equal(m.value, 96.19);
 });

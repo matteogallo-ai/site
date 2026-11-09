@@ -51,7 +51,7 @@ const translated = (en: string) => {
   <Brief
     slot="brief"
     does="Il répond aux questions sur un ensemble de contrats en citant la clause exacte, et dit « je ne sais pas » quand les documents ne contiennent pas la réponse."
-    measured="Sur des questions de test jamais vues pendant le réglage : s’il refuse les questions sans réponse, si ses réponses inventent quelque chose, et s’il fait mieux que la même chaîne sans contrôles."
+    measured="Sur des questions de test jamais vues pendant le réglage : s’il refuse les questions sans réponse et si ses réponses inventent quelque chose. Sur les questions de réglage et de test : s’il fait mieux que la même chaîne sans contrôles."
     defect="Il répond encore à des questions qui n’ont pas de réponse dans les documents ; les questions en cause sont nommées dans les résultats publiés."
     figures={[
       { id: "verity.invented_answer_rate", caption: "réponses contenant une invention, sur toutes les réponses données, que la question ait une réponse ou non (selon le juge)" },
@@ -124,7 +124,8 @@ const translated = (en: string) => {
       /> pour le RAG naïf : l’écart est net (test apparié, corrigé pour trois comparaisons : p = <Figure id="verity.twoarm_unanswerable_answered_p" where="prose" />). Il répond à <Figure
         id="verity.twoarm_answerable_answered_verity"
         where="prose"
-      /> questions qui ont une réponse, contre <Figure id="verity.twoarm_answerable_answered_naive" where="prose" />, et donne <Figure id="verity.twoarm_invented_answer_verity" where="prose" /> réponse inventée,
+      /> questions qui ont une réponse, contre <Figure id="verity.twoarm_answerable_answered_naive" where="prose" />, et donne <Figure id="verity.twoarm_invented_answer_verity" where="prose" /> réponse inventée
+      (<code>q-089</code>, qui se récuse tout en affirmant quelque chose, compte ici comme un refus selon la règle pré-enregistrée, alors que l’encadré « En bref » la compte comme une invention),
       contre <Figure id="verity.twoarm_invented_answer_naive" where="prose" /> : à cette taille, ni ce coût ni ce gain ne se distinguent du hasard (p = <Figure
         id="verity.twoarm_answerable_answered_p"
         where="prose"

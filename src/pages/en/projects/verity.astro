@@ -39,7 +39,7 @@ if (!thresholdSentence || !("contains" in thresholdSentence)) throw new Error("t
   <Brief
     slot="brief"
     does="It answers questions about a set of contracts by quoting the exact clause, and says “I don’t know” when the documents do not contain the answer."
-    measured="On test questions never seen during tuning: whether it refuses the unanswerable questions, whether its answers make anything up, and whether it does better than the same chain with no checks."
+    measured="On test questions never seen during tuning: whether it refuses the unanswerable questions and whether its answers make anything up. On the tuning and test questions: whether it does better than the same chain with no checks."
     defect="It still answers some questions that have no answer in the documents; the questions involved are named in the published results."
     figures={[
       { id: "verity.invented_answer_rate", caption: "answers containing a fabrication, over every answer given, whether the question has an answer or not (according to the judge)" },
@@ -113,7 +113,8 @@ if (!thresholdSentence || !("contains" in thresholdSentence)) throw new Error("t
         where="prose"
       /> unanswerable questions as if they had an answer, against <Figure id="verity.twoarm_unanswerable_answered_naive" where="prose" /> for the naive RAG: a clear gap (paired test, adjusted for three
       comparisons: p = <Figure id="verity.twoarm_unanswerable_answered_p" where="prose" />). It answers <Figure id="verity.twoarm_answerable_answered_verity" where="prose" /> questions that have an answer,
-      against <Figure id="verity.twoarm_answerable_answered_naive" where="prose" />, and gives <Figure id="verity.twoarm_invented_answer_verity" where="prose" /> fabricated answers, against <Figure
+      against <Figure id="verity.twoarm_answerable_answered_naive" where="prose" />, and gives <Figure id="verity.twoarm_invented_answer_verity" where="prose" /> fabricated answers
+      (<code>q-089</code>, which abstains while still asserting something, counts here as a refusal under the pre-registered rule, whereas the brief above counts it as a fabrication), against <Figure
         id="verity.twoarm_invented_answer_naive"
         where="prose"
       />: at this size, neither that cost nor that gain can be told from chance (p = <Figure id="verity.twoarm_answerable_answered_p" where="prose" /> and <Figure

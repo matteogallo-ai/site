@@ -131,6 +131,8 @@ a:where(:not(.button, .skip-link, .figure)) {
   position: absolute;
   left: var(--gutter);
   top: -100px;
+  /* Above the sticky header (z-index 10), which covers this corner at 375 px. */
+  z-index: 20;
   padding: 0.5rem 0.75rem;
   background: var(--ink);
   color: var(--paper);
@@ -426,4 +428,13 @@ a[href^="http"]:not(.card-link)::after {
 
 :root[data-reveal] .reveal > :nth-child(n + 4) {
   transition-delay: 180ms;
+}
+
+/* Paper never scrolls: a section still held back would print blank. */
+@media print {
+  :root[data-reveal] .reveal:not([data-shown]) > * {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
 }

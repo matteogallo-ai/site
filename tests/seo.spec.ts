@@ -70,6 +70,8 @@ for (const path of pages) {
     await page.goto(path);
     const og = (p: string) => page.locator(`meta[property="og:${p}"]`).getAttribute("content");
     expect(await og("title")).toBe(await page.title());
+    // A case study is an article; the home pages, the Colophon and the 404 are the site's own pages.
+    expect(await og("type")).toBe(/\/(projets|projects)\/[a-z]+\/$/.test(path) ? "article" : "website");
     if (path.endsWith("/404.html")) {
       // Served at every unknown address: no URL of its own to name.
       await expect(page.locator('link[rel="canonical"], meta[property="og:url"]')).toHaveCount(0);
@@ -225,5 +227,35 @@ for (const image of ogImages()) {
       const lines = await page.locator(".project .figure-line").allInnerTexts();
       expect(lines.map(plain)).toEqual(homeFigures(image.lang).map((f) => plain(f.line)));
     }
+  });
+}
+
+// Search engines read who the site is about from a Person record on each home page. It is an
+// inline script like any other: the build hashes it into the security policy.
+for (const [path, jobTitle] of [["/", "Ingénieur logiciel & IA"], ["/en/", "Software & AI Engineer"]] as const) {
+  test(`${path}: a JSON-LD Person names the author, his role and profiles, and its hash is in the policy`, async ({ page }) => {
+    await page.goto(path);
+    const blocks = page.locator('script[type="application/ld+json"]');
+    await expect(blocks).toHaveCount(1);
+    const text = (await blocks.textContent())!;
+    expect(JSON.parse(text)).toEqual({
+      "@context": "https://schema.org",
+      "@type": "Person",
+      name: "Matteo Gallo",
+      jobTitle,
+      url: `${ORIGIN}${path}`,
+      sameAs: ["https://github.com/matteogallo-ai", "https://www.linkedin.com/in/matteogallo-ai"],
+    });
+    const csp = /Content-Security-Policy: (.+)/.exec(readFileSync("dist/_headers", "utf8"))?.[1] ?? "";
+    const hash = createHash("sha256").update(text, "utf8").digest("base64");
+    expect(csp).toContain(`'sha256-${hash}'`);
+  });
+}
+
+// Only the home pages carry it: elsewhere the record would describe the page as the person.
+for (const path of pages.filter((p) => p !== "/" && p !== "/en/")) {
+  test(`${path}: no JSON-LD`, async ({ page }) => {
+    await page.goto(path);
+    await expect(page.locator('script[type="application/ld+json"]')).toHaveCount(0);
   });
 }

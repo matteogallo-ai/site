@@ -26,10 +26,10 @@ export const OG = {
   figures: [
     {
       id: "verity.twoarm_unanswerable_answered_verity",
-      // A comparison: the baseline's count and the test's p are read from their measures.
+      // A comparison: the baseline's count is read from its measure.
       caption: {
-        fr: `questions sans réponse traitées comme si elles en avaient une, contre ${measure("verity.twoarm_unanswerable_answered_naive").display.fr} pour un RAG naïf (même recherche, sans contrôles ; test apparié, p = ${measure("verity.twoarm_unanswerable_answered_p").display.fr})`,
-        en: `unanswerable questions answered as if they had an answer, against ${measure("verity.twoarm_unanswerable_answered_naive").display.en} for a naive RAG (same retrieval, no checks; paired test, p = ${measure("verity.twoarm_unanswerable_answered_p").display.en})`,
+        fr: `questions sans réponse traitées comme si elles en avaient une, contre ${measure("verity.twoarm_unanswerable_answered_naive").display.fr} pour la même chaîne sans contrôles`,
+        en: `unanswerable questions answered as if they had an answer, against ${measure("verity.twoarm_unanswerable_answered_naive").display.en} for the same pipeline without checks`,
       },
       dash: false,
     },
