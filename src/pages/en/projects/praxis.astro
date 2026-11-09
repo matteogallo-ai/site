@@ -8,8 +8,11 @@ import MeasuresTable from "../../../components/case/MeasuresTable.astro";
 import Limit from "../../../components/case/Limit.astro";
 import Figure from "../../../components/Figure.astro";
 import { pinned, pull } from "../../../lib/sources.ts";
+import { measure } from "../../../lib/measures.ts";
 
 const at = (path: string) => pinned("praxis", path);
+// Read from the measure, not typed: the description is the one place this figure is shown without <Figure>.
+const ratio = measure("praxis.q12_cost_ratio").display.en;
 ---
 
 <CaseStudy
@@ -17,7 +20,7 @@ const at = (path: string) => pinned("praxis", path);
   name="Praxis"
   repo="praxis"
   summary="A tool that turns a business question into a briefing written by AI models, whose sources are checked by code and whose drafting is reviewed by a model tasked with finding the flaw."
-  description="Case study of Praxis, AI-written analysis briefings with checked sources: problem, architecture, results, defects, decisions."
+  description={`Case study of Praxis, AI-written analysis briefings. Compared blind, on one question, with a single model call ${ratio} cheaper, it did no better.`}
 >
   <Brief
     slot="brief"
