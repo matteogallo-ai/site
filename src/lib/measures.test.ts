@@ -47,8 +47,10 @@ test("Praxis is pinned on the merge of praxis#65, where README and the system ca
 
 test("PromptLang's mutant count is the artefact's total, the denominator of its score", () => {
   const n = measure("promptlang.mutants_total");
-  assert.equal(n.value, 1914);
-  assert.deepEqual(n.display, { fr: "1\u00A0914", en: "1,914" });
+  assert.equal(n.value, 1942);
+  assert.deepEqual(n.display, { fr: "1\u00A0942", en: "1,942" });
+  // The Stryker run recorded by promptlang#48, merged as 8cd7c65.
+  assert.equal(n.commit, "8cd7c6575d65c4abb1c60c6a6147cc0d060235ab");
   assert.equal(n.commit, measure("promptlang.mutation_score").commit);
 });
 
@@ -90,5 +92,5 @@ test("the PromptLang audit counts its defects apart from its one remark on conte
 test("the home card rounds PromptLang's mutation score to whole percents; the value stays the artefact's", () => {
   const m = measure("promptlang.mutation_score");
   assert.deepEqual(m.display, { fr: "96 %", en: "96%" });
-  assert.equal(m.value, 96.13);
+  assert.equal(m.value, 96.19);
 });
