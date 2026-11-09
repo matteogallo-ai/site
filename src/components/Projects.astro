@@ -21,7 +21,7 @@ const t = {
     <article class="project card" aria-labelledby="p-verity">
       <h3 id="p-verity"><a class="card-link" href={study("verity")}>Verity</a></h3>
       <ProductShot id="verity" size="card" />
-      <p>{fr ? "Assistant de questions-réponses sur des documents d’entreprise : chaque réponse cite le passage source, et il est conçu pour refuser quand la preuve manque." : "Question answering over company documents: every answer cites its source passage, and it is designed to refuse when the evidence is missing."}</p>
+      <p>{fr ? "Assistant de questions-réponses sur des documents : chaque réponse cite le passage source, et il est conçu pour refuser quand la preuve manque." : "Question answering over documents: every answer cites its source passage, and it is designed to refuse when the evidence is missing."}</p>
       <p class="figure-line"><Figure id="verity.twoarm_unanswerable_answered_verity" where="card" sentence /> {fr ? "questions sans réponse traitées comme si elles en avaient une, contre" : "unanswerable questions answered as if they had an answer, against"} <Figure id="verity.twoarm_unanswerable_answered_naive" where="card" sentence /> {fr ? "pour la même chaîne sans contrôles" : "for the same pipeline without checks"}</p>
       <p class="links"><a class="button" href={study("verity")}>{t.read}</a> <a href={repo("verity")}>{t.code}</a></p>
     </article>

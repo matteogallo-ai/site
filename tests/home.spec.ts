@@ -17,12 +17,12 @@ const WORDS = {
     actions: ["Voir les projets", "Me contacter"],
     projects: [
       [
-        "Assistant de questions-réponses sur des documents d'entreprise : chaque réponse cite le passage source, et il est conçu pour refuser quand la preuve manque.",
+        "Assistant de questions-réponses sur des documents : chaque réponse cite le passage source, et il est conçu pour refuser quand la preuve manque.",
         "4/31 questions sans réponse traitées comme si elles en avaient une, contre 12/31 pour la même chaîne sans contrôles",
       ],
       [
         "Compilateur pour un langage typé de prompts : génère du code TypeScript et Python, publié sur npm.",
-        "96 % des 1 914 mutants détectés par ses tests (erreurs introduites exprès dans la lecture du langage et le contrôle de version)",
+        "96 % des 1 942 mutants détectés par ses tests (erreurs introduites exprès dans la lecture du langage et le contrôle de version)",
       ],
     ],
     experiments: ["Expériences", "Praxis — pipeline d'analyse en 7 étapes ; comparé à l'aveugle, sur une question, à un appel unique 9,8× moins cher : le relecteur a préféré l'appel unique. Résultat publié.", "/projets/praxis/"],
@@ -52,12 +52,12 @@ const WORDS = {
     actions: ["See the projects", "Get in touch"],
     projects: [
       [
-        "Question answering over company documents: every answer cites its source passage, and it is designed to refuse when the evidence is missing.",
+        "Question answering over documents: every answer cites its source passage, and it is designed to refuse when the evidence is missing.",
         "4/31 unanswerable questions answered as if they had an answer, against 12/31 for the same pipeline without checks",
       ],
       [
         "A compiler for a typed prompt language: generates TypeScript and Python, published on npm.",
-        "96% of 1,914 mutants detected by its tests (errors deliberately introduced into the language reader and the version check)",
+        "96% of 1,942 mutants detected by its tests (errors deliberately introduced into the language reader and the version check)",
       ],
     ],
     experiments: ["Experiments", "Praxis — a 7-stage analysis pipeline; compared blind, on one question, with a single call 9.8× cheaper: the reviewer preferred the single call. Result published.", "/en/projects/praxis/"],
