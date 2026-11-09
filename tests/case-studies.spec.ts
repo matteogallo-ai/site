@@ -241,3 +241,38 @@ for (const [path, sentence] of [
     expect(plain(await page.locator(".summary").innerText())).toBe(plain(sentence));
   });
 }
+
+// Verity's run of record covers test questions only; its comparison with the same chain without
+// checks covers tuning and test questions (verity docs/results.md, "dev + test"). The brief keeps
+// the two scopes apart, and the comparison says why its 0/93 does not contradict the brief's 1/40.
+for (const [path, scopes, q089] of [
+  [
+    "/projets/verity/",
+    "Sur des questions de test jamais vues pendant le réglage : s'il refuse les questions sans réponse et si ses réponses inventent quelque chose. Sur les questions de réglage et de test : s'il fait mieux que la même chaîne sans contrôles.",
+    /0\/93 réponse inventée \(q-089, qui se récuse tout en affirmant quelque chose, compte ici comme un refus selon la règle pré-enregistrée\)/,
+  ],
+  [
+    "/en/projects/verity/",
+    "On test questions never seen during tuning: whether it refuses the unanswerable questions and whether its answers make anything up. On the tuning and test questions: whether it does better than the same chain with no checks.",
+    /0\/93 fabricated answers \(q-089, which abstains while still asserting something, counts here as a refusal under the pre-registered rule\)/,
+  ],
+] as const) {
+  test(`${path}: the brief keeps the run's scope apart from the comparison's, and the comparison explains q-089`, async ({ page }) => {
+    await page.goto(path);
+    expect(plain(await page.locator(".brief dd").nth(1).innerText())).toBe(plain(scopes));
+    expect(plain(await page.locator("#mesures").innerText()).replace(/\s+/g, " ")).toMatch(q089);
+  });
+}
+
+// A search result cuts a description near 155 characters; the Praxis one states who preferred what.
+for (const [path, end] of [
+  ["/projets/praxis/", "le relecteur a préféré l'appel unique."],
+  ["/en/projects/praxis/", "the reviewer preferred the single call."],
+] as const) {
+  test(`${path}: the description fits a search result and says the reviewer preferred the single call`, async ({ page }) => {
+    await page.goto(path);
+    const description = plain((await page.locator('meta[name="description"]').getAttribute("content")) ?? "");
+    expect(description.length).toBeLessThanOrEqual(155);
+    expect(description.endsWith(end)).toBe(true);
+  });
+}
