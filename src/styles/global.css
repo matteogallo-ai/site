@@ -427,3 +427,12 @@ a[href^="http"]:not(.card-link)::after {
 :root[data-reveal] .reveal > :nth-child(n + 4) {
   transition-delay: 180ms;
 }
+
+/* Paper never scrolls: a section still held back would print blank. */
+@media print {
+  :root[data-reveal] .reveal:not([data-shown]) > * {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}

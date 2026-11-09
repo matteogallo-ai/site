@@ -256,3 +256,21 @@ test("/: the demo holds on a 375 px screen, no sideways scroll, the page scrolls
   await page.mouse.wheel(0, 300);
   await expect.poll(() => page.evaluate(() => scrollY)).toBeGreaterThan(before);
 });
+
+// A section that has not yet scrolled into view waits at opacity 0 (src/scripts/reveal.ts); a
+// printout or a PDF taken from the first screen must not come out with those sections blank.
+for (const w of Object.values(WORDS)) {
+  test(`${w.path}: printed from the first screen, the sections below it are visible`, async ({ page }) => {
+    await page.goto(w.path);
+    await expect(page.locator("html[data-reveal]")).toHaveCount(1);
+    await page.emulateMedia({ media: "print" });
+    const fr = w.path === "/";
+    for (const selector of [fr ? "#methode" : "#method", fr ? "#a-propos" : "#about", "#contact"]) {
+      const held = await page.locator(selector).evaluate((section) => {
+        const box = section.closest(".reveal") ?? section;
+        return [...box.children].filter((child) => getComputedStyle(child).opacity !== "1").map((child) => child.className || child.tagName);
+      });
+      expect(held, selector).toEqual([]);
+    }
+  });
+}
