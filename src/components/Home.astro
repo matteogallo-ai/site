@@ -16,6 +16,16 @@ const repo = (name: string) => `https://github.com/matteogallo-ai/${name}`;
 // one style sheet, the words of the page's language.
 const fr = langOf(Astro.url.pathname) === "fr";
 const id = fr ? { projects: "projets", method: "methode", about: "a-propos" } : { projects: "projects", method: "method", about: "about" };
+// Who the site is about, for search engines (schema.org). An inline script: scripts/headers.ts
+// hashes it into the security policy with the others.
+const person = {
+  "@context": "https://schema.org",
+  "@type": "Person",
+  name: "Matteo Gallo",
+  jobTitle: fr ? "Ingénieur logiciel & IA" : "Software & AI Engineer",
+  url: new URL(Astro.url.pathname, Astro.site).href,
+  sameAs: ["https://github.com/matteogallo-ai", "https://www.linkedin.com/in/matteogallo-ai"],
+};
 ---
 
 <Base
@@ -26,6 +36,8 @@ const id = fr ? { projects: "projets", method: "methode", about: "a-propos" } : 
   serif
   stickyHeader
 >
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(person)} />
+
   <div class="bar" slot="header">
     <div class="pill glass glass-nav">
       <nav class="nav" aria-label={fr ? "Principale" : "Main"}>

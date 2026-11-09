@@ -15,9 +15,11 @@ interface Props {
   canonical?: boolean;
   /** The header stays at the top of the screen as the page scrolls (the home page's navigation). */
   stickyHeader?: boolean;
+  /** Open Graph type: "article" for a case study, "website" for the site's own pages. */
+  ogType?: "website" | "article";
 }
 
-const { title, description, serif = false, canonical: hasCanonical = true, stickyHeader = false } = Astro.props;
+const { title, description, serif = false, canonical: hasCanonical = true, stickyHeader = false, ogType = "website" } = Astro.props;
 const lang = langOf(Astro.url.pathname);
 const skipLabel = lang === "fr" ? "Aller au contenu" : "Skip to content";
 const canonical = hasCanonical ? new URL(Astro.url.pathname, Astro.site).href : undefined;
@@ -36,7 +38,7 @@ const image = ogImage(Astro.url.pathname);
     {canonical && <link rel="canonical" href={canonical} />}
     {versions.map((v) => <link rel="alternate" hreflang={v.hreflang} href={v.href} />)}
     {/* Link previews (Open Graph): the home image of the page's language, or its case study's; written by scripts/og.ts. */}
-    <meta property="og:type" content="website" />
+    <meta property="og:type" content={ogType} />
     <meta property="og:site_name" content="Matteo Gallo" />
     <meta property="og:locale" content={lang === "fr" ? "fr_CH" : "en_GB"} />
     <meta property="og:title" content={title} />
