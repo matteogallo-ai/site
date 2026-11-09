@@ -1076,6 +1076,39 @@
       "note": "22 defects (blocking, major, minor) and C23, context rather than a defect. What was done about each: 2026-11-03-f1-follow-up.md."
     },
     {
+      "id": "promptlang.audit_defects",
+      "label": {
+        "fr": "Défauts relevés par l'audit d'un agent sans contexte, hors la remarque de contexte",
+        "en": "Defects found by the audit of a context-free agent, the remark on context aside"
+      },
+      "display": {
+        "fr": "22",
+        "en": "22"
+      },
+      "value": 22,
+      "repo": "matteogallo-ai/promptlang",
+      "commit": "804f1be95261da6a82763e7acfc80251a1db81d1",
+      "path": "docs/audit/2026-11-03-f1-neutral-audit.md",
+      "url": "https://github.com/matteogallo-ai/promptlang/blob/804f1be95261da6a82763e7acfc80251a1db81d1/docs/audit/2026-11-03-f1-neutral-audit.md",
+      "evidence": [
+        {
+          "path": "docs/audit/2026-11-03-f1-neutral-audit.md",
+          "contains": "| C22 | Mineur |"
+        },
+        {
+          "path": "docs/audit/2026-11-03-f1-neutral-audit.md",
+          "contains": "| C23 | Contexte (pas un défaut) |"
+        },
+        {
+          "path": "docs/audit/2026-11-03-f1-follow-up.md",
+          "contains": "| C23 | Context | Acknowledged, see below | — |"
+        }
+      ],
+      "status": "verified",
+      "derived": "Rows C1 to C22 of the findings table, each graded Majeur or Mineur; C23 is graded « Contexte (pas un défaut) ». Checked by reading the file; the evidence proves that C22 is a defect and C23 is not.",
+      "note": "11 major and 11 minor. The follow-up (2026-11-03-f1-follow-up.md) fixes each defect, in whole or in part, and refutes the rest in writing."
+    },
+    {
       "id": "praxis.insufficiently_sourced",
       "label": {
         "fr": "Briefings réels signalés comme insuffisamment sourcés",
@@ -1400,22 +1433,26 @@
       "value": 9.8429,
       "repo": "matteogallo-ai/praxis",
       "commit": "bfad47e21f0d191d5c7cf57993932a640c3453d2",
-      "path": "benchmarks/review/q12/key.json",
-      "url": "https://github.com/matteogallo-ai/praxis/blob/bfad47e21f0d191d5c7cf57993932a640c3453d2/benchmarks/review/q12/key.json",
+      "path": "README.md",
+      "url": "https://github.com/matteogallo-ai/praxis/blob/bfad47e21f0d191d5c7cf57993932a640c3453d2/README.md",
       "evidence": [
         {
+          "path": "benchmarks/review/q12/key.json",
           "pointer": "/A",
           "equals": "praxis"
         },
         {
+          "path": "benchmarks/review/q12/key.json",
           "pointer": "/B",
           "equals": "baseline"
         },
         {
+          "path": "benchmarks/review/q12/key.json",
           "pointer": "/inputs/praxis",
           "equals": "benchmarks/outputs/live/12-sodium-ion-plant-morocco/run-2026-11-04T13-20-16-572Z/brief.md"
         },
         {
+          "path": "benchmarks/review/q12/key.json",
           "pointer": "/inputs/baseline",
           "equals": "benchmarks/outputs/baseline/12-sodium-ion-plant-morocco/run-2026-11-07T11-28-59-229Z/brief.md"
         },
