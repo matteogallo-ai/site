@@ -11,7 +11,7 @@ const [user, domain] = address.split("@");
    then read the same with or without JavaScript, whatever the zone setting. */}
 <!--email_off-->
 <div class="contact" id="contact">
-  <h2>{fr ? "Un poste d’ingénieur logiciel et IA en Suisse romande ? Écrivez-moi." : "A software and AI engineering role in French-speaking Switzerland? Get in touch."}</h2>
+  <h2>{fr ? "Un projet à automatiser ou un poste en Suisse romande ? Écrivez-moi." : "A project to automate, or a role in French-speaking Switzerland? Get in touch."}</h2>
   <p class="email">
     {/* If the address cannot hold on one line, it breaks after the @ and nowhere else. */}
     <a class="address" href={`mailto:${address}`} data-copy>{user}@<wbr />{domain}</a>

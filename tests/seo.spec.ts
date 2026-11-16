@@ -232,7 +232,7 @@ for (const image of ogImages()) {
 
 // Search engines read who the site is about from a Person record on each home page. It is an
 // inline script like any other: the build hashes it into the security policy.
-for (const [path, jobTitle] of [["/", "Ingénieur logiciel & IA"], ["/en/", "Software & AI Engineer"]] as const) {
+for (const [path, jobTitle] of [["/", "Développeur logiciel et intelligence artificielle"], ["/en/", "Software & AI Developer"]] as const) {
   test(`${path}: a JSON-LD Person names the author, his role and profiles, and its hash is in the policy`, async ({ page }) => {
     await page.goto(path);
     const blocks = page.locator('script[type="application/ld+json"]');

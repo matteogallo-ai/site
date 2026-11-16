@@ -3,7 +3,7 @@ import { test } from "node:test";
 import { gapsIn } from "./gaps.ts";
 
 test("a page with no placeholder has no gap", () => {
-  assert.deepEqual(gapsIn('<h1>Matteo Gallo — Software &amp; AI Engineer</h1><p>Contact : <a href="mailto:a@b.c">a@b.c</a></p>'), []);
+  assert.deepEqual(gapsIn('<h1>Matteo Gallo — Software &amp; AI Developer</h1><p>Contact : <a href="mailto:a@b.c">a@b.c</a></p>'), []);
 });
 
 test("every placeholder form is reported, with its text", () => {

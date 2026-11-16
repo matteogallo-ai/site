@@ -150,8 +150,8 @@ for (const file of files) {
 
 // M1: the French 404 names the role in French.
 test("404.html: the role reads in French", () => {
-  expect(html("404.html")).toContain("Matteo Gallo · Ingénieur logiciel &amp; IA");
-  expect(html("404.html")).not.toContain("Software &amp; AI Engineer");
+  expect(html("404.html")).toContain("Matteo Gallo · Développeur logiciel et intelligence artificielle");
+  expect(html("404.html")).not.toContain("Software &amp; AI Developer");
 });
 
 // D4: the English refusal rationale is the trace's own text, internal reference included; a short

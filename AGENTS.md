@@ -2,7 +2,7 @@
 
 ## What this is
 
-The personal site of Matteo Gallo, Software & AI Engineer: a static Astro site
+The personal site of Matteo Gallo, Software & AI Developer: a static Astro site
 (TypeScript strict, zero JS by default) deployed on Cloudflare Pages. `docs/SPEC.md`
 is the reference specification: read it in full before changing anything; it takes
 precedence over habits. Every figure the site shows comes from `src/data/measures.json`

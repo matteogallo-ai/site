@@ -381,3 +381,14 @@ for (const [width, most] of [[1440, 4], [375, 5]] as const) {
     });
   }
 }
+
+// Whatever the headline's length, the two buttons stay in the first screen of a common laptop.
+for (const path of ["/", "/en/"]) {
+  test(`${path} at 1280×800: the hero's buttons are in the first screen`, async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await page.goto(path);
+    await page.evaluate(() => document.fonts.ready);
+    const bottom = await page.locator(".hero .actions").evaluate((el) => el.getBoundingClientRect().bottom);
+    expect(bottom).toBeLessThanOrEqual(800);
+  });
+}

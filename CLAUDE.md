@@ -2,7 +2,7 @@
 
 ## What this is
 
-The personal site of Matteo Gallo, Software & AI Engineer: a static Astro site
+The personal site of Matteo Gallo, Software & AI Developer: a static Astro site
 (TypeScript strict, zero JS by default) deployed on Cloudflare Pages. `docs/SPEC.md`
 is the reference specification: read it in full before changing anything; it takes
 precedence over habits. Every figure the site shows comes from `src/data/measures.json`
@@ -87,7 +87,8 @@ tests/                   Playwright on every built page: axe (light + dark), key
                          built-html.spec.ts: rules read on the built HTML (inline code, diagram descriptions, translations,
                          English calques, French and English typography);
                          layout.spec.ts: rules measured at given widths (e-mail line, contact and footer, demo tabs and
-                         cards, project grid, case-study layout, touch targets, figure names, focus ring, text-wrap);
+                         cards, project grid, case-study layout, touch targets, figure names, focus ring, text-wrap,
+                         home headline lines, hero buttons in the first screen at 1280×800);
                          states.spec.ts: hover, focus, transitions and cursor of every interactive element (home,
                          case studies, both languages), project cards opening their case study, the measures fold
 scripts/site-measures*   Lighthouse CI output -> site-measures.json (weight, scores, date, commit)
