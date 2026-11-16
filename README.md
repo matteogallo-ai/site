@@ -1,6 +1,6 @@
 # matteogallo — personal site
 
-The personal site of Matteo Gallo, Software & AI Engineer. Static
+The personal site of Matteo Gallo, Software & AI Developer. Static
 [Astro](https://astro.build) site. The full specification is [`docs/SPEC.md`](docs/SPEC.md);
 what is proven by which check is in [`docs/CLAIMS.md`](docs/CLAIMS.md).
 

@@ -8,11 +8,12 @@ import { plain } from "../scripts/typography.ts";
 const WORDS = {
   fr: {
     path: "/",
-    title: "Matteo Gallo — Ingénieur logiciel & IA",
-    description: "Matteo Gallo, ingénieur logiciel et IA à Lausanne. Je construis des systèmes à base de LLM et je mesure s'ils tiennent leurs promesses.",
-    role: "Ingénieur logiciel & IA · Lausanne",
-    status: "Disponible pour un poste",
-    h1: "Je construis des systèmes à base de LLM, et je mesure s'ils tiennent leurs promesses.",
+    title: "Matteo Gallo — Développeur logiciel et intelligence artificielle",
+    description: "Matteo Gallo, développeur logiciel et IA à Lausanne : automatisation des processus métier, des systèmes mesurés et publiés avec leurs défauts.",
+    role: "Développeur logiciel et intelligence artificielle · Lausanne",
+    specialty: "Automatisation des processus métier",
+    status: "Disponible pour des projets ou un poste",
+    h1: "Je conçois des logiciels et des systèmes d'IA qui automatisent les processus métier des entreprises, de la conception à la mise en production.",
     message: "Recherche documentaire qui cite ou refuse, langage typé pour prompts : chaque résultat publié avec sa preuve.",
     actions: ["Voir les projets", "Me contacter"],
     projects: [
@@ -32,7 +33,7 @@ const WORDS = {
       ["Évaluation pré-enregistrée", "Échantillon tiré avec une graine fixe et enregistré dans le dépôt avant l'annotation. Le résultat est publié tel quel, même défavorable : 12 signalements justes sur 40.", "PR promptlang#39"],
     ],
     bio: [
-      "Ingénieur logiciel et IA basé à Lausanne. Je construis des systèmes à base de LLM, avec leurs tests, leurs évaluations et leurs mesures publiées.",
+      "Développeur logiciel et intelligence artificielle basé à Lausanne. Je conçois des logiciels et des systèmes d'IA, avec leurs tests, leurs évaluations et leurs mesures publiées.",
       "Développement assisté par agents de code : je spécifie, je relis les PR et leurs tests, et je réponds de ce qui est fusionné.",
       "Formation d'automaticien à l'ETML (école des métiers), interrompue en deuxième année pour me consacrer au développement logiciel.",
       "Langues : français et italien (maternelles), anglais (intermédiaire), espagnol (notions).",
@@ -43,11 +44,12 @@ const WORDS = {
   },
   en: {
     path: "/en/",
-    title: "Matteo Gallo — Software & AI Engineer",
-    description: "Matteo Gallo, software and AI engineer in Lausanne. I build LLM systems and measure whether they deliver.",
-    role: "Software & AI Engineer · Lausanne",
-    status: "Available for a role",
-    h1: "I build LLM systems and measure whether they deliver.",
+    title: "Matteo Gallo — Software & AI Developer",
+    description: "Matteo Gallo, software and AI developer in Lausanne: business process automation, with systems measured and published with their defects.",
+    role: "Software & AI Developer · Lausanne",
+    specialty: "Business process automation",
+    status: "Available for projects or a role",
+    h1: "I build software and AI systems that automate business processes, from design to production.",
     message: "Document search that cites or refuses, a typed language for prompts: every result published with its proof.",
     actions: ["See the projects", "Get in touch"],
     projects: [
@@ -67,7 +69,7 @@ const WORDS = {
       ["Pre-registered evaluation", "Sample drawn with a fixed seed and committed before annotation. The result is published as is, even when unfavourable: 12 of 40 flags correct.", "PR promptlang#39"],
     ],
     bio: [
-      "Software and AI engineer based in Lausanne. I build LLM systems, with their tests, evaluations and published measurements.",
+      "Software and AI developer based in Lausanne. I build software and AI systems, with their tests, evaluations and published measurements.",
       "Built with coding agents: I write the specs, review the pull requests and their tests, and answer for what gets merged.",
       "I trained as an automation technician at ETML (vocational school) and left in the second year to focus on software.",
       "Languages: French and Italian (native), English (intermediate), Spanish (basic).",
@@ -87,11 +89,12 @@ for (const [lang, w] of Object.entries(WORDS)) {
     expect(plain(await page.title())).toBe(plain(w.title));
     expect(plain((await page.locator('meta[name="description"]').getAttribute("content")) ?? "")).toBe(w.description);
     expect(await texts(page, ".hero .role")).toEqual([w.role]);
+    expect(await texts(page, ".hero .specialty")).toEqual([w.specialty]);
     expect(await texts(page, ".hero .status")).toEqual([w.status]);
     expect(await texts(page, "h1")).toEqual([w.h1]);
-    // A recruiter may not read "LLM": its first use on the page says what it stands for.
-    await expect(page.locator("main abbr").first()).toHaveText("LLM");
-    await expect(page.locator("h1 abbr")).toHaveAttribute("title", lang === "fr" ? "grand modèle de langage" : "large language model");
+    // A recruiter may not read "LLM", and the home page no longer says it: bringing it back means
+    // an <abbr> saying what it stands for at its first use, and an assertion here for it.
+    expect(await page.locator("main").innerText()).not.toMatch(/\bLLM\b/);
     // Search results cut a description near 160 characters.
     expect(w.description.length).toBeLessThanOrEqual(160);
     expect(await texts(page, ".hero .message")).toEqual([w.message]);

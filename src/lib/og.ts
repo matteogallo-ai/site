@@ -11,16 +11,16 @@ export const OG = {
   /** The site's dark tokens: a light card disappears in a white feed (LinkedIn). */
   scheme: "dark",
   name: "Matteo Gallo",
-  role: { fr: "Ingénieur logiciel & IA · Lausanne", en: "Software & AI Engineer · Lausanne" },
+  role: { fr: "Développeur logiciel et intelligence artificielle · Lausanne", en: "Software & AI Developer · Lausanne" },
   fr: {
     file: "public/og.png",
-    headline: "Je construis des systèmes à base de LLM, et je mesure s’ils tiennent leurs promesses.",
-    alt: "Matteo Gallo, ingénieur logiciel et IA à Lausanne : « Je construis des systèmes à base de LLM, et je mesure s’ils tiennent leurs promesses. »",
+    headline: "Je conçois des logiciels et des systèmes d’IA qui automatisent les processus métier des entreprises, de la conception à la mise en production.",
+    alt: "Matteo Gallo, développeur logiciel et intelligence artificielle à Lausanne : « Je conçois des logiciels et des systèmes d’IA qui automatisent les processus métier des entreprises, de la conception à la mise en production. »",
   },
   en: {
     file: "public/og-en.png",
-    headline: "I build LLM systems and measure whether they deliver.",
-    alt: "Matteo Gallo, software and AI engineer in Lausanne: “I build LLM systems and measure whether they deliver.”",
+    headline: "I build software and AI systems that automate business processes, from design to production.",
+    alt: "Matteo Gallo, software and AI developer in Lausanne: “I build software and AI systems that automate business processes, from design to production.”",
   },
   /** The home page's project cards, drawn beside the headline: one figure each, as the card shows it. */
   figures: [
