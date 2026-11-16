@@ -71,8 +71,7 @@ function page(image: OgImage): string {
   img { width: 104px; height: 104px; border-radius: 50%; }
   .name { font-size: 38px; font-weight: 600; letter-spacing: var(--track-44); line-height: 1.1; }
   .role { font-size: 24px; color: var(--graphite); margin-top: 6px; }
-  /* 44 px: the home headline is a full sentence (142 characters in French) and must fit beside the figures. */
-  h1 { margin: 0; font-size: 44px; font-weight: 600; letter-spacing: var(--track-68); line-height: 1.1; text-wrap: balance; }
+  h1 { margin: 0; font-size: 60px; font-weight: 600; letter-spacing: var(--track-68); line-height: 1.08; text-wrap: balance; }
   h1.case-name { font-size: 104px; letter-spacing: var(--track-68); line-height: 1; margin-top: 12px; }
   .kind { font-family: "JetBrains Mono"; font-size: 22px; color: var(--graphite); }
   .site { font-family: "JetBrains Mono"; font-size: 21px; color: var(--proof-text); }

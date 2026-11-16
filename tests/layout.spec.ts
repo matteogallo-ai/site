@@ -362,12 +362,10 @@ for (const width of [375, 1440]) {
   });
 }
 
-// The headline is the first thing read. The budget is the measured length of the French promise,
-// a full sentence: 7 lines at 1440 px, 8 at 375 px; a longer one fails here, and the test below
-// keeps the buttons in the first screen whatever the headline's length. Lines are
-// counted from the text's own boxes, not its height, once the site's fonts are in: a narrower
-// fallback would pass with fewer lines.
-for (const [width, most] of [[1440, 7], [375, 8]] as const) {
+// The headline is the first thing read: at 7 lines on a 1440 px screen it pushed the message and
+// the buttons down. Lines are counted from the text's own boxes, not its height, once the site's
+// fonts are in: a narrower fallback would pass with fewer lines.
+for (const [width, most] of [[1440, 4], [375, 5]] as const) {
   for (const path of ["/", "/en/"]) {
     test(`${path} at ${width} px: the headline holds in ${most} lines or fewer`, async ({ page }) => {
       await page.setViewportSize({ width, height: 900 });

@@ -13,7 +13,7 @@ const WORDS = {
     role: "Développeur logiciel et intelligence artificielle · Lausanne",
     specialty: "Automatisation des processus métier",
     status: "Disponible pour des projets ou un poste",
-    h1: "Je conçois des logiciels et des systèmes d'IA qui automatisent les processus métier des entreprises, de la conception à la mise en production.",
+    h1: "Je conçois des logiciels et des systèmes d'IA qui automatisent les processus métier.",
     message: "Recherche documentaire qui cite ou refuse, langage typé pour prompts : chaque résultat publié avec sa preuve.",
     actions: ["Voir les projets", "Me contacter"],
     projects: [
@@ -49,7 +49,7 @@ const WORDS = {
     role: "Software & AI Developer · Lausanne",
     specialty: "Business process automation",
     status: "Available for projects or a role",
-    h1: "I build software and AI systems that automate business processes, from design to production.",
+    h1: "I build software and AI systems that automate business processes.",
     message: "Document search that cites or refuses, a typed language for prompts: every result published with its proof.",
     actions: ["See the projects", "Get in touch"],
     projects: [
